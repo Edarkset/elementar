@@ -307,7 +307,7 @@ const D = {
     "desc": "Por alguns segundos, ataca mais rápido.",
     "mods": [
      "Sede de Sangue: roubo de vida",
-     "Imparável: imune a lentidão e empurrão"
+     "Imparável: +25% de dano e o Invocador ignora lentidão e atordoamento"
     ]
    },
    "sinergia2": "Roubo de vida: golpes curam 3% do dano causado.",
@@ -391,7 +391,7 @@ const D = {
     "nome": "Rajada Elementar",
     "desc": "Golpe em área no maior grupo.",
     "mods": [
-     "Chuva: vários impactos menores",
+     "Chuva: seis impactos espalhados",
      "Colapso: um impacto gigante"
     ]
    },
@@ -649,20 +649,20 @@ const D = {
     "reacao": 1.25
    },
    "solitario": {
-    "dano": 1.12,
-    "vida": 1.12,
+    "dano": 1.08,
+    "vida": 1.08,
     "reacao": 1.0
    },
    "alianca": {
-    "dano": 1.0,
-    "vida": 1.0,
+    "dano": 1.05,
+    "vida": 1.05,
     "reacao": 1.0,
     "classe_dupla": true
    },
    "regional": {
-    "dano": 1.08,
-    "vida": 1.04,
-    "reacao": 1.1
+    "dano": 1.12,
+    "vida": 1.08,
+    "reacao": 1.15
    }
   },
   "sinergia_classe": {
@@ -5528,7 +5528,7 @@ const D = {
    "chefe": "Humbaba, Guardião da Floresta de Cedros",
    "reliquia": {
     "nome": "Tabuletas do Destino",
-    "efeito": "+1 nova rolagem de cartas por level up."
+    "efeito": "Cada level up tem 30% de chance de render uma escolha extra."
    },
    "cenario": "zigurates de tijolos azuis, jardins suspensos, portões com leões",
    "humor": null,
@@ -5925,7 +5925,7 @@ const D = {
    "chefe": "Zahhak, o Rei-Serpente",
    "reliquia": {
     "nome": "Taça de Jamshid",
-    "efeito": "Mostra a recompensa de todos os portais da Era."
+    "efeito": "Ao entrar num mapa, a equipe recupera 25% da vida e ganha um escudo de 15%."
    },
    "cenario": "palácios de mosaico azul-turquesa, jardins geométricos, deserto dourado",
    "humor": null,
@@ -6117,7 +6117,7 @@ const D = {
    "chefe": "Jörmungandr, a Serpente do Mundo",
    "reliquia": {
     "nome": "Hidromel do Salão dos Heróis",
-    "efeito": "Cada abate dá +1% de dano por 10 s (acumula)."
+    "efeito": "Cada abate dá +1% de dano por 10 s (acumula até +30%)."
    },
    "cenario": "fiordes congelados, aurora boreal, ponte de arco-íris quebrada",
    "humor": "Trolls viram pedra se tocados pela luz.",
@@ -6512,7 +6512,7 @@ const D = {
    "chefe": "Morgana",
    "reliquia": {
     "nome": "Espada na Pedra",
-    "efeito": "O membro com menos vida causa +30% de dano."
+    "efeito": "Com menos de metade da vida, a equipe causa +30% de dano."
    },
    "cenario": "castelo de Camelot em ruínas, lago enevoado de Avalon, macieiras",
    "humor": null,
@@ -6712,7 +6712,7 @@ const D = {
    "chefe": "Yamata no Orochi",
    "reliquia": {
     "nome": "Máscara de Oni",
-    "efeito": "+25% de dano, -10% de defesa."
+    "efeito": "+25% de dano, mas a equipe recebe 10% a mais de dano."
    },
    "cenario": "vila feudal à noite, pontes vermelhas, lanternas, cerejeiras",
    "humor": "Os guarda-chuvas pulam numa perna só.",
@@ -7299,7 +7299,7 @@ const D = {
    "chefe": "Mapinguari",
    "reliquia": {
     "nome": "Muiraquitã",
-    "efeito": "+sorte: cartas raras aparecem com mais frequência."
+    "efeito": "Cartas de Talismã aparecem bem mais nos level ups."
    },
    "cenario": "rio largo com vitórias-régias, árvores gigantes, névoa dourada",
    "humor": "O Saci selvagem rouba seus cristais e sai rindo.",
@@ -8487,7 +8487,7 @@ const D = {
    "chefe": "O Holandês Voador",
    "reliquia": {
     "nome": "Mapa do Tesouro",
-    "efeito": "+40% de ouro."
+    "efeito": "+40% de Essência ao fim da run."
    },
    "cenario": "ilhas tropicais com névoa verde, naufrágios, baús",
    "humor": "Os papagaios xingam a equipe.",
@@ -8679,7 +8679,7 @@ const D = {
    "chefe": "Caríbdis, o Redemoinho",
    "reliquia": {
     "nome": "Concha das Marés",
-    "efeito": "A cada 10 s, uma onda empurra os inimigos."
+    "efeito": "A cada 10 s, uma onda empurra e fere os inimigos em volta."
    },
    "cenario": "fundo do mar bioluminescente, ruínas de coral, bolhas",
    "humor": null,
@@ -8875,7 +8875,7 @@ const D = {
    "chefe": "Conde da Noite Eterna",
    "reliquia": {
     "nome": "Estaca de Freixo",
-    "efeito": "+50% de dano em Mortos-vivos."
+    "efeito": "+40% de dano em chefes, mini-chefes e elites."
    },
    "cenario": "castelo gótico no penhasco, lua cheia, cemitério com velas",
    "humor": null,
@@ -9259,7 +9259,7 @@ const D = {
    "chefe": "A Bruxa da Floresta",
    "reliquia": {
     "nome": "Espelho Mágico",
-    "efeito": "Reflete 20% do dano recebido."
+    "efeito": "Quando a equipe é ferida, um clarão revida nos inimigos encostados (1 vez por segundo)."
    },
    "cenario": "floresta escura com trilha de migalhas, chalés tortos, cogumelos brilhantes",
    "humor": null,
@@ -9652,7 +9652,7 @@ const D = {
    "chefe": "O Homem Dourado",
    "reliquia": {
     "nome": "Ídolo Dourado",
-    "efeito": "+60% de ouro, mas inimigos causam +15% de dano."
+    "efeito": "+60% de Essência ao fim da run, mas inimigos causam +15% de dano."
    },
    "cenario": "cidade de ouro escondida na selva, lago sagrado, estátuas douradas",
    "humor": null,
@@ -9847,7 +9847,7 @@ const D = {
    "chefe": "Guardião do Vale Eterno",
    "reliquia": {
     "nome": "Flor do Vale",
-    "efeito": "Regeneração constante da equipe."
+    "efeito": "A equipe regenera 0,5% da vida por segundo."
    },
    "cenario": "vale oculto entre montanhas nevadas, árvores floridas na neve, fontes termais",
    "humor": null,
@@ -10047,7 +10047,7 @@ const D = {
    "chefe": "Rei do Mundo Subterrâneo",
    "reliquia": {
     "nome": "Bússola Enlouquecida",
-    "efeito": "Portais aleatórios, mas com recompensa dobrada."
+    "efeito": "Recompensas de portal em dobro: Itens e Ovos vêm 2; o resto ganha um Item extra."
    },
    "cenario": "caverna colossal com mar interno, cogumelos gigantes e um sol de cristal",
    "humor": "Os dinossauros têm medo dos Pequeninos.",

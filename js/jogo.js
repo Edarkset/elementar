@@ -88,6 +88,8 @@ function novaRun(pacto, inicial){
   R={pacto, selos:[novoSelo(),novoSelo(),novoSelo()], reserva:[], ninho:[], ancestral:{estado:"nenhum"}, itens:{incenso:0,chamado:0,doce:0,pedra:0,pena:0}, pedraAtiva:false,
      profundidade:0, eraIdx:0, mapaNaEra:0, universo:"grecia", reliquias:[], chefesVencidos:0, ciclo:0, abates:0, essenciaRun:0, elos:[], vidaFrac:1};
   R.selos[0].mon={id:inicial, rar:"comum", ramo:null}; R.st=novoSt();
+  for(let i=0;i<nivelLoja("heranca");i++){ R.selos[0].nivel++; R.selos[0].pod.b=Math.min(5,R.selos[0].pod.b+1); }   // Herança do Santuário
+  R.reviverMeta=nivelLoja("chance"); R.recordeAntes=META.recorde;
 }
 const ativos=()=>R.selos.filter(s=>s.mon);
 const L=s=>LINHA[s.mon.id];
@@ -107,12 +109,59 @@ function poolPacto(){ const p=META.liberados.filter(id=>R.pacto.includes(LINHA[i
 
 // ================================================================ sinergias e atributos
 let SIN={dano:1,vida:1,cad:1,reac:1,chips:[],rm:{}};
-function relMods(){ const m={dano:1,vida:1,cad:1,xp:1,vel:1,ima:1,reac:1,regen:0,reviver:0,nucleo:[],curaTroca:false};
+// ================================================================ Santuário: melhorias permanentes compradas com a Essência das runs
+const LOJA=[
+  {id:"forca",     nome:"Força Ancestral",   max:5, base:40,  val:0.06, txt:"+6% de dano da equipe"},
+  {id:"vigor",     nome:"Vigor",             max:5, base:40,  val:0.08, txt:"+8% de vida da equipe"},
+  {id:"pronto",    nome:"Prontidão",         max:5, base:55,  val:0.04, txt:"+4% de cadência de ataque"},
+  {id:"sabedoria", nome:"Sabedoria",         max:5, base:45,  val:0.07, txt:"+7% de XP"},
+  {id:"ima",       nome:"Ímã de Cristal",    max:3, base:30,  val:0.25, txt:"+25% de alcance para puxar cristais"},
+  {id:"agil",      nome:"Passos Leves",      max:3, base:35,  val:0.05, txt:"+5% de velocidade do Invocador"},
+  {id:"ganancia",  nome:"Ganância",          max:5, base:50,  val:0.12, txt:"+12% de Essência ao fim da run"},
+  {id:"heranca",   nome:"Herança",           max:3, base:80,  val:1,    txt:"o monstro inicial começa 1 nível acima (no 3, já começa Jovem)"},
+  {id:"oraculo",   nome:"Visão do Oráculo",  max:1, base:260, val:1,    txt:"+1 portal para escolher ao fim de cada mapa"},
+  {id:"chance",    nome:"Segunda Chance",    max:1, base:420, val:1,    txt:"uma vez por run, a equipe se levanta com metade da vida"}];
+const nivelLoja=id=>(META.loja&&META.loja[id])||0;
+function bonusLoja(id){ const it=LOJA.find(x=>x.id===id); return 1+(it? it.val*nivelLoja(id) : 0); }
+const precoLoja=it=>Math.round(it.base*Math.pow(1.85,nivelLoja(it.id)));
+function lojaAcessivel(){ return LOJA.filter(it=>nivelLoja(it.id)<it.max&&precoLoja(it)<=META.essencia); }
+function telaSantuario(){
+  $("telaMenu").classList.remove("ativa"); META.loja=META.loja||{};
+  mostrarCartas("Santuário", `Essência: <b>${META.essencia}</b>. Melhorias permanentes: valem para todas as próximas runs.`,
+    LOJA.map(it=>{ const n=nivelLoja(it.id), cheio=n>=it.max, p=precoLoja(it), pode=!cheio&&p<=META.essencia;
+      return { titulo:`${it.nome} ${n}/${it.max}`, raridade: cheio?"lendario": pode?"raro":"comum", desab:!pode, manter:true,
+        texto:`${it.txt}${it.max>1?" por nível":""}.<br>${cheio?"Completo.":`Custa ${p} de Essência${pode?"":` (faltam ${p-META.essencia})`}.`}`,
+        acao:()=>{ if(!pode) return; META.essencia-=p; META.loja[it.id]=n+1; gravar(); toast(`${it.nome} ${n+1}/${it.max}`); telaSantuario(); } }; }));
+  const v=document.createElement("button"); v.className="botao sec"; v.textContent="Voltar"; v.onclick=()=>menu(); $("cartasRodape").appendChild(v);
+}
+// Relíquias com efeito em atributo ficam aqui; as de gatilho (Hidromel, Para-raios, Concha...) estão em atualizarReliquias e relDano
+const REL_GATILHO=new Set(["Tabuletas do Destino","Taça de Jamshid","Hidromel do Salão dos Heróis","Espada na Pedra","Ovo de Koschei","Bola de Borracha Sagrada","Anzol Mágico","Concha das Marés","Estaca de Freixo","Para-raios","Espelho Mágico","Bússola Enlouquecida"]);
+const temRel=n=>!!(R&&R.reliquias&&R.reliquias.includes(n));
+function relMods(){ const m={dano:bonusLoja("forca"),vida:bonusLoja("vigor"),cad:bonusLoja("pronto"),xp:bonusLoja("sabedoria"),vel:bonusLoja("agil"),ima:bonusLoja("ima"),reac:1,regen:0,reviver:0,nucleo:[],curaTroca:false,danoRec:1,ess:1,recarga:1,talisma:0,portais:0};
   for(const n of R.reliquias){ if(n==="Ankh") m.reviver++; else if(n.startsWith("Pêssego")) m.vida*=1.2; else if(n==="Quipu") m.xp*=1.2; else if(n==="Tapete Voador") m.vel*=1.2;
-    else if(n==="Pedra do Sol") m.cad*=1.15; else if(n==="Fio de Ariadne") m.ima*=1.8; else if(n==="Máscara de Oni") m.dano*=1.25; else if(n==="Cristal de Oricalco") m.reac*=1.2;
-    else if(n==="Flor do Vale") m.regen+=0.01; else if(n.startsWith("Caldeirão")) m.curaTroca=true;
-    else if(n.startsWith("Núcleo")){ const el=ELS.find(k=>n.includes(NOME_EL(k))); if(el) m.nucleo.push(el); } else m.dano*=1.1; }
+    else if(n==="Pedra do Sol") m.recarga*=0.85; else if(n==="Fio de Ariadne") m.ima*=1.8; else if(n==="Máscara de Oni"){ m.dano*=1.25; m.danoRec*=1.1; } else if(n==="Cristal de Oricalco") m.reac*=1.2;
+    else if(n==="Flor do Vale") m.regen+=0.005; else if(n.startsWith("Caldeirão")) m.curaTroca=true;
+    else if(n==="Muiraquitã") m.talisma+=0.3; else if(n==="Astrolábio") m.portais++; else if(n==="Mapa do Tesouro") m.ess*=1.4;
+    else if(n==="Ídolo Dourado"){ m.ess*=1.6; m.danoRec*=1.15; }
+    else if(n.startsWith("Núcleo")){ const el=ELS.find(k=>n.includes(NOME_EL(k))); if(el) m.nucleo.push(el); } else if(!REL_GATILHO.has(n)) m.dano*=1.1; }
   return m; }
+// multiplicador de dano das relíquias de gatilho, aplicado em cada golpe
+function relDano(e){ if(!R.reliquias.length) return 1; let k=1;
+  if(J.hidro&&J.hidro.length){ while(J.hidro.length&&J.hidro[0]<J.t) J.hidro.shift(); k*=1+0.01*J.hidro.length; }
+  if(temRel("Espada na Pedra")&&J.vida<J.vidaMax*0.5) k*=1.3;
+  if(temRel("Estaca de Freixo")&&(e.chefe||e.mini||e.elite)) k*=1.4;
+  return k; }
+const danoMedioEquipe=()=>{ const a=ativos(); return a.length? a.reduce((t,s)=>t+atrib(s).dano,0)/a.length : 1; };
+function atualizarReliquias(dt){ if(!R.reliquias.length||J.fim) return; const P=J.jogador;
+  if(temRel("Anzol Mágico")){ J.tAnzol=(J.tAnzol??30)-dt; if(J.tAnzol<=0){ J.tAnzol=30; J.gemas.forEach(g=>g.puxar=true); anel(P.x,P.y,40,"#9ad8ff",.5); texto(P.x,P.y-16,"Anzol!","#9ad8ff",13); } }
+  if(temRel("Concha das Marés")){ J.tConcha=(J.tConcha??10)-dt; if(J.tConcha<=0){ J.tConcha=10; const f=FONTE; FONTE="reliquia"; const dm=danoMedioEquipe()*1.5;
+      emArea(P.x,P.y,75,e=>{ const dx=e.x-P.x, dy=e.y-P.y, d=Math.hypot(dx,dy)||1; if(!e.chefe){ e.x+=dx/d*28; e.y+=dy/d*28; } ferir(e,dm,"agua"); }); FONTE=f;
+      anel(P.x,P.y,40,"#7fc0ff",.7); anel(P.x,P.y,75,"#bfe6ff",.5); particulas(P.x,P.y,"#bfe6ff",24,140); } }
+  if(temRel("Para-raios")){ J.tRaioRel=(J.tRaioRel??5)-dt; if(J.tRaioRel<=0){ J.tRaioRel=5; const vis=J.inimigos.filter(e=>e.hp>0&&!e.oculto&&Math.abs(e.x-P.x)<VW/2&&Math.abs(e.y-P.y)<VH/2);
+      const alvo=vis.find(e=>e.chefe||e.mini)||vis[Math.floor(Math.random()*vis.length)];
+      if(alvo){ const f=FONTE; FONTE="reliquia"; ferir(alvo,danoMedioEquipe()*6,"raio"); FONTE=f; J.efeitos.push({x:alvo.x+rnd(-8,8),y:alvo.y-90,x2:alvo.x,y2:alvo.y,linha:true,cor:"#fff6b0",vida:.25,max:.25}); anel(alvo.x,alvo.y,14,"#fff6b0",.6); tremor(2); } } }
+  if(temRel("Espelho Mágico")){ J.tEsp=(J.tEsp||0)-dt; const dr=J.danoRec||0; if(J.tEsp<=0&&dr>(J._drEsp||0)+0.5){ J.tEsp=1; J._drEsp=dr; const f=FONTE; FONTE="reliquia"; const dm=danoMedioEquipe()*3;
+      emArea(P.x,P.y,32,e=>ferir(e,dm,"luz")); FONTE=f; anel(P.x,P.y,32,"#e8f4ff",.6); } else if(J.tEsp<=0) J._drEsp=dr; } }
 function calcularSinergia(){
   const rg=D.regras, eq=ativos(), chips=[]; let dano=1,vida=1,reac=1; const cc={},lc={},ec={};
   eq.forEach(s=>{ const cl=L(s).classe; cc[cl]=(cc[cl]||0)+1; const ex=classeExtraDe(s); if(ex) cc[ex]=(cc[ex]||0)+1;
@@ -136,8 +185,8 @@ function atrib(s){
   const md=MULT[e]*(1+DIF.nivelAtrib*Math.max(0,s.nivel-NIV[eb]));
   const r=ramoObj(s), fd=r?D.regras.ramos[r.tipo].dano:1, fv=r?D.regras.ramos[r.tipo].vida:1, rar=RAR_BONUS[s.mon.rar];
   const elo=R.elos.some(n=>D.elos.find(x=>x.nome===n&&(x.a===s.mon.id||x.b===s.mon.id)))?1.2:1;
-  const desp=J&&J.desp>0, buff=J&&J.buffCad>0?1.3:1, furia=s.furia>0?2:1, canto=J&&J.canto>0?1.35:1, furiaD=s.furia>0&&s.furiaMod===1?1.5:1;
-  return { dano:b.dano*md*fd*rar*(1+0.15*(s.pod.b-1))*SIN.dano*elo*(desp?D.despertar.dano:1)*(J&&J.fervor>0?1.25:1)*furiaD*(J&&J.grito>0?1.6:1)*(J&&J.soloJog==="sombra"&&elementoDe(s)==="sombra"?1.2:1),
+  const desp=J&&J.desp>0, buff=J&&J.buffCad>0?1.3:1, furia=s.furia>0?2:1, canto=J&&J.canto>0?1.35:1, furiaD=s.furia>0&&s.furiaMod===1?1.25:1;
+  return { dano:b.dano*md*fd*rar*(1+0.2*(s.pod.b-1))*SIN.dano*elo*(desp?D.despertar.dano:1)*(J&&J.fervor>0?1.25:1)*furiaD*(J&&J.grito>0?1.6:1)*(J&&J.soloJog==="sombra"&&elementoDe(s)==="sombra"?1.2:1),
            cad:b.cadencia*(1+0.05*(s.pod.b-1))*SIN.cad*elo*(desp?D.despertar.cadencia:1)*buff*furia*canto*(J&&J.totemAnc>0?1.4:1),
            vida:b.vida/(1-b.defesa)*md*fv*rar, cura:(b.cura||0)*md*rar };
 }
@@ -159,6 +208,7 @@ function iniciarMapa(){
   if(R.mapaNaEra===0&&R.profundidade>0){ R.vidaFrac=1; setTimeout(()=>toast("Santuário: vida cheia e trocas livres."),2300); }
   if(SIN.rm.curaTroca) R.vidaFrac=1;
   J.vida=J.vidaMax*(R.vidaFrac??1); J.reviver=SIN.rm.reviver;
+  if(temRel("Taça de Jamshid")&&R.profundidade>0){ J.vida=Math.min(J.vidaMax,J.vida+J.vidaMax*0.25); J.escudo+=J.vidaMax*0.15; }
   ativos().forEach(s=>{ s.cdEsp=10; if(s.esp==null&&s.nivel>=NIV[1]&&!filaEsp.includes(s)) filaEsp.push(s); if(s.mon.ramo==null&&s.nivel>=NIV[2]&&!filaRamo.includes(s)) filaRamo.push(s); if(D.classes[L(s).classe].nome==="Místico"&&s.pod.h2>0) J.renascer=1; });
   gerarChao(u); iniciarCena(u); iniciarAbertura(); J.abates0=R.abates; evento("era:"+u.era); J.escudoGolpes=passiva("escudo_golpes");
   for(let i=0;i<6;i++) spawnInimigo();
@@ -169,14 +219,18 @@ function iniciarMapa(){
   if(filaRamo.length||filaEsp.length) agendar(0.3,()=>{ if(!pausado) proximaEscolha(); });
 }
 function dicaVantagem(el){ const forte=ELS.find(k=>D.vantagem[k]===el); return `${NOME_EL(forte)} é super efetivo aqui.`; }
-// Curva de dificuldade (calibrada pelas simulações em testes/simular.py)
-const DIF={vida:1.5, dano:1.55, danoBase:7, hp:30, spawn:0.15, base:3, cresc:0.08, onda:22, ondaN:20, max:280,
-  rapido:42, rapidoCresc:5, rapidoMax:70, frente:0.2, frenteCresc:0.07, tiroElite:2.8, nivelAtrib:0.03, xpA:10, xpB:4, xpC:0.35};
+// Curva de dificuldade (calibrada com o bot: testes/bot.js + testes/rodar_bot.js; ver docs/ANALISE_EQUILIBRIO.md)
+const DIF={vida:1.33, dano:1.42, danoBase:7, hp:30, spawn:0.15, base:3, cresc:0.08, onda:22, ondaN:20, max:280,
+  rapido:42, rapidoCresc:5, rapidoMax:70, frente:0.2, frenteCresc:0.07, tiroElite:2.8, nivelAtrib:0.03, xpA:10, xpB:4, xpC:0.35,
+  mini:80, chefe:560, guardiao:760, chefe1:0.5, chefeQueda:0.12, rampa:1.6, rampaK:2.2};   // vida de mini-chefe, chefe e Guardião da Era (em inimigos comuns); o 1º chefe leva chefe1 disso
 // ameaças que crescem com a profundidade: começo suave, fim duro
 const velRapido=()=>Math.min(DIF.rapidoMax, DIF.rapido+DIF.rapidoCresc*R.profundidade);
 const chanceFrente=()=>Math.min(0.65, DIF.frente+DIF.frenteCresc*R.profundidade);
-const dificuldade=()=>Math.pow(DIF.vida,R.profundidade)*(1+R.ciclo*1.5);
-const danoDif=()=>Math.pow(DIF.dano,R.profundidade)*(1+R.ciclo*1.5);
+// rampa: a equipe ganha muito poder nos primeiros mapas (evoluções); os inimigos acompanham mais rápido no começo e o crescimento
+// fixo por mapa fica mais suave, para não virar um muro de repente lá na frente
+const rampa=()=>1+DIF.rampa*(1-Math.exp(-R.profundidade/DIF.rampaK));
+const dificuldade=()=>Math.pow(DIF.vida,R.profundidade)*rampa()*(1+R.ciclo*1.5);
+const danoDif=()=>Math.pow(DIF.dano,R.profundidade)*rampa()*(1+R.ciclo*1.5);
 const xpPara=n=>Math.round(DIF.xpA+DIF.xpB*n+DIF.xpC*n*n);
 
 function spawnInimigo(kForcado){
@@ -199,7 +253,7 @@ function ondaCerco(){ const n=Math.round(DIF.ondaN*(1+R.profundidade*0.15)), P=J
   tremor(3); }
 function spawnChefe(mini){
   const u=UNIV[R.universo], era=D.eras[u.era], nome=mini?u.mini_chefe:(J.eraChefe?era.guardiao:u.chefe);
-  const hp=DIF.hp*dificuldade()*(mini?45:(J.eraChefe?265:180))*(R.profundidade===0?0.45:1);   // +40% com a árvore de poderes: a luta dura o bastante para mostrar golpes e segunda fase  // primeiro chefe mais leve: a equipe ainda é pequena
+  const hp=DIF.hp*dificuldade()*(mini?DIF.mini:(J.eraChefe?DIF.guardiao:DIF.chefe))*(R.profundidade===0?DIF.chefe1:1)/(1+DIF.chefeQueda*R.profundidade);   // chefes do fundo não viram esponja   // +40% com a árvore de poderes: a luta dura o bastante para mostrar golpes e segunda fase  // primeiro chefe mais leve: a equipe ainda é pequena
   const e={x:J.jogador.x, y:J.jogador.y-VH*0.55, hp, max:hp, v:mini?20:15, r:mini?10:15, esc:1, dano:DIF.danoBase*2.25*danoDif(), tipo:9, el:u.elemento, elite:true, chefe:!mini, mini, nome,
     spr:gerarSprite(u.id+(mini?"mini":"boss")+(J.eraChefe?"era":""), mini?14:20, J.eraChefe?"#7a4fb0":COR[u.elemento], {olhos:"#ffd34a"}),
     status:null, lenta:0, congela:0, cego:0, dot:0, dotT:0, reacCd:0, vulner:0, flash:0, marca:0, rajada:2.5, investida:5};
@@ -239,7 +293,7 @@ function ferir(e,dano,el,o={}){
   if(e.ehProp){ danificarProp(e,dano,el); return; }
   if(e.hp<=0||e.oculto) return;
   const ef=eficacia(el,e.el), crit=o.crit||Math.random()<0.08+tal.critico()+(ativos().some(s=>s.berserk>0)?0.2:0);
-  let d=dano*ef*(crit?1.8:1)*(e.vulner>0?1.2:1)*(e.bebado>0?1.5:1)*fadigaChefe(e)*multDanoLenda(e);
+  let d=dano*ef*(crit?1.8:1)*(e.vulner>0?1.2:1)*(e.bebado>0?1.5:1)*fadigaChefe(e)*multDanoLenda(e)*relDano(e);
   for(const z of J.zonas) if(z.tipo==="circulo"&&dist2(z,e)<z.r*z.r) d*=z.amp;
   e.hp-=d; e.flash=0.08; R.st.porFonte[FONTE]=(R.st.porFonte[FONTE]||0)+d; R.st.dano+=d; R.st.golpes++; if(ef>1) R.st.superEf++; else if(ef<1) R.st.poucoEf++;
   if(crit){ numero(e.x,e.y-6,d,"#ffe066",20,e); parar(0.025); particulas(e.x,e.y,"#fff3a0",5,60); }
@@ -267,7 +321,7 @@ function reagirEfeito(e,a,b,dano,r){ evento("reacao");
     case "congelar": case "enraizar": emArea(e.x,e.y,22,o=>o.congela=1.6); anel(e.x,e.y,22,cor,.6); break;
     case "cegueira": emArea(e.x,e.y,28,o=>{o.cego=3; o.lenta=2;}); anel(e.x,e.y,28,cor,.7); break;
     case "propaga": emArea(e.x,e.y,32,o=>{o.status={el:a,t:J.t}; danoSimples(o,p*0.4);}); anel(e.x,e.y,32,cor,.4); break;
-    case "cura": curar(J.vidaMax*0.04); particulas(J.jogador.x,J.jogador.y,"#7fe0a0",8,40); break;
+    case "cura": if(J.t-(J.tCuraReac??-9)>=0.5){ J.tCuraReac=J.t; curar(J.vidaMax*0.025); particulas(J.jogador.x,J.jogador.y,"#7fe0a0",8,40); } break;   // no máximo 1 cura a cada 0,5 s
     case "buff": J.buffCad=4; texto(J.jogador.x,J.jogador.y-16,"Cadência!",cor,14); break;
     case "escudo": J.escudo=Math.min(J.vidaMax*0.3,J.escudo+J.vidaMax*0.08); anel(J.jogador.x,J.jogador.y,16,"#fff3c4",.4); break;
     case "puxar": emArea(e.x,e.y,42,o=>{o.x+=(e.x-o.x)*0.7; o.y+=(e.y-o.y)*0.7; danoSimples(o,p*0.4);}); anel(e.x,e.y,42,cor,.5); break;
@@ -283,6 +337,7 @@ function morrer(e){
   if(e.chefe&&e.def&&e.def.fase2&&e.ia&&e.ia.fase===1&&!e.morto){ e.hp=e.max*0.45; e.ia.fase=2; faseDois(e,e.def.fase2); e.ia.ocupado=1.4; e.parado=true; return; }
   if(e.imortal){ e.hp=1; if(Math.random()<.15) texto(e.x,e.y-20,"Imortal! Quebre o carvalho.","#c8c8e0",13); return; }
   if(e.morto) return; e.morto=true; aoMorrerCriatura(e);
+  if(temRel("Hidromel do Salão dos Heróis")){ J.hidro=J.hidro||[]; if(J.hidro.length<30) J.hidro.push(J.t+10); else { J.hidro.shift(); J.hidro.push(J.t+10); } }
   R.abates++; if(R.ancestral&&R.ancestral.estado==="chocando") R.ancestral.prog+=D.ancestral_regras.por_abate_seg; if(R.st.primeiroAbate==null) R.st.primeiroAbate=J.t; J.combo++; J.comboT=D.combo.janela_seg; J.comboMax=Math.max(J.comboMax,J.combo);
   J.ult=Math.min(100,J.ult+(e.chefe?25:e.mini?10:e.elite?2:0.07)*(1+Math.min(1,J.combo/200)));
   const cor=COR[e.el]; particulas(e.x,e.y,cor,e.chefe?60:e.elite?22:9,e.chefe?150:90,e.elite?2:1);
@@ -319,7 +374,7 @@ function ataqueBasico(s,a,el,cor){
 // Habilidades 1 e 2: recarga base em segundos; o modificador é escolhido no nível 3.
 const HAB={
   guardiao:{ h1:{cd:7, f(s,a,el,cor,lv,mod){ emArea(s.x,s.y,60,e=>{ e.x+=(s.x-e.x)*0.5; e.y+=(s.y-e.y)*0.5; if(mod===0) ferir(e,a.dano*2*fNivel(lv),el); }); J.reducao=3; anel(s.x,s.y,60,cor,.5); if(mod===1) J.escudo=Math.min(J.vidaMax*0.4,J.escudo+J.vidaMax*0.1); tremor(2); }},
-             h2:{cd:10,f(s,a,el,cor,lv,mod){ emArea(s.x,s.y,50,e=>{ ferir(e,a.dano*2*fNivel(lv),el); const dx=e.x-s.x,dy=e.y-s.y,d=Math.hypot(dx,dy)||1; e.x+=dx/d*30; e.y+=dy/d*30; e.congela=mod===0?2.5:1; }); anel(s.x,s.y,50,cor,.6); tremor(3);
+             h2:{cd:10,f(s,a,el,cor,lv,mod){ const rr=mod===0?65:50; emArea(s.x,s.y,rr,e=>{ ferir(e,a.dano*2*fNivel(lv),el); const dx=e.x-s.x,dy=e.y-s.y,d=Math.hypot(dx,dy)||1; e.x+=dx/d*30; e.y+=dy/d*30; e.congela=mod===0?3.2:1; }); anel(s.x,s.y,rr,cor,.6); tremor(3);
                if(mod===1) agendar(1,()=>{ emArea(s.x,s.y,55,e=>ferir(e,a.dano*4*fNivel(lv),el)); anel(s.x,s.y,55,"#ffffff",.5); tremor(4); }); }} },
   guerreiro:{ h1:{cd:5, f(s,a,el,cor,lv,mod){ const e=pontoDenso(s,90)||maisProximo(s,90); if(!e) return false; J.fantasmas.push({x:s.x,y:s.y,spr:spriteSelo(s),vida:.25}); const x0=s.x,y0=s.y; s.x=e.x; s.y=e.y;
                const r=mod===1?50:30; emArea(e.x,e.y,r,o=>ferir(o,a.dano*2.5*fNivel(lv),el)); anel(e.x,e.y,r,cor,.4); tremor(3); particulas(e.x,e.y,cor,14,100);
@@ -331,15 +386,15 @@ const HAB={
               h2:{cd:8, f(s,a,el,cor,lv,mod){ let n=0; for(const e of embaralhar(J.inimigos)){ if(e.hp<=0||dist2(s,e)>110*110) continue; e.marca=a.dano*3*fNivel(lv); if(mod===0&&!e.chefe&&!e.mini&&e.hp<e.max*0.25) danoSimples(e,e.hp+1); if(++n>=(mod===1?5:3)) break; } return n>0; }} },
   cacador:{ h1:{cd:4, f(s,a,el,cor,lv,mod){ const e=maisProximo(s,150); if(!e) return false; const base=Math.atan2(e.y-s.y,e.x-s.x);
                for(let i=0;i<5;i++){ const ang=base+(i-2)*0.2; J.proj.push({fonte:FONTE,x:s.x,y:s.y,vx:Math.cos(ang)*190,vy:Math.sin(ang)*190,dano:a.dano*1.3*fNivel(lv),el,cor,vida:1.3,perf:mod===0?5:1,ric:mod===1?3:0,r:2}); } }},
-            h2:{cd:9, f(s,a,el,cor,lv,mod){ for(let i=0;i<3;i++) J.armadilhas.push({fonte:FONTE,x:s.x+rnd(-30,30),y:s.y+rnd(-30,30),dano:a.dano*(mod===1?6:3)*fNivel(lv),el,cor,raiz:mod===0,vida:12}); }} },
+            h2:{cd:9, f(s,a,el,cor,lv,mod){ for(let i=0;i<3;i++) J.armadilhas.push({fonte:FONTE,x:s.x+rnd(-30,30),y:s.y+rnd(-30,30),dano:a.dano*(mod===1?6:4.5)*fNivel(lv),el,cor,raiz:mod===0,vida:12}); }} },
   mago:{ h1:{cd:6, f(s,a,el,cor,lv,mod){ const e=pontoDenso(s,140); if(!e) return false;
-            if(mod===0){ for(let i=0;i<5;i++) agendar(i*0.12,()=>{ const x=e.x+rnd(-25,25), y=e.y+rnd(-25,25); emArea(x,y,18,o=>ferir(o,a.dano*1.6*fNivel(lv),el)); anel(x,y,18,cor,.35); particulas(x,y,cor,8,70); tremor(1.5); }); }
+            if(mod===0){ for(let i=0;i<6;i++) agendar(i*0.12,()=>{ const x=e.x+rnd(-28,28), y=e.y+rnd(-28,28); emArea(x,y,24,o=>ferir(o,a.dano*2*fNivel(lv),el)); anel(x,y,24,cor,.35); particulas(x,y,cor,8,70); tremor(1.5); }); }
             else { const r=mod===1?70:40; emArea(e.x,e.y,r,o=>ferir(o,a.dano*(mod===1?5:3)*fNivel(lv),el)); anel(e.x,e.y,r,cor,.5); particulas(e.x,e.y,cor,26,130); tremor(mod===1?7:4); } }},
          h2:{cd:12,f(s,a,el,cor,lv,mod){ J.zonas.push({fonte:FONTE,tipo:"circulo",x:J.jogador.x,y:J.jogador.y,r:55,amp:mod===0?1.6:1.3+0.05*lv,puxa:mod===1,cor,vida:5}); }} },
   invocador:{ h1:{cd:7, f(s,a,el,cor,lv,mod){ for(let i=0;i<4;i++) J.crias.push({fonte:FONTE,x:s.x+rnd(-8,8),y:s.y+rnd(-8,8),dano:a.dano*0.7*fNivel(lv),el,cor,vida:7,cd:0,kami:mod===0,guarda:mod===1}); particulas(s.x,s.y,cor,12,60); }},
               h2:{cd:14,f(s,a,el,cor,lv,mod){ const pos=[{x:s.x+20,y:s.y}]; if(mod===0) pos.push({x:s.x-20,y:s.y});
                if(mod===1){ J.crias.push({fonte:FONTE,x:s.x,y:s.y,dano:a.dano*4*fNivel(lv),el,cor,vida:9,cd:0,gigante:true}); anel(s.x,s.y,20,cor,.5); return; }
-               pos.forEach(p=>J.zonas.push({fonte:FONTE,tipo:"portal",x:p.x,y:p.y,r:8,cor,el,dano:a.dano*0.6*fNivel(lv),vida:5,cd:0})); }} },
+               pos.forEach(p=>J.zonas.push({fonte:FONTE,tipo:"portal",x:p.x,y:p.y,r:8,cor,el,dano:a.dano*(mod===0?0.85:0.6)*fNivel(lv),vida:5,cd:0})); }} },
   mistico:{ h1:{cd:8, f(s,a,el,cor,lv,mod){ J.regen=4; J.regenV=0.03*fNivel(lv); J.regenMod=mod; anel(J.jogador.x,J.jogador.y,30,"#7fe0a0",.6); if(mod===1) J.buffCad=4; }},
             h2:{cd:999,f(){ J.renascer=1; texto(J.jogador.x,J.jogador.y-18,"Renascer pronto","#fff3c4",13); }} },
   xama:{ h1:{cd:8, f(s,a,el,cor,lv,mod){ J.canto=5; if(mod===0) J.fervor=5; anel(J.jogador.x,J.jogador.y,40,cor,.6); if(mod===1) emArea(J.jogador.x,J.jogador.y,45,e=>{const dx=e.x-J.jogador.x,dy=e.y-J.jogador.y,d=Math.hypot(dx,dy)||1; e.x+=dx/d*25; e.y+=dy/d*25;}); }},
@@ -348,11 +403,11 @@ const HAB={
 function agirSelo(s,dt){
   const a=atrib(s), el=elementoDe(s), cor=COR[el], cls=L(s).classe;
   if(s.esp!=null&&!SIM.semEspeciais){ s.cdEsp=(s.cdEsp??10)-dt; if(s.cdEsp<=0){ FONTE="especial"; dispararEspecial(s,a,el,cor); s.cdEsp=recargaEspecial(s); } }
-  if(s.furia>0){ s.furia-=dt; if(s.furiaMod===0) curar(J.vidaMax*0.02*dt); }
+  if(s.furia>0){ s.furia-=dt; if(s.furiaMod===0) curar(J.vidaMax*0.02*dt); if(s.furiaMod===1) J.imparavel=0.2; }
   s.cd-=dt*a.cad*(J.cantoGuerra>0?1.2:1); if(s.cd<=0){ FONTE="basico"; s.cd=ataqueBasico(s,atribPoder(a,s,"b"),el,cor)*tal.recarga(); aoDisparar(s,"b",a,el,cor); if(J.t-(s.atkT??-9)>0.5) s.atkT=J.t; }
   for(const k of ["h1","h2"]){ const lv=s.pod[k]; if(!lv) continue; if(k==="h2"&&est(s)<1) continue;
     const def=HAB[cls][k]; const key=k==="h1"?"cd1":"cd2"; s[key]-=dt*(J.desp>0?1.4:1);
-    if(s[key]<=0){ FONTE="habilidade"; const r=def.f(s,atribPoder(a,s,k),el,cor,lv,s.mod[k]); s[key]= r===false? 0.6 : def.cd*fRecarga(lv)*tal.recarga(); if(r!==false) aoDisparar(s,k,a,el,cor); } }
+    if(s[key]<=0){ FONTE="habilidade"; const r=def.f(s,atribPoder(a,s,k),el,cor,lv,s.mod[k]); s[key]= r===false? 0.6 : def.cd*fRecarga(lv)*tal.recarga()*((SIN.rm&&SIN.rm.recarga)||1); if(r!==false) aoDisparar(s,k,a,el,cor); } }
 }
 
 // ================================================================ progressão: níveis, poderes, evolução
@@ -424,7 +479,7 @@ function abrirPoderes(s){
       texto: !lib? "Liberada quando virar Jovem." : max? "Nível máximo." : desc + (k!=="b"&&lv===2?" No próximo nível você escolhe um modificador.":""),
       acao:()=>{ s.pod[k]++; aplicarNivel(s,1); if(k!=="b"&&s.pod[k]===3&&s.mod[k]==null) return escolherMod(s,k); proximaEscolha(); } }; };
   mostrarCartas(nomeForma(s), `Nível ${s.nivel} → ${s.nivel+1}. Escolha qual poder evolui.`, [
-    item("b","Ataque básico", `${c.basico} +15% de dano e +5% de cadência.`, true),
+    item("b","Ataque básico", `${c.basico} +20% de dano e +5% de cadência.`, true),
     item("h1",c.h1.nome, c.h1.desc, true),
     item("h2",c.h2.nome, c.h2.desc, e>=1||estBase(s)>=1),
     ...(s.pod.b>=5&&s.pod.h1>=5&&s.pod.h2>=5? [{titulo:"Ascensão", raridade:"lendario", texto:"Todos os poderes no máximo: +1 nível (+6% em todos os atributos).", acao:()=>{ aplicarNivel(s,1); proximaEscolha(); }}] : []),
@@ -530,8 +585,8 @@ function vencerChefe(e){
   J.portalEm=6;
 }
 function mostrarPortais(){
-  const era=D.eras_ordem[R.eraIdx], opcoes=embaralhar(D.universos.filter(u=>u.era===era&&u.id!==R.universo)).slice(0,3);
-  const recs=embaralhar(["Recrutar","Cura total","Relíquia","Ovo Raro","Item"]);
+  const era=D.eras_ordem[R.eraIdx], opcoes=embaralhar(D.universos.filter(u=>u.era===era&&u.id!==R.universo)).slice(0,3+((SIN.rm&&SIN.rm.portais)||0)+nivelLoja("oraculo"));
+  const recs=embaralhar(["Recrutar","Cura total","Relíquia","Ovo Raro","Item"]); while(recs.length<opcoes.length) recs.push(escolha(["Relíquia","Ovo Raro","Item","Recrutar"]));
   mostrarCartas("Escolha o portal", `Próximo: ${D.eras[era].nome}${R.mapaNaEra===MAPAS_POR_ERA-1?" · o Guardião da Era espera no fim deste mapa":""}. A run fica salva aqui e as trocas são livres.`,
     opcoes.map((u,i)=>{ const rec=recs[i]; return { titulo:u.nome, raridade:"raro", sprite:gerarSprite(u.id+"portal",12,COR[u.elemento]),
       texto:`Inimigos de ${NOME_EL(u.elemento)}. ${dicaVantagem(u.elemento)}<br>Recompensa: ${rec}${rec==="Relíquia"?` (${u.reliquia.nome}: ${u.reliquia.efeito})`:""}`,
@@ -539,11 +594,12 @@ function mostrarPortais(){
 }
 function aplicarPortal(u,rec){
   R.universo=u.id; R.selos.forEach(s=>s.trocaCd=0);
-  const seguir=()=>{ salvarRun(); iniciarMapa(); };
+  const bussola=temRel("Bússola Enlouquecida"), itemExtra=()=>{ const k=escolha(["incenso","pedra","doce","pena","chamado"]); R.itens[k]++; return D.itens[k].nome; };
+  const seguir=()=>{ if(bussola&&rec!=="Item"&&rec!=="Ovo Raro") toast(`Bússola: + ${itemExtra()}`); salvarRun(); iniciarMapa(); };
   if(rec==="Relíquia"){ R.reliquias.push(u.reliquia.nome); toast(`Relíquia: ${u.reliquia.nome}`); return seguir(); }
   if(rec==="Cura total"){ R.vidaFrac=1; return seguir(); }
-  if(rec==="Ovo Raro"){ if(R.ninho.length<D.ovos.ninho_max) R.ninho.push({id:escolha(poolPacto()),rar:"raro",prog:0,alvo:D.ovos.raridades.raro.xp}); else R.itens.incenso++; return seguir(); }
-  if(rec==="Item"){ const k=escolha(["incenso","pedra","doce","pena","chamado"]); R.itens[k]++; toast(`Item: ${D.itens[k].nome}`); return seguir(); }
+  if(rec==="Ovo Raro"){ for(let i=0;i<(bussola?2:1);i++){ if(R.ninho.length<D.ovos.ninho_max) R.ninho.push({id:escolha(poolPacto()),rar:"raro",prog:0,alvo:D.ovos.raridades.raro.xp}); else R.itens.incenso++; } return seguir(); }
+  if(rec==="Item"){ const k=escolha(["incenso","pedra","doce","pena","chamado"]); R.itens[k]++; let msg=`Item: ${D.itens[k].nome}`; if(bussola) msg+=` + ${itemExtra()}`; toast(msg); return seguir(); }
   const pool=embaralhar(poolPacto()).slice(0,3);
   mostrarCartas("Recrutar","Escolha um monstro Raro do seu Pacto.", pool.map(id=>{ const l=LINHA[id]; return { titulo:l.filhote, sprite:spriteLinha(id,"raro"), raridade:"raro",
     texto:`${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome} · ${D.linhagens[l.linhagem].nome}`,
@@ -552,9 +608,15 @@ function aplicarPortal(u,rec){
 function salvarRun(){ RUN_SALVA=JSON.parse(JSON.stringify({...R, selos:R.selos.map(s=>({nivel:s.nivel,pod:s.pod,mod:s.mod,esp:s.esp??null,mon:s.mon,trocaCd:0}))})); gravar(); }
 function carregarRun(s){ R=JSON.parse(JSON.stringify(s)); R.st=R.st||novoSt(); }
 function derrota(){
-  rodando=false; if(SIM.aoDerrota){ SIM.aoDerrota(); return; } const ess=Math.round((R.essenciaRun+Math.floor(R.abates/15))*(1+passiva("essencia"))); META.essencia+=ess; RUN_SALVA=null; gravar();
-  mostrarCartas("A equipe caiu", `Profundidade: ${R.profundidade} mapas · Abates: ${R.abates} · Maior combo: ${J.comboMax} · Essência ganha: ${ess}`,
-    [{titulo:"Voltar ao Nexo", texto:"Fechar um novo Pacto.", acao:()=>menu()}]);
+  rodando=false; if(SIM.aoDerrota){ SIM.aoDerrota(); return; } const ess=Math.round((R.essenciaRun+Math.floor(R.abates/15))*(1+passiva("essencia"))*relMods().ess*bonusLoja("ganancia")); META.essencia+=ess; RUN_SALVA=null; gravar();
+  // fim de run que puxa para a próxima: recorde, quanto falta para a próxima melhoria e atalho para o Santuário
+  const recorde=R.profundidade>(R.recordeAntes??0)&&R.profundidade>0;
+  const prox=LOJA.filter(it=>nivelLoja(it.id)<it.max).sort((a,b)=>precoLoja(a)-precoLoja(b))[0], podem=lojaAcessivel();
+  const dica= podem.length? `Dá para comprar <b>${podem.length}</b> melhoria${podem.length>1?"s":""} no Santuário agora.` : prox? `Faltam <b>${precoLoja(prox)-META.essencia}</b> de Essência para ${prox.nome}.` : "";
+  mostrarCartas(recorde?"Novo recorde!":"A equipe caiu", `Profundidade: <b>${R.profundidade}</b> mapa${R.profundidade===1?"":"s"}${recorde?" (seu melhor)":` · recorde ${META.recorde}`} · Abates: ${R.abates} · Maior combo: ${J.comboMax}<br>Essência ganha: <b>+${ess}</b> (total ${META.essencia}). ${dica}`,
+    [...(podem.length? [{titulo:"Ir ao Santuário", raridade:"lendario", texto:"Gastar a Essência em melhorias permanentes.", acao:()=>telaSantuario()}] : []),
+     {titulo:"Nova run", raridade:podem.length?"comum":"raro", texto:"Fechar um novo Pacto agora.", acao:()=>telaPacto()},
+     {titulo:"Voltar ao Nexo", texto:"Ir para o menu.", acao:()=>menu()}]);
 }
 
 // ================================================================ especial individual (escolhido pelo jogador, dispara sozinho)
@@ -878,7 +940,7 @@ function atualizar(dt){
   const mm=Math.hypot(mx,my); if(mm>1){mx/=mm; my/=mm;} if(mm>0.1) J.dir={x:mx,y:my};
   if(J.dashT>0){ J.dashT-=dt; const dn=Math.hypot(J.dir.x,J.dir.y)||1; P.x+=J.dir.x/dn*D.esquiva.distancia/0.15*dt; P.y+=J.dir.y/dn*D.esquiva.distancia/0.15*dt;
     J.fantasmas.push({x:P.x,y:P.y,spr:gerarSprite("invocador-capa",9,"#d6ab4f",{olhos:"#7fe0ff"}),vida:.18}); }
-  else { const sj=soloEm(Math.floor(P.x/CEL),Math.floor(P.y/CEL)); J.soloJog=sj; const ac=sj==="gelo"?0.05:1, vmul=(sj==="lama"?0.7:1)*(J.atordoa>0?0.45:1)*tal.velocidade()*(1+passiva("velocidade")+custo("velocidade")); J.pvx+=(mx*58*rm.vel*vmul-J.pvx)*Math.min(1,ac*60*dt); J.pvy+=(my*58*rm.vel*vmul-J.pvy)*Math.min(1,ac*60*dt); P.x+=J.pvx*dt; P.y+=J.pvy*dt; }
+  else { const sj=soloEm(Math.floor(P.x/CEL),Math.floor(P.y/CEL)); J.soloJog=sj; const ac=sj==="gelo"?0.05:1, vmul=(J.imparavel? 1 : (sj==="lama"?0.7:1)*(J.atordoa>0?0.45:1))*tal.velocidade()*(1+passiva("velocidade")+custo("velocidade")); J.pvx+=(mx*58*rm.vel*vmul-J.pvx)*Math.min(1,ac*60*dt); J.pvy+=(my*58*rm.vel*vmul-J.pvy)*Math.min(1,ac*60*dt); P.x+=J.pvx*dt; P.y+=J.pvy*dt; }
   atualizarSolo(dt);
   const form=[[-13,9],[13,9],[0,-12]];
   R.selos.forEach((s,i)=>{ if(!s.mon) return; const dxF=(P.x+form[i][0]-s.x); if(dxF<-1) s.esq=true; else if(dxF>1) s.esq=false; s.x+=dxF*Math.min(1,dt*6); s.y+=(P.y+form[i][1]-s.y)*Math.min(1,dt*6); agirSelo(s,dt); });
@@ -910,7 +972,7 @@ function atualizar(dt){
       if(e.investida<=0){ e.investida=e.chefe?6:8; e.x+=dx/d*45; e.y+=dy/d*45; tremor(4); particulas(e.x,e.y,"#ff8a6a",14,80); } }
   }
   J.inimigos=J.inimigos.filter(e=>e.hp>0&&((Math.abs(e.x-P.x)<VW*1.6&&Math.abs(e.y-P.y)<VH*1.6)||e.chefe||e.mini));
-  atualizarCena(dt); if(!J) return; atualizarPerigos(dt); atualizarCriaturas(dt); atualizarAvisos(dt); atualizarVfx(dt); atualizarLuz(dt); if(tal.regen()+passiva("regen")>0&&!custo("regen_zero")) J.vida=Math.min(J.vidaMax,J.vida+J.vidaMax*(tal.regen()+passiva("regen"))*dt); atualizarArvore(dt); atualizarConquistas(dt); atualizarLenda(dt);
+  atualizarCena(dt); if(!J) return; if(J.imparavel>0) J.imparavel-=dt; atualizarReliquias(dt); atualizarPerigos(dt); atualizarCriaturas(dt); atualizarAvisos(dt); atualizarVfx(dt); atualizarLuz(dt); if(tal.regen()+passiva("regen")>0&&!custo("regen_zero")) J.vida=Math.min(J.vidaMax,J.vida+J.vidaMax*(tal.regen()+passiva("regen"))*dt); atualizarArvore(dt); atualizarConquistas(dt); atualizarLenda(dt);
   for(const b of J.balas){ b.x+=b.vx*dt; b.y+=b.vy*dt; b.vida-=dt;
     if(b.contraInimigo){ for(const o of J.inimigos){ if(o===b.dono||o.hp<=0) continue; if(dist2(b,o)<(o.r+2)*(o.r+2)){ b.vida=0; const f=FONTE; FONTE="ambiente"; danoSimples(o,b.dano*3); FONTE=f; break; } } }
     else if(J.invuln<=0&&dist2(b,P)<25){ b.vida=0; feriJogador(b.dano,b.el); if(b.cura&&b.dono&&b.dono.hp>0) b.dono.hp=Math.min(b.dono.max,b.dono.hp+b.dano*0.5); }
@@ -925,7 +987,7 @@ function atualizar(dt){
     for(const e of J.inimigos){ if(e.hp<=0||(p.ja&&p.ja.has(e))) continue; if(dist2(p,e)<(e.r+p.r)*(e.r+p.r)){
       if(p.explode){ emArea(p.x,p.y,p.explode,o=>ferir(o,p.dano,p.el)); anel(p.x,p.y,p.explode,p.cor,.35); particulas(p.x,p.y,p.cor,8,70); p.vida=0; break; }
       ferir(e,p.dano,p.el); (p.ja=p.ja||new Set()).add(e);
-      if(p.ric>0){ const n=maisProximo(e,60,o=>!p.ja.has(o)); if(n){ p.ric--; const dx=n.x-p.x, dy=n.y-p.y, d=Math.hypot(dx,dy)||1, v=Math.hypot(p.vx,p.vy); p.vx=dx/d*v; p.vy=dy/d*v; continue; } }
+      if(p.ric>0||(temRel("Bola de Borracha Sagrada")&&!p.bola)){ const n=maisProximo(e,60,o=>!p.ja.has(o)); if(n){ if(p.ric>0) p.ric--; else p.bola=true; const dx=n.x-p.x, dy=n.y-p.y, d=Math.hypot(dx,dy)||1, v=Math.hypot(p.vx,p.vy); p.vx=dx/d*v; p.vy=dy/d*v; continue; } }
       if(--p.perf<=0){ p.vida=0; break; } } }
     if(p.vida>0&&J.cena&&((p.alvo&&p.alvo.ehProp)||p.alvoProp)){ const q=propNoPonto(p.x,p.y,p.r); if(q&&!(p.ja&&p.ja.has(q))){
       if(p.explode){ emArea(p.x,p.y,p.explode,o=>ferir(o,p.dano,p.el)); anel(p.x,p.y,p.explode,p.cor,.35); particulas(p.x,p.y,p.cor,8,70); p.vida=0; }
@@ -963,7 +1025,7 @@ function atualizar(dt){
   J.selvagens=J.selvagens.filter(f=>f.vida>0);
   // cristais
   const ima=22*rm.ima*tal.coleta();
-  for(const g of J.gemas){ g.x+=g.vx*dt; g.y+=g.vy*dt; g.vx*=0.9; g.vy*=0.9; const d=Math.sqrt(dist2(g,P)); if(d<ima||J.fim){ g.x+=(P.x-g.x)*Math.min(1,dt*8); g.y+=(P.y-g.y)*Math.min(1,dt*8); } if(d<6){ g.pega=true; ganharXp(g.v*rm.xp*(1+Math.min(D.combo.xp_max,J.combo/10*D.combo.xp_por_10))); } }
+  for(const g of J.gemas){ g.x+=g.vx*dt; g.y+=g.vy*dt; g.vx*=0.9; g.vy*=0.9; const d=Math.sqrt(dist2(g,P)); if(d<ima||J.fim||g.puxar){ g.x+=(P.x-g.x)*Math.min(1,dt*8); g.y+=(P.y-g.y)*Math.min(1,dt*8); } if(d<6){ g.pega=true; ganharXp(g.v*rm.xp*(1+Math.min(D.combo.xp_max,J.combo/10*D.combo.xp_por_10))); } }
   J.gemas=J.gemas.filter(g=>!g.pega);
   // partículas e textos
   for(const p of J.parts){ p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=(p.g??60)*dt; p.vx*=0.96; p.vida-=dt; } J.parts=J.parts.filter(p=>p.vida>0);
@@ -971,11 +1033,13 @@ function atualizar(dt){
   J.textos.forEach(t=>{ t.vida-=dt; t.y-=dt*12; }); J.textos=J.textos.filter(t=>t.vida>0);
   J.efeitos.forEach(f=>f.vida-=dt); J.efeitos=J.efeitos.filter(f=>f.vida>0);
   J.fantasmas.forEach(f=>f.vida-=dt); J.fantasmas=J.fantasmas.filter(f=>f.vida>0);
+  if(J.vida<=0&&temRel("Ovo de Koschei")&&!J.koschei){ J.koschei=true; J.vida=1; J.invuln=Math.max(J.invuln,1.5); anel(P.x,P.y,50,"#c8c8e0",.8); tremor(6); toast("Ovo de Koschei: a morte foi enganada!"); }
   if(J.vida<=0&&!lendaReviver()){
     if(J.renascer>0){ J.renascer=0; const mi=ativos().find(s=>L(s).classe==="mistico"&&s.pod.h2>0); const mod=mi?mi.mod.h2:null;
       J.vida=J.vidaMax*(mod===1?0.7:0.4); anel(P.x,P.y,60,"#fff3c4",.8); tremor(8); toast("Renascer!");
       if(mod===0){ emArea(P.x,P.y,70,e=>ferir(e,atrib(mi).dano*8,elementoDe(mi))); anel(P.x,P.y,70,"#ff8a3d",.7); particulas(P.x,P.y,"#ff8a3d",40,150,2); } }
     else if(J.reviver>0){ J.reviver--; J.vida=J.vidaMax*0.5; toast("Ankh: a equipe se levanta!"); }
+    else if(R.reviverMeta>0){ R.reviverMeta--; J.vida=J.vidaMax*0.5; J.invuln=Math.max(J.invuln,1.5); anel(P.x,P.y,60,"#ffd34a",.8); tremor(8); toast("Segunda Chance: a equipe se levanta!"); }
     else return derrota(); }
   hud();
 }
@@ -983,7 +1047,7 @@ function ganharXp(v){
   v*=tal.xp()*(1+passiva("xp")); J.xp+=v; for(const ov of R.ninho) ov.prog+=v;
   const prontos=R.ninho.filter(o=>o.prog>=o.alvo); if(prontos.length){ R.ninho=R.ninho.filter(o=>o.prog<o.alvo); prontos.forEach(chocar); }
   desenharNinho();
-  while(J.xp>=J.xpProx){ J.xp-=J.xpProx; J.nivel++; J.xpProx=xpPara(J.nivel); J.niveisPend++;
+  while(J.xp>=J.xpProx){ J.xp-=J.xpProx; J.nivel++; J.xpProx=xpPara(J.nivel); J.niveisPend++; if(temRel("Tabuletas do Destino")&&Math.random()<0.3){ J.niveisPend++; textoUnico("tabuleta",J.jogador.x,J.jogador.y-22,"Destino: escolha extra!","#ffd34a",14); }
     const P=J.jogador; anel(P.x,P.y,50,"#ffd34a",.6); emArea(P.x,P.y,50,e=>{const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy)||1; e.x+=dx/d*22; e.y+=dy/d*22;}); particulas(P.x,P.y,"#ffd34a",16,100); tremor(3); }
   if(J.niveisPend>0&&!pausado&&!J.nivelAgendado){ J.nivelAgendado=true; agendar(0.15,()=>{ J.nivelAgendado=false; if(!pausado&&J.niveisPend>0){ J.niveisPend--; abrirNivel(); } }); }
 }
@@ -2020,11 +2084,11 @@ function textoUnico(chave,x,y,t,cor,tam){ R.vistos=R.vistos||{}; if(R.vistos[cha
 const PD=()=>D.poderes;
 function nivTal(id){ return (R.talismas&&R.talismas[id])||0; }
 function valTal(efeito){ let v=0; for(const id in (R.talismas||{})){ const t=PD().talismas[id]; if(t&&t.efeito===efeito) v+=t.valor*R.talismas[id]; } return v; }
-const tal={ dano:()=>1+valTal("dano"), defesa:()=>Math.max(0.5,1-valTal("defesa")), recarga:()=>Math.max(0.6,1-valTal("recarga")), area:()=>1+valTal("area")+passiva("area")+custo("area"),
+const tal={ dano:()=>1+valTal("dano"), defesa:()=>Math.max(0.5,1-valTal("defesa"))*((SIN.rm&&SIN.rm.danoRec)||1), recarga:()=>Math.max(0.6,1-valTal("recarga")), area:()=>1+valTal("area")+passiva("area")+custo("area"),
   coleta:()=>1+valTal("coleta"), regen:()=>valTal("regen"), duracao:()=>1+valTal("duracao")+passiva("duracao"), projeteis:()=>{ const lv=nivTal("espelho"); return (lv>=2?1:0)+(lv>=5?1:0); },
   velocidade:()=>1+valTal("velocidade"), critico:()=>valTal("critico"), xp:()=>1+valTal("xp")+valTal("risco")*1.25, riscoVida:()=>1+valTal("risco"), riscoVel:()=>1+valTal("risco")*0.5 };
 function talismasLiberados(){ const T=PD().talismas; return Object.keys(T).filter(id=>T[id].inicial||(META.talismas||[]).includes(id)||SIM.tudoLiberado); }
-function cartaTalisma(){ if(SIM.semTalismas||Math.random()>=PD().chance_carta+passiva("carta_extra")*0.35) return null; const tem=Object.keys(R.talismas||{}), cheio=tem.length>=PD().encaixes;
+function cartaTalisma(){ if(SIM.semTalismas||Math.random()>=PD().chance_carta+passiva("carta_extra")*0.35+((SIN.rm&&SIN.rm.talisma)||0)) return null; const tem=Object.keys(R.talismas||{}), cheio=tem.length>=PD().encaixes;
   const ops=talismasLiberados().filter(id=> cheio? (tem.includes(id)&&nivTal(id)<5) : nivTal(id)<5); if(!ops.length) return null;
   const util=ops.filter(id=>PD().despertos.some(d=>d.talisma===id&&ativos().some(s=>L(s).classe===d.classe)));   // prefere os que abrem Desperto da equipe
   // meio caminho de uma União: se a equipe já tem um Desperto de um par e a classe do parceiro está na equipe, favorece o Talismã que falta
@@ -3203,6 +3267,7 @@ function menu(){
   if(RUN_SALVA){ const b=document.createElement("button"); b.className="botao"; b.textContent=`Continuar run (mapa ${RUN_SALVA.profundidade+1})`;
     b.onclick=()=>{ $("telaMenu").classList.remove("ativa"); carregarRun(RUN_SALVA); iniciarMapa(); }; box.appendChild(b); }
   const n=document.createElement("button"); n.className="botao"+(RUN_SALVA?" sec":""); n.textContent="Nova run: fechar Pacto"; n.onclick=telaPacto; box.appendChild(n);
+  { const pode=lojaAcessivel().length, sa=document.createElement("button"); sa.className="botao"+(pode?"":" sec"); sa.textContent=`Santuário (${META.essencia} de Essência)${pode?` · ${pode} melhoria${pode>1?"s":""} disponível${pode>1?"is":""}`:""}`; sa.onclick=telaSantuario; box.appendChild(sa); }
   metaConq(); META.cont.colecao=META.liberados.length; checarGlobais("colecao");
   const cq=document.createElement("button"); cq.className="botao sec"; cq.textContent=`Conquistas e Lendas (${Object.keys(META.conq).length}/${D.conquistas.length})`; cq.onclick=telaConquistas; box.appendChild(cq);
   if(MODERADOR_DISPONIVEL&&META.moderador){ const md=document.createElement("button"); md.className="botao sec"; md.textContent="Modo moderador"; md.onclick=telaModerador; box.appendChild(md); }

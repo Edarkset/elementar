@@ -178,3 +178,44 @@ html.ui-acao .circ span{font-size:10px; text-shadow:0 1px 2px #000, 0 0 4px #000
 html.ui-acao .circ.ult span, html.ui-acao .circ.esq:not(.comb) span{display:none}
 html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 @keyframes pulsaArte{from{filter:drop-shadow(0 3px 6px rgba(0,0,0,.5)) brightness(1)} to{filter:drop-shadow(0 0 12px rgba(255,211,74,.8)) brightness(1.15)}}
+
+/* contador de Essência da run */
+.ess-hud{font-size:15px; font-weight:600; color:#ffe6a6; padding:1px 8px 1px 20px; border-radius:999px; background:rgba(18,15,28,.72) radial-gradient(circle at 10px 50%, #ffe7a0 0 3px, #d6a030 4px 5px, transparent 6px); border:1px solid rgba(214,171,79,.55); text-shadow:0 1px 0 #000}
+.ess-hud.pop{animation:essPop .3s ease-out} @keyframes essPop{0%{transform:scale(1.35); filter:brightness(1.6)} 100%{transform:none}}
+/* baú e roleta */
+.bau-tela{position:absolute; inset:0; z-index:40; display:none; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:16px; overflow:hidden;
+  background:radial-gradient(circle at 50% 42%, rgba(70,50,120,.55), rgba(6,4,14,.92) 70%)}
+.bau-tela.vis{display:flex; animation:painelEntra .25s ease-out}
+.bau-raios{position:absolute; left:50%; top:40%; width:900px; height:900px; margin:-450px 0 0 -450px; opacity:0; pointer-events:none;
+  background:repeating-conic-gradient(from 0deg, rgba(255,220,120,.22) 0 8deg, transparent 8deg 22deg); border-radius:50%; mask-image:radial-gradient(circle, #000 20%, transparent 65%); -webkit-mask-image:radial-gradient(circle, #000 20%, transparent 65%);
+  transition:opacity .4s; animation:girar 9s linear infinite}
+.bau-tela.aberto .bau-raios{opacity:1} .bau-tela.ouro .bau-raios{background:repeating-conic-gradient(from 0deg, rgba(255,200,80,.32) 0 8deg, rgba(200,120,255,.12) 8deg 14deg, transparent 14deg 22deg)}
+@keyframes girar{to{transform:rotate(360deg)}}
+.bau-titulo{position:relative; font-size:26px; font-weight:600; color:#ffe6a6; text-shadow:0 2px 0 #000, 0 0 18px rgba(255,200,80,.6)}
+.bau-titulo.jackpot{font-size:44px; text-shadow:none; filter:drop-shadow(0 3px 0 #000) drop-shadow(0 0 14px rgba(255,200,80,.8)); background:linear-gradient(90deg,#ff6a6a,#ffd34a,#7fe8c0,#7fb4ff,#d08aff,#ff6a6a); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; animation:arcoIris 1s linear infinite, pop .4s}
+@keyframes arcoIris{to{background-position:200% 0}}
+.bau-arca{position:relative; width:150px; height:125px; animation:bauTreme .12s linear infinite}
+.bau-arca svg{width:100%; height:100%; filter:drop-shadow(0 0 20px rgba(255,211,74,.55)) drop-shadow(0 8px 10px rgba(0,0,0,.6))}
+.bau-arca .tampa{transform-origin:10px 48px; transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+.bau-tela.aberto .bau-arca{animation:none} .bau-tela.aberto .bau-arca .tampa{transform:rotate(-38deg) translate(-6px,-6px)}
+.bau-tela.aberto .bau-arca::after{content:""; position:absolute; left:15%; right:15%; top:30%; height:40%; background:radial-gradient(ellipse, rgba(255,240,180,.95), transparent 70%); filter:blur(4px); animation:pop .4s}
+@keyframes bauTreme{0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg) translateY(-2px)}}
+.bau-casas{position:relative; display:flex; flex-wrap:wrap; justify-content:center; gap:8px; max-width:440px}
+.casa{width:120px; min-height:118px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:4px; padding:8px 6px; border-radius:10px; text-align:center;
+  background:linear-gradient(180deg,rgba(46,41,80,.96),rgba(22,19,40,.96)); border:1.5px solid var(--rar,#6d6880); box-shadow:inset 0 0 14px rgba(0,0,0,.5); opacity:0; transform:scale(.6); transition:transform .25s, opacity .25s}
+.bau-tela.aberto .casa{opacity:1; transform:none}
+.casa img{width:58px; height:58px; image-rendering:auto} .casa img:not([src]){visibility:hidden}
+.casa span{font-size:12px; line-height:1.2; color:#fff1cf; min-height:28px}
+.casa.pisca img{transform:translateY(-3px) scale(1.06)}
+.casa.parou{animation:casaPara .35s ease-out; box-shadow:0 0 18px var(--rar), inset 0 0 14px rgba(0,0,0,.4)}
+.casa.parou.r-lendario{background:linear-gradient(180deg,rgba(90,70,30,.96),rgba(40,28,20,.96)); box-shadow:0 0 28px #ffcc4a, 0 0 60px rgba(255,204,74,.5)}
+@keyframes casaPara{0%{transform:scale(1.25); filter:brightness(2)} 100%{transform:none; filter:none}}
+.bau-coletar{position:relative; max-width:280px; opacity:0; pointer-events:none; transition:opacity .3s}
+.bau-tela.pronto .bau-coletar{opacity:1; pointer-events:auto; animation:pulsaArte .9s infinite alternate}
+.bau-tela.treme{animation:telaTreme .18s}
+@keyframes telaTreme{25%{transform:translate(3px,-2px)} 50%{transform:translate(-3px,2px)} 75%{transform:translate(2px,1px)}}
+.moeda-voa{position:absolute; left:50%; top:45%; width:14px; height:14px; margin:-7px; border-radius:50%; pointer-events:none; z-index:2;
+  background:radial-gradient(circle at 35% 30%, #fff8d0 0 2px, #ffd34a 3px, #b8860b 7px); box-shadow:0 0 8px rgba(255,211,74,.9); animation:moedaVoa var(--d) cubic-bezier(.2,.7,.4,1) forwards}
+.casa .moeda-voa{top:40%}
+@keyframes moedaVoa{0%{transform:translate(0,0) rotateY(0) scale(.6); opacity:1} 55%{transform:translate(calc(var(--x)*.8),var(--y)) rotateY(var(--r)) scale(1)} 100%{transform:translate(var(--x),calc(var(--y)*-0.6 + 120px)) rotateY(calc(var(--r)*2)); opacity:0}}
+@media (prefers-reduced-motion: reduce){ .bau-raios,.bau-arca,.moeda-voa{animation:none} }

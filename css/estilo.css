@@ -1,0 +1,79 @@
+:root{
+  --lapis:#1c2446; --ouro:#d6ab4f; --pergaminho:#f2e7c9; --jade:#46b08f; --sangue:#c8473b; --tinta:#120f1c;
+  --bg:#e9e1cb; --surface:#f6f0de; --text:#1c1a26; --muted:#5d5868; --line:#b8ab86;
+  color-scheme: light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#0f1224; --surface:#1a1f3a; --text:#f2e7c9; --muted:#a8a2b8; --line:#3a4170; color-scheme:dark; } }
+:root[data-theme="dark"]{ --bg:#0f1224; --surface:#1a1f3a; --text:#f2e7c9; --muted:#a8a2b8; --line:#3a4170; color-scheme:dark; }
+html{height:100%; scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0; height:100%; background:var(--tinta); color:var(--text); font-family:"Pixelify Sans","Courier New",monospace; overflow:hidden; -webkit-user-select:none; user-select:none; touch-action:none}
+#jogo{position:relative; width:100%; height:100%; overflow:hidden; background:var(--tinta)}
+#tela{position:absolute; inset:0; width:100%; height:100%; image-rendering:pixelated; display:block}
+canvas.mini{image-rendering:pixelated}
+.hud-topo{position:absolute; left:0; right:0; top:0; padding:8px 10px 0; pointer-events:none; color:var(--pergaminho)}
+.linha{display:flex; align-items:center; gap:6px}
+.lugar{font-size:12.5px; opacity:.92; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.tempo{font-size:18px; font-weight:600}
+.barra{height:7px; background:rgba(0,0,0,.45); border:1px solid rgba(242,231,201,.25); margin-top:6px; position:relative}
+.barra > i,.barra > b{position:absolute; left:0; top:0; bottom:0; width:0}
+.barra.xp > i{background:var(--jade)} .barra.vida{height:9px} .barra.vida > i{background:var(--sangue)} .barra.vida > b{background:rgba(214,171,79,.75)}
+.chips{display:flex; flex-wrap:wrap; gap:4px; margin-top:6px}
+.chip{font-size:11px; padding:1px 5px; background:rgba(18,15,28,.72); border:1px solid rgba(214,171,79,.5); color:var(--pergaminho)}
+.chip.el{border-color:currentColor}
+.btn-hud{pointer-events:auto; background:rgba(18,15,28,.72); color:var(--pergaminho); border:1px solid rgba(242,231,201,.3); font:inherit; font-size:13px; padding:4px 9px}
+.combo{position:absolute; left:0; right:0; top:96px; text-align:center; pointer-events:none; color:#fff3c4; font-size:28px; font-weight:600;
+  text-shadow:2px 2px 0 #120f1c, 0 0 12px rgba(214,171,79,.6); opacity:0; transition:opacity .2s}
+.combo.vis{opacity:1} .combo small{display:block; font-size:12px; font-weight:400; color:var(--pergaminho)}
+.combo.pop{animation:pop .25s} @keyframes pop{from{transform:scale(1.5)} to{transform:scale(1)}}
+.hud-base{position:absolute; left:0; right:0; bottom:0; padding:0 10px 10px; display:flex; align-items:flex-end; gap:8px; pointer-events:none}
+.coluna-esq{flex:1; display:flex; flex-direction:column; gap:6px}
+.ninho{display:flex; gap:5px; align-items:center; color:var(--pergaminho); font-size:11px}
+.ovo{width:30px; text-align:center} .ovo.anc canvas{width:30px; height:30px; filter:drop-shadow(0 0 4px #ffd34a)} .ovo canvas{width:22px; height:22px; display:block; margin:0 auto}
+.ovo i{display:block; height:3px; background:rgba(0,0,0,.5); margin-top:1px; position:relative} .ovo i b{position:absolute; left:0; top:0; bottom:0; background:var(--jade)}
+.equipe{display:flex; gap:6px}
+.retrato{pointer-events:auto; width:58px; background:rgba(18,15,28,.78); border:2px solid rgba(214,171,79,.45); color:var(--pergaminho); padding:3px; text-align:center; font:inherit; font-size:10px; line-height:1.15; position:relative}
+.retrato canvas{width:38px; height:38px; display:block; margin:0 auto}
+.retrato.vazio{opacity:.55; border-style:dashed}
+.retrato .cd{position:absolute; inset:0; background:rgba(0,0,0,.55)}
+.botoes-dir{display:flex; flex-direction:column; align-items:center; gap:8px}
+.circ{pointer-events:auto; border-radius:50%; border:2px solid var(--ouro); background:rgba(18,15,28,.82); color:var(--pergaminho); font:inherit; position:relative; overflow:hidden; padding:0}
+.circ.esq{width:52px; height:52px; font-size:11px; border-color:#9fd6d0}
+.circ.ult{width:70px; height:70px; font-size:11px}
+.circ.comb{border-color:#c070ff; font-size:10px; line-height:1.05; padding:2px}
+.circ i{position:absolute; left:0; right:0; bottom:0; background:rgba(214,171,79,.5); height:0} .circ span{position:relative}
+.circ.pronto{animation:pulsa .8s infinite alternate}
+@keyframes pulsa{from{box-shadow:0 0 0 2px rgba(214,171,79,.5)} to{box-shadow:0 0 0 9px rgba(214,171,79,.08)}}
+@media (prefers-reduced-motion: reduce){ .circ.pronto,.combo.pop{animation:none} }
+.tela{position:absolute; inset:0; display:none; align-items:center; justify-content:center; padding:14px; background:rgba(12,10,22,.8)}
+.tela.ativa{display:flex}
+.painel{width:min(470px,100%); max-height:100%; overflow:auto; background:var(--surface); color:var(--text); border:2px solid var(--line); padding:16px 14px}
+.painel h1{font-size:44px; margin:0; font-weight:600; line-height:1; color:var(--ouro); text-shadow:2px 2px 0 var(--tinta)}
+.painel h2{font-size:21px; margin:0 0 4px; font-weight:600}
+.painel p{margin:6px 0; color:var(--muted); font-size:14px; line-height:1.4}
+.cartas{display:grid; gap:9px; margin-top:10px}
+.cartas.grade{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.cartas.grade .carta{min-width:0; overflow-wrap:anywhere}
+.cartas.grade .carta canvas{width:38px; height:38px}
+.carta{display:flex; gap:10px; align-items:center; text-align:left; width:100%; font:inherit; color:var(--text); background:var(--bg); padding:9px; cursor:pointer; border:3px solid #8d8a95}
+.carta:focus-visible,.botao:focus-visible,.retrato:focus-visible,.circ:focus-visible{outline:3px solid var(--jade); outline-offset:2px}
+.carta canvas{width:46px; height:46px; flex:none; image-rendering:pixelated}
+.carta b{display:block; font-size:15.5px} .carta small{display:block; font-size:12.5px; color:var(--muted); line-height:1.3}
+.carta[disabled]{opacity:.5; cursor:not-allowed}
+.carta.sel{outline:3px solid var(--jade); outline-offset:-1px}
+.r-comum{border-color:#8d8a95} .r-incomum{border-color:#b07a45} .r-raro{border-color:#c4ccd8}
+.r-epico{border-color:#c4ccd8; box-shadow:inset 0 0 0 2px var(--ouro)} .r-lendario{border-color:var(--ouro); box-shadow:inset 0 0 0 2px #fff3c4}
+.botao{font:inherit; font-size:16px; padding:10px 14px; background:var(--lapis); color:var(--pergaminho); border:2px solid var(--ouro); cursor:pointer; width:100%; margin-top:10px}
+.botao[disabled]{opacity:.5; cursor:not-allowed}
+.botao.sec{background:transparent; color:var(--text); border-color:var(--line)}
+#telaMenu.com-arte{align-items:flex-end}
+#telaMenu.com-arte .painel{background:linear-gradient(180deg,rgba(14,10,24,.35),rgba(14,10,24,.82)); border-color:rgba(214,171,79,.6); color:var(--pergaminho); margin-bottom:2vh}
+#telaMenu.com-arte .painel p, #telaMenu.com-arte .meta{color:#e8dcc0}
+#telaMenu.com-arte .botao.sec{color:var(--pergaminho); border-color:var(--ouro); background:rgba(28,36,70,.55)}
+#telaMenu.com-arte h1{margin:0 0 4px}
+.meta{display:flex; flex-wrap:wrap; gap:4px 12px; font-size:13px; color:var(--muted); margin-top:8px}
+.secao{font-size:13px; color:var(--muted); margin:12px 0 0}
+.toast{position:absolute; left:50%; top:24%; transform:translateX(-50%); background:rgba(18,15,28,.88); color:var(--pergaminho); border:1px solid var(--ouro);
+  padding:8px 12px; font-size:14px; pointer-events:none; opacity:0; transition:opacity .25s; text-align:center; max-width:90%}
+.toast.vis{opacity:1}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Elementar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#120f1c">
+<link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+<div id="jogo">
+  <canvas id="tela"></canvas>
+  <div class="hud-topo" id="hud">
+    <div class="linha"><span class="lugar" id="lugar"></span><span class="tempo" id="tempo">0:00</span>
+      <button class="btn-hud" id="btnBolsa">Bolsa</button><button class="btn-hud" id="btnPausa" aria-label="Pausar">II</button></div>
+    <div class="barra vida" aria-label="Vida da equipe"><i id="barVida"></i><b id="barEscudo"></b></div>
+    <div class="barra xp" aria-label="Experiência"><i id="barXp"></i></div>
+    <div class="chips" id="chips"></div>
+  </div>
+  <div class="combo" id="combo"></div>
+  <div class="hud-base" id="hudBase">
+    <div class="coluna-esq"><div class="ninho" id="ninho"></div><div class="equipe" id="equipe"></div></div>
+    <div class="botoes-dir">
+      <button class="circ esq comb" id="btnComb" aria-label="Especial combinado"><i id="combFill"></i><span id="combNome">Combo</span></button>
+      <button class="circ esq" id="btnEsq" aria-label="Esquiva"><i id="esqFill"></i><span>Esquiva</span></button>
+      <button class="circ ult" id="btnUlt" aria-label="Despertar Elemental"><i id="ultFill"></i><span>Despertar</span></button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <div class="tela ativa" id="telaMenu"><div class="painel">
+    <h1>Elementar</h1>
+    <p>Feche um Pacto com os elementos, choque ovos, capture filhotes e leve seus monstros mitológicos o mais fundo que conseguir.</p>
+    <div class="meta"><span id="metaEss"></span><span id="metaProf"></span><span id="metaCol"></span></div>
+    <div id="menuBotoes"></div>
+    <p style="margin-top:14px">Arraste o dedo para andar (ou W, A, S, D). Esquiva: botão, Shift ou toque duplo. Despertar: botão ou espaço.</p>
+  </div></div>
+  <div class="tela" id="telaCartas"><div class="painel"><h2 id="cartasTitulo"></h2><p id="cartasSub"></p><div class="cartas" id="cartas"></div><div id="cartasRodape"></div></div></div>
+</div>
+<script>window.ARTE_MANIFESTO="arte/manifesto.json";</script>
+<script src="js/dados.js"></script>
+<script src="js/jogo.js"></script>
+</body>
+</html>

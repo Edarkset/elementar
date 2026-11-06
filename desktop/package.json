@@ -1,0 +1,33 @@
+{
+  "name": "elementar-desktop",
+  "productName": "Elementar",
+  "version": "0.1.0",
+  "description": "Elementar para computador (Windows, Mac, Linux) e Steam",
+  "main": "main.js",
+  "private": true,
+  "author": "Edarkset",
+  "scripts": {
+    "preparar": "node preparar.js",
+    "jogar": "node preparar.js && electron .",
+    "empacotar": "node preparar.js && electron-builder --dir",
+    "instalador": "node preparar.js && electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "optionalDependencies": {
+    "steamworks.js": "^0.4.0"
+  },
+  "build": {
+    "appId": "com.edarkset.elementar",
+    "productName": "Elementar",
+    "directories": { "output": "dist" },
+    "files": ["main.js", "preload.js", "steam.js", "jogo/**/*", "package.json"],
+    "extraFiles": [{ "from": "steam_appid.txt", "to": "steam_appid.txt", "filter": ["**/*"] }],
+    "asarUnpack": ["node_modules/steamworks.js/**/*"],
+    "win": { "target": "nsis", "icon": "jogo/app/icones/icone-1024.png" },
+    "mac": { "target": "dmg", "icon": "jogo/app/icones/icone-1024.png", "category": "public.app-category.games" },
+    "linux": { "target": "AppImage", "icon": "jogo/app/icones/icone-1024.png", "category": "Game" }
+  }
+}

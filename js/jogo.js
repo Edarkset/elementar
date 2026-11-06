@@ -20,8 +20,10 @@ function mistura(a,b,t){const x=hexRgb(a), y=hexRgb(b); return hex(x.map((v,i)=>
 
 // ================================================================ save
 const CHAVE="elementar_proto_v2";
-function lerSave(){try{const s=localStorage.getItem(CHAVE); return s?JSON.parse(s):null;}catch(e){return null;}}
-function gravar(){try{localStorage.setItem(CHAVE, JSON.stringify({meta:META, run:RUN_SALVA}));}catch(e){}}
+// o save passa pela camada de plataforma (js/plataforma.js): localStorage na web, arquivo no desktop/Steam
+const PLAT=window.Plataforma||{lerSave:k=>{try{return localStorage.getItem(k);}catch(e){return null;}}, gravarSave:(k,t)=>{try{localStorage.setItem(k,t);}catch(e){}}, conquista(){}};
+function lerSave(){try{const s=PLAT.lerSave(CHAVE); return s?JSON.parse(s):null;}catch(e){return null;}}
+function gravar(){try{PLAT.gravarSave(CHAVE, JSON.stringify({meta:META, run:RUN_SALVA}));}catch(e){}}
 const salvo=lerSave()||{};
 function liberadosIniciais(){ const ini=new Set(D.linhas.filter(l=>D.universos.find(u=>u.id===l.universo).era==="berco"||l.universo==="amazonia").map(l=>l.id));
   ELS.forEach(el=>D.linhas.filter(l=>l.elemento===el).slice(0,3).forEach(l=>ini.add(l.id))); return [...ini]; }
@@ -61,10 +63,17 @@ function spriteOvo(el,rar){ const k="ovo|"+el+"|"+rar; if(cacheSpr.has(k)) retur
 
 // ================================================================ estado
 const cv=$("tela"), ctx=cv.getContext("2d"), lo=document.createElement("canvas"), lg=lo.getContext("2d");
-let W=0,H=0,S=2,VW=0,VH=0;
+let W=0,H=0,S=2,VW=0,VH=0,Q=1;
+// S = pixels de tela (CSS) por pixel de mundo. Q = pixels reais da tela interna por pixel de mundo:
+// o mundo é desenhado na resolução do aparelho (as coordenadas continuam as mesmas), então a arte
+// importada sai nítida e o desenho por código continua com cara de pixel art (cada pixel vira um bloco).
+// O limite de pixels protege a performance em telas 4K.
+const PIXELS_MAX=4.2e6;
 function redimensionar(){ W=cv.clientWidth; H=cv.clientHeight; const dpr=Math.min(2,window.devicePixelRatio||1);
   cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0);
-  S=Math.max(2,Math.round(Math.min(W,H)/200)); VW=Math.ceil(W/S); VH=Math.ceil(H/S); lo.width=VW; lo.height=VH; }
+  S=Math.max(2,Math.round(Math.min(W,H)/200)); VW=Math.ceil(W/S); VH=Math.ceil(H/S);
+  Q=SIM.ativo? 1 : Math.max(1,Math.min(Math.ceil(S*dpr), Math.floor(Math.sqrt(PIXELS_MAX/Math.max(1,VW*VH)))));
+  lo.width=VW*Q; lo.height=VH*Q; lg.setTransform(Q,0,0,Q,0,0); }
 addEventListener("resize",redimensionar);
 let R=null, J=null, rodando=false, pausado=false;
 // Ganchos para simulação e testes automatizados (não afetam o jogo normal)
@@ -340,7 +349,7 @@ function agirSelo(s,dt){
   const a=atrib(s), el=elementoDe(s), cor=COR[el], cls=L(s).classe;
   if(s.esp!=null&&!SIM.semEspeciais){ s.cdEsp=(s.cdEsp??10)-dt; if(s.cdEsp<=0){ FONTE="especial"; dispararEspecial(s,a,el,cor); s.cdEsp=recargaEspecial(s); } }
   if(s.furia>0){ s.furia-=dt; if(s.furiaMod===0) curar(J.vidaMax*0.02*dt); }
-  s.cd-=dt*a.cad*(J.cantoGuerra>0?1.2:1); if(s.cd<=0){ FONTE="basico"; s.cd=ataqueBasico(s,atribPoder(a,s,"b"),el,cor)*tal.recarga(); aoDisparar(s,"b",a,el,cor); }
+  s.cd-=dt*a.cad*(J.cantoGuerra>0?1.2:1); if(s.cd<=0){ FONTE="basico"; s.cd=ataqueBasico(s,atribPoder(a,s,"b"),el,cor)*tal.recarga(); aoDisparar(s,"b",a,el,cor); if(J.t-(s.atkT??-9)>0.5) s.atkT=J.t; }
   for(const k of ["h1","h2"]){ const lv=s.pod[k]; if(!lv) continue; if(k==="h2"&&est(s)<1) continue;
     const def=HAB[cls][k]; const key=k==="h1"?"cd1":"cd2"; s[key]-=dt*(J.desp>0?1.4:1);
     if(s[key]<=0){ FONTE="habilidade"; const r=def.f(s,atribPoder(a,s,k),el,cor,lv,s.mod[k]); s[key]= r===false? 0.6 : def.cd*fRecarga(lv)*tal.recarga(); if(r!==false) aoDisparar(s,k,a,el,cor); } }
@@ -721,6 +730,36 @@ function arteMonstro(id,e,ramo,rar){
   const celula=e<=1? e : e===2? 2+(ramo??0) : 5+(ramo??0), k=`${id}|${celula}|${sufixo}|${e}`; if(cacheArte.has(k)) return cacheArte.get(k);
   const cw=img.width/4, ch=img.height/2, c=encaixarArte(img,(celula%4)*cw,Math.floor(celula/4)*ch,cw,ch,ALVO_ARTE[e]); cacheArte.set(k,c); return c;
 }
+// ---------------------------------------------------------------- animação dos monstros
+// Folhas arte/monstros/<el>/<id>__anim_N.png (N = forma 1..8), grade 6x3:
+// linha 0 parado (4 quadros), linha 1 andando (6), linha 2 atacando (6).
+const QUADROS_ANIM=[4,6,6], FPS_ANIM=[5,10,14], cacheUniao=new Map();
+// área ocupada pela linha inteira: todos os quadros usam o mesmo recorte e a mesma escala,
+// então o monstro não "pulsa" de tamanho entre um quadro e outro
+function uniaoLinha(img,row){ if(!img._id) img._id=++ID_IMG; const k=img._id+"|"+row; if(cacheUniao.has(k)) return cacheUniao.get(k);
+  const cw=img.width/6, ch=img.height/3; let x0=cw, y0=ch, x1=0, y1=0; const cols=[];
+  for(let c=0;c<QUADROS_ANIM[row];c++){ const b=bboxCelula(img,c*cw,row*ch,cw,ch);
+    // quadro vazio (algumas folhas vieram com um quadro a menos) fica de fora do ciclo
+    if(b.x===c*cw&&b.y===row*ch&&b.w===cw&&b.h===ch) continue; cols.push(c);
+    x0=Math.min(x0,b.x-c*cw); y0=Math.min(y0,b.y-row*ch); x1=Math.max(x1,b.x-c*cw+b.w); y1=Math.max(y1,b.y-row*ch+b.h); }
+  const u= !cols.length? {x:0,y:0,w:cw,h:ch,cols} : {x:x0,y:y0,w:x1-x0,h:y1-y0,cols}; cacheUniao.set(k,u); return u; }
+function quadroAnim(img,row,col,alvo){ const k=(img._id||(img._id=++ID_IMG))+"|a"+row+"|"+col+"|"+alvo; if(cacheArte.has(k)) return cacheArte.get(k);
+  const u=uniaoLinha(img,row), cw=img.width/6, ch=img.height/3, s=Math.min(alvo/u.w,alvo/u.h), w=Math.max(1,Math.round(u.w*s)), h=Math.max(1,Math.round(u.h*s));
+  const c=document.createElement("canvas"); c.width=c.height=alvo; const g=c.getContext("2d"); g.imageSmoothingEnabled=true; const ox=Math.round((alvo-w)/2), oy=alvo-h, sx=col*cw+u.x, sy=row*ch+u.y;
+  g.drawImage(img,sx,sy,u.w,u.h,ox,oy,w,h); c._src={img,sx,sy,sw:u.w,sh:u.h,dest:[ox/alvo,oy/alvo,w/alvo,h/alvo]}; cacheArte.set(k,c); return c; }
+// quadro atual do monstro de um Selo, ou null (sem folha de animação: usa a imagem fixa)
+function quadroAnimSelo(s){ if(SIM.ativo||!J||!s.mon) return null; const l=LINHA[s.mon.id]; if(!l||l.ancestral||s.mon.rar==="epico"||s.mon.rar==="lendario") return null;
+  const e=est(s), ramo=ramoAtual(s), celula=e<=1? e : e===2? 2+(ramo??0) : 5+(ramo??0);
+  const img=ARTE_IMG[`arte/monstros/${l.elemento}/${s.mon.id}__anim_${celula+1}.png`]; if(!img||!img.pronta) return null;
+  // velocidade em pixels de mundo por segundo (saltos grandes são teleporte de habilidade, não andar)
+  const dtA=J.t-(s._at??J.t), d=s._ax==null? 0 : Math.hypot(s.x-s._ax,s.y-s._ay); s._ax=s.x; s._ay=s.y; s._at=J.t;
+  if(dtA>0&&d<25) s._vel=(s._vel||0)*0.75+(d/dtA)*0.25;
+  let row= s.atkT!=null&&J.t-s.atkT<QUADROS_ANIM[2]/FPS_ANIM[2]? 2 : (s._vel||0)>6? 1 : 0;
+  if(uniaoLinha(img,row).cols.length<2) row=0;
+  const cols=uniaoLinha(img,row).cols; if(cols.length<2) return null;   // folha fora do padrão: imagem fixa
+  if(row!==s._row){ s._row=row; s._t0=J.t; }
+  const f=Math.floor((J.t-s._t0)*FPS_ANIM[row]), col= row===2? cols[Math.min(cols.length-1,f)] : cols[f%cols.length];
+  return quadroAnim(img,row,col,ALVO_ARTE[e]); }
 
 // ================================================================ entrada
 const teclas=new Set(); let toque=null, ultimoToque=0;
@@ -1495,9 +1534,23 @@ function celulaArte(img,cols,rows,col,row,w,h,base){ if(!img) return null; if(!i
 // O mundo é desenhado em baixa resolução (estilo pixel art) e ampliado para a tela. Arte pintada (monstros, inimigos, chefes,
 // Lendas) reduzida a 20-40 px vira borrão; por isso ela é desenhada por cima, na resolução real da tela, a partir do original.
 const CAMADA_ARTE=[]; let cvArte=null;
-function versaoHi(c){ if(!c||!c._src) return null; if(c.hi) return c.hi; const K=4, h=document.createElement("canvas"); h.width=c.width*K; h.height=c.height*K;
+// versão da célula em K pixels por pixel de mundo, recortada do arquivo original com suavização de alta qualidade
+function versaoHi(c,K){ if(!c||!c._src) return null; K=Math.max(1,Math.min(8,Math.ceil(K||4))); if(c.hi&&c.hiK===K) return c.hi;
+  const h=document.createElement("canvas"); h.width=Math.max(1,Math.round(c.width*K)); h.height=Math.max(1,Math.round(c.height*K));
   const g=h.getContext("2d"); g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high"; const s=c._src, d=s.dest||[0,0,1,1];
-  g.drawImage(s.img,s.sx,s.sy,s.sw,s.sh,d[0]*h.width,d[1]*h.height,d[2]*h.width,d[3]*h.height); c.hi=h; return h; }
+  g.drawImage(s.img,s.sx,s.sy,s.sw,s.sh,d[0]*h.width,d[1]*h.height,d[2]*h.width,d[3]*h.height); c.hi=h; c.hiK=K; return h; }
+// Toda célula de arte importada (tem _src) desenhada no mundo usa a versão em alta resolução no lugar
+// da miniatura. Funciona para qualquer chamada lg.drawImage, então nenhum desenho precisa mudar.
+{ const desenhoOriginal=lg.drawImage.bind(lg);
+  lg.drawImage=function(img,a,b,c,d,e,f,g2,h2){
+    if(Q<=1||!img||!img._src) return desenhoOriginal.apply(null,arguments);
+    const hi=versaoHi(img,Q*1.25); if(!hi) return desenhoOriginal.apply(null,arguments);
+    const suave=lg.imageSmoothingEnabled; lg.imageSmoothingEnabled=true; lg.imageSmoothingQuality="high";
+    const kx=hi.width/img.width, ky=hi.height/img.height, n=arguments.length;
+    if(n<=3) desenhoOriginal(hi,a,b,img.width,img.height);
+    else if(n<=5) desenhoOriginal(hi,a,b,c,d);
+    else desenhoOriginal(hi,a*kx,b*ky,c*kx,d*ky,e,f,g2,h2);
+    lg.imageSmoothingEnabled=suave; }; }
 // área desenhada de uma célula (para encaixar o monstro pelo desenho visível, não pela célula)
 const cacheBB=new Map();
 function bboxCelula(img,sx,sy,sw,sh){ if(!img._id) img._id=++ID_IMG; const k=img._id+"|"+sx+"|"+sy; if(cacheBB.has(k)) return cacheBB.get(k);
@@ -1509,11 +1562,13 @@ const ALVO_ARTE=[18,22,27,34];   // altura do monstro com arte, por estágio (pi
 function encaixarArte(img,sx,sy,sw,sh,alvo){ const bb=bboxCelula(img,sx,sy,sw,sh), k=Math.min(alvo/bb.w,alvo/bb.h), w=Math.max(1,Math.round(bb.w*k)), h=Math.max(1,Math.round(bb.h*k));
   const c=document.createElement("canvas"); c.width=c.height=alvo; const g=c.getContext("2d"); g.imageSmoothingEnabled=true; const ox=Math.round((alvo-w)/2), oy=alvo-h;
   g.drawImage(img,bb.x,bb.y,bb.w,bb.h,ox,oy,w,h); c._src={img,sx:bb.x,sy:bb.y,sw:bb.w,sh:bb.h,dest:[ox/alvo,oy/alvo,w/alvo,h/alvo]}; return c; }
-function desenharSprite(spr,dx,dy,dw,dh){ const hi=(!SIM.ativo&&spr&&spr._src)? versaoHi(spr) : null;
+// Com a tela interna em alta resolução (Q>1) a arte vai direto para o mundo: fica na ordem certa com
+// efeitos e recebe a luz do mapa. A camada separada só é usada se a tela interna estiver em baixa resolução.
+function desenharSprite(spr,dx,dy,dw,dh){ const hi=(!SIM.ativo&&Q<=1&&spr&&spr._src)? versaoHi(spr) : null;
   if(!hi){ lg.drawImage(spr,dx,dy,dw,dh); return; } const t=lg.getTransform(); CAMADA_ARTE.push({hi,t,dx,dy,dw,dh,al:lg.globalAlpha}); }
 function desenharCamadaArte(){ if(!CAMADA_ARTE.length) return; if(!cvArte) cvArte=document.createElement("canvas"); if(cvArte.width!==W||cvArte.height!==H){ cvArte.width=W; cvArte.height=H; }
   const g=cvArte.getContext("2d"); g.setTransform(1,0,0,1,0,0); g.clearRect(0,0,W,H); g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
-  for(const o of CAMADA_ARTE){ const t=o.t; g.setTransform(S*t.a,S*t.b,S*t.c,S*t.d,S*t.e,S*t.f); g.globalAlpha=o.al; g.drawImage(o.hi,o.dx,o.dy,o.dw,o.dh); }
+  for(const o of CAMADA_ARTE){ const t=o.t, k=S/Q; g.setTransform(k*t.a,k*t.b,k*t.c,k*t.d,k*t.e,k*t.f); g.globalAlpha=o.al; g.drawImage(o.hi,o.dx,o.dy,o.dw,o.dh); }
   CAMADA_ARTE.length=0; g.setTransform(1,0,0,1,0,0); g.globalAlpha=1;
   // a mesma luz do mapa escurece a arte (senão os monstros brilhariam nos mapas noturnos)
   const e=typeof escurecimentoArte==="function"? escurecimentoArte() : null; if(e&&e.a>0.02){ g.globalCompositeOperation="source-atop"; g.globalAlpha=e.a; g.fillStyle=e.cor; g.fillRect(0,0,W,H); g.globalCompositeOperation="source-over"; g.globalAlpha=1; }
@@ -1531,7 +1586,8 @@ function tornarContinuo(img,T){ const c=document.createElement("canvas"); c.widt
   const borda=(x0,y0,x1,y1,rx,ry,rw,rh)=>{ const gr=gm.createLinearGradient(x0,y0,x1,y1); gr.addColorStop(0,"rgba(255,255,255,1)"); gr.addColorStop(1,"rgba(255,255,255,0)"); gm.fillStyle=gr; gm.fillRect(rx,ry,rw,rh); };
   borda(0,0,F,0,0,0,F,T); borda(T,0,T-F,0,T-F,0,F,T); borda(0,0,0,F,0,0,T,F); borda(0,T,0,T-F,0,T-F,T,F);
   go.globalCompositeOperation="destination-in"; go.drawImage(m,0,0); g.drawImage(o,0,0); return c; }
-function chaoArte(u){ const piso=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__piso.png`]; if(piso&&piso.pronta){ chao={cv:tornarContinuo(piso,512),u}; return true; }
+// o piso é guardado na resolução do arquivo (até 2048 px) e desenhado com 512 px de mundo
+function chaoArte(u){ const piso=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__piso.png`]; if(piso&&piso.pronta){ const T=SIM.ativo?512:Math.max(512,Math.min(2048,piso.width)); chao={cv:tornarContinuo(piso,T),u,tam:512,suave:true}; return true; }
   const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__tiles.png`]; if(!img||!img.pronta) return false;
   const c=document.createElement("canvas"); c.width=c.height=128; const g=c.getContext("2d"), r=semente(u.id+"chao"); g.imageSmoothingEnabled=false;
   for(let y=0;y<8;y++) for(let x=0;x<8;x++){ const v=Math.floor(r()*8); g.drawImage(celulaArte(img,8,3,v,0,16,16),x*16,y*16); }
@@ -1955,7 +2011,7 @@ function evento(nome,n){ if(!J||SIM.ativo&&!SIM.conquistas) return; n=n||1; meta
     if(c.categoria==="mapa"){ if(c.universo===R.universo&&J.cont[nome]>=c.n) conceder(c); }
     else if(META.cont[nome]>=c.n) conceder(c); } }
 function checarGlobais(nome){ for(const c of CONQ()) if(!META.conq[c.id]&&c.categoria!=="mapa"&&c.evento===nome&&(META.cont[nome]||0)>=c.n) conceder(c); }
-function conceder(c){ const M=metaConq(); if(M.conq[c.id]) return; M.conq[c.id]=Date.now(); M.essencia+=c.essencia;
+function conceder(c){ const M=metaConq(); if(M.conq[c.id]) return; M.conq[c.id]=Date.now(); M.essencia+=c.essencia; if(!M.modUsado) PLAT.conquista(c.id);   // save mexido no modo moderador não gera conquista na Steam
   if(c.talisma&&!M.talismas.includes(c.talisma)) M.talismas.push(c.talisma);
   const rot={bronze:"Insígnia de bronze",prata:"Insígnia de prata",ouro:"Insígnia de ouro",secreta:"Insígnia secreta"}[c.insignia];
   avisoConquista(`${c.secreta?"Segredo descoberto":"Conquista"}: ${c.nome}`, `${rot} · +${c.essencia} de Essência${c.talisma?` · Talismã liberado: ${D.poderes.talismas[c.talisma].nome}`:""}${c.ladrilho!=null?" · Ladrilho do mural":""}`);
@@ -2318,7 +2374,7 @@ function spriteCriatura(def,tam,cor,q,pose,semente){
 const cacheFolha=new Map();
 function quadroFolha(caminho,cols,rows,col,row,lado){ const img=ARTE_IMG[caminho]; if(!img||!img.pronta) return null; const k=caminho+"|"+col+"|"+row+"|"+lado;
   if(cacheFolha.has(k)) return cacheFolha.get(k); const cw=img.width/cols, ch=img.height/rows, c=document.createElement("canvas"); c.width=c.height=lado; const g=c.getContext("2d"); g.imageSmoothingEnabled=false;
-  g.drawImage(img,col*cw,row*ch,cw,ch,0,0,lado,lado); cacheFolha.set(k,c); return c; }
+  g.drawImage(img,col*cw,row*ch,cw,ch,0,0,lado,lado); c._src={img,sx:col*cw,sy:row*ch,sw:cw,sh:ch}; cacheFolha.set(k,c); return c; }
 function arteCriatura(e,pose,q){ const u=UNIV[R.universo]; if(!u) return null;
   if(e.chefe||e.mini){ const tam=Math.round(e.tam*1.8), caminho=e.eraChefe? `arte/reinos/${u.era}/guardiao_${u.era}__anim.png` : `arte/reinos/${u.era}/${u.id}__${e.mini?"mini":"chefe"}.png`;
     const img=folhaArte(caminho); if(!img) return null; const rows=e.mini?5:6; let row=0, col=q%4;
@@ -2893,8 +2949,9 @@ function desenharVirado(spr,x,y,virar,lado){ const w=lado||spr.width, h=lado||sp
 function desenhar(dt){
   const P=J.jogador; J.shake*=0.86; const sx=(Math.random()-.5)*J.shake, sy=(Math.random()-.5)*J.shake;
   const ox=Math.round(P.x-VW/2+sx), oy=Math.round(P.y-VH/2+sy);
+  lg.imageSmoothingEnabled=!!chao.suave; lg.imageSmoothingQuality="high";
+  const TC=chao.tam||chao.cv.width, px=((ox%TC)+TC)%TC, py=((oy%TC)+TC)%TC; for(let y=-py;y<VH;y+=TC) for(let x=-px;x<VW;x+=TC) lg.drawImage(chao.cv,x,y,TC,TC);
   lg.imageSmoothingEnabled=false;
-  const TC=chao.cv.width, px=((ox%TC)+TC)%TC, py=((oy%TC)+TC)%TC; for(let y=-py;y<VH;y+=TC) for(let x=-px;x<VW;x+=TC) lg.drawImage(chao.cv,x,y);
   desenharDetalhesChao(ox,oy); desenharEstrutura(ox,oy);
   desenharSolo(ox,oy); desenharFauna(ox,oy,"agua"); desenharCenaChao(ox,oy); desenharFauna(ox,oy,"chao"); desenharPerigos(ox,oy); desenharVfx(ox,oy,"chao"); desenharCadaveres(ox,oy); desenharQuedasAbismo(ox,oy);
   const sombra=(x,y,w)=>{ lg.fillStyle="rgba(0,0,0,.35)"; lg.fillRect(Math.round(x-w/2),Math.round(y),Math.round(w),2); };
@@ -2925,7 +2982,7 @@ function desenhar(dt){
   // Invocador e equipe
   const inv=gerarSprite("invocador-capa",9,"#d6ab4f",{olhos:"#7fe0ff"}); sombra(P.x-ox,P.y-oy+5,8);
   if(J.invuln>0) lg.globalAlpha=.55; lg.drawImage(inv,Math.round(P.x-ox-inv.width/2),Math.round(P.y-oy-inv.height/2)); lg.globalAlpha=1;
-  R.selos.forEach(s=>{ if(!s.mon) return; const spr=spriteSelo(s), x=s.x-ox, y=s.y-oy; sombra(x,y+spr.width/2-1,spr.width*0.8);
+  R.selos.forEach(s=>{ if(!s.mon) return; const spr=quadroAnimSelo(s)||spriteSelo(s), x=s.x-ox, y=s.y-oy; sombra(x,y+spr.width/2-1,spr.width*0.8);
     if(J.desp>0){ lg.globalCompositeOperation="lighter"; lg.globalAlpha=.3+.15*Math.sin(J.t*12); lg.fillStyle=COR[elementoDe(s)]; lg.beginPath(); lg.arc(x,y,spr.width*0.8,0,Math.PI*2); lg.fill(); lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; }
     desenharVirado(spr,Math.round(x-spr.width/2),Math.round(y-spr.height/2)+Math.round(Math.sin(J.t*6+s.x)*0.6),s.esq);
     if(s.furia>0){ lg.fillStyle="#ff5a4a"; lg.fillRect(Math.round(x)-1,Math.round(y-spr.height/2)-3,2,1); } });
@@ -3003,7 +3060,48 @@ function menu(){
   const n=document.createElement("button"); n.className="botao"+(RUN_SALVA?" sec":""); n.textContent="Nova run: fechar Pacto"; n.onclick=telaPacto; box.appendChild(n);
   metaConq(); META.cont.colecao=META.liberados.length; checarGlobais("colecao");
   const cq=document.createElement("button"); cq.className="botao sec"; cq.textContent=`Conquistas e Lendas (${Object.keys(META.conq).length}/${D.conquistas.length})`; cq.onclick=telaConquistas; box.appendChild(cq);
+  if(MODERADOR_DISPONIVEL&&META.moderador){ const md=document.createElement("button"); md.className="botao sec"; md.textContent="Modo moderador"; md.onclick=telaModerador; box.appendChild(md); }
   gravar();
+}
+// ================================================================ modo moderador (testes)
+// Escondido: toque 5 vezes no título do menu, ou abra o jogo com ?moderador no endereço.
+// Desligue MODERADOR_DISPONIVEL na versão que vai para a Steam.
+const MODERADOR_DISPONIVEL=true;
+const CHAVE_BACKUP=CHAVE+"_antes_moderador";
+if(MODERADOR_DISPONIVEL){
+  if(/[?&](moderador|mod)\b/.test(location.search)) META.moderador=true;
+  let toques=0, ultimo=0;
+  document.querySelector("#telaMenu h1")?.addEventListener("click",()=>{ const t=performance.now(); toques= t-ultimo<600? toques+1 : 1; ultimo=t;
+    if(toques>=5){ toques=0; META.moderador=true; gravar(); toast("Modo moderador liberado"); menu(); } });
+}
+function backupModerador(){ if(!PLAT.lerSave(CHAVE_BACKUP)) PLAT.gravarSave(CHAVE_BACKUP, JSON.stringify({meta:META, run:RUN_SALVA})); META.modUsado=true; }
+function telaModerador(){
+  $("telaMenu").classList.remove("ativa"); metaConq(); metaDeuses();
+  const talismas=[...new Set(D.conquistas.map(c=>c.talisma).filter(Boolean))], temBackup=!!PLAT.lerSave(CHAVE_BACKUP);
+  const feito=msg=>{ gravar(); toast(msg); telaModerador(); };
+  mostrarCartas("Modo moderador", "Ferramentas de teste. O save de antes da primeira mudança fica guardado e pode ser restaurado aqui.", [
+    {titulo:`Liberar todos os monstros (${META.liberados.length}/${D.linhas.length})`, texto:"Todas as linhas evolutivas aparecem no Pacto, nos ovos e nos filhotes.", raridade:"raro", manter:true,
+      acao:()=>{ backupModerador(); META.liberados=[...new Set([...META.liberados,...D.linhas.map(l=>l.id)])]; feito("Todos os monstros liberados"); }},
+    {titulo:`Liberar todas as Lendas (${META.lendas.length}/${D.lendas.length})`, texto:"Todas podem ser escolhidas como Invocador.", raridade:"epico", manter:true,
+      acao:()=>{ backupModerador(); META.lendas=[...new Set([...META.lendas,...D.lendas.map(l=>l.universo)])]; feito("Todas as Lendas liberadas"); }},
+    {titulo:`Liberar o Panteão (${META.deuses.length}/${D.panteao.length})`, texto:"Todos os deuses podem ser escolhidos como Invocador.", raridade:"lendario", manter:true,
+      acao:()=>{ backupModerador(); META.deuses=[...new Set([...META.deuses,...D.panteao.map(g=>g.id)])]; feito("Panteão liberado"); }},
+    {titulo:`Liberar todos os Talismãs (${META.talismas.length}/${talismas.length})`, texto:"", raridade:"incomum", manter:true,
+      acao:()=>{ backupModerador(); META.talismas=[...new Set([...META.talismas,...talismas])]; feito("Talismãs liberados"); }},
+    {titulo:"+10.000 de Essência", texto:`Agora: ${META.essencia}`, manter:true,
+      acao:()=>{ backupModerador(); META.essencia+=10000; feito("+10.000 de Essência"); }},
+    {titulo:"Liberar tudo", texto:"Monstros, Lendas, Panteão, Talismãs e +10.000 de Essência.", raridade:"lendario", manter:true,
+      acao:()=>{ backupModerador(); META.liberados=[...new Set([...META.liberados,...D.linhas.map(l=>l.id)])]; META.lendas=[...new Set([...META.lendas,...D.lendas.map(l=>l.universo)])];
+        META.deuses=[...new Set([...META.deuses,...D.panteao.map(g=>g.id)])]; META.talismas=[...new Set([...META.talismas,...talismas])]; META.essencia+=10000; feito("Tudo liberado"); }},
+    {titulo:"Restaurar save de antes", texto: temBackup? "Volta ao progresso de antes do modo moderador." : "Nenhuma mudança feita ainda.", desab:!temBackup, manter:true,
+      acao:()=>{ if(!confirm("Voltar ao save de antes do modo moderador? O que foi liberado aqui some.")) return;
+        try{ const s=JSON.parse(PLAT.lerSave(CHAVE_BACKUP)); META=Object.assign({essencia:0, recorde:0, liberados:liberadosIniciais()}, s.meta||{}); RUN_SALVA=s.run||null; }catch(e){ return toast("Backup ilegível"); }
+        META.moderador=true; PLAT.gravarSave(CHAVE_BACKUP,""); feito("Save restaurado"); }},
+    {titulo:"Esconder modo moderador", texto:"Tire o botão do menu (toque 5 vezes no título para voltar).", manter:true,
+      acao:()=>{ META.moderador=false; gravar(); fechar(); menu(); }},
+    {titulo:"Voltar", texto:"", acao:()=>menu()}
+  ]);
+  $("telaCartas").classList.add("ativa");
 }
 function telaPacto(){
   $("telaMenu").classList.remove("ativa"); const sel=new Set();

@@ -16,12 +16,17 @@ Jogo de ação no estilo *survivor* (inspirado em Vampire Survivors e Hades) com
 O jogo carrega arquivos separados (dados, artes), então precisa de um servidor local; abrir o `index.html` com dois cliques não carrega as artes.
 
 ```bash
-# na pasta do repositório
-python3 -m http.server 8000
+# na pasta do repositório (Windows, sem instalar nada)
+powershell -ExecutionPolicy Bypass -File ferramentas\servidor.ps1
+# ou, com Python: python3 -m http.server 8000
 # depois abra http://localhost:8000
 ```
 
 Ou use a extensão **Live Server** do VS Code.
+
+## App, celular e Steam
+
+Celular (instalar como app), versão de computador/Steam, modo moderador, resolução das artes e pendências de performance: veja [docs/APP.md](docs/APP.md).
 
 ## Estrutura
 

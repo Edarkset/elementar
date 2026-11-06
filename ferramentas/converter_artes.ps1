@@ -8,13 +8,17 @@
 # - Arte que já está no manifesto: substitui o arquivo atual, no mesmo tamanho.
 # - ambiente: folha 8x2 de peças de 32 px (256x64).
 # - lendas e panteao: folha 6x3 (384x192); __retrato 2x3 (256x384).
+# - efeitos: tira de quadros quadrados; cada quadro da folha é recortado na faixa com desenho, sem achatar
+#   (reacao 6 x 128 px, especial 8 x 192 px, combinado 10 x 256 px).
+# - Use -Apenas efeitos (por exemplo) para converter só algumas pastas.
 # - Pula: pastas em $Pular, pastas bkp, arquivos "(1)" (cópias), e marcações (PNG pequeno com o texto "substitua por esta arte").
 # - Nome com sufixo de computador do OneDrive (ex.: anubis-BR10-6LL70QN.png) vale como o nome sem o sufixo.
 param(
   [Parameter(Mandatory = $true)][string]$Origem,
   [int]$Porta = 8001,
   [double]$Qualidade = 0.9,
-  [string[]]$Pular = @('efeitos', 'Itens', 'npcs'),
+  [string[]]$Pular = @('Itens', 'npcs'),
+  [string[]]$Apenas = @(),
   [switch]$Listar
 )
 $ErrorActionPreference = 'Stop'
@@ -40,15 +44,22 @@ foreach ($k in $manifesto.Keys) { $porNome[[IO.Path]::GetFileNameWithoutExtensio
 $tarefas = New-Object System.Collections.ArrayList
 $pulados = New-Object System.Collections.ArrayList
 $porChave = @{}
-foreach ($f in Get-ChildItem -LiteralPath $Origem -Recurse -File -Filter *.png) {
+# nome normal antes da cópia com sufixo de computador: se os dois forem arte, vale o de nome normal
+foreach ($f in Get-ChildItem -LiteralPath $Origem -Recurse -File -Filter *.png | Sort-Object { $_.BaseName -match '-[A-Z]{2}\d+-[A-Z0-9]{6,}$' }, FullName) {
   $rel = $f.FullName.Substring($origemCheia.Length); $topo = $rel.Split('\')[0]
+  if ($Apenas.Count -and $Apenas -notcontains $topo) { continue }
   if ($Pular -contains $topo) { [void]$pulados.Add("$rel  (pasta pulada)"); continue }
   if ($rel -match '(^|\\)bkp\\') { [void]$pulados.Add("$rel  (backup)"); continue }
   if ($f.Name -match '\(\d+\)\.png$') { [void]$pulados.Add("$rel  (cópia)"); continue }
   if ($f.Length -lt 150KB) { [void]$pulados.Add("$rel  (marcação)"); continue }
   $nome = ($f.BaseName -replace '-[A-Z]{2}\d+-[A-Z0-9]{6,}$', '').ToLower()
-  $chave = $null; $w = 0; $h = 0
-  if ($porNome.ContainsKey($nome)) {
+  $chave = $null; $w = 0; $h = 0; $cols = 0
+  if ($topo -eq 'efeitos') {
+    # o jogo toca a folha como uma tira de quadros quadrados (tocarFolha): reação 6, especial 8, combinado 10
+    $tipo = @{ reacao = @(6, 128); especial = @(8, 192); combinado = @(10, 256) }[($nome -split '__')[0]]
+    if (-not $tipo) { [void]$pulados.Add("$rel  (não sei onde o jogo usa)"); continue }
+    $chave = "arte/efeitos/$nome.png"; $cols = $tipo[0]; $w = $tipo[0] * $tipo[1]; $h = $tipo[1]
+  } elseif ($porNome.ContainsKey($nome)) {
     $chave = $porNome[$nome]; $atual = Join-Path $repo ($manifesto[$chave] -replace '/', '\')
     if (-not (Test-Path -LiteralPath $atual)) { [void]$pulados.Add("$rel  (arquivo do manifesto não existe)"); continue }
     $t = TamanhoWebp $atual; $w = $t[0]; $h = $t[1]
@@ -59,7 +70,7 @@ foreach ($f in Get-ChildItem -LiteralPath $Origem -Recurse -File -Filter *.png) 
   if ($porChave.ContainsKey($chave)) { [void]$pulados.Add("$rel  (repetida: $chave já veio de $($porChave[$chave]))"); continue }
   $porChave[$chave] = $rel
   $destino = if ($manifesto.Contains($chave) -and $manifesto[$chave] -like '*.webp') { $manifesto[$chave] } else { $chave -replace '\.png$', '.webp' }
-  [void]$tarefas.Add([pscustomobject]@{ i = $tarefas.Count; origem = $f.FullName; rel = $rel; chave = $chave; destino = $destino; w = $w; h = $h; feito = $false })
+  [void]$tarefas.Add([pscustomobject]@{ i = $tarefas.Count; origem = $f.FullName; rel = $rel; chave = $chave; destino = $destino; w = $w; h = $h; cols = $cols; feito = $false })
 }
 
 Write-Host "Converter: $($tarefas.Count)   Pulados: $($pulados.Count)"
@@ -89,7 +100,7 @@ try {
       $cam = $req.Url.AbsolutePath
       if ($cam -eq '/') { Responder $resp 200 $pagina 'text/html; charset=utf-8' }
       elseif ($cam -eq '/tarefas') {
-        $lista = @($tarefas | ForEach-Object { [pscustomobject]@{ i = $_.i; rel = $_.rel; w = $_.w; h = $_.h; q = $Qualidade } })
+        $lista = @($tarefas | ForEach-Object { [pscustomobject]@{ i = $_.i; rel = $_.rel; w = $_.w; h = $_.h; cols = $_.cols; q = $Qualidade } })
         Responder $resp 200 $utf8.GetBytes((ConvertTo-Json -InputObject $lista -Compress)) 'application/json'
       }
       elseif ($cam -match '^/origem/(\d+)$') { Responder $resp 200 ([IO.File]::ReadAllBytes($tarefas[[int]$matches[1]].origem)) 'image/png' }

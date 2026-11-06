@@ -249,3 +249,22 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 @keyframes chefeEntra{from{opacity:0; transform:translateX(60%) scale(1.4)} to{opacity:1; transform:none}}
 .cine-texto.chefe{animation-delay:.5s} .cine-texto.chefe b{color:#ff8a7a; font-size:34px}
 @media (prefers-reduced-motion: reduce){ .cine-raios{animation:none} }
+
+/* abertura do mapa */
+.intro{position:absolute; inset:0; z-index:44; display:none; overflow:hidden; background:#06040c; cursor:pointer}
+.intro.vis{display:block; animation:introEntra 3.6s ease-in-out forwards}
+@keyframes introEntra{0%{opacity:0} 10%{opacity:1} 85%{opacity:1} 100%{opacity:0}}
+.intro-fundo{position:absolute; inset:-30px; background:center/cover no-repeat; filter:blur(18px) brightness(.45) saturate(1.2); transform:scale(1.1)}
+.intro-arte{position:absolute; left:0; right:0; top:8%; height:min(62vh, calc(100vw * .6667 * 1.25)); background:center/contain no-repeat; animation:kenBurns 3.6s ease-out forwards;
+  filter:drop-shadow(0 10px 30px rgba(0,0,0,.7)); -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 8%,#000 88%,transparent 100%); mask-image:linear-gradient(180deg,transparent 0,#000 8%,#000 88%,transparent 100%)}
+@media (orientation:landscape){ .intro-arte{top:0; height:100%; background-size:cover} }
+@keyframes kenBurns{from{transform:scale(1.08) translateX(2%)} to{transform:scale(1) translateX(-2%)}}
+.intro-texto{position:absolute; left:0; right:0; bottom:calc(12% + env(safe-area-inset-bottom,0px)); padding:0 20px; text-align:center; display:flex; flex-direction:column; gap:4px; animation:textoSobe .7s .35s ease-out both}
+@media (orientation:landscape){ .intro-texto{bottom:8%; background:linear-gradient(180deg,transparent,rgba(6,4,12,.75) 40%); padding-top:30px} }
+.intro-texto small{color:#d6ab4f; font-size:14px; letter-spacing:1px; text-transform:uppercase}
+.intro-texto b{font-size:clamp(28px, 9vw, 46px); line-height:1.05; color:#fff1cf; text-shadow:0 3px 0 #000, 0 0 22px rgba(255,200,90,.45); overflow-wrap:break-word}
+.intro-texto span{font-size:18px; color:#ffe6a6}
+.intro-texto i{font-style:normal; font-size:14px; color:#d8cfe6; margin-top:6px} .intro-texto em{font-style:normal; font-weight:600}
+/* interface escondida durante a abertura */
+#jogo.em-intro .hud-topo, #jogo.em-intro .hud-base, #jogo.em-intro .toast{opacity:0; pointer-events:none}
+.hud-topo,.hud-base{transition:opacity .4s}

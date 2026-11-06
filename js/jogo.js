@@ -248,7 +248,7 @@ function iniciarMapa(){
   $("lugar").textContent=`${u.nome} · ${D.eras[u.era].nome}${R.ciclo?` · ciclo ${R.ciclo+1}`:""} · mapa ${R.profundidade+1}`;
   $("hud").style.display=""; $("hudBase").style.display="";
   desenharEquipe(); desenharNinho(); rodando=true; pausado=false;
-  toast(`${u.nome}<br><small>Inimigos de ${NOME_EL(u.elemento)}. ${dicaVantagem(u.elemento)}</small>`);
+  { const av=`${u.nome}<br><small>Inimigos de ${NOME_EL(u.elemento)}. ${dicaVantagem(u.elemento)}</small>`; if(J.intro) J.avisoIntro=null; else toast(av); }   // com abertura, o texto já aparece nela
   if(filaRamo.length||filaEsp.length) agendar(0.3,()=>{ if(!pausado) proximaEscolha(); });
 }
 function dicaVantagem(el){ const forte=ELS.find(k=>D.vantagem[k]===el); return `${NOME_EL(forte)} é super efetivo aqui.`; }
@@ -1133,7 +1133,7 @@ function passo(t){ requestAnimationFrame(passo); let dt=Math.min(0.05,(t-ultimoT
     if(MSQ>18&&QUAL>0&&agora-tQual>2){ QUAL--; tQual=agora; } else if(MSQ<9&&QUAL<2&&agora-tQual>6){ QUAL++; tQual=agora; } } }
 function tick(dt){ if(J.hitstop>0){ J.hitstop-=dt; return; } if(J.lento>0){ J.lento-=dt; dt*=0.3; } atualizar(dt); }
 function atualizar(dt){
-  if(J.intro){ J.intro.t+=dt; if(J.intro.t>=J.intro.dur) J.intro=null; return; }
+  if(J.intro){ J.intro.t+=dt; if(J.intro.t>=J.intro.dur){ J.intro=null; fimAbertura(); if(J.avisoIntro){ toast(J.avisoIntro); J.avisoIntro=null; } } return; }
   J.t+=dt; const P=J.jogador, rm=SIN.rm;
   if(J.agenda.length){ const vence=J.agenda.filter(a=>a.t<=J.t); J.agenda=J.agenda.filter(a=>a.t>J.t); vence.forEach(a=>a.fn()); if(!J) return; }
   ["dashCd","invuln","buffCad","canto","fervor","reducao","regen","grito","totemAnc"].forEach(k=>{ if(J[k]>0) J[k]-=dt; });
@@ -1819,7 +1819,7 @@ function desenharCenaObjetos(ox,oy){ const C=J.cena; if(!C) return; desenharProp
   lg.globalAlpha=1; }
 function desenharCenaAr(ox,oy){ const C=J.cena; if(!C) return;
   for(const p of C.lista){ if(p.tipo!=="frente") continue; const s=spriteMarco(p); if(!s) continue; const P=J.jogador, atras=P.y<p.y&&P.y>p.y-s.height&&Math.abs(P.x-p.x)<s.width/2;
-    lg.globalAlpha=atras?0.45:1; lg.drawImage(s,Math.round(p.x-ox-s.width/2),Math.round(p.y-oy-s.height*0.85)); lg.globalAlpha=1; }
+    lg.globalAlpha=atras?0.45:1; lg.drawImage(s,Math.round(p.x-ox-s.width/2),Math.round(p.y-oy-s.height*(s.base||0.85))); lg.globalAlpha=1; }
   // fumaça
   for(const f of C.fumaca){ const a=Math.min(1,f.vida/f.max*1.4)*0.32; lg.globalAlpha=a; lg.drawImage(bolhaCor(f.cor),f.x-ox-f.r,f.y-f.z-oy-f.r,f.r*2,f.r*2); }
   lg.globalAlpha=1;
@@ -1985,7 +1985,14 @@ function sortearMarcos(cx,cy,r,out){ const img=folhaU("props"); if(!img) return;
   const sorte=r(); if(sorte<0.3) out.push(Object.assign(novoProp("marco",x,y,r),{idx:Math.floor(r()*6)}));
   else if(sorte<0.42) out.push(Object.assign(novoProp("luz",x,y,r),{idx:6}));
   else if(sorte<0.54) out.push(Object.assign(novoProp("frente",x,y,r),{idx:7})); }
-function spriteMarco(p){ const img=folhaU("props"); if(!img) return null; const t=p.idx===7?60:p.idx===6?30:46; return celulaArte(img,4,2,p.idx%4,Math.floor(p.idx/4),t,t,0.85); }
+// marcos: recorta só a parte desenhada da célula (a folha tem muita margem vazia) e dá a altura certa para cada tipo
+// (colunas e estátuas altas, templo e árvore grandes, braseiro baixo); antes a célula inteira virava um quadrado e tudo saía pequeno
+const ALT_MARCO=[56,30,60,56,62,48,32,74];
+function spriteMarco(p){ const img=folhaU("props"); if(!img) return null; if(!img._id) img._id=++ID_IMG; const k="marco|"+img._id+"|"+p.idx; if(cacheCel.has(k)) return cacheCel.get(k);
+  const cw=img.width/4, ch=img.height/2, sx=(p.idx%4)*cw, sy=Math.floor(p.idx/4)*ch, bb=bboxCelula(img,sx,sy,cw,ch), H=ALT_MARCO[p.idx]||46;
+  const e=H/bb.h, w=Math.max(1,Math.round(bb.w*e)), h=Math.max(1,Math.round(bb.h*e)), c=document.createElement("canvas"); c.width=w; c.height=h; const g=c.getContext("2d"); g.imageSmoothingEnabled=true;
+  g.drawImage(img,bb.x,bb.y,bb.w,bb.h,0,0,w,h); c._src={img,sx:bb.x,sy:bb.y,sw:bb.w,sh:bb.h}; c.base=0.97; cacheCel.set(k,c); return c; }
+function spriteMarcoAntigo(p){ const img=folhaU("props"); if(!img) return null; const t=p.idx===7?60:p.idx===6?30:46; return celulaArte(img,4,2,p.idx%4,Math.floor(p.idx/4),t,t,0.85); }
 
 // ---------------------------------------------------------------- objetos físicos (folha 8xN: intacto, trincado, quebrado, estado especial, 4 cacos)
 const TAM_OBJ={vaso:13,caixote:13,barril:14,polvora:14,feno:14,fruta:9,rocha:17,gelo:15,cristal:17,metal:18,arvore:26,tronco:16,ovo:9,saque:14};
@@ -2136,9 +2143,17 @@ function desenharFauna(ox,oy,camada){ const C=J.cena; if(!C||!C.fauna) return;
       const s=quadroFauna(0,q,16); if(s){ lg.save(); lg.translate(x,y-b.z); if(b.vx<0) lg.scale(-1,1); lg.drawImage(s,-8,-8); lg.restore(); } else { lg.fillStyle="#f4f4ee"; const asa=q%2?-1:1; lg.fillRect(x-3,y-b.z+asa,3,1); lg.fillRect(x+1,y-b.z+asa,3,1); lg.fillRect(x,y-b.z,1,1); } } } }
 
 // ---------------------------------------------------------------- cena de abertura: a arte-conceito com movimento lento e o nome do mapa
-function iniciarAbertura(){ const u=UNIV[R.universo]; if(!u||SIM.ativo) return; const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`]; if(!img||!img.pronta) return; J.intro={t:0,dur:3.4,img,u}; }
+// abertura do mapa: tela própria por cima do jogo (arte inteira sobre fundo desfocado, texto que quebra linha, interface escondida)
+function iniciarAbertura(){ const u=UNIV[R.universo]; if(!u||SIM.ativo) return; const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`]; if(!img||!img.pronta||!img.src) return;
+  J.intro={t:0,dur:3.6,img,u}; let el=$("intro"); if(!el){ el=document.createElement("div"); el.id="intro"; $("jogo").appendChild(el); }
+  const [nome,...resto]=u.nome.split(","), cor=COR[u.elemento];
+  el.innerHTML=`<div class="intro-fundo" style="background-image:url('${img.src}')"></div><div class="intro-arte" style="background-image:url('${img.src}')"></div>
+    <div class="intro-texto"><small>${D.eras[u.era].nome}${R.ciclo?` · ciclo ${R.ciclo+1}`:""} · mapa ${R.profundidade+1}</small><b>${nome}</b>${resto.length?`<span>${resto.join(",").trim()}</span>`:""}
+    <i>Inimigos de <em style="color:${cor}">${NOME_EL(u.elemento)}</em>. ${dicaVantagem(u.elemento)}</i></div>`;
+  el.className="intro vis"; $("jogo").classList.add("em-intro"); el.onclick=()=>{ if(J&&J.intro) J.intro.t=J.intro.dur; }; }
+function fimAbertura(){ const el=$("intro"); if(el) el.classList.remove("vis"); $("jogo").classList.remove("em-intro"); }
 function pularAbertura(){ if(J&&J.intro&&J.intro.t<J.intro.dur-0.45) J.intro.t=J.intro.dur-0.45; }
-function desenharAbertura(){ const I=J&&J.intro; if(!I) return; const q=I.t/I.dur, img=I.img, esc=Math.max(W/img.width,H/img.height)*(1.12-0.1*q);
+function desenharAbertura(){ const I=J&&J.intro; if(!I||$("intro")) return; const q=I.t/I.dur, img=I.img, esc=Math.max(W/img.width,H/img.height)*(1.12-0.1*q);
   const w=img.width*esc, h=img.height*esc, x=(W-w)/2-(q-0.5)*W*0.06, y=(H-h)/2-(q-0.5)*H*0.03;
   ctx.globalAlpha=q<0.12? q/0.12 : q>0.85? (1-q)/0.15 : 1; ctx.fillStyle="#08060c"; ctx.fillRect(0,0,W,H); ctx.imageSmoothingEnabled=true; ctx.drawImage(img,x,y,w,h); ctx.imageSmoothingEnabled=false;
   const gr=ctx.createLinearGradient(0,H*0.6,0,H); gr.addColorStop(0,"rgba(8,6,12,0)"); gr.addColorStop(1,"rgba(8,6,12,.85)"); ctx.fillStyle=gr; ctx.fillRect(0,H*0.6,W,H*0.4);
@@ -3553,7 +3568,7 @@ function pausar(){ if(!J) return; pausado=true;
     {titulo:`Som: ${META.som&&META.som.mudo?"desligado":"ligado"}`, texto:"Toque para ligar ou desligar os efeitos sonoros.", manter:true, acao:()=>{ META.som=META.som||{}; META.som.mudo=!META.som.mudo; gravar(); somLigar(); som("ding"); pausar(); }},
     {titulo:"Sair e salvar", texto:"A run recomeça do início deste mapa.", acao:()=>{ rodando=false; menu(); }} ]); }
 function menu(){
-  rodando=false; fechar(); $("telaMenu").classList.add("ativa"); $("hud").style.display="none"; $("hudBase").style.display="none"; $("combo").classList.remove("vis");
+  rodando=false; fechar(); if(typeof fimAbertura==="function") fimAbertura(); $("telaMenu").classList.add("ativa"); $("hud").style.display="none"; $("hudBase").style.display="none"; $("combo").classList.remove("vis");
   $("metaEss").textContent=`Essência: ${META.essencia}`; $("metaProf").textContent=`Recorde: ${META.recorde} mapas`; $("metaCol").textContent=`Coleção: ${META.liberados.length}/${D.linhas.length}`;
   const box=$("menuBotoes"); box.innerHTML="";
   if(RUN_SALVA){ const b=document.createElement("button"); b.className="botao"; b.textContent=`Continuar run (mapa ${RUN_SALVA.profundidade+1})`;

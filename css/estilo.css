@@ -77,3 +77,69 @@ canvas.mini{image-rendering:pixelated}
 .toast{position:absolute; left:50%; top:24%; transform:translateX(-50%); background:rgba(18,15,28,.88); color:var(--pergaminho); border:1px solid var(--ouro);
   padding:8px 12px; font-size:14px; pointer-events:none; opacity:0; transition:opacity .25s; text-align:center; max-width:90%}
 .toast.vis{opacity:1}
+
+/* ================================================================ painéis e cartas: tema escuro com filete dourado (vale em qualquer tema do sistema) */
+.tela{background:radial-gradient(ellipse at center, rgba(20,16,40,.72) 0%, rgba(8,6,16,.9) 100%); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px)}
+.painel{--surface:#17142c; --text:#f2e7c9; --muted:#b4abc6; --line:#6b5a3a; --bg:#211d3c;
+  position:relative; color:var(--text); border:1px solid #c9a24f; border-radius:10px; padding:20px 16px 16px;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(120,96,210,.28), transparent 60%),
+    radial-gradient(ellipse at 50% 110%, rgba(214,171,79,.10), transparent 55%),
+    linear-gradient(180deg,#1d1938 0%,#141127 55%,#0f0d1e 100%);
+  box-shadow:0 0 0 3px #0b0916, 0 0 0 4px rgba(214,171,79,.45), 0 24px 60px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,240,200,.08), inset 0 0 50px rgba(90,70,170,.18);
+  animation:painelEntra .28s ease-out}
+.painel::before,.painel::after{content:""; position:absolute; left:50%; width:12px; height:12px; transform:translateX(-50%) rotate(45deg);
+  background:linear-gradient(135deg,#fff3c4,#d6ab4f 45%,#8a6a2a); border:1px solid #0b0916; box-shadow:0 0 10px rgba(255,211,74,.55)}
+.painel::before{top:-7px} .painel::after{bottom:-7px}
+@keyframes painelEntra{from{opacity:0; transform:translateY(10px) scale(.985)} to{opacity:1; transform:none}}
+.painel h2{font-size:22px; text-align:center; letter-spacing:.5px; margin:0 0 6px; color:#ffe6a6;
+  text-shadow:0 2px 0 #0b0916, 0 0 14px rgba(255,200,90,.35)}
+.painel h2::after{content:""; display:block; height:1px; margin:8px auto 0; width:70%; background:linear-gradient(90deg,transparent,#d6ab4f,transparent)}
+.painel p{color:var(--muted); text-align:center}
+.painel p b{color:#ffe6a6}
+/* cartas */
+.carta{position:relative; color:var(--text); border:1.5px solid var(--rar,#6d6880); border-radius:8px; padding:10px 12px;
+  background:linear-gradient(180deg,rgba(46,41,80,.96) 0%,rgba(27,23,48,.96) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07), inset 0 0 0 1px rgba(0,0,0,.35), 0 3px 10px rgba(0,0,0,.35), 0 0 var(--brilho,0px) var(--rar,#6d6880);
+  transition:transform .12s ease, box-shadow .15s ease, filter .15s; animation:cartaEntra .32s ease-out both; animation-delay:calc(var(--i,0) * 45ms)}
+.carta::before{content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.07) 50%,transparent 60%); opacity:.9}
+@keyframes cartaEntra{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
+@media (hover:hover){ .carta:not([disabled]):hover{transform:translateY(-2px); filter:brightness(1.12); box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 6px 16px rgba(0,0,0,.45), 0 0 14px var(--rar)} }
+.carta:not([disabled]):active{transform:scale(.98); filter:brightness(1.2)}
+.carta b{color:#fff1cf; font-size:15.5px; letter-spacing:.2px; text-shadow:0 1px 0 #0b0916}
+.carta small{color:#bdb4cf}
+.carta canvas{border-radius:50%; padding:3px; background:radial-gradient(circle at 50% 40%, rgba(255,255,255,.16), rgba(0,0,0,.35) 70%);
+  box-shadow:0 0 0 1.5px var(--rar,#6d6880), 0 0 12px color-mix(in srgb, var(--rar,#6d6880) 45%, transparent); image-rendering:auto}
+.carta[disabled]{opacity:.42; filter:grayscale(.7)}
+.r-comum{--rar:#7d7890} .r-incomum{--rar:#5fbf7f} .r-raro{--rar:#6aa8f0; --brilho:6px}
+.r-epico{--rar:#b77cff; --brilho:10px; box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 3px 10px rgba(0,0,0,.35), 0 0 10px #b77cff}
+.r-lendario{--rar:#ffcc4a; --brilho:12px; background:linear-gradient(180deg,rgba(70,56,40,.96) 0%,rgba(36,28,30,.96) 100%)}
+.r-lendario::before{background:linear-gradient(105deg,transparent 35%,rgba(255,236,170,.22) 50%,transparent 65%); background-size:250% 100%; animation:brilhoLenda 2.6s linear infinite}
+@keyframes brilhoLenda{from{background-position:120% 0} to{background-position:-120% 0}}
+/* botões */
+.botao{border-radius:8px; border:1.5px solid #d6ab4f; color:#fff1cf; letter-spacing:.3px; text-shadow:0 1px 0 #0b0916;
+  background:linear-gradient(180deg,#34449a 0%,#1f2a66 55%,#18204e 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18), inset 0 -2px 0 rgba(0,0,0,.3), 0 3px 10px rgba(0,0,0,.4), 0 0 12px rgba(214,171,79,.18); transition:transform .1s, filter .15s}
+.botao:not([disabled]):active{transform:translateY(1px) scale(.99); filter:brightness(1.15)}
+@media (hover:hover){ .botao:not([disabled]):hover{filter:brightness(1.12)} }
+.botao.sec{background:linear-gradient(180deg,rgba(40,36,70,.8),rgba(22,19,40,.8)); color:#e8dcc0; border-color:rgba(214,171,79,.45); box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 2px 8px rgba(0,0,0,.35)}
+/* menu */
+#telaMenu .painel{text-align:center}
+#telaMenu.com-arte .painel{background:linear-gradient(180deg,rgba(18,14,34,.55),rgba(14,11,28,.9)); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px)}
+.meta{justify-content:center; gap:6px}
+.meta span{padding:3px 9px; border-radius:999px; background:rgba(0,0,0,.35); border:1px solid rgba(214,171,79,.35); color:#ffe6a6; font-size:12.5px}
+.meta span:empty{display:none}
+/* HUD com o mesmo acabamento */
+.retrato{border-radius:7px; background:linear-gradient(180deg,rgba(40,36,70,.85),rgba(16,13,30,.9)); box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.retrato canvas{image-rendering:auto}
+.btn-hud{border-radius:6px; background:linear-gradient(180deg,rgba(40,36,70,.85),rgba(16,13,30,.9)); border-color:rgba(214,171,79,.45)}
+.chip{border-radius:999px; padding:1px 7px}
+.barra{border-radius:4px; overflow:hidden} .barra.vida > i{background:linear-gradient(180deg,#ff7a6a,#c8473b 60%,#8a2a26)} .barra.xp > i{background:linear-gradient(180deg,#7fe8c0,#46b08f 60%,#2a7a60)}
+.circ{box-shadow:0 3px 10px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.12)}
+.toast{border-radius:8px; background:linear-gradient(180deg,rgba(32,28,58,.94),rgba(16,13,30,.94)); box-shadow:0 6px 20px rgba(0,0,0,.5), 0 0 14px rgba(214,171,79,.2)}
+@media (prefers-reduced-motion: reduce){ .painel,.carta{animation:none} .r-lendario::before{animation:none} }
+.carta:focus-visible{outline:2px solid #ffe6a6; outline-offset:2px}
+.cartas.grade .carta{flex-direction:column; text-align:center; gap:6px; padding:10px 8px}
+.cartas.grade .carta canvas{width:44px; height:44px}
+.cartas.grade .carta small{overflow-wrap:normal}

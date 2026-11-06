@@ -1,5 +1,36 @@
 # Análise de equilíbrio do Elementar
 
+## Atualização 06/11/2026: o que foi feito (com simulação de verdade)
+
+Agora existe um bot que joga dentro da própria página (`testes/bot.js`), rodado em lote pelo Playwright (`testes/rodar_bot.js`) e resumido por `testes/resumo.py`. Ele não precisa de Python para jogar, só para o resumo.
+
+```bash
+python3 -m http.server 8765 &                      # na raiz do repositório
+node testes/rodar_bot.js --n 20 --paralelo 4 --mapas 12 --saida testes/res.json
+node testes/rodar_bot.js --n 12 --loja max --saida testes/res_loja.json   # com o Santuário todo comprado
+python3 testes/resumo.py testes/res.json
+```
+
+O bot foge do que está perto, coleta cristais, ovos e filhotes, usa esquiva, Despertar e Combinado, e **escolhe as cartas ao acaso** (com semente). Ele desvia melhor que uma pessoa no celular, então os números abaixo são o teto de habilidade, não a média.
+
+| Medida (bot, sem Santuário) | Antes | Depois |
+|---|---|---|
+| Chefe dos mapas 1–8 (mediana) | 7–20 s | 19–48 s |
+| Vida mínima nos mapas 2–6 | 60–75% | 60–72% (mapas 7–9: 56% → 38%) |
+| Onde as runs morrem | quase todas entre os mapas 8 e 10 (muro) | espalhadas do mapa 5 ao 11 |
+| Profundidade mediana | 8 | 8 (com o Santuário completo: 9,5) |
+
+**Mudanças:**
+1. **Curva de dificuldade** (`DIF` em `js/jogo.js`): crescimento por mapa 1,5/1,55 → 1,33/1,42, mais uma *rampa* que endurece rápido nos primeiros mapas (quando a equipe evolui) e se acalma depois (`rampa:1.6, rampaK:2.2`). Vida dos chefes 180 → 560, Guardião 265 → 760, mini-chefe 45 → 80, primeiro chefe 45% → 50%, e chefes do fundo perdem 12% de vida por mapa (`chefeQueda`) para não virarem esponja.
+2. **Santuário (novo):** a Essência não servia para nada. Agora compra 10 melhorias permanentes (Força, Vigor, Prontidão, Sabedoria, Ímã, Passos Leves, Ganância, Herança, Visão do Oráculo, Segunda Chance). A tela de derrota mostra recorde, quanto falta para a próxima melhoria e leva direto ao Santuário.
+3. **Relíquias:** as 16 que viravam "+10% de dano" agora fazem o que dizem (Hidromel, Ovo de Koschei, Anzol, Concha, Para-raios, Bola de Borracha, Astrolábio, Bússola, Pedra do Sol só nas habilidades, custo da Máscara de Oni e do Ídolo...). As que não tinham como existir no jogo (Taça, Espada, Estaca, Espelho, Tabuletas, Muiraquitã, ouro do Mapa e do Ídolo) ganharam efeito novo e texto honesto. Flor do Vale 1%/s → 0,5%/s.
+4. **Árvore:** Solitário 1,12 → 1,08; Aliança 1,00 → 1,05; Regional 1,08/1,04/1,10 → 1,12/1,08/1,15. Chuva (Mago) 5×1,6 raio 18 → 6×2,0 raio 24; Rede (Caçador) ×3 → ×4,5; Portal duplo 0,6 → 0,85; Fortaleza maior e congela 3,2 s; Imparável agora ignora lentidão (+25% de dano em vez de +50%). Básico +15% → +20% por nível.
+5. **Cura por reação** (Florescer, Fotossíntese): 4% → 2,5%, no máximo 1 vez a cada 0,5 s.
+
+**Ainda pendente** (da lista abaixo): reações com texto que o código não faz (0.3), efeitos de nível 3 das sinergias (0.4), sinergias de Invocador/Caçador/Místico (prioridade 3) e classes (prioridade 5). Próximo passo: guardar no bot qual carta foi escolhida e comparar a profundidade por opção (teste A/B).
+
+---
+
 Data: 05/11/2026. Feita só lendo os dados (`dados/fonte_*.py`), o código (`js/jogo.js`) e os resultados de simulação já gravados (`docs/sim_resultados.json`, 94 partidas). Nesta máquina não há Python, então **nenhuma simulação nova foi rodada**. Os números marcados com "≈" são contas feitas à mão a partir do código; servem para apontar a direção e precisam ser confirmados no simulador (seção 4).
 
 ---

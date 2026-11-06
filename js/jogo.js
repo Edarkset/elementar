@@ -294,7 +294,7 @@ function spawnChefe(mini){
   if(cb){ const andar={ave:"voa",espectro:"flutua",bolha:"flutua",aquatico:"flutua",serpente:"rasteja"}[cb.corpo]||"caminha";
     e.cor=J.eraChefe?"#7a4fb0":mistura(COR[u.elemento],"#5a3a4a",0.25); prepararCriatura(e,Object.assign({nome,andar,golpe:"contato",morte:mini?"estilhaca":"evapora"},cb),mini?32:J.eraChefe?54:44); e.eraChefe=!mini&&J.eraChefe; }
   J.inimigos.push(e); if(!mini){ J.chefeVivo=e; J.tChefe=J.t; J.atingidoNoChefe=false; }
-  tremor(6); som("chefe"); toast(`${mini?"Mini-chefe":J.eraChefe?"Guardião da Era":"Chefe"}: ${nome}`);
+  tremor(6); som("chefe"); if(mini) toast(`Mini-chefe: ${nome}`); else cenaChefe(e,nome,J.eraChefe);
 }
 function maisProximo(o,alc,f){ let best=null, bd=alc*alc; for(const e of J.inimigos){ if(e.hp<=0||e.oculto||(e.imortal&&e.hp<=1)||(f&&!f(e))) continue; const d=dist2(o,e); if(d<bd){bd=d; best=e;} }
   if(!best&&!f&&J.cena){
@@ -453,7 +453,7 @@ function checarEvolucao(s,antes){
   if(s.mon.ramo==null&&s.nivel>=NIV[2]&&!filaRamo.includes(s)) filaRamo.push(s);
   if(s.esp==null&&s.nivel>=NIV[1]&&!filaEsp.includes(s)) filaEsp.push(s);
   const depois=estBase(s);
-  if(depois>antes){ R.st.evolucoes[depois]++; efeitoEvolucao(s); som("evolucao"); toast(`Evoluiu para <b>${nomeForma(s)}</b>!${depois===3?`<br><small>${ramoObj(s).ultimate}</small>`:""}`); calcularSinergia(); desenharEquipe(); }
+  if(depois>antes){ R.st.evolucoes[depois]++; efeitoEvolucao(s); som("evolucao"); cenaEvolucao(s,antes,depois); calcularSinergia(); desenharEquipe(); }
 }
 function efeitoEvolucao(s){ if(!J) return; anel(s.x,s.y,30,"#ffffff",.6); anel(s.x,s.y,50,COR[elementoDe(s)],.8); particulas(s.x,s.y,COR[elementoDe(s)],30,120,2); particulas(s.x,s.y,"#fff3c4",14,90); tremor(5); parar(0.08); }
 function ramosElegiveis(s,ignorarPedra,base){
@@ -481,6 +481,7 @@ function mostrarCartas(titulo,sub,cartas,op={}){
     else if(c.sprite){ const sp=spriteUI(c.sprite), cc=document.createElement("canvas"); cc.width=sp.width; cc.height=sp.height; cc.getContext("2d").drawImage(sp,0,0); if(c.suave||sp!==c.sprite) cc.style.imageRendering="auto"; if(c.classe==="grande") cc.className="retrato-grande"; b.appendChild(cc); }
     const t=document.createElement("div"); t.innerHTML=`<b>${c.titulo}</b>${c.texto?`<small>${c.texto}</small>`:""}`; b.appendChild(t);
     b.onclick=()=>{ if(c.desab) return; if(!c.manter) $("telaCartas").classList.remove("ativa"); c.acao(b); }; box.appendChild(b); });
+  box.classList.toggle("revelar",!!op.revelar);
   $("telaCartas").classList.add("ativa"); box.querySelector("button:not([disabled])")?.focus();
 }
 function fechar(){ $("telaCartas").classList.remove("ativa"); }
@@ -509,15 +510,36 @@ function escolherRamo(s){
       acao:()=>{ const antes=estBase(s); s.mon.ramo=i; if(pedra) R.pedraAtiva=false; checarEvolucao(s,antes); proximaEscolha(); } })));
 }
 function resumoPoderes(s){ const c=D.classes[L(s).classe]; return `Básico ${s.pod.b} · ${c.h1.nome} ${s.pod.h1} · ${c.h2.nome} ${s.pod.h2}`; }
+// level up no estilo survivor: 3 cartas sorteadas entre os poderes da equipe (com raridade), mais Elo, Talismã e Lenda quando houver.
+// Às vezes vem uma carta dourada (+2 níveis). Dá para sortear de novo algumas vezes por run.
+function cartasNivel(){ const eq=ativos(), maxN=Math.max(...eq.map(s=>s.nivel)), cand=[];
+  for(const s of eq){ const c=D.classes[L(s).classe], lib=[["b","Ataque básico",`${c.basico} +20% de dano e +5% de cadência.`],["h1",c.h1.nome,c.h1.desc],...((est(s)>=1||estBase(s)>=1)?[["h2",c.h2.nome,c.h2.desc]]:[])];
+    const peso=1+(maxN-s.nivel)*0.35; let algum=false;
+    for(const [k,nome,desc] of lib){ const lv=s.pod[k]; if(lv>=5) continue; algum=true; const prox=lv+1;
+      cand.push({peso, s, k, raridade: prox===5?"lendario": prox===3&&k!=="b"?"epico": prox>=2?"raro":"incomum",
+        titulo:`${nome} ${lv?`${lv} → ${prox}`:"(novo)"}`, texto:`<b style="color:${COR[elementoDe(s)]}">${nomeForma(s)}</b> · nível ${s.nivel}. ${desc}${k!=="b"&&prox===3?" Libera um modificador.":""}${prox===5?" Nível máximo!":""}`}); }
+    if(!algum) cand.push({peso:0.8, s, asc:true, raridade:"lendario", titulo:`Ascensão de ${nomeForma(s)}`, texto:"Todos os poderes no máximo: +1 nível (+6% em todos os atributos)."}); }
+  const sorteio=[], pool=cand.slice();
+  while(sorteio.length<3&&pool.length){ const tot=pool.reduce((t,c)=>t+c.peso,0); let x=Math.random()*tot; const i=pool.findIndex(c=>(x-=c.peso)<=0); const c=pool.splice(i<0?0:i,1)[0]; sorteio.push(c); }
+  if(sorteio.length&&Math.random()<0.07+((SIN.rm&&SIN.rm.talisma)||0)*0.1){ const c=escolha(sorteio.filter(c=>!c.asc&&c.s.pod[c.k]<=3)); if(c){ c.dourada=true; c.raridade="lendario"; c.titulo="✦ "+c.titulo.replace(/(\d) → (\d)/,(m,a)=>`${a} → ${Math.min(5,+a+2)}`); c.texto+=" <b>Carta dourada: +2 níveis!</b>"; } }
+  return sorteio; }
+function aplicarCartaNivel(c){ const s=c.s;
+  if(c.asc){ aplicarNivel(s,1); return proximaEscolha(); }
+  const vezes=c.dourada? Math.min(2,5-s.pod[c.k]) : 1; let mod=false;
+  for(let i=0;i<vezes;i++){ s.pod[c.k]++; aplicarNivel(s,1); if(c.k!=="b"&&s.pod[c.k]===3&&s.mod[c.k]==null) mod=true; }
+  if(c.dourada){ som("jackpot"); if(J) luzFlash(J.jogador.x,J.jogador.y,"#ffd34a",90,0.6); }
+  if(mod) return escolherMod(s,c.k); proximaEscolha(); }
 function abrirNivel(){
-  const cartas=ativos().map(s=>{ const prox=NIV.find(n=>n>s.nivel); let ev="Forma final: cada nível vira estrela.";
-    if(prox===NIV[1]) ev=`Vira Jovem no nível ${NIV[1]}.`; else if(prox===NIV[2]) ev=`Vira Adulto no nível ${NIV[2]}.`; else if(prox===NIV[3]) ev=R.chefesVencidos?`Vira Supremo no nível ${NIV[3]}.`:"Supremo exige vencer um chefe.";
-    return { titulo:nomeForma(s), sprite:spriteSelo(s), raridade:s.mon.rar, texto:`Nível ${s.nivel}. ${ev}<br>${resumoPoderes(s)}`, manter:true, acao:()=>abrirPoderes(s) }; });
+  if(R.rerolagens==null) R.rerolagens=2+nivelLoja("oraculo");
+  const sorteadas=cartasNivel();
+  const cartas=sorteadas.map(c=>({ titulo:c.titulo, sprite:spriteSelo(c.s), raridade:c.raridade, texto:c.texto, classe:c.dourada?"dourada":null, acao:()=>aplicarCartaNivel(c) }));
   D.elos.forEach(e=>{ const a=ativos().find(s=>s.mon.id===e.a), b=ativos().find(s=>s.mon.id===e.b);
     if(a&&b&&!R.elos.includes(e.nome)&&(estBase(a)>=2||estBase(b)>=2)) cartas.push({titulo:`Elo: ${e.nome}`, raridade:"epico", texto:`${e.desc} (+20% de dano e cadência para os dois)`,
       acao:()=>{ R.elos.push(e.nome); tremor(4); calcularSinergia(); proximaEscolha(); }}); });
   const ct=cartaTalisma(); if(ct) cartas.push(ct); const cl=cartaLenda(); if(cl) cartas.push(cl);
-  mostrarCartas(`Nível ${J.nivel}`, "Quem vai crescer?", cartas);
+  if(cartas.some(c=>c.raridade==="lendario")) som("ding");
+  mostrarCartas(`Nível ${J.nivel}`, "Escolha uma carta.", cartas, {revelar:true});
+  if(R.rerolagens>0){ const b=document.createElement("button"); b.className="botao sec"; b.textContent=`Sortear de novo (${R.rerolagens})`; b.onclick=()=>{ R.rerolagens--; som("tic"); abrirNivel(); }; $("cartasRodape").appendChild(b); }
 }
 function abrirPoderes(s){
   const c=D.classes[L(s).classe], e=est(s);
@@ -610,6 +632,24 @@ function usarItem(k){
   if(k==="pena"){ R.selos.forEach(s=>s.trocaCd=0); toast("Trocas liberadas."); return proximaEscolha(); }
   if(k==="doce"){ mostrarCartas("Mel Ancestral","Qual Selo ganha +1 nível?", ativos().map(s=>({titulo:nomeForma(s), sprite:spriteSelo(s), texto:`Nível ${s.nivel} → ${s.nivel+1}`, acao:()=>{ aplicarNivel(s,1); proximaEscolha(); }}))); }
 }
+
+// ================================================================ cenas: evolução e chegada do chefe (o jogo para por um instante)
+const CINE={ativa:false, fila:[]};
+function cenaTocar(html,classe,dur,aoFim){ if(SIM.ativo) return; CINE.fila.push({html,classe,dur,aoFim}); if(!CINE.ativa) cenaProxima(); }
+function cenaProxima(){ const c=CINE.fila.shift(); let el=$("cine"); if(!c){ CINE.ativa=false; if(el) el.className="cine"; return; }
+  CINE.ativa=true; if(!el){ el=document.createElement("div"); el.id="cine"; $("jogo").appendChild(el); }
+  el.className="cine "+c.classe; el.innerHTML=c.html; void el.offsetWidth; el.classList.add("vis");
+  let feito=false; const fim=()=>{ if(feito) return; feito=true; el.classList.remove("vis"); if(c.aoFim) c.aoFim(); setTimeout(cenaProxima,220); };
+  el.onclick=fim; setTimeout(fim,c.dur); }
+function imgDe(spr){ const h=spriteUI(spr); try{ return h.toDataURL(); }catch(e){ return ""; } }
+function cenaEvolucao(s,antes,depois){ if(SIM.ativo||!J) return;
+  const velho=arteMonstro(s.mon.id,antes,s.mon.ramo,s.mon.rar)||gerarSprite(s.mon.id+"#"+antes+"#-",TAM[antes],COR[elementoDe(s)],{rar:s.mon.rar}), novo=spriteSelo(s), cor=COR[elementoDe(s)];
+  const etapa=["Filhote","Jovem","Adulto","Supremo"][depois];
+  cenaTocar(`<div class="cine-raios" style="--cor:${cor}"></div><div class="cine-evo"><img class="velho" src="${imgDe(velho)}" alt=""><img class="novo" src="${imgDe(novo)}" alt=""></div>
+    <div class="cine-texto"><small>Evoluiu para ${etapa}!</small><b style="color:${cor}">${nomeForma(s)}</b>${depois===3&&ramoObj(s)?`<i>${ramoObj(s).ultimate}</i>`:""}</div>`, "evolucao", 2400); }
+function cenaChefe(e,nome,guardiao){ if(SIM.ativo) return; const u=UNIV[R.universo], spr=arteCriatura(e,"parado",0), cor=COR[e.el]||"#ff5a4a";
+  cenaTocar(`<div class="cine-faixa" style="--cor:${cor}"></div><div class="cine-chefe">${spr?`<img src="${imgDe(spr)}" alt="">`:""}</div>
+    <div class="cine-texto chefe"><small>${guardiao?"Guardião da Era":"Chefe"} · ${u?u.nome.split(",")[0]:""}</small><b>${nome}</b><i>Inimigo de ${NOME_EL(e.el)}. ${dicaVantagem(e.el)}</i></div>`, "chefe", 2600); }
 
 // ================================================================ moedas, baús e a roleta de prêmios
 function soltarMoedas(x,y,n){ if(!J||n<=0) return; J.moedas=J.moedas||[]; for(let i=0;i<n;i++){ if(J.moedas.length>120) break; const a=Math.random()*Math.PI*2, v=rnd(30,80);
@@ -1088,7 +1128,7 @@ let ultimoT=0;
 let QUAL=2, MSQ=8, tQual=0;
 function passo(t){ requestAnimationFrame(passo); let dt=Math.min(0.05,(t-ultimoT)/1000||0); ultimoT=t;
   if(!rodando||!J) return; const t0=performance.now();
-  if(!pausado) tick(dt);
+  if(!pausado&&!CINE.ativa) tick(dt);
   if(J){ desenhar(dt); const ms=performance.now()-t0; MSQ=MSQ*0.95+ms*0.05; const agora=t/1000;
     if(MSQ>18&&QUAL>0&&agora-tQual>2){ QUAL--; tQual=agora; } else if(MSQ<9&&QUAL<2&&agora-tQual>6){ QUAL++; tQual=agora; } } }
 function tick(dt){ if(J.hitstop>0){ J.hitstop-=dt; return; } if(J.lento>0){ J.lento-=dt; dt*=0.3; } atualizar(dt); }

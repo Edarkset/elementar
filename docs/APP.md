@@ -73,14 +73,15 @@ O jogo agora desenha o mundo na resolução real da tela (antes era 1/4 a 1/6 de
 Reexporte a partir dos originais com tamanhos maiores. O jogo não precisa de mudança: ele lê qualquer tamanho. **Ao subir a resolução, carregue as artes por mapa** (ver Performance), senão o celular fica sem memória.
 
 ## 5. Animações
-As 408 folhas de animação dos monstros eram baixadas mas **não eram usadas**. Agora os monstros da equipe ficam parados, andam e atacam com os quadros das folhas (as variações Épica e Lendária, sem animação própria, continuam com a imagem fixa).
+Os monstros da equipe, os dragões ancestrais e a Lenda/deus que acompanha o jogador usam as folhas de animação (parado, andando, atacando).
 
-Conferência automática das folhas (padrão: 3 linhas com 4, 6 e 6 quadros):
-- 398 de 408 animações no padrão.
-- **Refazer:** `fogo/fenix__anim_1` e `fogo/fogo_fatuo__anim_5` (quadros pequenos e deslocados da grade; o jogo usa a imagem fixa nelas).
-- Falta 1 quadro (o jogo pula o quadro vazio): `ar/tengu__anim_6`, `luz/anjo__anim_3`, `luz/simurgh__anim_5`, `raio/poraque__anim_7`, `sombra/pirata_fantasma__anim_4` e `__anim_7`, `terra/roc__anim_3` e `__anim_8`.
-- Folhas base, épica e lendária: todas com as 8 formas. Ifrit, Anjo e Kodama têm a primeira forma muito pequena na célula (perde detalhe quando ampliada).
-- Os dragões ancestrais (`arte/lendarios/*__anim_*`) também têm folhas que o jogo ainda não usa.
+**Recorte inteligente.** As folhas não seguem a grade de 64 px à risca: em muitas, o desenho de uma linha passa da marca de 1/3 (pés cortados, pedaço do quadro de cima aparecendo no de baixo). O jogo agora acha a linha e a coluna vazias mais próximas da grade, ignora sobras soltas do quadro vizinho e alinha cada quadro pelos pés e pelo centro do corpo. Resultado da conferência automática: as 440 folhas (monstros + ancestrais) passam; `fenix__anim_1` e `fogo_fatuo__anim_5`, antes descartadas, voltaram a funcionar; 102 folhas têm 5 ou 6 quadros de "parado" e agora todos tocam.
+
+**Épico e Lendário animados.** Essas variações não têm folha própria, mas têm a mesma pose da forma comum com outras cores. O jogo monta uma tabela de cores (célula comum → célula da raridade) e pinta os quadros da folha comum com ela, mantendo o brilho de cada pixel. Quando o desenho da raridade é muito diferente do comum (ex.: Tengu Lendário), a cor fica aproximada.
+
+**Corpo por código, por cima dos quadros:** agacha e estica no golpe, avança na direção do alvo, inclina para onde anda, vira de lado suavemente, cadência do passo pela velocidade, pulinho e respiração quando não há folha, e um pulo de tamanho com brilho ao evoluir.
+
+**Limite que continua:** as células têm 64 px e aparecem 5 a 7 vezes maiores na tela; nenhum filtro cria detalhe que não existe. O jogo amplia "nítido e liso" (pixel a pixel por 2x, depois suave), mas a melhora de verdade é exportar as células em 128 px (tabela da seção 4). O código lê qualquer tamanho.
 
 ## 6. Performance e segurança
 
@@ -92,7 +93,12 @@ Feito:
 - Electron isolado (sandbox, sem acesso do jogo ao Node, sem navegar para fora do jogo).
 - Servidor local só responde em `localhost` e bloqueia acesso a arquivos fora da pasta.
 
+- **Artes sob demanda.** Na abertura o jogo baixa só a interface usada e as imagens fixas dos monstros (69 arquivos, ~2,4 MB, antes eram as 1.294 artes, ~87 MB). Ao entrar num mapa baixa o reino, o Guardião da era, a equipe, a Lenda, o chão dos elementos e os efeitos (~7 MB no primeiro mapa; a abertura do mapa cobre a espera). Qualquer outra arte é baixada na primeira vez em que o jogo a pede. Os portais adiantam a arte de abertura e o chão de cada opção.
+- Chegada de arte não apaga mais os recortes guardados (antes, a cada 40 artes, tudo era refeito e o jogo engasgava).
+- Câmera com precisão menor que 1 pixel do mundo: a rolagem e os inimigos andam de forma contínua.
+
+Artes no manifesto que o código não usa (ficam no repositório; com o carregamento sob demanda não pesam): `arte/itens/*` (34), `arte/lendarios/*__eclosao` (8) e 20 da pasta `arte/ui/` (`ui__barra_chefe`, `ui__barras`, `ui__botao_perigo`, `ui__camada_*`, `ui__cartas`, `ui__classes`, `ui__derrota`, `ui__elementos`, `ui__emblema`, `ui__faixa`, `ui__itens`, `ui__linhagens`, `ui__livro`, `ui__paineis`, `ui__portais`, `ui__refugio`, `ui__selos`, `ui__vitoria`).
+
 Pendente (por prioridade):
-1. **Carregar artes por mapa.** Hoje o jogo baixa e decodifica as 1.129 artes na abertura (~35 MB em arquivo, centenas de MB na memória). Com artes maiores isso estoura a memória do iPhone. O ideal: carregar só a interface, a equipe e o reino atual, e baixar o próximo reino durante o mapa.
-2. **Fonte local.** A fonte Pixelify Sans vem do Google Fonts; sem internet (ou na Steam offline) cai na fonte reserva. Baixar o arquivo `.woff2` para `css/` resolve (licença livre, OFL).
-3. Desligar o modo moderador na versão Steam (`MODERADOR_DISPONIVEL=false`).
+1. **Fonte local.** A fonte Pixelify Sans vem do Google Fonts; sem internet (ou na Steam offline) cai na fonte reserva. Baixar o arquivo `.woff2` para `css/` resolve (licença livre, OFL).
+2. Desligar o modo moderador na versão Steam (`MODERADOR_DISPONIVEL=false`).

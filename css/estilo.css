@@ -143,3 +143,38 @@ canvas.mini{image-rendering:pixelated}
 .cartas.grade .carta{flex-direction:column; text-align:center; gap:6px; padding:10px 8px}
 .cartas.grade .carta canvas{width:44px; height:44px}
 .cartas.grade .carta small{overflow-wrap:normal}
+
+/* retratos grandes (monstro inicial) */
+.cartas.grade .carta.grande{padding:12px 8px 10px}
+.carta canvas.retrato-grande, .cartas.grade .carta canvas.retrato-grande{width:min(36vw,128px); height:min(36vw,128px); border-radius:14px; padding:0; image-rendering:auto;
+  background:radial-gradient(circle at 50% 62%, color-mix(in srgb, var(--rar) 35%, transparent), rgba(0,0,0,.35) 72%); box-shadow:0 0 0 1.5px var(--rar), inset 0 -10px 20px rgba(0,0,0,.35)}
+/* roda do Pacto */
+.roda-pacto{position:relative; width:min(100%,420px); aspect-ratio:1; margin:4px auto 0}
+.roda-pacto img{width:100%; height:100%; display:block; filter:drop-shadow(0 6px 18px rgba(0,0,0,.6))}
+.gema{position:absolute; width:19%; height:19%; transform:translate(-50%,-50%); border-radius:50%; border:0; background:transparent; cursor:pointer; padding:0; transition:box-shadow .2s, background .2s}
+.gema::after{content:""; position:absolute; inset:8%; border-radius:50%; transition:inherit}
+.gema:not(.sel)::after{background:rgba(10,8,20,.38)}
+.gema.sel::after{box-shadow:0 0 0 3px #ffe6a6, 0 0 22px 6px var(--cor), inset 0 0 18px var(--cor); background:radial-gradient(circle, rgba(255,255,255,.18), transparent 70%); animation:gemaPulsa 1.4s ease-in-out infinite alternate}
+.gema.foco:not(.sel)::after{box-shadow:0 0 0 2px rgba(255,230,166,.6)}
+@keyframes gemaPulsa{from{filter:brightness(1)} to{filter:brightness(1.35)}}
+.roda-info{text-align:center; margin-top:4px; min-height:44px}
+.roda-info b{display:block; font-size:16px; color:#ffe6a6} .roda-info small{display:block; font-size:13px; color:#bdb4cf; margin-top:3px}
+
+/* botões com a arte desenhada (quando carregada) */
+html.ui-arte .botao{border:0; border-radius:0; box-shadow:none; min-height:60px; padding:12px 44px 14px; color:#3a2410; font-weight:600; text-shadow:0 1px 0 rgba(255,240,200,.55); filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));
+  background:var(--bp0-esq) left center/auto 100% no-repeat, var(--bp0-dir) right center/auto 100% no-repeat, var(--bp0-cen) center/auto 100% no-repeat, var(--bp0-meio) center/auto 100% repeat-x}
+html.ui-arte .botao:not([disabled]):active{background:var(--bp1-esq) left center/auto 100% no-repeat, var(--bp1-dir) right center/auto 100% no-repeat, var(--bp1-cen) center/auto 100% no-repeat, var(--bp1-meio) center/auto 100% repeat-x}
+html.ui-arte .botao[disabled]{opacity:1; color:#5a5560; text-shadow:none; background:var(--bp2-esq) left center/auto 100% no-repeat, var(--bp2-dir) right center/auto 100% no-repeat, var(--bp2-cen) center/auto 100% no-repeat, var(--bp2-meio) center/auto 100% repeat-x}
+html.ui-arte .botao.sec{color:#f2e7c9; text-shadow:0 1px 0 #0b0916; background:var(--bs0-esq) left center/auto 100% no-repeat, var(--bs0-dir) right center/auto 100% no-repeat, var(--bs0-cen) center/auto 100% no-repeat, var(--bs0-meio) center/auto 100% repeat-x}
+html.ui-arte .botao.sec:not([disabled]):active{background:var(--bs1-esq) left center/auto 100% no-repeat, var(--bs1-dir) right center/auto 100% no-repeat, var(--bs1-cen) center/auto 100% no-repeat, var(--bs1-meio) center/auto 100% repeat-x}
+html.ui-arte #telaMenu.com-arte .botao.sec{background:var(--bs0-esq) left center/auto 100% no-repeat, var(--bs0-dir) right center/auto 100% no-repeat, var(--bs0-cen) center/auto 100% no-repeat, var(--bs0-meio) center/auto 100% repeat-x}
+/* botões redondos de ação (Despertar = sol, Esquiva = asa, Combinado = moldura) */
+html.ui-acao .circ{border:0; background:center/100% 100% no-repeat; box-shadow:none; filter:drop-shadow(0 3px 6px rgba(0,0,0,.5))}
+html.ui-acao .circ.ult{background-image:var(--acao0-1); width:78px; height:78px} html.ui-acao .circ.ult.pronto{background-image:var(--acao0-0)}
+html.ui-acao .circ.esq:not(.comb){background-image:var(--acao1-0)} html.ui-acao .circ.esq{width:58px; height:58px}
+html.ui-acao .circ.comb{background-image:var(--acao2-1)} html.ui-acao .circ.comb.pronto{background-image:var(--acao2-0)}
+html.ui-acao .circ i{background:rgba(255,211,74,.16); border-radius:50%; inset:auto 14% 14% 14%; width:auto}
+html.ui-acao .circ span{font-size:10px; text-shadow:0 1px 2px #000, 0 0 4px #000; position:absolute; left:0; right:0; bottom:16%}
+html.ui-acao .circ.ult span, html.ui-acao .circ.esq:not(.comb) span{display:none}
+html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
+@keyframes pulsaArte{from{filter:drop-shadow(0 3px 6px rgba(0,0,0,.5)) brightness(1)} to{filter:drop-shadow(0 0 12px rgba(255,211,74,.8)) brightness(1.15)}}

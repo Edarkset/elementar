@@ -58,6 +58,14 @@ elementar/
 
 As artes atuais são WebP; as chaves terminam em `.png` porque é o nome que o código já usa.
 
+### Trocar várias artes de uma vez (a partir dos PNGs originais)
+
+```
+powershell -ExecutionPolicy Bypass -File ferramentas\converter_artes.ps1 -Origem "C:\caminho\da\pasta\arte"
+```
+
+Abra http://localhost:8001 e espere aparecer "Pronto". O navegador reduz cada original para o tamanho que o jogo usa, grava o WebP em `arte/` e atualiza o `manifesto.json`. Ele pula marcações (PNG pequeno com "substitua por esta arte"), cópias `(1)`, pastas `bkp` e as pastas `efeitos`, `Itens` e `npcs` (mude com `-Pular`). Use `-Listar` para ver antes o que seria convertido.
+
 ## Save
 
 O progresso fica no navegador (`localStorage`, chave `elementar_proto_v2`). Cada endereço onde o jogo roda tem o seu próprio save.

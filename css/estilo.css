@@ -143,3 +143,109 @@ canvas.mini{image-rendering:pixelated}
 .cartas.grade .carta{flex-direction:column; text-align:center; gap:6px; padding:10px 8px}
 .cartas.grade .carta canvas{width:44px; height:44px}
 .cartas.grade .carta small{overflow-wrap:normal}
+
+/* retratos grandes (monstro inicial) */
+.cartas.grade .carta.grande{padding:12px 8px 10px}
+.carta canvas.retrato-grande, .cartas.grade .carta canvas.retrato-grande{width:min(36vw,128px); height:min(36vw,128px); border-radius:14px; padding:0; image-rendering:auto;
+  background:radial-gradient(circle at 50% 62%, color-mix(in srgb, var(--rar) 35%, transparent), rgba(0,0,0,.35) 72%); box-shadow:0 0 0 1.5px var(--rar), inset 0 -10px 20px rgba(0,0,0,.35)}
+/* roda do Pacto */
+.roda-pacto{position:relative; width:min(100%,420px); aspect-ratio:1; margin:4px auto 0}
+.roda-pacto img{width:100%; height:100%; display:block; filter:drop-shadow(0 6px 18px rgba(0,0,0,.6))}
+.gema{position:absolute; width:19%; height:19%; transform:translate(-50%,-50%); border-radius:50%; border:0; background:transparent; cursor:pointer; padding:0; transition:box-shadow .2s, background .2s}
+.gema::after{content:""; position:absolute; inset:8%; border-radius:50%; transition:inherit}
+.gema:not(.sel)::after{background:rgba(10,8,20,.38)}
+.gema.sel::after{box-shadow:0 0 0 3px #ffe6a6, 0 0 22px 6px var(--cor), inset 0 0 18px var(--cor); background:radial-gradient(circle, rgba(255,255,255,.18), transparent 70%); animation:gemaPulsa 1.4s ease-in-out infinite alternate}
+.gema.foco:not(.sel)::after{box-shadow:0 0 0 2px rgba(255,230,166,.6)}
+@keyframes gemaPulsa{from{filter:brightness(1)} to{filter:brightness(1.35)}}
+.roda-info{text-align:center; margin-top:4px; min-height:44px}
+.roda-info b{display:block; font-size:16px; color:#ffe6a6} .roda-info small{display:block; font-size:13px; color:#bdb4cf; margin-top:3px}
+
+/* botões com a arte desenhada (quando carregada) */
+html.ui-arte .botao{border:0; border-radius:0; box-shadow:none; min-height:60px; padding:12px 44px 14px; color:#3a2410; font-weight:600; text-shadow:0 1px 0 rgba(255,240,200,.55); filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));
+  background:var(--bp0-esq) left center/auto 100% no-repeat, var(--bp0-dir) right center/auto 100% no-repeat, var(--bp0-cen) center/auto 100% no-repeat, var(--bp0-meio) center/auto 100% repeat-x}
+html.ui-arte .botao:not([disabled]):active{background:var(--bp1-esq) left center/auto 100% no-repeat, var(--bp1-dir) right center/auto 100% no-repeat, var(--bp1-cen) center/auto 100% no-repeat, var(--bp1-meio) center/auto 100% repeat-x}
+html.ui-arte .botao[disabled]{opacity:1; color:#5a5560; text-shadow:none; background:var(--bp2-esq) left center/auto 100% no-repeat, var(--bp2-dir) right center/auto 100% no-repeat, var(--bp2-cen) center/auto 100% no-repeat, var(--bp2-meio) center/auto 100% repeat-x}
+html.ui-arte .botao.sec{color:#f2e7c9; text-shadow:0 1px 0 #0b0916; background:var(--bs0-esq) left center/auto 100% no-repeat, var(--bs0-dir) right center/auto 100% no-repeat, var(--bs0-cen) center/auto 100% no-repeat, var(--bs0-meio) center/auto 100% repeat-x}
+html.ui-arte .botao.sec:not([disabled]):active{background:var(--bs1-esq) left center/auto 100% no-repeat, var(--bs1-dir) right center/auto 100% no-repeat, var(--bs1-cen) center/auto 100% no-repeat, var(--bs1-meio) center/auto 100% repeat-x}
+html.ui-arte #telaMenu.com-arte .botao.sec{background:var(--bs0-esq) left center/auto 100% no-repeat, var(--bs0-dir) right center/auto 100% no-repeat, var(--bs0-cen) center/auto 100% no-repeat, var(--bs0-meio) center/auto 100% repeat-x}
+/* botões redondos de ação (Despertar = sol, Esquiva = asa, Combinado = moldura) */
+html.ui-acao .circ{border:0; background:center/100% 100% no-repeat; box-shadow:none; filter:drop-shadow(0 3px 6px rgba(0,0,0,.5))}
+html.ui-acao .circ.ult{background-image:var(--acao0-1); width:78px; height:78px} html.ui-acao .circ.ult.pronto{background-image:var(--acao0-0)}
+html.ui-acao .circ.esq:not(.comb){background-image:var(--acao1-0)} html.ui-acao .circ.esq{width:58px; height:58px}
+html.ui-acao .circ.comb{background-image:var(--acao2-1)} html.ui-acao .circ.comb.pronto{background-image:var(--acao2-0)}
+html.ui-acao .circ i{background:rgba(255,211,74,.16); border-radius:50%; inset:auto 14% 14% 14%; width:auto}
+html.ui-acao .circ span{font-size:10px; text-shadow:0 1px 2px #000, 0 0 4px #000; position:absolute; left:0; right:0; bottom:16%}
+html.ui-acao .circ.ult span, html.ui-acao .circ.esq:not(.comb) span{display:none}
+html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
+@keyframes pulsaArte{from{filter:drop-shadow(0 3px 6px rgba(0,0,0,.5)) brightness(1)} to{filter:drop-shadow(0 0 12px rgba(255,211,74,.8)) brightness(1.15)}}
+
+/* contador de Essência da run */
+.ess-hud{font-size:15px; font-weight:600; color:#ffe6a6; padding:1px 8px 1px 20px; border-radius:999px; background:rgba(18,15,28,.72) radial-gradient(circle at 10px 50%, #ffe7a0 0 3px, #d6a030 4px 5px, transparent 6px); border:1px solid rgba(214,171,79,.55); text-shadow:0 1px 0 #000}
+.ess-hud.pop{animation:essPop .3s ease-out} @keyframes essPop{0%{transform:scale(1.35); filter:brightness(1.6)} 100%{transform:none}}
+/* baú e roleta */
+.bau-tela{position:absolute; inset:0; z-index:40; display:none; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:16px; overflow:hidden;
+  background:radial-gradient(circle at 50% 42%, rgba(70,50,120,.55), rgba(6,4,14,.92) 70%)}
+.bau-tela.vis{display:flex; animation:painelEntra .25s ease-out}
+.bau-raios{position:absolute; left:50%; top:40%; width:900px; height:900px; margin:-450px 0 0 -450px; opacity:0; pointer-events:none;
+  background:repeating-conic-gradient(from 0deg, rgba(255,220,120,.22) 0 8deg, transparent 8deg 22deg); border-radius:50%; mask-image:radial-gradient(circle, #000 20%, transparent 65%); -webkit-mask-image:radial-gradient(circle, #000 20%, transparent 65%);
+  transition:opacity .4s; animation:girar 9s linear infinite}
+.bau-tela.aberto .bau-raios{opacity:1} .bau-tela.ouro .bau-raios{background:repeating-conic-gradient(from 0deg, rgba(255,200,80,.32) 0 8deg, rgba(200,120,255,.12) 8deg 14deg, transparent 14deg 22deg)}
+@keyframes girar{to{transform:rotate(360deg)}}
+.bau-titulo{position:relative; font-size:26px; font-weight:600; color:#ffe6a6; text-shadow:0 2px 0 #000, 0 0 18px rgba(255,200,80,.6)}
+.bau-titulo.jackpot{font-size:44px; text-shadow:none; filter:drop-shadow(0 3px 0 #000) drop-shadow(0 0 14px rgba(255,200,80,.8)); background:linear-gradient(90deg,#ff6a6a,#ffd34a,#7fe8c0,#7fb4ff,#d08aff,#ff6a6a); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; animation:arcoIris 1s linear infinite, pop .4s}
+@keyframes arcoIris{to{background-position:200% 0}}
+.bau-arca{position:relative; width:150px; height:125px; animation:bauTreme .12s linear infinite}
+.bau-arca svg{width:100%; height:100%; filter:drop-shadow(0 0 20px rgba(255,211,74,.55)) drop-shadow(0 8px 10px rgba(0,0,0,.6))}
+.bau-arca .tampa{transform-origin:10px 48px; transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+.bau-tela.aberto .bau-arca{animation:none} .bau-tela.aberto .bau-arca .tampa{transform:rotate(-38deg) translate(-6px,-6px)}
+.bau-tela.aberto .bau-arca::after{content:""; position:absolute; left:15%; right:15%; top:30%; height:40%; background:radial-gradient(ellipse, rgba(255,240,180,.95), transparent 70%); filter:blur(4px); animation:pop .4s}
+@keyframes bauTreme{0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg) translateY(-2px)}}
+.bau-casas{position:relative; display:flex; flex-wrap:wrap; justify-content:center; gap:8px; max-width:440px}
+.casa{width:120px; min-height:118px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:4px; padding:8px 6px; border-radius:10px; text-align:center;
+  background:linear-gradient(180deg,rgba(46,41,80,.96),rgba(22,19,40,.96)); border:1.5px solid var(--rar,#6d6880); box-shadow:inset 0 0 14px rgba(0,0,0,.5); opacity:0; transform:scale(.6); transition:transform .25s, opacity .25s}
+.bau-tela.aberto .casa{opacity:1; transform:none}
+.casa img{width:58px; height:58px; image-rendering:auto} .casa img:not([src]){visibility:hidden}
+.casa span{font-size:12px; line-height:1.2; color:#fff1cf; min-height:28px}
+.casa.pisca img{transform:translateY(-3px) scale(1.06)}
+.casa.parou{animation:casaPara .35s ease-out; box-shadow:0 0 18px var(--rar), inset 0 0 14px rgba(0,0,0,.4)}
+.casa.parou.r-lendario{background:linear-gradient(180deg,rgba(90,70,30,.96),rgba(40,28,20,.96)); box-shadow:0 0 28px #ffcc4a, 0 0 60px rgba(255,204,74,.5)}
+@keyframes casaPara{0%{transform:scale(1.25); filter:brightness(2)} 100%{transform:none; filter:none}}
+.bau-coletar{position:relative; max-width:280px; opacity:0; pointer-events:none; transition:opacity .3s}
+.bau-tela.pronto .bau-coletar{opacity:1; pointer-events:auto; animation:pulsaArte .9s infinite alternate}
+.bau-tela.treme{animation:telaTreme .18s}
+@keyframes telaTreme{25%{transform:translate(3px,-2px)} 50%{transform:translate(-3px,2px)} 75%{transform:translate(2px,1px)}}
+.moeda-voa{position:absolute; left:50%; top:45%; width:14px; height:14px; margin:-7px; border-radius:50%; pointer-events:none; z-index:2;
+  background:radial-gradient(circle at 35% 30%, #fff8d0 0 2px, #ffd34a 3px, #b8860b 7px); box-shadow:0 0 8px rgba(255,211,74,.9); animation:moedaVoa var(--d) cubic-bezier(.2,.7,.4,1) forwards}
+.casa .moeda-voa{top:40%}
+@keyframes moedaVoa{0%{transform:translate(0,0) rotateY(0) scale(.6); opacity:1} 55%{transform:translate(calc(var(--x)*.8),var(--y)) rotateY(var(--r)) scale(1)} 100%{transform:translate(var(--x),calc(var(--y)*-0.6 + 120px)) rotateY(calc(var(--r)*2)); opacity:0}}
+@media (prefers-reduced-motion: reduce){ .bau-raios,.bau-arca,.moeda-voa{animation:none} }
+
+/* cartas de nível: revelação e carta dourada */
+.cartas.revelar .carta{animation:cartaVira .45s cubic-bezier(.2,.9,.3,1.2) both; animation-delay:calc(var(--i,0) * 110ms); transform-origin:50% 50%}
+@keyframes cartaVira{0%{opacity:0; transform:perspective(600px) rotateY(80deg) scale(.9)} 100%{opacity:1; transform:none}}
+.carta.dourada{background:linear-gradient(180deg,rgba(110,84,30,.97),rgba(52,38,18,.97)); --rar:#ffd34a; box-shadow:0 0 0 1px #fff1b0, 0 0 22px rgba(255,211,74,.7)}
+.carta.dourada b{color:#fff3c4}
+/* cenas */
+.cine{position:absolute; inset:0; z-index:45; display:none; flex-direction:column; align-items:center; justify-content:center; gap:14px; overflow:hidden; cursor:pointer; background:radial-gradient(circle at 50% 45%, rgba(30,24,60,.6), rgba(4,3,10,.9) 70%)}
+.cine.vis{display:flex; animation:painelEntra .2s ease-out}
+.cine-raios{position:absolute; left:50%; top:42%; width:900px; height:900px; margin:-450px 0 0 -450px; border-radius:50%; pointer-events:none;
+  background:repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--cor) 45%, transparent) 0 7deg, transparent 7deg 20deg);
+  mask-image:radial-gradient(circle, #000 15%, transparent 62%); -webkit-mask-image:radial-gradient(circle, #000 15%, transparent 62%); animation:girar 7s linear infinite}
+.cine-evo{position:relative; width:min(60vw,240px); aspect-ratio:1}
+.cine-evo img{position:absolute; inset:0; width:100%; height:100%; object-fit:contain; image-rendering:pixelated}
+.cine-evo .velho{animation:evoSai 1.1s ease-in forwards} .cine-evo .novo{opacity:0; animation:evoEntra .9s .95s cubic-bezier(.2,1.5,.4,1) forwards}
+@keyframes evoSai{0%{filter:none; transform:scale(1)} 60%{filter:brightness(0) invert(1) drop-shadow(0 0 20px #fff); transform:scale(1.08)} 80%{filter:brightness(0) invert(1); transform:scale(.9)} 100%{opacity:0; filter:brightness(0) invert(1); transform:scale(1.25)}}
+@keyframes evoEntra{0%{opacity:0; filter:brightness(0) invert(1); transform:scale(.6)} 50%{opacity:1; filter:brightness(0) invert(1) drop-shadow(0 0 30px #fff)} 100%{opacity:1; filter:drop-shadow(0 0 18px rgba(255,240,200,.6)); transform:scale(1)}}
+.cine-texto{position:relative; text-align:center; display:flex; flex-direction:column; gap:4px; padding:0 18px; opacity:0; animation:textoSobe .5s 1.2s ease-out forwards}
+.cine-texto small{color:#ffe6a6; font-size:15px; letter-spacing:1px; text-transform:uppercase} .cine-texto b{font-size:30px; text-shadow:0 3px 0 #000, 0 0 18px currentColor}
+.cine-texto i{font-style:normal; font-size:13px; color:#d8cfe6; max-width:360px}
+@keyframes textoSobe{from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:none}}
+.cine.chefe{background:radial-gradient(circle at 50% 45%, rgba(80,10,20,.55), rgba(4,2,6,.92) 70%)}
+.cine-faixa{position:absolute; left:-10%; right:-10%; top:36%; height:150px; background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--cor) 55%,#000) 20%,color-mix(in srgb,var(--cor) 55%,#000) 80%,transparent);
+  transform:skewY(-6deg) scaleX(0); animation:faixaAbre .35s .1s ease-out forwards; box-shadow:0 0 40px var(--cor)}
+@keyframes faixaAbre{to{transform:skewY(-6deg) scaleX(1)}}
+.cine-chefe{position:relative; width:min(62vw,260px); aspect-ratio:1; animation:chefeEntra .6s .25s cubic-bezier(.2,1.4,.4,1) both}
+.cine-chefe img{width:100%; height:100%; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 0 22px rgba(0,0,0,.8)) drop-shadow(0 0 14px rgba(255,60,60,.5))}
+@keyframes chefeEntra{from{opacity:0; transform:translateX(60%) scale(1.4)} to{opacity:1; transform:none}}
+.cine-texto.chefe{animation-delay:.5s} .cine-texto.chefe b{color:#ff8a7a; font-size:34px}
+@media (prefers-reduced-motion: reduce){ .cine-raios{animation:none} }

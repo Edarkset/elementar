@@ -282,7 +282,7 @@ function iniciarMapa(){
   if(temRel("Taça de Jamshid")&&R.profundidade>0){ J.vida=Math.min(J.vidaMax,J.vida+J.vidaMax*0.25); J.escudo+=J.vidaMax*0.15; }
   ativos().forEach(s=>{ s.cdEsp=10; if(s.esp==null&&s.nivel>=NIV[1]&&!filaEsp.includes(s)) filaEsp.push(s); if(s.mon.ramo==null&&s.nivel>=NIV[2]&&!filaRamo.includes(s)) filaRamo.push(s); if(D.classes[L(s).classe].nome==="Místico"&&s.pod.h2>0) J.renascer=1; });
   gerarChao(u); iniciarCena(u); iniciarAbertura(); J.abates0=R.abates; evento("era:"+u.era); J.escudoGolpes=passiva("escudo_golpes");
-  for(let i=0;i<6;i++) spawnInimigo();
+  for(let i=0;i<(R.profundidade===0?3:6);i++) spawnInimigo(); if(R.profundidade===0) J.invuln=Math.max(J.invuln,2.5);
   $("lugar").textContent=`${u.nome} · ${D.eras[u.era].nome}${R.ciclo?` · ciclo ${R.ciclo+1}`:""} · mapa ${R.profundidade+1}`;
   if(!J.intro){ $("hud").style.display=""; $("hudBase").style.display=""; }
   desenharEquipe(); desenharNinho(); rodando=true; pausado=false;
@@ -1257,7 +1257,7 @@ function artesDoMapa(u){ if(!u) return []; const pre=`arte/reinos/${u.era}/`, or
 // artes em arquivos: arte/manifesto.json lista { "nome usado no código": "caminho do arquivo" }.
 // Na abertura baixa só a interface e as imagens fixas dos monstros (menu e cartas); o resto vem por mapa ou quando for usado.
 if(window.ARTE_MANIFESTO){ const av=document.createElement("div");
-  av.style.cssText="position:fixed;left:50%;bottom:calc(8px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:rgba(18,14,26,.88);color:#f2e7c9;border:1px solid #d6ab4f;padding:5px 12px;font:600 12px Nunito,system-ui,sans-serif;border-radius:4px;pointer-events:none;transition:opacity .4s";
+  av.style.cssText="position:fixed;left:50%;top:calc(8px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:60;background:rgba(18,14,26,.88);color:#f2e7c9;border:1px solid #d6ab4f;padding:5px 12px;font:600 12px Nunito,system-ui,sans-serif;border-radius:4px;pointer-events:none;transition:opacity .4s";
   av.textContent="Carregando artes…"; (document.body||document.documentElement).appendChild(av);
   (async()=>{ try{
       const r=await fetch(window.ARTE_MANIFESTO,{cache:"no-cache"}); MANIFESTO=await r.json();
@@ -2577,14 +2577,16 @@ function desenharAbertura(){ const I=J&&J.intro; if(!I) return; const t=I.t, D0=
 // A pressão-alvo cresce dentro de cada mapa e de um mapa para o outro (como no Vampire Survivors).
 function iniciarDiretor(){ J.diretor={mult:1, tick:0, respiro:0, tEvento:rnd(40,55), alvo:20, n:0, vida:1, eventos:0, ameaca:1, tCheia:0}; }
 // ameaça: quem passa muito tempo com a vida cheia apanha mais forte (até +60%); quando a vida cai, volta ao normal
-function ameacaDiretor(){ return J.diretor? J.diretor.ameaca : 1; }
+// primeiro mapa da run: o dano recebido começa em 20% e chega ao normal em 80 s (antes, parado, a equipe caía em ~10 s)
+function inicioSuave(){ return R&&R.profundidade===0&&!R.teste? Math.min(1,0.2+J.t/100) : 1; }
+function ameacaDiretor(){ return (J.diretor? J.diretor.ameaca : 1)*inicioSuave(); }
 // XP: os inimigos extras que o diretor coloca valem proporcionalmente menos, para o ritmo de níveis não disparar
 function fatorXPDiretor(){ const d=J.diretor; return d&&d.mult>1? Math.max(0.55,1/Math.sqrt(d.mult)) : 1; }
 function multDiretor(){ const d=J.diretor; if(!d) return 1; return d.respiro>0? 0.1 : d.mult; }
 function contarTela(){ const P=J.jogador; let n=0, col=0; for(const e of J.inimigos){ if(e.hp<=0) continue; const dx=Math.abs(e.x-P.x), dy=Math.abs(e.y-P.y); if(dx<VW/2&&dy<VH/2){ n++; if(dx<40&&dy<40) col++; } } return [n,col]; }
 function atualizarDiretor(dt){ if(!J.diretor) iniciarDiretor(); const d=J.diretor; d.tick-=dt;
   if(d.tick<=0){ d.tick=0.5; const [n,col]=contarTela(), vida=J.vida/J.vidaMax; d.n=n; d.vida=vida;
-    d.alvo=Math.min(150,24+R.profundidade*16+J.t*0.22);
+    d.alvo=Math.min(150,24+R.profundidade*16+J.t*0.22)*(R.profundidade===0&&!R.teste? Math.min(1,0.4+J.t/60) : 1);   // primeiro mapa: a horda cresce aos poucos
     if(col>22&&vida<0.45&&d.respiro<=0){ d.respiro=3; }                  // afogado: respiro curto
     let m=d.mult; if(n>d.alvo*1.6) m-=0.15; else if(n<d.alvo*0.7&&vida>0.5) m+=0.12; else if(n<d.alvo) m+=0.04; else m-=0.03;
     d.mult=Math.max(0.3,Math.min(2.6,m));

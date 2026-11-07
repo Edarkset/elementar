@@ -332,3 +332,8 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 
 /* retrato do monstro: halo suave atrás e arte já ampliada pixel a pixel (o navegador só ajusta ao tamanho) */
 .carta canvas.retrato-grande, .carta canvas.retrato-medio{image-rendering:auto; background:radial-gradient(circle at 50% 58%, rgba(255,236,190,.16), rgba(255,236,190,0) 55%), radial-gradient(circle at 50% 40%, rgba(255,255,255,.08), rgba(0,0,0,.42) 75%)}
+/* menu no celular: botões mais baixos e juntos, para a cena da capa aparecer */
+@media (max-width:520px) and (orientation:portrait){
+  #telaMenu.com-arte #menuBotoes .botao{padding:7px 12px; font-size:15px; margin-top:6px}
+  #telaMenu.com-arte .meta{margin:6px 0 4px}
+}

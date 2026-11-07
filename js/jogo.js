@@ -561,12 +561,15 @@ function animarRetratos(){ if(animRet) return; const passo=t=>{ const cs=[...doc
     const f=Math.floor(t/1000*6); for(const c of cs){ const q=c._quadros[f%c._quadros.length], g=c.getContext("2d"); g.clearRect(0,0,c.width,c.height); g.drawImage(q,0,0); }
     animRet=requestAnimationFrame(passo); }; animRet=requestAnimationFrame(passo); }
 // quadros do monstro parado, em alta resolução, para a tela de escolha; sem folha de animação, usa a imagem fixa
-function quadrosForma(id,e,ramo,rar){ const fa=folhaAnimMonstro(id,e,ramo,rar); if(!fa) return null; const f=fatiarFolha(fa.img,6,3); if(!f.valida||!f.linhas[0].qs.length) return null;
-  // escala 1: um pixel da arte = um pixel do quadro; a tela amplia em blocos nítidos (sem borrar)
-  const alvo=Math.round(Math.max(f.corpoW,f.corpoH*correcaoAltura(fa.img)));
-  // recorte justo em volta do corpo (o quadro do jogo tem folga para o efeito do golpe)
-  return f.linhas[0].qs.map((_,i)=>{ const q=quadroAnim(fa.img,0,i,alvo,fa.cor); if(!q) return null; const L=Math.round(alvo*1.12), c=document.createElement("canvas"); c.width=c.height=L;
-    c.getContext("2d").drawImage(q,Math.round((q.width-L)/2),Math.round(q._pe-alvo-(L-alvo)/2),L,L,0,0,L,L); return c; }).filter(Boolean); }
+// retrato animado (linha "parado" da folha): caixa calculada pela união de todos os quadros (nada sai cortado), margem,
+// ampliação inteira pixel a pixel (pixel nítido, sem borrão) e uma sombra macia no chão; os pés ficam na mesma linha em todos os quadros
+function quadrosForma(id,e,ramo,rar){ const fa=folhaAnimMonstro(id,e,ramo,rar); if(!fa) return null; const img=fa.img, fo=fa.cor||img, f=fatiarFolha(img,6,3); if(!f.valida||!f.linhas[0].qs.length) return null;
+  const L=f.linhas[0], ky=correcaoAltura(img); let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+  for(const q of L.qs){ const ax=q.bx-q.ref-L.centro; x0=Math.min(x0,ax); x1=Math.max(x1,ax+q.bw); y0=Math.min(y0,(q.by-L.pe)*ky); y1=Math.max(y1,(q.by+q.bh-L.pe)*ky); }
+  const w=x1-x0, h=y1-y0, lado=Math.max(w,h)*1.22, K=Math.max(2,Math.round(340/lado)), C=Math.round(lado*K), cx=C/2-(x0+w/2)*K, peY=C/2+(h/2)*K-(y1>0?y1*K:0)+C*0.02;
+  return L.qs.map(q=>{ const c=document.createElement("canvas"); c.width=c.height=C; const g=c.getContext("2d");
+    const sg=g.createRadialGradient(C/2,peY,0,C/2,peY,w*K*0.55); sg.addColorStop(0,"rgba(0,0,0,.45)"); sg.addColorStop(1,"rgba(0,0,0,0)"); g.save(); g.translate(0,peY); g.scale(1,0.22); g.translate(0,-peY); g.fillStyle=sg; g.fillRect(0,peY-w*K,C,w*K*2); g.restore();
+    g.imageSmoothingEnabled=false; g.drawImage(fo,q.bx,q.by,q.bw,q.bh,Math.round(cx+(q.bx-q.ref-L.centro)*K),Math.round(peY+(q.by-L.pe)*ky*K),q.bw*K,Math.round(q.bh*ky*K)); return c; }); }
 function quadrosRetrato(id){ return quadrosForma(id,0,null,"comum"); }
 function proximaEscolha(){
   if(filaRamo.length) return escolherRamo(filaRamo.shift());

@@ -129,7 +129,7 @@ let W=0,H=0,S=2,VW=0,VH=0,Q=1;
 // Celular/tablet (toque): tela interna bem menor. Cada passada de tela cheia (piso, chão, luz, tom, vinheta...) custa
 // proporcional aos pixels; no iPhone o mundo era desenhado a 860x1867, e o aparelho esquentava. Em tela pequena a diferença quase não aparece.
 const TOQUE=matchMedia("(pointer: coarse)").matches||"ontouchstart" in window;
-const PIXELS_MAX=TOQUE? 7.5e5 : 2.6e6;
+const PIXELS_MAX=TOQUE? 1.8e6 : 3.2e6;
 // a qualidade automática também reduz a resolução: QUAL 1 = 80%, QUAL 0 = 62%
 const ESC_QUAL=[0.62,0.8,1];
 const ZOOM_MUNDO=170;   // pixels de mundo no lado menor da tela (menor = câmera mais perto, arte maior)
@@ -137,7 +137,9 @@ function redimensionar(){ W=cv.clientWidth; H=cv.clientHeight; const dpr=Math.mi
   cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0);
   S=Math.max(2,Math.min(W,H)/ZOOM_MUNDO); VW=Math.ceil(W/S); VH=Math.ceil(H/S);
   // tela interna na resolução real do aparelho (sem reamostrar a cada quadro); limitada a PIXELS_MAX
-  Q=SIM.ativo? 1 : Math.max(1.5,Math.min(S*dpr, Math.sqrt(PIXELS_MAX/Math.max(1,VW*VH)))*(typeof QUAL==='number'?ESC_QUAL[QUAL]:1));
+  // a tela interna é sempre a resolução da tela dividida por um número inteiro (1, 2, 3...): a ampliação final fica exata.
+  // Com um fator quebrado (ex.: 1,46x) cada pixel virava um bloco de tamanho diferente e tudo parecia distorcido.
+  { const cheio=S*dpr, lim=PIXELS_MAX*Math.pow(typeof QUAL==='number'?ESC_QUAL[QUAL]:1,2), k=Math.max(1,Math.ceil(Math.sqrt(VW*VH*cheio*cheio/lim)-1e-9)); Q=SIM.ativo? 1 : Math.max(1,cheio/k); }
   lo.width=Math.round(VW*Q); lo.height=Math.round(VH*Q); lg.setTransform(Q,0,0,Q,0,0); }
 addEventListener("resize",redimensionar);
 let R=null, J=null, rodando=false, pausado=false;

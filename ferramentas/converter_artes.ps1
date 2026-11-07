@@ -5,8 +5,12 @@
 # Depois abra http://localhost:8001 e espere terminar. Use -Listar para só ver o que seria convertido.
 #
 # Regras:
-# - Arte que já está no manifesto: substitui o arquivo atual, no mesmo tamanho.
-# - ambiente: folha 8x2 de peças de 32 px (256x64).
+# - A proporção do original é mantida (antes a arte era forçada ao tamanho antigo e ficava achatada ou esticada).
+#   A largura é a do arquivo atual vezes -Escala (padrão 2: o dobro de detalhe); a altura sai da proporção do original.
+#   O jogo lê qualquer tamanho e proporção. Use -Escala 1 para manter a largura de antes.
+# - Arte que já está no manifesto: substitui o arquivo atual.
+# - ambiente: folha 8x2 de peças de 64 px (512x128). Cada peça é recortada pelo desenho (o original tem as peças no meio
+#   de uma imagem grande, com margem em volta); reduzir a imagem inteira esmagava as peças e deixava faixas transparentes.
 # - lendas e panteao: folha 6x3 (384x192); __retrato 2x3 (256x384).
 # - efeitos: tira de quadros quadrados; cada quadro da folha é recortado na faixa com desenho, sem achatar
 #   (reacao 6 x 128 px, especial 8 x 192 px, combinado 10 x 256 px).
@@ -17,6 +21,7 @@ param(
   [Parameter(Mandatory = $true)][string]$Origem,
   [int]$Porta = 8001,
   [double]$Qualidade = 0.9,
+  [double]$Escala = 2,
   [string[]]$Pular = @('Itens', 'npcs'),
   [string[]]$Apenas = @(),
   [switch]$Listar
@@ -27,6 +32,10 @@ $origemCheia = [IO.Path]::GetFullPath($Origem).TrimEnd('\') + '\'
 $arqManifesto = Join-Path $repo 'arte\manifesto.json'
 $utf8 = New-Object Text.UTF8Encoding($false)
 
+function TamanhoPng($caminho) {
+  $fs = [IO.File]::OpenRead($caminho); try { $b = New-Object byte[] 24; [void]$fs.Read($b, 0, 24) } finally { $fs.Close() }
+  return @((($b[16] -shl 24) -bor ($b[17] -shl 16) -bor ($b[18] -shl 8) -bor $b[19]), (($b[20] -shl 24) -bor ($b[21] -shl 16) -bor ($b[22] -shl 8) -bor $b[23]))
+}
 function TamanhoWebp($caminho) {
   $b = [IO.File]::ReadAllBytes($caminho); $c = [Text.Encoding]::ASCII.GetString($b, 12, 4)
   if ($c -eq 'VP8X') { return @((1 + $b[24] + 256 * $b[25] + 65536 * $b[26]), (1 + $b[27] + 256 * $b[28] + 65536 * $b[29])) }
@@ -53,24 +62,26 @@ foreach ($f in Get-ChildItem -LiteralPath $Origem -Recurse -File -Filter *.png |
   if ($f.Name -match '\(\d+\)\.png$') { [void]$pulados.Add("$rel  (cópia)"); continue }
   if ($f.Length -lt 150KB) { [void]$pulados.Add("$rel  (marcação)"); continue }
   $nome = ($f.BaseName -replace '-[A-Z]{2}\d+-[A-Z0-9]{6,}$', '').ToLower()
-  $chave = $null; $w = 0; $h = 0; $cols = 0
+  $chave = $null; $w = 0; $h = 0; $cols = 0; $grade = ''
   if ($topo -eq 'efeitos') {
     # o jogo toca a folha como uma tira de quadros quadrados (tocarFolha): reação 6, especial 8, combinado 10
     $tipo = @{ reacao = @(6, 128); especial = @(8, 192); combinado = @(10, 256) }[($nome -split '__')[0]]
     if (-not $tipo) { [void]$pulados.Add("$rel  (não sei onde o jogo usa)"); continue }
     $chave = "arte/efeitos/$nome.png"; $cols = $tipo[0]; $w = $tipo[0] * $tipo[1]; $h = $tipo[1]
+  } elseif ($topo -eq 'ambiente') { $chave = "arte/ambiente/$nome.png"; $w = 512; $h = 128; $grade = '8x2'
   } elseif ($porNome.ContainsKey($nome)) {
     $chave = $porNome[$nome]; $atual = Join-Path $repo ($manifesto[$chave] -replace '/', '\')
     if (-not (Test-Path -LiteralPath $atual)) { [void]$pulados.Add("$rel  (arquivo do manifesto não existe)"); continue }
     $t = TamanhoWebp $atual; $w = $t[0]; $h = $t[1]
-  } elseif ($topo -eq 'ambiente') { $chave = "arte/ambiente/$nome.png"; $w = 256; $h = 64 }
-  elseif ($topo -eq 'lendas' -or $topo -eq 'panteao') {
+  } elseif ($topo -eq 'lendas' -or $topo -eq 'panteao') {
     $chave = "arte/$topo/$nome.png"; if ($nome -like '*__retrato') { $w = 256; $h = 384 } else { $w = 384; $h = 192 }
   } else { [void]$pulados.Add("$rel  (não sei onde o jogo usa)"); continue }
+  # mantém a proporção do original (menos efeitos e ambiente, que são montados em grade própria)
+  if (-not $cols -and -not $grade) { $o = TamanhoPng $f.FullName; $w = [int][Math]::Min($o[0], [Math]::Round($w * $Escala)); $h = [int][Math]::Max(1, [Math]::Round($w * $o[1] / $o[0])) }
   if ($porChave.ContainsKey($chave)) { [void]$pulados.Add("$rel  (repetida: $chave já veio de $($porChave[$chave]))"); continue }
   $porChave[$chave] = $rel
   $destino = if ($manifesto.Contains($chave) -and $manifesto[$chave] -like '*.webp') { $manifesto[$chave] } else { $chave -replace '\.png$', '.webp' }
-  [void]$tarefas.Add([pscustomobject]@{ i = $tarefas.Count; origem = $f.FullName; rel = $rel; chave = $chave; destino = $destino; w = $w; h = $h; cols = $cols; feito = $false })
+  [void]$tarefas.Add([pscustomobject]@{ i = $tarefas.Count; origem = $f.FullName; rel = $rel; chave = $chave; destino = $destino; w = $w; h = $h; cols = $cols; grade = $grade; feito = $false })
 }
 
 Write-Host "Converter: $($tarefas.Count)   Pulados: $($pulados.Count)"
@@ -100,7 +111,7 @@ try {
       $cam = $req.Url.AbsolutePath
       if ($cam -eq '/') { Responder $resp 200 $pagina 'text/html; charset=utf-8' }
       elseif ($cam -eq '/tarefas') {
-        $lista = @($tarefas | ForEach-Object { [pscustomobject]@{ i = $_.i; rel = $_.rel; w = $_.w; h = $_.h; cols = $_.cols; q = $Qualidade } })
+        $lista = @($tarefas | ForEach-Object { [pscustomobject]@{ i = $_.i; rel = $_.rel; w = $_.w; h = $_.h; cols = $_.cols; grade = $_.grade; q = $Qualidade } })
         Responder $resp 200 $utf8.GetBytes((ConvertTo-Json -InputObject $lista -Compress)) 'application/json'
       }
       elseif ($cam -match '^/origem/(\d+)$') { Responder $resp 200 ([IO.File]::ReadAllBytes($tarefas[[int]$matches[1]].origem)) 'image/png' }

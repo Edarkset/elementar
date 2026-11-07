@@ -8,7 +8,7 @@
 :root[data-theme="dark"]{ --bg:#0f1224; --surface:#1a1f3a; --text:#f2e7c9; --muted:#a8a2b8; --line:#3a4170; color-scheme:dark; }
 html{height:100%; scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
-body{margin:0; height:100%; background:var(--tinta); color:var(--text); font-family:"Pixelify Sans","Courier New",monospace; overflow:hidden; -webkit-user-select:none; user-select:none; touch-action:none}
+body{margin:0; height:100%; background:var(--tinta); color:var(--text); font-family:"Nunito","Segoe UI",system-ui,sans-serif; font-weight:600; overflow:hidden; -webkit-user-select:none; user-select:none; touch-action:none}
 #jogo{position:relative; width:100%; height:100%; overflow:hidden; background:var(--tinta)}
 #tela{position:absolute; inset:0; width:100%; height:100%; image-rendering:pixelated; display:block}
 canvas.mini{image-rendering:pixelated}
@@ -231,11 +231,24 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 .cine-raios{position:absolute; left:50%; top:42%; width:900px; height:900px; margin:-450px 0 0 -450px; border-radius:50%; pointer-events:none;
   background:repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--cor) 45%, transparent) 0 7deg, transparent 7deg 20deg);
   mask-image:radial-gradient(circle, #000 15%, transparent 62%); -webkit-mask-image:radial-gradient(circle, #000 15%, transparent 62%); animation:girar 7s linear infinite}
-.cine-evo{position:relative; width:min(60vw,240px); aspect-ratio:1}
+.cine-evo{position:relative; width:min(66vw,260px); aspect-ratio:1}
 .cine-evo img{position:absolute; inset:0; width:100%; height:100%; object-fit:contain; image-rendering:pixelated}
-.cine-evo .velho{animation:evoSai 1.1s ease-in forwards} .cine-evo .novo{opacity:0; animation:evoEntra .9s .95s cubic-bezier(.2,1.5,.4,1) forwards}
-@keyframes evoSai{0%{filter:none; transform:scale(1)} 60%{filter:brightness(0) invert(1) drop-shadow(0 0 20px #fff); transform:scale(1.08)} 80%{filter:brightness(0) invert(1); transform:scale(.9)} 100%{opacity:0; filter:brightness(0) invert(1); transform:scale(1.25)}}
-@keyframes evoEntra{0%{opacity:0; filter:brightness(0) invert(1); transform:scale(.6)} 50%{opacity:1; filter:brightness(0) invert(1) drop-shadow(0 0 30px #fff)} 100%{opacity:1; filter:drop-shadow(0 0 18px rgba(255,240,200,.6)); transform:scale(1)}}
+/* evolução clássica: as duas formas, em silhueta branca, se alternam cada vez mais rápido; clarão; a nova aparece com cor e faíscas */
+.cine-evo .velho{animation:evoVelho 1.9s linear forwards} .cine-evo .novo{opacity:0; animation:evoNovo 1.9s linear forwards, evoRevela .7s 1.95s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes evoVelho{0%{opacity:1; filter:none} 18%{opacity:1; filter:brightness(0) invert(1) drop-shadow(0 0 14px #fff)} 30%{opacity:0} 40%{opacity:1} 50%{opacity:0} 57%{opacity:1} 63%{opacity:0} 68%{opacity:1} 72%{opacity:0} 76%{opacity:1} 79%{opacity:0} 82%{opacity:1} 84.5%{opacity:0} 87%{opacity:1} 89%{opacity:0} 91%{opacity:1} 93%,100%{opacity:0; filter:brightness(0) invert(1)}}
+@keyframes evoNovo{0%,29%{opacity:0; filter:brightness(0) invert(1) drop-shadow(0 0 14px #fff)} 30%{opacity:1} 40%{opacity:0} 50%{opacity:1} 57%{opacity:0} 63%{opacity:1} 68%{opacity:0} 72%{opacity:1} 76%{opacity:0} 79%{opacity:1} 82%{opacity:0} 84.5%{opacity:1} 87%{opacity:0} 89%{opacity:1} 91%{opacity:0} 93%,100%{opacity:1; filter:brightness(0) invert(1) drop-shadow(0 0 30px #fff)}}
+@keyframes evoRevela{0%{opacity:1; filter:brightness(0) invert(1) drop-shadow(0 0 30px #fff); transform:scale(1.25)} 100%{opacity:1; filter:drop-shadow(0 0 16px color-mix(in srgb,var(--cor) 70%,transparent)) drop-shadow(0 6px 8px rgba(0,0,0,.6)); transform:scale(1)}}
+.evo-aura{position:absolute; inset:-20%; border-radius:50%; background:radial-gradient(circle, color-mix(in srgb,var(--cor) 55%,transparent), transparent 62%); animation:evoAura 1.9s ease-in forwards}
+@keyframes evoAura{0%{transform:scale(.6); opacity:.4} 90%{transform:scale(1.15); opacity:1} 100%{transform:scale(1.35); opacity:.85}}
+.cine-clarao{position:absolute; inset:0; background:radial-gradient(circle at 50% 42%, #fff, rgba(255,255,255,.85) 30%, transparent 70%); opacity:0; pointer-events:none; animation:evoClarao .9s 1.75s ease-out forwards}
+@keyframes evoClarao{0%{opacity:0} 15%{opacity:1} 100%{opacity:0}}
+.evo-faiscas{position:absolute; left:50%; top:50%; width:0; height:0}
+.evo-faiscas i{position:absolute; width:6px; height:6px; margin:-3px; border-radius:50%; background:#fff; box-shadow:0 0 8px 2px var(--cor); opacity:0; transform:rotate(var(--a)) translateX(0);
+  animation:evoFaisca var(--t) 1.9s cubic-bezier(.1,.8,.3,1) forwards}
+@keyframes evoFaisca{0%{opacity:1; transform:rotate(var(--a)) translateX(10px) scale(1.4)} 100%{opacity:0; transform:rotate(var(--a)) translateX(var(--d)) scale(.3)}}
+.cine.evolucao .cine-texto{animation-delay:2.05s}
+@keyframes evoSaiAntigo{0%{filter:none; transform:scale(1)} 60%{filter:brightness(0) invert(1) drop-shadow(0 0 20px #fff); transform:scale(1.08)} 80%{filter:brightness(0) invert(1); transform:scale(.9)} 100%{opacity:0; filter:brightness(0) invert(1); transform:scale(1.25)}}
+@keyframes evoEntraAntigo{0%{opacity:0; filter:brightness(0) invert(1); transform:scale(.6)} 50%{opacity:1; filter:brightness(0) invert(1) drop-shadow(0 0 30px #fff)} 100%{opacity:1; filter:drop-shadow(0 0 18px rgba(255,240,200,.6)); transform:scale(1)}}
 .cine-texto{position:relative; text-align:center; display:flex; flex-direction:column; gap:4px; padding:0 18px; opacity:0; animation:textoSobe .5s 1.2s ease-out forwards}
 .cine-texto small{color:#ffe6a6; font-size:15px; letter-spacing:1px; text-transform:uppercase} .cine-texto b{font-size:30px; text-shadow:0 3px 0 #000, 0 0 18px currentColor}
 .cine-texto i{font-style:normal; font-size:13px; color:#d8cfe6; max-width:360px}
@@ -249,3 +262,70 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 @keyframes chefeEntra{from{opacity:0; transform:translateX(60%) scale(1.4)} to{opacity:1; transform:none}}
 .cine-texto.chefe{animation-delay:.5s} .cine-texto.chefe b{color:#ff8a7a; font-size:34px}
 @media (prefers-reduced-motion: reduce){ .cine-raios{animation:none} }
+
+/* retratos das cartas: pixel nítido, na resolução da arte */
+.carta canvas.retrato-grande{image-rendering:pixelated}
+.carta canvas.retrato-medio{width:76px; height:76px; border-radius:14px; padding:0; flex:none; image-rendering:pixelated;
+  background:radial-gradient(circle at 50% 60%, rgba(255,255,255,.14), rgba(0,0,0,.4) 72%)}
+/* portal: capa com a arte do reino */
+.carta.portal canvas{width:118px; height:74px; border-radius:8px; padding:0; image-rendering:auto; box-shadow:0 0 0 1.5px rgba(255,226,150,.55), 0 4px 10px rgba(0,0,0,.5)}
+.cartas.grade .carta.portal canvas{width:100%; height:auto; aspect-ratio:240/150}
+/* baú */
+.bau-raios{filter:blur(1.5px)}
+.bau-arca{width:170px; height:150px}
+.bau-arca svg{overflow:visible}
+.bau-tela.aberto .bau-arca .tampa{transform:rotate(-20deg) translate(-2px,-4px)}
+.bau-titulo{margin-bottom:10px}
+.bau-arca .brilho-interno{opacity:0; transition:opacity .3s .1s} .bau-tela.aberto .bau-arca .brilho-interno{opacity:1}
+
+/* fonte: Cinzel (letras de pedra gravada, combina com o tema mitológico) nos títulos; Nunito (arredondada, legível em tela pequena) no resto */
+.painel h1,.painel h2,.bau-titulo,.cine-texto b,.intro-texto b,.carta b{font-family:"Cinzel",Georgia,serif; font-weight:800; letter-spacing:.3px}
+.carta b{font-weight:600}
+.botao,.btn-hud,.circ{font-family:"Nunito",system-ui,sans-serif; font-weight:800}
+
+/* ovos do ninho: arte em alta resolução, proporção do ovo */
+.ovo canvas{width:20px; height:24px; image-rendering:auto} .ovo.anc canvas{width:25px; height:30px; image-rendering:auto}
+
+/* menu em camadas */
+#telaMenu{overflow:hidden}
+.paralaxe{position:absolute; inset:0; z-index:0; pointer-events:none; --px:0; --py:0}
+#telaMenu .painel{position:relative; z-index:1}
+.paralaxe .cam{position:absolute; inset:-6%; background:center bottom/cover no-repeat; will-change:transform}
+.paralaxe .ceu{transform:translate(calc(var(--px)*-8px),calc(var(--py)*-6px)) scale(1.04); animation:ceuDeriva 60s ease-in-out infinite alternate}
+.paralaxe .cri{transform:translate(calc(var(--px)*-18px),calc(var(--py)*-12px)); animation:criFlutua 7s ease-in-out infinite alternate}
+.paralaxe .fr{inset:-3%; transform:translate(calc(var(--px)*-30px),calc(var(--py)*-14px))}
+.paralaxe .brilho{background:radial-gradient(ellipse at 50% 38%, rgba(255,226,160,.28), transparent 45%); mix-blend-mode:screen; animation:brilhoPulsa 5s ease-in-out infinite alternate}
+.paralaxe .cri, .paralaxe .ceu, .paralaxe .fr{transition:transform .25s ease-out}
+@keyframes ceuDeriva{from{background-position:48% bottom} to{background-position:52% bottom}}
+@keyframes criFlutua{from{margin-top:0} to{margin-top:-10px}}
+@keyframes brilhoPulsa{from{opacity:.55} to{opacity:1}}
+@media (prefers-reduced-motion: reduce){ .paralaxe .cam{animation:none!important} }
+/* telas com fundo pintado (Santuário, fim de run) */
+#telaCartas.com-fundo{background-size:cover; background-position:center}
+/* celular em pé: painel do menu mais baixo e compacto, para a cena em camadas aparecer */
+@media (max-width:520px) and (orientation:portrait){
+  #telaMenu.com-arte .painel{padding:12px 14px; margin-bottom:1.5vh}
+  #telaMenu.com-arte .painel > p:first-of-type{display:none}
+  #telaMenu.com-arte h1 img{width:min(78%,300px)!important}
+  #telaMenu.com-arte .painel > p:last-of-type{font-size:12px; margin-top:8px!important; opacity:.85}
+}
+
+/* Bolsa brilha quando há um item que serve agora */
+.btn-hud.util{border-color:#ffd34a; color:#fff3c4; box-shadow:0 0 0 1px rgba(255,211,74,.5), 0 0 12px rgba(255,211,74,.55); animation:pulsaArte .9s infinite alternate}
+
+/* choco: o ovo treme cada vez mais, racha, clarão e o filhote aparece */
+.cine-choco{position:relative; width:min(56vw,220px); aspect-ratio:1}
+.cine-choco img{position:absolute; inset:0; width:100%; height:100%; object-fit:contain}
+.cine-choco .ovo{image-rendering:auto; transform-origin:50% 85%; animation:ovoTreme 1.5s ease-in forwards, ovoSome .25s 1.45s forwards}
+.cine-choco .novo{image-rendering:pixelated; opacity:0; animation:evoRevela .7s 1.55s cubic-bezier(.2,1.6,.4,1) forwards}
+.cine-choco .racha{position:absolute; left:30%; right:30%; top:22%; bottom:20%; opacity:0; animation:rachaAparece .5s 1s forwards;
+  background:linear-gradient(115deg,transparent 46%,#fff8d8 47%,#fff8d8 50%,transparent 51%), linear-gradient(65deg,transparent 46%,#fff8d8 47%,#fff8d8 49%,transparent 50%);
+  filter:drop-shadow(0 0 6px var(--cor)) drop-shadow(0 0 12px #fff)}
+.cine-clarao.choco{animation-delay:1.4s}
+.cine.choco .cine-texto{animation-delay:1.75s}
+@keyframes ovoTreme{0%{transform:rotate(0)} 10%{transform:rotate(-6deg)} 20%{transform:rotate(6deg)} 30%{transform:rotate(0)} 45%{transform:rotate(-9deg)} 52%{transform:rotate(9deg)} 60%{transform:rotate(-9deg)} 66%{transform:rotate(0)}
+  74%{transform:rotate(-12deg) scale(1.03)} 78%{transform:rotate(12deg) scale(1.05)} 82%{transform:rotate(-12deg) scale(1.05)} 86%{transform:rotate(12deg) scale(1.07)} 90%{transform:rotate(-8deg) scale(1.08)} 100%{transform:rotate(0) scale(1.12); filter:brightness(1.8) drop-shadow(0 0 20px #fff)}}
+@keyframes ovoSome{to{opacity:0; transform:scale(1.4)}}
+@keyframes rachaAparece{to{opacity:1}}
+
+.prog-diaria{height:6px; margin-top:5px; border-radius:3px; background:rgba(0,0,0,.4); overflow:hidden} .prog-diaria b{display:block; height:100%; background:linear-gradient(90deg,#d6ab4f,#ffe296)}

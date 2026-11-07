@@ -13,9 +13,11 @@ python3 testes/resumo.py testes/res.json
 |---|---|---|---|
 | Antes dos ajustes | 7,8 mapas | 2,8 mapas | 0 |
 | Ajuste 1 (classes + itens + ritmo) | 7,9 mapas | 2,3 mapas | 0 |
-| Ajuste 2 (classes refinadas) | ver abaixo | ver abaixo | ver abaixo |
+| Ajuste 2 (classes refinadas, versão atual) | 8,6 mapas | 2,5 mapas | 0 |
 
 **Antes:** guerreiro, guardião e místico chegavam a ~9,4 mapas; assassino só a 6,6; xamã 7,2; caçador e invocador ~7,5.
+
+**Depois:** guerreiro 10,3 · assassino 9,5 · guardião 9,1 · invocador 8,9 · místico 8,8 · mago 8,6 · xamã 8,2 · caçador 7,8. Com 40 partidas a variação entre baterias é de ~1 mapa por classe, então diferenças menores que isso são ruído; o próximo passo seria rodar 200 partidas.
 
 **Mortes:** concentradas nos mapas 8 a 11 (a curva de dificuldade está boa: quase ninguém morre nos 3 primeiros mapas e quase ninguém passa do 12).
 
@@ -39,7 +41,7 @@ python3 testes/resumo.py testes/res.json
 
 ## Testes de regressão feitos nesta rodada
 
-- 120 partidas simuladas completas (3 baterias de 40): nenhum erro de página.
+- 160 partidas simuladas completas (4 baterias de 40): nenhum erro de página.
 - Todas as 34 Lendas e os 13 deuses do Panteão, com poder no nível 5, 30 s de jogo cada: nenhum erro.
 - Os 8 Dragões Ancestrais nas 4 formas (Filhote, Jovem, Adulto, Supremo): nenhum erro.
 - Os 34 reinos, 50 s de mapa e 25 s de chefe cada: todas as artes carregam; um erro encontrado (título do baú atualizado depois de a tela fechar) e corrigido.

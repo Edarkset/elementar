@@ -353,16 +353,16 @@ function emArea(x,y,r,fn){ if(FONTE!=="ambiente") r*=tal.area(); const r2=r*r; f
 function pontoDenso(o,alc){ let best=null, bn=0; for(const e of J.inimigos){ if(e.hp<=0||dist2(o,e)>alc*alc) continue; let n=0; for(const f of J.inimigos) if(dist2(e,f)<900) n++; if(n>bn){bn=n; best=e;} } return best; }
 
 // ================================================================ efeitos de impacto
-function tremor(v){ J.shake=Math.max(J.shake,v); }
+function tremor(v){ v= v>=10? v*0.7 : Math.min(4,v*0.45); J.shake=Math.max(J.shake,v); }   // tremor suave: só os grandes momentos (Despertar, combinado, chefe) sacodem forte
 function parar(t){ J.hitstop=Math.max(J.hitstop,t); }
-function particulas(x,y,cor,n,vel,tam){ const L=J.parts.length; if(L>380) n=Math.ceil(n/4); else if(L>250) n=Math.ceil(n/2); if(QUAL===0) n=Math.ceil(n/2); for(let i=0;i<n;i++){ if(J.parts.length>450) J.parts.shift(); const a=Math.random()*Math.PI*2, v=rnd(vel*0.3,vel);
+function particulas(x,y,cor,n,vel,tam){ const L=J.parts.length; if(L>380) n=Math.ceil(n/4); else if(L>250) n=Math.ceil(n/2); if(QUAL===0) n=Math.ceil(n/2); for(let i=0;i<n;i++){ if(J.parts.length>320) J.parts.shift(); const a=Math.random()*Math.PI*2, v=rnd(vel*0.3,vel);
   J.parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-rnd(0,vel*0.3),vida:rnd(.3,.7),max:.7,cor,tam:tam||1+Math.floor(Math.random()*2)}); } }
 function anel(x,y,r,cor,dur){ J.efeitos.push({x,y,r,cor,vida:dur||.35,max:dur||.35}); }
 function raio(x1,y1,x2,y2,cor){ J.efeitos.push({x:x1,y:y1,x2,y2,cor,vida:.22,max:.22,linha:true}); }
 function numero(x,y,v,cor,tam,alvo){
   // golpes seguidos no mesmo inimigo somam no mesmo número (menos poluição na tela)
   if(alvo){ const n=J.nums.find(k=>k.alvo===alvo&&k.cor===cor&&k.vida>0.35); if(n){ n.v+=Math.round(v); n.vida=Math.max(n.vida,0.6); n.x=x; n.y=y; n.pop=1; return; } }
-  if(J.nums.length>30) J.nums.shift(); J.nums.push({x:x+rnd(-3,3),y,v:Math.round(v),cor,tam,vida:.8,max:.8,vy:-44,vx:((Math.abs(x*13.7+y*7.3+J.t*31)%32)-16),alvo}); }
+  if(J.nums.length>20) J.nums.shift(); J.nums.push({x:x+rnd(-3,3),y,v:Math.round(v),cor,tam,vida:.8,max:.8,vy:-44,vx:((Math.abs(x*13.7+y*7.3+J.t*31)%32)-16),alvo}); }
 function texto(x,y,t,cor,tam){ if(J.textos.length>12) J.textos.shift(); J.textos.push({x,y,t,cor,tam:tam||16,vida:1.1}); }
 
 // sombra de contato: elipse com borda macia (imagem pronta, escalada), mais escura no centro
@@ -389,7 +389,7 @@ function ferir(e,dano,el,o={}){
   let d=dano*ef*(crit?1.8:1)*(e.vulner>0?1.2:1)*(e.bebado>0?1.5:1)*fadigaChefe(e)*multDanoLenda(e)*relDano(e);
   for(const z of J.zonas) if(z.tipo==="circulo"&&dist2(z,e)<z.r*z.r) d*=z.amp;
   e.hp-=d; e.flash=0.08; e.golpeT=J.t; if(J.t-(e.dorT??-9)>0.6) e.dorT=J.t; R.st.porFonte[FONTE]=(R.st.porFonte[FONTE]||0)+d; R.st.dano+=d; R.st.golpes++; if(ef>1) R.st.superEf++; else if(ef<1) R.st.poucoEf++;
-  if(crit){ som("critico"); numero(e.x,e.y-6,d,"#ffe066",20,e); parar(0.025); particulas(e.x,e.y,"#fff3a0",5,60); }
+  if(crit){ som("critico"); numero(e.x,e.y-6,d,"#ffe066",20,e); particulas(e.x,e.y,"#fff3a0",5,60); }
   else if(ef>1){ numero(e.x,e.y-6,d,"#ff8a3d",17,e); }
   else if(ef<1){ numero(e.x,e.y-6,d,"#9a98a8",12,e); }
   else numero(e.x,e.y-6,d,"#fff8e6",13,e);
@@ -408,7 +408,7 @@ function reagir(e,a,b,dano){
 function reagirEfeito(e,a,b,dano,r){ evento("reacao"); diaria("reacoes");
   if(!SIM.ativo&&!META.dicaReacao){ META.dicaReacao=true; gravar(); toast(`<b>Reação elemental!</b><br><small>${NOME_EL(a)} + ${NOME_EL(b)} no mesmo inimigo. Misturar elementos na equipe é a maior fonte de dano do jogo.</small>`); }
   const p=Math.max(dano,6)*2.2*SIN.reac, cor=mistura(COR[a],COR[b],.5);
-  R.st.reacoes[r.nome]=(R.st.reacoes[r.nome]||0)+1; textoUnico("r:"+r.nome,e.x,e.y-10,r.nome,cor,19); tremor(2.5); vfxReacao(e,a,b);
+  R.st.reacoes[r.nome]=(R.st.reacoes[r.nome]||0)+1; textoUnico("r:"+r.nome,e.x,e.y-10,r.nome,cor,17); vfxReacao(e,a,b);
   switch(r.tipo){
     case "explosao": case "dano_area": anel(e.x,e.y,26,cor,.45); emArea(e.x,e.y,26,o=>{ if(o!==e) danoSimples(o,p); }); danoSimples(e,p); tremor(4); break;
     case "cadeia": { let alvo=e; const vistos=new Set([e]); for(let i=0;i<5;i++){ const n=maisProximo(alvo,48,o=>!vistos.has(o)); if(!n) break; raio(alvo.x,alvo.y,n.x,n.y,cor); danoSimples(n,p*0.7); vistos.add(n); alvo=n; } break; }
@@ -2734,7 +2734,7 @@ const VFX_EL={
 const vEl=el=>VFX_EL[el]||VFX_EL.luz;
 // partículas com forma (usa o mesmo J.parts; "forma" e "g" são opcionais)
 function particulasEl(x,y,el,n,vel){ const v=vEl(el), L=J.parts.length; if(L>380) n=Math.ceil(n/4); else if(L>250) n=Math.ceil(n/2); if(QUAL===0) n=Math.ceil(n/2);
-  for(let i=0;i<n;i++){ if(J.parts.length>450) J.parts.shift(); const a=Math.random()*Math.PI*2, s=rnd(vel*0.3,vel);
+  for(let i=0;i<n;i++){ if(J.parts.length>320) J.parts.shift(); const a=Math.random()*Math.PI*2, s=rnd(vel*0.3,vel);
     J.parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-(v.forma==="brasa"?20:0),vida:rnd(.35,.75),max:.75,cor:Math.random()<.6?v.c1:v.c2,tam:Math.random()<.4?2:1,forma:v.forma,g:v.g,giro:Math.random()*6}); } }
 function desenharParticula(p,ox,oy){ const x=p.x-ox, y=p.y-oy; if(x<-4||y<-4||x>VW+4||y>VH+4) return; const a=Math.min(1,p.vida/p.max*1.4); lg.globalAlpha=a; lg.fillStyle=p.cor; lg.strokeStyle=p.cor;
   switch(p.forma){
@@ -3164,6 +3164,8 @@ function desenharMapaLuz(ox,oy){ if(QUAL===0||SIM.ativo||J.escuro>0.05) return; 
   const furo=(x,y,r,a)=>{ const X=(x-ox+1)*k, Y=(y-oy+1)*k, R2=r*k; if(X<-R2||Y<-R2||X>w+R2||Y>h+R2) return; g.globalAlpha=Math.min(1,a); g.drawImage(FURO,X-R2,Y-R2,R2*2,R2*2); };
   const P=J.jogador; furo(P.x,P.y,78,1); furo(P.x,P.y,40,0.6);
   for(const s of ativos()) if(s.x!=null) furo(s.x,s.y,44,0.75);
+  // à noite os inimigos são visíveis: cada um abre um pouco de luz em volta de si
+  { let ne=0; if(L.noite) for(const e of J.inimigos){ if(e.hp<=0||e.oculto) continue; if(++ne>70) break; furo(e.x,e.y-(e.tam||10)*0.4,(e.chefe?50:e.mini?30:16),e.chefe?0.8:0.5); } }
   let n=0; for(const p of J.proj){ if(++n>30) break; furo(p.x,p.y,p.alvo||p.explode?26:16,0.55); }
   for(const f of (J.flashes||[])){ const q=f.t/f.max; furo(f.x,f.y,f.r*1.2,(1-q)*0.9); }
   for(const f of J.efeitos){ furo(f.x,f.y,(f.r||20)*1.3,f.vida/f.max*0.6); }
@@ -3597,6 +3599,7 @@ function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||
   if(e.congela>0) lg.globalAlpha*=.75;
   const virar=e.x>P.x? true : false, img=e.flash>0? branco(spr) : spr;
   if(z<2&&!e.oculta&&clip>=1) sombraProjetada(spr,x+dx,y+h*0.35+h*(1-(spr.base||1)),w,h,virar,e.chefe||e.mini?1:0.85);
+  e._vis={spr,x:x+dx,y:y-z+h*0.35+h*(1-(spr.base||1)),w,h,virar,t:J.t};   // para o brilho noturno, desenhado depois da escuridão
   lg.save(); lg.translate(x+dx,y-z+h*0.35+h*(1-(spr.base||1))); if(e.caido>0&&!spr._src) lg.rotate(virar?-1.4:1.4); /* só o desenho por código deita girando; a arte pintada girada virava uma mancha achatada */ if(pose==="mania") lg.scale(Math.floor(J.t*5)%2?-1:1,1);
   lg.scale((virar?-1:1)*sx,sy);
   if(clip<1){ lg.globalAlpha*=clip; lg.translate(0,(1-clip)*3); }
@@ -3795,7 +3798,7 @@ function executarGolpe(e,g,P){ const cor=corG(e,g), el=elG(e,g), C=J.cena;
       agendar(0.6,()=>{ if(e.hp<=0) return; J.golpes.push({t:0,hit:0,ts:0,atualizar(dt){ this.t+=dt; this.hit-=dt; this.ts-=dt; if(e.hp<=0) return false; const P=J.jogador, d=Math.hypot(P.x-e.x,P.y-e.y), dentro=d<L&&Math.abs(angDif(Math.atan2(P.y-e.y,P.x-e.x),a))<ang/2;
           if(dentro&&this.hit<=0&&feriJogador(D0(e)*0.45,el)) this.hit=0.35; if(dentro&&g.empurra&&J.dashT<=0){ P.x+=Math.cos(a)*45*dt; P.y+=Math.sin(a)*45*dt; }
           if(C) for(const p of C.lista){ if(p.morto) continue; const dp=Math.hypot(p.x-e.x,p.y-e.y); if(dp>L||Math.abs(angDif(Math.atan2(p.y-e.y,p.x-e.x),a))>ang/2) continue; danificarProp(p,p.max*0.5*dt,el); if(g.empurra&&!p.mat.fixo){ p.vx+=Math.cos(a)*900/p.m*dt; p.vy+=Math.sin(a)*900/p.m*dt; } }
-          for(let k=0;k<3;k++){ if(J.parts.length>450) J.parts.shift(); const aa=a+rnd(-ang/2,ang/2), v=rnd(L*0.9,L*1.6); J.parts.push({x:e.x+Math.cos(a)*e.r,y:e.y+Math.sin(a)*e.r,vx:Math.cos(aa)*v,vy:Math.sin(aa)*v-8,vida:rnd(.4,.7),max:.7,cor:k?cor:tom(cor,1.4),tam:1+Math.floor(Math.random()*2)}); }
+          for(let k=0;k<3;k++){ if(J.parts.length>320) J.parts.shift(); const aa=a+rnd(-ang/2,ang/2), v=rnd(L*0.9,L*1.6); J.parts.push({x:e.x+Math.cos(a)*e.r,y:e.y+Math.sin(a)*e.r,vx:Math.cos(aa)*v,vy:Math.sin(aa)*v-8,vida:rnd(.4,.7),max:.7,cor:k?cor:tom(cor,1.4),tam:1+Math.floor(Math.random()*2)}); }
           if(g.solo&&this.ts<=0){ this.ts=0.04; const aa=a+rnd(-ang/2,ang/2), rr=rnd(e.r,L); pintarSolo(e.x+Math.cos(aa)*rr,e.y+Math.sin(aa)*rr,5,g.solo); }
           return this.t<1.3; }}); });
       return 2.0; }
@@ -3977,6 +3980,22 @@ function desenharBala(b,ox,oy){ const x=Math.round(b.x-ox), y=Math.round(b.y-oy)
     default: lg.fillStyle=c; lg.globalAlpha=.4; lg.fillRect(x-2,y-2,5,5); lg.globalAlpha=1; lg.fillRect(x-1,y-1,2,2); } }
 // escuridão: só a equipe, o fogo e os objetos em chamas iluminam
 let ESCURO=null;
+// silhueta para o brilho: corta o fundo quase transparente de algumas artes (virava um quadrado aceso em volta do bicho)
+const cacheSilB=new WeakMap();
+function silhuetaBrilho(spr,cor){ let m=cacheSilB.get(spr); if(!m){ m={}; cacheSilB.set(spr,m); } if(m[cor]) return m[cor];
+  const c=silhueta(spr,cor), o=document.createElement("canvas"); o.width=c.width; o.height=c.height; const g=o.getContext("2d"); g.drawImage(c,0,0);
+  try{ const im=g.getImageData(0,0,o.width,o.height), d=im.data; for(let i=3;i<d.length;i+=4) d[i]=d[i]<70? 0 : Math.min(255,(d[i]-70)*1.4); g.putImageData(im,0,0); }catch(e){}
+  if(c._suave) o._suave=true; m[cor]=o; return o; }
+// reinos noturnos: inimigos brilham (aura na cor do elemento e contorno claro), por cima da escuridão, para lerem bem e ficarem bonitos
+function desenharBrilhoInimigos(){ if(SIM.ativo||QUAL===0) return; const L=(UNIV[R.universo]||{}).luz; if(!(L&&L.noite)&&!(J.escuro>0.05)) return;
+  const a0=lg.globalCompositeOperation; lg.globalCompositeOperation="lighter"; let n=0;
+  for(const e of J.inimigos){ const v=e._vis; if(!v||v.t!==J.t||e.hp<=0||e.oculto) continue; if(++n>90) break;
+    const cor=e._corBrilho||(e._corBrilho=mistura(COR[e.el]||"#c8a0ff","#ffffff",0.25)), pul=0.75+0.25*Math.sin(J.t*3+(e.fase||0)), au=e.chefe||e.mini? 1.3 : 1.22;
+    lg.save(); lg.translate(v.x,v.y); lg.scale(v.virar?-1:1,1);
+    lg.globalAlpha=0.45*pul; lg.drawImage(silhuetaBrilho(v.spr,cor),-v.w*au/2,-v.h*au+(au-1)*v.h*0.1,v.w*au,v.h*au);   // aura
+    lg.globalAlpha=0.2*pul; lg.drawImage(silhuetaBrilho(v.spr,"#ffffff"),-v.w/2,-v.h,v.w,v.h);                         // corpo levemente aceso
+    lg.restore(); }
+  lg.globalAlpha=1; lg.globalCompositeOperation=a0; }
 function desenharEscuridao(ox,oy){ if(!(J.escuro>0.02)||passiva("imune_escuro")) return; if(!ESCURO||ESCURO.width!==VW||ESCURO.height!==VH){ ESCURO=document.createElement("canvas"); ESCURO.width=VW; ESCURO.height=VH; }
   const g=ESCURO.getContext("2d"); g.globalCompositeOperation="source-over"; g.clearRect(0,0,VW,VH); g.fillStyle=`rgba(6,4,14,${J.escuro})`; g.fillRect(0,0,VW,VH); g.globalCompositeOperation="destination-out";
   const furo=(x,y,r)=>{ const gr=g.createRadialGradient(x-ox,y-oy,0,x-ox,y-oy,r); gr.addColorStop(0,"rgba(0,0,0,1)"); gr.addColorStop(1,"rgba(0,0,0,0)"); g.fillStyle=gr; g.fillRect(x-ox-r,y-oy-r,r*2,r*2); };
@@ -4016,7 +4035,9 @@ function desenhar(dt){
   const P=J.jogador; J.shake*=0.86; const tq=performance.now()/1000, sx=J.shake*(Math.sin(tq*53)*0.35+Math.sin(tq*29+1.3)*0.25), sy=J.shake*(Math.sin(tq*47+0.7)*0.35+Math.sin(tq*23+2.1)*0.25);
   // câmera com precisão menor que 1 pixel do mundo: as posições continuam inteiras (ox, oy), e a sobra desloca a tela inteira.
   // Assim a rolagem é contínua em vez de andar em saltos de um pixel do mundo (3 a 4 pixels da tela).
-  const cx0=P.x-VW/2+sx, cy0=P.y-VH/2+sy, ox=Math.round(cx0), oy=Math.round(cy0);
+  // câmera suave: segue o herói com um leve atraso e se adianta um pouco para onde ele anda (vê mais do que vem pela frente)
+  { const k=1-Math.exp(-(dt||1/60)*7), lx=P.x+(J.pvx||0)*0.16, ly=P.y+(J.pvy||0)*0.16; if(J.camX==null||Math.abs(J.camX-P.x)>VW){ J.camX=P.x; J.camY=P.y; } J.camX+=(lx-J.camX)*k; J.camY+=(ly-J.camY)*k; }
+  const cx0=J.camX-VW/2+sx, cy0=J.camY-VH/2+sy, ox=Math.round(cx0), oy=Math.round(cy0);
   if(Q>1&&!SIM.ativo) lg.setTransform(Q,0,0,Q,(ox-cx0)*Q,(oy-cy0)*Q); else lg.setTransform(Q,0,0,Q,0,0);
   lg.imageSmoothingEnabled=!!chao.suave; lg.imageSmoothingQuality="high";
   // piso como padrão repetido: a amostragem dá a volta na borda, então não sobra linha de emenda entre um bloco e outro
@@ -4062,7 +4083,7 @@ function desenhar(dt){
   fila.push({y:P.y+3,f:()=>desenharLenda(ox,oy)});
   for(const t of J.totens) fila.push({y:t.y+1,f:()=>desenharTotem(t,ox,oy)});
   fila.sort((a,b)=>a.y-b.y); for(const it of fila){ lg.globalAlpha=1; it.f(); } lg.globalAlpha=1;
-  desenharVfx(ox,oy,"frente"); desenharFauna(ox,oy,"ar"); desenharQuedas(ox,oy); desenharCenaAr(ox,oy); desenharFauna(ox,oy,"ceu"); J._nuvemFeita=false; desenharMapaLuz(ox,oy); desenharNuvens(ox,oy); desenharLuzAmbiente(ox,oy); desenharEscuridao(ox,oy);
+  desenharVfx(ox,oy,"frente"); desenharFauna(ox,oy,"ar"); desenharQuedas(ox,oy); desenharCenaAr(ox,oy); desenharFauna(ox,oy,"ceu"); J._nuvemFeita=false; desenharMapaLuz(ox,oy); desenharNuvens(ox,oy); desenharLuzAmbiente(ox,oy); desenharEscuridao(ox,oy); desenharBrilhoInimigos();
   // luzes aditivas
   lg.globalCompositeOperation="lighter";
   for(const p of J.proj) desenharProjetil(p,ox,oy);
@@ -4071,11 +4092,12 @@ function desenhar(dt){
   for(const p of J.parts) desenharParticula(p,ox,oy);
   // anéis e raios com halo: traço largo e fraco por baixo, fino e forte por cima
   lg.lineCap="round"; lg.lineJoin="round";
-  for(const f of J.efeitos){ const a=f.vida/f.max; lg.strokeStyle=f.cor; lg.fillStyle=f.cor;
+  const kEf=J.efeitos.length>16? 16/J.efeitos.length : 1;   // muitos anéis juntos: cada um mais fraco (somados viravam um clarão branco)
+  for(const f of J.efeitos){ const a=f.vida/f.max*kEf; lg.strokeStyle=f.cor; lg.fillStyle=f.cor;
     if(f.linha){ const n=6, pts=[[f.x-ox,f.y-oy]]; for(let i=1;i<n;i++){ const t=i/n; pts.push([f.x+(f.x2-f.x)*t-ox+rnd(-3.5,3.5), f.y+(f.y2-f.y)*t-oy+rnd(-3.5,3.5)]); } pts.push([f.x2-ox,f.y2-oy]);
       for(const [lw,al,cor] of [[3.5,0.25,f.cor],[1.3,0.9,f.cor],[0.5,1,"#ffffff"]]){ lg.globalAlpha=a*al; lg.strokeStyle=cor; lg.lineWidth=lw; lg.beginPath(); lg.moveTo(pts[0][0],pts[0][1]); for(const q of pts) lg.lineTo(q[0],q[1]); lg.stroke(); } }
-    else { const r=f.r*(1.15-a*0.5); lg.globalAlpha=a*0.12; lg.beginPath(); lg.arc(f.x-ox,f.y-oy,r,0,Math.PI*2); lg.fill();
-      lg.globalAlpha=a*0.3; lg.lineWidth=3; lg.stroke(); lg.globalAlpha=a*0.95; lg.lineWidth=0.9; lg.stroke(); } }
+    else { const q=1-f.vida/f.max, r=f.r*(0.55+0.6*(1-Math.pow(1-q,3)));   /* abre rápido e desacelera */ lg.globalAlpha=a*0.06; lg.beginPath(); lg.arc(f.x-ox,f.y-oy,r,0,Math.PI*2); lg.fill();
+      lg.globalAlpha=a*0.2; lg.lineWidth=2.6; lg.stroke(); lg.globalAlpha=a*0.7; lg.lineWidth=0.8; lg.stroke(); } }
   lg.lineWidth=1; lg.lineCap="butt"; lg.lineJoin="miter";
   desenharCenaLuz(ox,oy); desenharGolpesLuz(ox,oy); desenharVfx(ox,oy,"luz");
   lg.globalAlpha=1; lg.globalCompositeOperation="source-over";
@@ -4085,15 +4107,15 @@ function desenhar(dt){
   // luz quente em volta do jogador + vinheta das bordas: uma imagem pequena pronta, desenhada esticada (uma passada em vez de duas)
   ctx.imageSmoothingEnabled=true; ctx.drawImage(sobreposicao(J.desp>0?COR[elementoDe(ativos()[0])]:"#ffd68c",J.desp>0?.24:.16,J.vida/J.vidaMax<0.3?.8:.62),(P.x-ox-VW/2)*S-10,(P.y-oy-VH/2)*S-10,W+20,H+20); ctx.imageSmoothingEnabled=false;
   if(J.vida/J.vidaMax<0.3){ ctx.globalAlpha=0.12+0.08*Math.sin(J.t*8); ctx.fillStyle="#c8473b"; ctx.fillRect(0,0,W,H); ctx.globalAlpha=1; }
-  if(J.flash){ J.flash.vida-=dt||1/60; ctx.globalAlpha=Math.max(0,J.flash.vida); ctx.fillStyle=J.flash.cor; ctx.fillRect(0,0,W,H); ctx.globalAlpha=1; if(J.flash.vida<=0) J.flash=null; }
+  if(J.flash){ J.flash.vida-=dt||1/60; ctx.globalAlpha=Math.max(0,J.flash.vida)*0.4; ctx.fillStyle=J.flash.cor;   /* clarão de tela mais leve: não ofusca */ ctx.fillRect(0,0,W,H); ctx.globalAlpha=1; if(J.flash.vida<=0) J.flash=null; }
   ctx.textAlign="center";
   // números: valores grandes abreviados ("5,3k"); com a tela cheia, só críticos e super efetivos aparecem
-  const cheio=J.nums.length>12;
+  const cheio=J.nums.length>8;
   // números: nascem com um pulo elástico, contorno escuro (lê em qualquer chão), crítico dourado com brilho; somem encolhendo
   ctx.lineJoin="round"; ctx.textBaseline="middle";
   for(const n of J.nums){ if(cheio&&n.tam<=13) continue; const idade=(n.max||0.8)-n.vida, v=n.v>=1000? (n.v/1000).toFixed(n.v>=10000?0:1).replace(".",",")+"k" : n.v;
     const pulo=idade<0.18? 1+Math.sin(idade/0.18*Math.PI)*0.55*(1-idade/0.18)+0.25*(1-idade/0.18) : 1, some=n.vida<0.22? 0.6+n.vida/0.22*0.4 : 1, esc=pulo*some*(1+(n.pop||0)*0.3);
-    const crit=n.tam>=20, X=(n.x-ox)*S, Y=(n.y-oy)*S, fs=Math.round(n.tam*esc*(crit?1.1:1));
+    const crit=n.tam>=20, X=(n.x-ox)*S, Y=(n.y-oy)*S, fs=Math.round(n.tam*0.78*esc*(crit?1.1:1));   /* números menores: menos poluição */
     ctx.globalAlpha=Math.min(1,n.vida*3); ctx.font=`900 ${fs}px "Nunito", system-ui, sans-serif`;
     ctx.lineWidth=Math.max(2.5,fs*0.2); ctx.strokeStyle="rgba(18,14,26,.92)"; ctx.strokeText(v,X,Y);
     if(crit){ const gr=ctx.createLinearGradient(0,Y-fs/2,0,Y+fs/2); gr.addColorStop(0,"#fffbe0"); gr.addColorStop(0.5,"#ffe066"); gr.addColorStop(1,"#ff9a3d"); ctx.fillStyle=gr; ctx.shadowColor="rgba(255,190,60,.85)"; ctx.shadowBlur=fs*0.5; }
@@ -4159,26 +4181,30 @@ function desenharTotem(t,ox,oy){ const x=t.x-ox, y=t.y-oy, tm=J.t+(t.x%7), pul=0
 // dourado e espada curta com a gema do elemento. Olha para o lado em que anda (espelhado), anda com as pernas alternando e
 // o corpo balançando, respira parado e pisca de vez em quando. Antes era um desenho vetorial de costas, difícil de ler.
 const HEROI={
-  pal:{K:"#1c1224",H:"#5a3418",h:"#7e4a22",y:"#b07a40",S:"#f6d0aa",s:"#dfa880",E:"#1e1a30",w:"#ffffff",B:"#f39a9a",N:"#28366e",n:"#3c52a0",
-    C:"#f1e4c4",c:"#c9b48c",T:"#3f72cc",t:"#2a5096",G:"#f0c45a",g:"#a87a2a",P:"#6a4a34",p:"#4a3222",O:"#7a4a26",M:"#eef4fc",m:"#9aaac0"},
-  cab:["........KK........",".......KhHK.......","....KKKHHHKKK.....","...KHHhhhhhhHHK...","..KHhhyyhhhhhhHK..","..KHhHHHHHHHHhHK..",
-    ".KHHHHSHHHHSHHHHK.",".KHHSSSSSSSSSSHHK.",".KHSSwESSSSwESSHK.",".KHSSEESSSSEESSHK.","..KSBSSSSssSSSBSK.","..KKSSSSSSSSSSKK..","....KKSSSSSSKK...."],
-  corpo:["...KCNNNNNNNNCK...","..KCCnNNNNNNnCCK..","..KCTTTTNNTTTTCK..",".KCSTTTTNNTTTTSCK.",".KCSTGGGGGGGGTSCK.",".KCcKTTTTgTTTKcCK.","..KcKttTTTTttKcK..","..KKKKKKKKKKKKKK.."],
+  // contorno marrom-escuro (mais suave que preto), cabelo com 4 tons e reflexo, olhos com íris azul e brilho, cachecol vermelho,
+  // túnica creme com cinto dourado, capa azul por trás dos ombros, calça escura e botas de couro
+  pal:{o:"#2b1a24",H:"#7a4222",h:"#552c16",j:"#a8622c",y:"#dc9a52",S:"#fbd8b6",s:"#e8ad8c",r:"#f2a0a0",E:"#2a1f3a",I:"#4a86e8",w:"#ffffff",
+    N:"#d0463c",n:"#93302a",m:"#f07060",C:"#2f4c8e",c:"#1f3468",k:"#4a70b8",T:"#f1e4c4",t:"#cbb68e",G:"#f4c85c",g:"#b0802e",P:"#3c3256",p:"#2a2240",O:"#86532a",q:"#4e2e16",M:"#f2f7fd",l:"#a8b6c8"},
+  cab:["..........oo..........",".........ojyo.........","......oooojjHoooo.....",".....oHHjjyyjjHHHo....","....oHjjyyjjjjjHHHo...","...oHHjjjHHHHHjjHHHo..",
+    "...oHHHHHHHHHHHHHHHo..","...oHHhSHHHHHSHHhHHo..","...oHhSSSSSSSSSSShHo..","..ohhSwEESSSSSwEESho..","..ohSSEIESSSSSEIESSo..","...oSSEEESSSSSEEESo...",
+    "...oSrrSSSSoSSSrrSo...","....ooSSSSSSSSSSoo....","......ooooooooooo....."],
+  corpo:[".....oNNmmNNNNNNo.....","...ookNNNNNNNNnnCoo...","..okCCoTTTNNTTTTokCo..","..oCCoSoTTNnTTToSoCco.","..oCCoSoTGGGGGToSoCco.",
+    "..okCooTTTTgTTTToocco.","..oCCcotTTTTTTtocCcco.","...oCcootttttttoocco..","....oooooooooooooo...."],
   pernas:{
-    p:["....KPPPK.KPPPK...","....KPpPK.KPpPK...","....KOOOK.KOOOK...","...KOOOOK.KOOOOK..","...KKKKKK.KKKKKK.."],
-    a:["....KPPPK.KPPPK...","....KOOOK.KPpPK...","...KOOOOK.KOOOK...","...KKKKKK.KOOOOK..","..........KKKKKK.."],
-    b:["....KPPPK.KPPPK...","....KPpPK.KOOOK...","....KOOOK.KOOOOK..","...KOOOOK.KKKKKK..","...KKKKKK........."]},
-  // espada na mão, apontando para baixo ao lado das pernas (para cima ela encostava no rosto); X = gema do elemento no pomo
-  espada:[[16,14,"K"],[15,15,"K"],[16,15,"X"],[17,15,"K"],[16,16,"O"],[17,16,"K"],[14,17,"K"],[15,17,"G"],[16,17,"G"],[17,17,"G"],
-    [15,18,"K"],[16,18,"M"],[17,18,"K"],[15,19,"K"],[16,19,"M"],[17,19,"K"],[15,20,"K"],[16,20,"m"],[17,20,"K"],[15,21,"K"],[16,21,"m"],[17,21,"K"],[16,22,"K"]],
+    p:["......oPPo.oPPo.......","......oPpo.oPpo.......",".....oOOOo.oOOOo......",".....oOqqo.oOqqo......",".....ooooo.ooooo......"],
+    a:["......oPPo.oPPo.......",".....oOOOo.oPpo.......",".....oOqqo.oOOOo......",".....ooooo.oOqqo......","...........ooooo......"],
+    b:["......oPPo.oPPo.......","......oPpo.oOOOo......",".....oOOOo.oOqqo......",".....oOqqo.ooooo......",".....ooooo............"]},
+  // espada na mão direita, apontando para baixo; X = gema do elemento no pomo
+  espada:[[19,15,"o"],[18,16,"o"],[19,16,"X"],[20,16,"o"],[19,17,"g"],[17,18,"o"],[18,18,"G"],[19,18,"G"],[20,18,"G"],[21,18,"o"],
+    [18,19,"o"],[19,19,"M"],[20,19,"o"],[18,20,"o"],[19,20,"M"],[20,20,"o"],[18,21,"o"],[19,21,"l"],[20,21,"o"],[18,22,"o"],[19,22,"l"],[20,22,"o"],[19,23,"o"]],
   cache:new Map() };
 // quadro do herói: pernas (p parado, a e b passada), corpo e cabeça descidos 'bob' px, olhos fechados se 'pisca'; a gema da espada leva a cor do elemento
 function quadroHeroi(pernas,bob,pisca,corGema){ const k=pernas+bob+(pisca?1:0)+corGema; if(HEROI.cache.has(k)) return HEROI.cache.get(k);
-  const W=18, H=27, c=document.createElement("canvas"); c.width=W; c.height=H; const g=c.getContext("2d"), px=(x,y,ch)=>{ const cor=ch==="X"? corGema : HEROI.pal[ch]; if(!cor) return; g.fillStyle=cor; g.fillRect(x,y,1,1); };
-  const nc=HEROI.cab.length, ncp=HEROI.corpo.length;
-  HEROI.pernas[pernas].forEach((L,y)=>{ for(let x=0;x<W;x++) if(L[x]!==".") px(x,nc+ncp-1+y+1,L[x]); });
-  HEROI.corpo.forEach((L,y)=>{ for(let x=0;x<W;x++) if(L[x]!==".") px(x,nc+y+bob,L[x]); });
-  HEROI.cab.forEach((L,y)=>{ for(let x=0;x<W;x++){ let ch=L[x]; if(ch===".") continue; if(pisca&&(ch==="E"||ch==="w")) ch= y===9? "E" : "S"; px(x,y+bob,ch); } });
+  const nc=HEROI.cab.length, ncp=HEROI.corpo.length, W=22, H=nc+ncp+4, c=document.createElement("canvas"); c.width=W; c.height=H;
+  const g=c.getContext("2d"), px=(x,y,ch)=>{ const cor=ch==="X"? corGema : HEROI.pal[ch]; if(!cor) return; g.fillStyle=cor; g.fillRect(x,y,1,1); };
+  HEROI.pernas[pernas].forEach((L,y)=>{ for(let x=0;x<W;x++) if(L[x]!==".") px(x,nc+ncp-2+y,L[x]); });
+  HEROI.corpo.forEach((L,y)=>{ for(let x=0;x<W;x++) if(L[x]!==".") px(x,nc+y-1+bob,L[x]); });
+  HEROI.cab.forEach((L,y)=>{ for(let x=0;x<W;x++){ let ch=L[x]; if(ch===".") continue; if(pisca&&(ch==="E"||ch==="w"||ch==="I")) ch= y===11? "E" : "S"; px(x,y+bob,ch); } });
   for(const [x,y,ch] of HEROI.espada) px(x,y+bob,ch);
   HEROI.cache.set(k,c); return c; }
 function desenharInvocador(x,y){
@@ -4189,9 +4215,9 @@ function desenharInvocador(x,y){
   if(anda){ const f=Math.floor(t*9)%4; pernas=["a","p","b","p"][f]; bob=f%2===0? 1 : 0; } else bob=Math.floor(t*1.6)%2;   // passada; parado respira
   const pisca=(t%3.4)<0.12, spr=quadroHeroi(pernas,bob,pisca,cor);
   const suave=lg.imageSmoothingEnabled; lg.imageSmoothingEnabled=false; lg.save(); lg.translate(Math.round(x),Math.round(y)+7); lg.scale(lado,1);
-  lg.drawImage(spr,-9,-27); lg.restore(); lg.imageSmoothingEnabled=suave;
+  lg.drawImage(spr,-11,-spr.height); lg.restore(); lg.imageSmoothingEnabled=suave;
   // brilho do elemento na gema da espada
-  const gx=x+lado*7.5, gy=y+7-27+15.5+bob, pul=0.5+0.5*Math.sin(t*4), [r1,g1,b1]=hexRgb(cor); lg.globalCompositeOperation="lighter";
+  const gx=x+lado*8.5, gy=y+7-28+16.5+bob, pul=0.5+0.5*Math.sin(t*4), [r1,g1,b1]=hexRgb(cor); lg.globalCompositeOperation="lighter";
   const gg=lg.createRadialGradient(gx,gy,0,gx,gy,3+pul); gg.addColorStop(0,`rgba(${r1},${g1},${b1},${0.5+0.2*pul})`); gg.addColorStop(1,`rgba(${r1},${g1},${b1},0)`); lg.fillStyle=gg; lg.fillRect(gx-5,gy-5,10,10);
   lg.globalCompositeOperation="source-over"; }
 let SOBRE=null;
@@ -4203,7 +4229,7 @@ function sobreposicao(cor,aLuz,aVin){ const k=cor+"|"+aLuz+"|"+aVin+"|"+W+"x"+H;
 // brilho (bloom): reduz a tela, guarda só o que é claro (multiplicar a imagem por ela mesma) e soma de volta, borrado.
 // Custa pouco (imagens pequenas) e some sozinho quando o aparelho está lento (QUAL<2).
 let BL1=null, BL2=null;
-function aplicarBloom(){ if(QUAL<2||SIM.ativo||TOQUE) return;
+function aplicarBloom(){ if(QUAL<2||SIM.ativo) return;   // também no celular: é barato e o jogo desliga sozinho (QUAL<2) se ficar lento
   const w1=Math.max(8,Math.round(W/4)), h1=Math.max(8,Math.round(H/4)), w2=Math.max(4,w1>>1), h2=Math.max(4,h1>>1);
   if(!BL1){ BL1=document.createElement("canvas"); BL2=document.createElement("canvas"); }
   if(BL1.width!==w1||BL1.height!==h1){ BL1.width=w1; BL1.height=h1; BL2.width=w2; BL2.height=h2; }

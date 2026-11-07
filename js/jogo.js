@@ -2327,8 +2327,9 @@ function nitidez(c,k){ if(SIM.ativo) return c; try{ const g=c.getContext("2d"), 
 // piso pintado mais calmo: a arte do chão tem muito contraste e detalhe (flores, trepadeiras, ladrilhos) e competia com
 // monstros e inimigos; tira 20% do contraste, 25% da saturação e escurece um pouco, uma vez só quando o mapa começa
 function acalmarPiso(c){ if(SIM.ativo) return c; try{ const g=c.getContext("2d"), im=g.getImageData(0,0,c.width,c.height), d=im.data;
+    let soma=0, n=0; for(let i=0;i<d.length;i+=4*97){ soma+=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114; n++; } const media=soma/n, luz=media<25? 1.45 : media<45? 1.25 : 0.97;   /* piso muito escuro clareia */
     for(let i=0;i<d.length;i+=4){ const r=d[i], gg=d[i+1], b=d[i+2], L=r*0.299+gg*0.587+b*0.114;
-      for(let ch=0;ch<3;ch++){ const v=d[i+ch], s=L+(v-L)*0.75; d[i+ch]=(118+(s-118)*0.8)*0.93; } }
+      for(let ch=0;ch<3;ch++){ const v=d[i+ch], s=L+(v-L)*0.75; d[i+ch]=(118+(s-118)*0.8)*luz; } }
     g.putImageData(im,0,0); }catch(e){} return c; }
 function tornarContinuo(img,T){ const c=document.createElement("canvas"); c.width=c.height=T; const g=c.getContext("2d"); g.imageSmoothingEnabled=false; g.drawImage(img,0,0,T,T);
   const o=document.createElement("canvas"); o.width=o.height=T; const go=o.getContext("2d"), h=T/2; go.imageSmoothingEnabled=false;
@@ -3146,7 +3147,10 @@ function atualizarLuz(dt){ if(J.flashes){ for(const f of J.flashes) f.t+=dt; J.f
 // ---------------------------------------------------------------- escuridão com poças de luz e sombras projetadas
 // quanto o mapa escurece: noite bem mais, dia só um pouco; o fim do mapa e o chefe puxam para o crepúsculo
 function crepusculo(){ return J.chefeVivo? 1 : Math.max(0,Math.min(1,(J.t-MAPA_SEG*0.6)/(MAPA_SEG*0.4))); }
-function nivelEscuro(){ const u=UNIV[R.universo], L=u&&u.luz; const c=crepusculo(); if(!L) return 0.1+c*0.15; return Math.min(0.7,(L.noite?0.48:0.1)+c*(L.noite?0.12:0.2)); }
+function nivelEscuro(){ const u=UNIV[R.universo], L=u&&u.luz; const c=crepusculo(); if(!L) return 0.1+c*0.15; return pisoEscuroK()*Math.min(0.6,(L.noite?0.34:0.1)+c*(L.noite?0.1:0.2)); }   /* noite mais clara: no celular os mapas noturnos ficavam escuros demais para ler */
+// piso que já é escuro (reinos noturnos têm piso com brilho de 3% a 5%): a cor da noite e a sombra do mapa pesam menos,
+// senão as três camadas juntas deixavam a tela quase preta no celular
+function pisoEscuroK(){ const l=typeof lumChao==="function"? lumChao() : 0.2; return l<0.08? 0.5 : l<0.15? 0.7 : 1; }
 let LMAP=null, FURO=null;
 function desenharMapaLuz(ox,oy){ if(QUAL===0||SIM.ativo||J.escuro>0.05) return; const A=nivelEscuro(); if(A<0.04) return;
   const k=0.25, w=Math.ceil((VW+2)*k), h=Math.ceil((VH+2)*k);
@@ -3178,7 +3182,7 @@ function sombraProjetada(spr,x,yPe,w,h,virar,forca){ if(!spr||QUAL===0||SIM.ativ
 // tom ambiente: multiplica a cena pela cor da luz do universo; perto do fim do mapa caminha para o crepúsculo
 function desenharLuzAmbiente(ox,oy){ const u=UNIV[R.universo]; if(!u||!u.luz) return; const L=u.luz;
   const crep=J.chefeVivo? 1 : Math.max(0,Math.min(1,(J.t-MAPA_SEG*0.6)/(MAPA_SEG*0.4)));
-  const tom=crep>0? mistura(L.tom, L.noite?"#2a1a4a":"#c06a50", crep*0.6) : L.tom, forca=Math.min(0.55,L.forca+crep*(L.noite?0.06:0.16))*(J.escuro>0.05?0.4:1);
+  const tom=crep>0? mistura(L.tom, L.noite?"#2a1a4a":"#c06a50", crep*0.6) : L.tom, forca=Math.min(0.55,L.forca+crep*(L.noite?0.06:0.16))*(J.escuro>0.05?0.4:1)*pisoEscuroK();
   if(forca>0.01){ lg.globalCompositeOperation="multiply"; lg.globalAlpha=forca/0.62; lg.fillStyle=tom; lg.fillRect(-1,-1,VW+2,VH+2); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1; }
   // luzes: à noite brilham mais
   const k=0.35+(L.noite?0.65:0)+crep*0.25; if(k<0.3) return; lg.globalCompositeOperation="lighter";

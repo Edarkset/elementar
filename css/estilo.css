@@ -376,3 +376,18 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 .bau-tela.aberto .bau-arca .tampa-aberta{transform:none}
 .bau-arca .interior{opacity:0; transition:opacity .2s .05s} .bau-tela.aberto .bau-arca .interior{opacity:1}
 .bau-tela.aberto .bau-arca::after{top:22%}
+
+/* botões do HUD (Bolsa, pausa) grandes o bastante para o dedo: eram 26 px de altura */
+.btn-hud{min-height:36px; min-width:40px; padding:6px 12px; font-size:14px}
+/* baú no celular deitado: tudo cabe na tela (o botão Coletar ficava de fora) */
+@media (max-height:500px) and (orientation:landscape){
+  .bau-tela{gap:4px; padding:8px; justify-content:center}
+  .bau-titulo{font-size:20px; margin-bottom:0} .bau-titulo.jackpot{font-size:28px}
+  .bau-arca{width:min(22vh,110px)}
+  .bau-casas{max-width:none; flex-wrap:nowrap}
+  .casa{width:104px; min-height:0; padding:5px 4px} .casa img{width:40px; height:40px}
+  .bau-coletar{margin-top:2px; padding:6px 12px}
+}
+/* baú com 5 prêmios em tela pequena: cartas mais estreitas (3 por linha) e a tela rola se ainda faltar espaço */
+.bau-tela{overflow-y:auto}
+@media (max-width:520px) and (orientation:portrait){ .casa{width:min(30vw,112px); min-height:100px; padding:6px 4px} .casa img{width:48px; height:48px} .bau-arca{width:min(40vw,160px)} }

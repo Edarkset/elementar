@@ -367,3 +367,12 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 
 /* retrato animado desenhado nos pixels reais da tela: o navegador não amplia de novo (era o que borrava) */
 .carta canvas.anim-retrato.nitido{image-rendering:pixelated}
+
+/* baú novo: proporção do desenho (120x112); a tampa abre para trás a partir da dobradiça e o interior aparece brilhando */
+.bau-arca{width:min(46vw,180px); height:auto; aspect-ratio:120/112}
+.bau-arca .tampa{transform-box:view-box; transform-origin:60px 11px; transition:transform .45s cubic-bezier(.3,1.5,.5,1)}
+.bau-tela.aberto .bau-arca .tampa{transform:scaleY(0); transform-origin:60px 50px; transition:transform .16s ease-in}
+.bau-arca .tampa-aberta{transform-box:view-box; transform-origin:60px 47px; transform:scaleY(0); transition:transform .35s .14s cubic-bezier(.3,1.6,.5,1)}
+.bau-tela.aberto .bau-arca .tampa-aberta{transform:none}
+.bau-arca .interior{opacity:0; transition:opacity .2s .05s} .bau-tela.aberto .bau-arca .interior{opacity:1}
+.bau-tela.aberto .bau-arca::after{top:22%}

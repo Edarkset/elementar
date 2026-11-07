@@ -878,26 +878,48 @@ function premioNivel(s){ if(!s||!s.mon) return; const lib=["b","h1",...((est(s)>
 // tela do baú: o baú treme, abre com moedas voando e as casas giram como uma roleta até parar uma por uma
 // baú desenhado: madeira com veios em degradê, cintas de metal com rebites, cantoneiras e fechadura (dourado no baú de ouro),
 // tampa curva separada (abre girando) e brilho de dentro que aparece quando ela levanta
-function svgBau(ouro){ const m=ouro?["#fff0a8","#e0a830","#8a5a10"]:["#eef2f8","#a8b0c0","#5a6070"], mad=ouro?["#7a2e6a","#4e1a46","#2e0c2a"]:["#9a5a2a","#6a3818","#3e1e0c"];
-  const reb=(x,y)=>`<circle cx="${x}" cy="${y}" r="1.6" fill="url(#bm)" stroke="${m[2]}" stroke-width=".5"/>`;
-  return `<svg viewBox="0 0 120 100" aria-hidden="true"><defs>
-    <linearGradient id="bw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mad[0]}"/><stop offset=".55" stop-color="${mad[1]}"/><stop offset="1" stop-color="${mad[2]}"/></linearGradient>
-    <linearGradient id="bt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mad[0]}"/><stop offset="1" stop-color="${mad[1]}"/></linearGradient>
-    <linearGradient id="bm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${m[0]}"/><stop offset=".5" stop-color="${m[1]}"/><stop offset="1" stop-color="${m[2]}"/></linearGradient>
-    <radialGradient id="bl" cx=".5" cy=".9" r=".7"><stop offset="0" stop-color="#fffbe0"/><stop offset=".4" stop-color="${ouro?"#ffd34a":"#ffe9a0"}" stop-opacity=".9"/><stop offset="1" stop-color="#ffd34a" stop-opacity="0"/></radialGradient></defs>
-    <ellipse cx="60" cy="95" rx="52" ry="5" fill="rgba(0,0,0,.45)"/>
-    <ellipse class="brilho-interno" cx="60" cy="44" rx="48" ry="26" fill="url(#bl)"/>
-    <g class="corpo"><rect x="10" y="48" width="100" height="44" rx="4" fill="url(#bw)" stroke="#1a0c06" stroke-width="2"/>
-      <path d="M12 60H108M12 74H108" stroke="#1a0c06" stroke-opacity=".45" stroke-width="1"/><path d="M14 54q20 2 40 0M64 66q22 2 42 0M16 82q24 2 46 0" stroke="#fff" stroke-opacity=".08" stroke-width="1" fill="none"/>
-      <rect x="22" y="48" width="9" height="44" fill="url(#bm)" stroke="${m[2]}" stroke-width=".8"/><rect x="89" y="48" width="9" height="44" fill="url(#bm)" stroke="${m[2]}" stroke-width=".8"/>
-      ${reb(26.5,53)}${reb(26.5,70)}${reb(26.5,87)}${reb(93.5,53)}${reb(93.5,70)}${reb(93.5,87)}
-      <path d="M10 82v10h12v-3h-9v-7zM110 82v10H98v-3h9v-7z" fill="url(#bm)" stroke="${m[2]}" stroke-width=".6"/>
-      <rect x="50" y="52" width="20" height="22" rx="3" fill="url(#bm)" stroke="${m[2]}" stroke-width="1"/><path d="M60 58a3 3 0 0 1 1.6 5.5l1 5h-5.2l1-5A3 3 0 0 1 60 58z" fill="#1a0c06"/></g>
-    <g class="tampa"><path d="M10 48V40Q10 20 60 18Q110 20 110 40V48Z" fill="url(#bt)" stroke="#1a0c06" stroke-width="2"/>
-      <path d="M14 34Q60 22 106 34" stroke="#fff" stroke-opacity=".12" stroke-width="2" fill="none"/>
-      <path d="M22 48V30Q22 23 31 22V48z" fill="url(#bm)" stroke="${m[2]}" stroke-width=".8"/><path d="M98 48V30Q98 23 89 22V48z" fill="url(#bm)" stroke="${m[2]}" stroke-width=".8"/>
-      <rect x="8" y="44" width="104" height="6" rx="2" fill="url(#bm)" stroke="${m[2]}" stroke-width=".8"/>${reb(26.5,30)}${reb(93.5,30)}
-      <path d="M53 44h14v8a7 7 0 0 1-14 0z" fill="url(#bm)" stroke="${m[2]}" stroke-width="1"/>${ouro?`<circle cx="60" cy="33" r="5" fill="#d84aff" stroke="${m[0]}" stroke-width="1.5"/><circle cx="58.5" cy="31.5" r="1.4" fill="#fff" opacity=".8"/>`:""}</g></svg>`; }
+// baú da tela de prêmio: de frente, mais alto que largo o bastante para ler como baú (antes era uma caixa larga e baixa),
+// madeira em tábuas, cantoneiras, cintas com rebites e fechadura. Ao abrir, a tampa sobe e tomba para trás (achata em Y a partir
+// da dobradiça de trás) e aparece o interior brilhando, em vez de girar de lado e ficar solta.
+function svgBau(ouro){ const m=ouro?["#fff4c0","#f0c048","#a87418","#5a3a08"]:["#f4f6fa","#b8c0cc","#6e7686","#3a404c"], mad=ouro?["#9a4a8e","#6e2c66","#4a1a46","#2a0c28"]:["#b8743a","#8a4e22","#5e3214","#341a08"];
+  const reb=(x,y,r=1.9)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".6"/><circle cx="${x-r*.35}" cy="${y-r*.35}" r="${r*.35}" fill="#fff" opacity=".7"/>`;
+  const tabuas=(y0,y1)=>[34,52,68,86].map(x=>`<path d="M${x} ${y0}V${y1}" stroke="${mad[3]}" stroke-opacity=".55" stroke-width="1"/><path d="M${x+1.2} ${y0}V${y1}" stroke="#fff" stroke-opacity=".07" stroke-width="1"/>`).join("");
+  const veios=`<path d="M38 66q6-1.5 12 0M56 80q5 1.5 10 0M72 64q5-1.5 12 0M40 90q4 1 9 0M74 88q4-1 9 0" stroke="${mad[3]}" stroke-opacity=".35" stroke-width=".8" fill="none"/>`;
+  return `<svg viewBox="0 0 120 112" aria-hidden="true"><defs>
+    <linearGradient id="bauW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mad[0]}"/><stop offset=".5" stop-color="${mad[1]}"/><stop offset="1" stop-color="${mad[2]}"/></linearGradient>
+    <linearGradient id="bauWl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".35"/><stop offset=".18" stop-color="#000" stop-opacity="0"/><stop offset=".82" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></linearGradient>
+    <linearGradient id="bauT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mad[0]}"/><stop offset=".7" stop-color="${mad[1]}"/><stop offset="1" stop-color="${mad[2]}"/></linearGradient>
+    <linearGradient id="bauM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${m[0]}"/><stop offset=".45" stop-color="${m[1]}"/><stop offset="1" stop-color="${m[2]}"/></linearGradient>
+    <radialGradient id="bauL" cx=".5" cy=".75" r=".75"><stop offset="0" stop-color="#fffbe6"/><stop offset=".35" stop-color="${ouro?"#ffd34a":"#ffe9a0"}"/><stop offset="1" stop-color="${ouro?"#c070ff":"#ffb040"}" stop-opacity="0"/></radialGradient></defs>
+    <ellipse cx="60" cy="106" rx="54" ry="5" fill="rgba(0,0,0,.5)"/>
+    <g class="tampa-aberta"><path d="M11 47L15 6Q60 1 105 6L109 47Z" fill="${mad[2]}" stroke="#140804" stroke-width="2.2"/>
+      <path d="M17 44L20 11Q60 7 100 11L103 44Z" fill="${mad[3]}"/>${[36,52,68,84].map(x=>`<path d="M${x} 9V45" stroke="#000" stroke-opacity=".3" stroke-width="1"/>`).join("")}
+      <path d="M11 47L15 6Q60 1 105 6L109 47" fill="none" stroke="url(#bauM)" stroke-width="3.2"/>
+      <path d="M23 46L25 7H33L32 46z" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".7"/><path d="M97 46L95 7H87L88 46z" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".7"/>
+      ${reb(28.5,16)+reb(28,32)+reb(91.5,16)+reb(92,32)}</g>
+    <ellipse class="brilho-interno" cx="60" cy="40" rx="56" ry="34" fill="url(#bauL)" opacity=".85"/>
+    <g class="interior"><path d="M12 52Q12 44 20 43H100Q108 44 108 52Z" fill="#1a0c06"/><ellipse cx="60" cy="49" rx="42" ry="5.5" fill="url(#bauL)"/>
+      <circle cx="44" cy="49" r="3.2" fill="#ffd34a" stroke="#a87418" stroke-width=".6"/><circle cx="52" cy="47.5" r="3.2" fill="#ffe680" stroke="#a87418" stroke-width=".6"/><circle cx="70" cy="48" r="3.2" fill="#ffd34a" stroke="#a87418" stroke-width=".6"/><circle cx="62" cy="50" r="3.2" fill="#fff0a8" stroke="#a87418" stroke-width=".6"/>${ouro?`<path d="M76 50l3-5 3 5-3 3z" fill="#d84aff" stroke="#fff" stroke-width=".5"/>`:""}</g>
+    <g class="corpo">
+      <rect x="10" y="50" width="100" height="52" rx="3" fill="url(#bauW)" stroke="#140804" stroke-width="2.2"/>
+      ${tabuas(52,100)}${veios}<rect x="10" y="50" width="100" height="52" rx="3" fill="url(#bauWl)"/>
+      <rect x="9" y="50" width="102" height="6" rx="1.5" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".8"/>
+      <rect x="9" y="95" width="102" height="7" rx="1.5" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".8"/>
+      <rect x="22" y="50" width="10" height="52" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".8"/><rect x="88" y="50" width="10" height="52" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".8"/>
+      ${[61,73,85].map(y=>reb(27,y)+reb(93,y)).join("")}${[14,44,76,106].map(x=>reb(x,53,1.4)+reb(x,98.5,1.4)).join("")}
+      <path d="M9 56v14h5V61h4v-5zM111 56v14h-5V61h-4v-5zM9 95V81h5v9h4v5zM111 95V81h-5v9h-4v5z" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".7"/>
+      <path d="M49 58h22v14q0 9-11 13q-11-4-11-13z" fill="url(#bauM)" stroke="${m[3]}" stroke-width="1.1"/><path d="M51.5 60.5h17v11q0 7-8.5 10.5q-8.5-3.5-8.5-10.5z" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width=".8"/>
+      <circle cx="60" cy="67" r="3" fill="#140804"/><path d="M58.6 68.5h2.8l1 7h-4.8z" fill="#140804"/>${ouro?`<circle cx="60" cy="80" r="2" fill="#d84aff" stroke="#fff4c0" stroke-width=".7"/>`:""}</g>
+    <g class="tampa">
+      <path d="M10 50V36Q10 13 60 11Q110 13 110 36V50Z" fill="url(#bauT)" stroke="#140804" stroke-width="2.2"/>
+      <path d="M16 46V35Q17 19 60 17Q103 19 104 35V46" fill="none" stroke="${mad[3]}" stroke-opacity=".5" stroke-width="1"/>
+      <path d="M12 28Q60 6 108 28" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="2.5"/>
+      <path d="M10 50V36Q10 13 60 11Q110 13 110 36V50Z" fill="url(#bauWl)"/>
+      <path d="M22 50V30Q22 18 32 16.5V50z" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".8"/><path d="M98 50V30Q98 18 88 16.5V50z" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".8"/>
+      ${reb(27,26)+reb(27,38)+reb(93,26)+reb(93,38)}
+      <rect x="8" y="44" width="104" height="7" rx="2" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".9"/>${[14,44,76,106].map(x=>reb(x,47.5,1.4)).join("")}
+      <path d="M53 44h14v9q0 6-7 8q-7-2-7-8z" fill="url(#bauM)" stroke="${m[3]}" stroke-width="1.1"/><circle cx="60" cy="52" r="1.6" fill="#140804"/>
+      ${ouro?`<circle cx="60" cy="27" r="5.5" fill="#d84aff" stroke="${m[1]}" stroke-width="2"/><circle cx="58.3" cy="25.3" r="1.6" fill="#fff" opacity=".85"/>`:""}</g></svg>`; }
 function abrirBau(b){ const premios=sortearPremios(b.tipo);
   if(SIM.ativo){ premios.forEach(p=>p.aplicar()); return; }
   pausado=true; som("bau"); let tela=$("bau"); if(!tela){ tela=document.createElement("div"); tela.id="bau"; $("jogo").appendChild(tela); }

@@ -1656,7 +1656,7 @@ function gerarCausticas(){ const fr=[]; for(let f=0;f<8;f++){ const c=document.c
 // ---------------------------------------------------------------- objetos: geração por pedaço do mapa
 function pesoAleatorio(r,pesos){ let tot=0; for(const k in pesos) tot+=pesos[k]; let x=r()*tot; for(const k in pesos){ x-=pesos[k]; if(x<=0) return k; } return Object.keys(pesos)[0]; }
 function gerarPedaco(cx,cy){ const C=J.cena, k=cx+":"+cy; if(C.props.has(k)) return; const r=semente(C.u.id+"p"+k+"#"+R.profundidade), out=[];
-  if(r()<0.62){ const tipo=pesoAleatorio(r,C.kit.props), n=r()<0.35? 2+Math.floor(r()*2) : 1, bx=cx*CH+14+r()*68, by=cy*CH+14+r()*68;
+  if(r()<0.4){ const tipo=pesoAleatorio(r,C.kit.props), n=r()<0.2? 2 : 1,   /* mapa menos poluído: menos objetos soltos e grupos menores */ bx=cx*CH+14+r()*68, by=cy*CH+14+r()*68;
     for(let i=0;i<n;i++){ const x=bx+(i%2)*13+r()*3, y=by+Math.floor(i/2)*11+r()*3; if(Math.abs(x)<36&&Math.abs(y)<36) continue;
       const t=soloNatural(Math.floor(x/CEL),Math.floor(y/CEL)); if(t==="agua"&&!C.kit.submerso) continue; if(!lugarDeObjeto(x,y,10)) continue;
       out.push(novoProp(i>0&&r()<0.3? pesoAleatorio(r,C.kit.props) : tipo, x, y, r)); } }
@@ -2118,7 +2118,8 @@ function desenharTufos(ox,oy){ const C=J.cena, V=VEG[C.veg]; if(!V) return; for(
   const capC=C.kit.cogu||"#c070ff", pintado=!!(chao&&chao.suave);
   for(let j=0;j<nr;j++) for(let i=0;i<nc;i++){ const cx=c0+i, cy=r0+j, t=tufoInfo(cx,cy); if(!t) continue; if(QUAL<2&&hash2(cx,cy,91)>(QUAL===1?0.6:0.35)) continue;
     // sobre piso pintado, menos tufos soltos no chão comum (o piso já tem detalhe próprio)
-    if(pintado&&t==="chao"&&hash2(cx,cy,93)>0.4) continue;
+    if(pintado&&t==="chao"&&hash2(cx,cy,93)>0.2) continue;
+    if(hash2(cx,cy,95)>0.6) continue;   // mapa menos poluído: 40% menos tufos em qualquer chão
     const x0=cx*CEL+1+hash2(cx,cy,43)*6-ox, y0=cy*CEL+2+hash2(cx,cy,47)*5-oy, k=cx+","+cy, st=C.tufos.get(k), marca=C.marcas.get(k);
     // crescimento: grama nova (Natureza) brota aos poucos
     const sm=J.solo.get(k); let g=1; if(sm&&(t==="grama"||t==="vinha")){ g=Math.min(1,(J.t-(sm.ate-DUR[t]))*1.6); if(g<=0) continue; }
@@ -2319,6 +2320,12 @@ function nitidez(c,k){ if(SIM.ativo) return c; try{ const g=c.getContext("2d"), 
     for(let y=0;y<h;y++){ const ym=((y-1+h)%h)*w, yp=((y+1)%h)*w, y0=y*w; for(let x=0;x<w;x++){ const xm=(x-1+w)%w, xp=(x+1)%w, i=(y0+x)*4;
       for(let ch=0;ch<3;ch++){ const blur=(o[(ym+x)*4+ch]+o[(yp+x)*4+ch]+o[(y0+xm)*4+ch]+o[(y0+xp)*4+ch])*0.25; d[i+ch]=o[i+ch]+(o[i+ch]-blur)*k; } } }
     g.putImageData(im,0,0); }catch(e){} return c; }
+// piso pintado mais calmo: a arte do chão tem muito contraste e detalhe (flores, trepadeiras, ladrilhos) e competia com
+// monstros e inimigos; tira 20% do contraste, 25% da saturação e escurece um pouco, uma vez só quando o mapa começa
+function acalmarPiso(c){ if(SIM.ativo) return c; try{ const g=c.getContext("2d"), im=g.getImageData(0,0,c.width,c.height), d=im.data;
+    for(let i=0;i<d.length;i+=4){ const r=d[i], gg=d[i+1], b=d[i+2], L=r*0.299+gg*0.587+b*0.114;
+      for(let ch=0;ch<3;ch++){ const v=d[i+ch], s=L+(v-L)*0.75; d[i+ch]=(118+(s-118)*0.8)*0.93; } }
+    g.putImageData(im,0,0); }catch(e){} return c; }
 function tornarContinuo(img,T){ const c=document.createElement("canvas"); c.width=c.height=T; const g=c.getContext("2d"); g.imageSmoothingEnabled=false; g.drawImage(img,0,0,T,T);
   const o=document.createElement("canvas"); o.width=o.height=T; const go=o.getContext("2d"), h=T/2; go.imageSmoothingEnabled=false;
   for(const [dx,dy] of [[-h,-h],[h,-h],[-h,h],[h,h]]) go.drawImage(img,dx,dy,T,T);
@@ -2332,15 +2339,17 @@ function tornarContinuo(img,T){ const c=document.createElement("canvas"); c.widt
   if(mx){ borda(0,0,F,0,0,0,F,T); borda(T,0,T-F,0,T-F,0,F,T); } if(my){ borda(0,0,0,F,0,0,T,F); borda(0,T,0,T-F,0,T-F,T,F); }
   go.globalCompositeOperation="destination-in"; go.drawImage(m,0,0); g.drawImage(o,0,0); return c; }
 // o piso é guardado na resolução do arquivo (até 2048 px) e desenhado com 512 px de mundo
-function chaoArte(u){ const piso=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__piso.png`]; if(piso&&piso.pronta){ const T=SIM.ativo?512:Math.max(512,Math.min(2048,piso.width)); chao={cv:nitidez(tornarContinuo(piso,T),0.55),u,tam:TAM_PISO,suave:true}; return true; }
+function chaoArte(u){ const piso=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__piso.png`]; if(piso&&piso.pronta){ const T=SIM.ativo?512:Math.max(512,Math.min(2048,piso.width)); chao={cv:acalmarPiso(nitidez(tornarContinuo(piso,T),0.2)),u,tam:TAM_PISO,suave:true}; return true; }
   const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__tiles.png`]; if(!img||!img.pronta) return false;
   const c=document.createElement("canvas"); c.width=c.height=128; const g=c.getContext("2d"), r=semente(u.id+"chao"); g.imageSmoothingEnabled=false;
   for(let y=0;y<8;y++) for(let x=0;x<8;x++){ const v=Math.floor(r()*8); g.drawImage(celulaArte(img,8,3,v,0,16,16),x*16,y*16); }
   chao={cv:c,u}; return true; }
 // manchas (linha 2) e enfeites (linha 3) espalhados em cada pedaço de 96 px
 function detalhesArte(r){ const img=folhaU("tiles"); if(!img) return null; const out=[];
-  for(let i=0;i<3;i++) out.push({s:celulaArte(img,8,3,Math.floor(r()*8),1,32,32), x:r()*80-8, y:r()*80-8, w:14+r()*6, a:0.55+r()*0.25});
-  for(let i=0;i<3;i++){ if(r()<0.35) continue; out.push({s:celulaArte(img,8,3,Math.floor(r()*8),2,32,32), x:r()*84, y:r()*84, w:9+r()*4, a:1}); }
+  // mapa menos poluído: menos manchas e enfeites por pedaço; sobre piso pintado (que já tem detalhe próprio), quase nenhum
+  const pintado=!!(chao&&chao.suave), nM=pintado?0:1+(r()<0.4?1:0), pE=pintado?0.25:0.45;
+  for(let i=0;i<nM;i++) out.push({s:celulaArte(img,8,3,Math.floor(r()*8),1,32,32), x:r()*80-8, y:r()*80-8, w:14+r()*6, a:0.5+r()*0.2});
+  for(let i=0;i<2;i++){ if(r()>pE) continue; out.push({s:celulaArte(img,8,3,Math.floor(r()*8),2,32,32), x:r()*84, y:r()*84, w:9+r()*4, a:1}); }
   return out; }
 
 // ---------------------------------------------------------------- superfícies (fogo, água, gelo...): textura contínua por célula de 8 px
@@ -2356,7 +2365,7 @@ function superficieArte(t,cx,cy,x,y,pisca){ const img=folhaArte(`arte/ambiente/$
 // ---------------------------------------------------------------- marcos, luzes e peças de primeiro plano (folha 4x2)
 function sortearMarcos(cx,cy,r,out){ const img=folhaU("props"); if(!img) return;
   const x=cx*CH+10+r()*76, y=cy*CH+10+r()*76; if(Math.abs(x)<40&&Math.abs(y)<40) return; if(!lugarDeObjeto(x,y,22)) return;
-  const sorte=r(); if(sorte<0.3) out.push(Object.assign(novoProp("marco",x,y,r),{idx:Math.floor(r()*6)}));
+  const sorte=r()*1.5; /* mapa menos poluído: ~1/3 menos marcos */ if(sorte<0.3) out.push(Object.assign(novoProp("marco",x,y,r),{idx:Math.floor(r()*6)}));
   else if(sorte<0.42) out.push(Object.assign(novoProp("luz",x,y,r),{idx:6}));
   else if(sorte<0.54) out.push(Object.assign(novoProp("frente",x,y,r),{idx:7})); }
 // marcos: recorta só a parte desenhada da célula (a folha tem muita margem vazia) e dá a altura certa para cada tipo

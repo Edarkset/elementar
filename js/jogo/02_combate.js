@@ -22,7 +22,7 @@ function iniciarMapa(){
   if(temRel("Taça de Jamshid")&&R.profundidade>0){ J.vida=Math.min(J.vidaMax,J.vida+J.vidaMax*0.25); J.escudo+=J.vidaMax*0.15; }
   ativos().forEach(s=>{ s.cdEsp=10; if(s.esp==null&&s.nivel>=NIV[1]&&!filaEsp.includes(s)) filaEsp.push(s); if(s.mon.ramo==null&&s.nivel>=NIV[2]&&!filaRamo.includes(s)) filaRamo.push(s); if(D.classes[L(s).classe].nome==="Místico"&&s.pod.h2>0) J.renascer=1; });
   gerarChao(u); iniciarCena(u); iniciarAbertura(); J.abates0=R.abates; evento("era:"+u.era); J.escudoGolpes=passiva("escudo_golpes");
-  for(let i=0;i<(R.profundidade===0?3:6);i++) spawnInimigo(); if(R.profundidade===0) J.invuln=Math.max(J.invuln,2.5);
+  for(let i=0;i<(R.profundidade===0?2:4);i++) spawnInimigo(); if(R.profundidade===0) J.invuln=Math.max(J.invuln,2.5);
   $("lugar").textContent=`${u.nome} · ${D.eras[u.era].nome}${R.ciclo?` · ciclo ${R.ciclo+1}`:""} · mapa ${R.profundidade+1}`;
   if(!J.intro){ $("hud").style.display=""; $("hudBase").style.display=""; }
   desenharEquipe(); desenharNinho(); rodando=true; pausado=false;
@@ -65,7 +65,7 @@ function cartaProibida(){ if(SIM.ativo||!J||J.nivel<6||Math.random()>0.2) return
     acao:()=>{ (R.maldicoes=R.maldicoes||[]).push(m.id); somarMods(m.mods); som("jackpot"); tremor(8); luzFlash(J.jogador.x,J.jogador.y,"#c0304a",90,0.6); anunciar({el:"sombra"},m.nome,"Carta Proibida aceita"); proximaEscolha(); } }; }
 function dicaVantagem(el){ const forte=ELS.find(k=>D.vantagem[k]===el); return `${NOME_EL(forte)} é super efetivo aqui.`; }
 // Curva de dificuldade (calibrada com o bot: testes/bot.js + testes/rodar_bot.js; ver docs/ANALISE_EQUILIBRIO.md)
-const DIF={vida:1.33, dano:1.48, danoBase:9, hp:30, spawn:0.18, base:4, cresc:0.08, onda:22, ondaN:20, max:280,
+const DIF={vida:1.33, dano:1.48, danoBase:11, hp:38, spawn:0.15, base:1.6, cresc:0.1, onda:22, ondaN:20, max:280,
   rapido:42, rapidoCresc:5, rapidoMax:70, frente:0.2, frenteCresc:0.07, tiroElite:2.8, nivelAtrib:0.03, xpA:6, xpB:4, xpC:0.35,
   mini:80, chefe:560, guardiao:760, chefe1:0.5, chefeQueda:0.12, rampa:2.0, rampaK:2.2};   /* mais difícil (o jogo estava fácil): mais dano, mais inimigos desde o começo e rampa inicial mais forte */   // vida de mini-chefe, chefe e Guardião da Era (em inimigos comuns); o 1º chefe leva chefe1 disso
 // ameaças que crescem com a profundidade: começo suave, fim duro
@@ -209,7 +209,7 @@ function morrer(e){
   J.ult=Math.min(100,J.ult+(e.chefe?25:e.mini?10:e.elite?2:0.07)*(1+Math.min(1,J.combo/200))*(1+MOD("despertar")));
   const cor=COR[e.el]; particulas(e.x,e.y,cor,e.chefe?60:e.elite?22:9,e.chefe?150:90,e.elite?2:1);
   if(e.elite){ tremor(e.chefe?10:4); parar(e.chefe?0.2:0.05); }
-  const val=(e.chefe?40:e.mini?15:e.elite?8:1+(e.tipo===2?1:0))*(1+0.12*R.profundidade)*(e.xpF||1);   // xpF: inimigos extras do diretor valem menos
+  const val=(e.chefe?40:e.mini?15:e.elite?8:1.6*(1+(e.tipo===2?1:0)))*(1+0.12*R.profundidade)*(e.xpF||1);   // inimigo comum vale mais: a horda é menor   // xpF: inimigos extras do diretor valem menos
   const nG=Math.min(6,Math.ceil(val/3)); for(let i=0;i<nG;i++){ const a=Math.random()*Math.PI*2; J.gemas.push({x:e.x,y:e.y,vx:Math.cos(a)*rnd(20,50),vy:Math.sin(a)*rnd(20,50),v:val/nG,cor}); }
   if(e.marca>0){ anel(e.x,e.y,24,"#c070ff",.35); emArea(e.x,e.y,24,o=>danoSimples(o,e.marca)); }
   if(e.elite&&!e.chefe&&!e.mini&&Math.random()<(e.daOnda?0.1:0.3)) darItem(itemUtil(["incenso","doce","pena","doce"]), e);

@@ -17,7 +17,8 @@ function multDiretor(){ const d=J.diretor; if(!d) return 1; return d.respiro>0? 
 function contarTela(){ const P=J.jogador; let n=0, col=0; for(const e of J.inimigos){ if(e.hp<=0) continue; const dx=Math.abs(e.x-P.x), dy=Math.abs(e.y-P.y); if(dx<VW/2&&dy<VH/2){ n++; if(dx<40&&dy<40) col++; } } return [n,col]; }
 function atualizarDiretor(dt){ if(!J.diretor) iniciarDiretor(); const d=J.diretor; d.tick-=dt;
   if(d.tick<=0){ d.tick=0.5; const [n,col]=contarTela(), vida=J.vida/J.vidaMax; d.n=n; d.vida=vida;
-    d.alvo=Math.min(150,24+R.profundidade*16+J.t*0.22)*(R.profundidade===0&&!R.teste? Math.min(1,0.4+J.t/60) : 1);   // primeiro mapa: a horda cresce aos poucos
+    // a horda começa pequena em todo mapa (poucos inimigos, mais perigosos) e cresce aos poucos com o tempo e a profundidade
+    d.alvo=Math.min(120,7+R.profundidade*7+J.t*(0.3+R.profundidade*0.04))*(R.profundidade===0&&!R.teste? Math.min(1,0.5+J.t/80) : 1);
     if(col>22&&vida<0.45&&d.respiro<=0){ d.respiro=3; }                  // afogado: respiro curto
     let m=d.mult; if(n>d.alvo*1.6) m-=0.15; else if(n<d.alvo*0.7&&vida>0.5) m+=0.12; else if(n<d.alvo) m+=0.04; else m-=0.03;
     d.mult=Math.max(0.3,Math.min(2.6,m));

@@ -235,7 +235,7 @@ function atualizarReliquias(dt){ if(!R.reliquias.length||J.fim) return; const P=
   if(temRel("Espelho Mágico")){ J.tEsp=(J.tEsp||0)-dt; const dr=J.danoRec||0; if(J.tEsp<=0&&dr>(J._drEsp||0)+0.5){ J.tEsp=1; J._drEsp=dr; const f=FONTE; FONTE="reliquia"; const dm=danoMedioEquipe()*3;
       emArea(P.x,P.y,32,e=>ferir(e,dm,"luz")); FONTE=f; anel(P.x,P.y,32,"#e8f4ff",.6); } else if(J.tEsp<=0) J._drEsp=dr; } }
 function calcularSinergia(){
-  const rg=D.regras, eq=ativos(), chips=[]; let dano=1,vida=1,reac=1; const cc={},lc={},ec={};
+  const rg=D.regras, eq=ativos(), chips=[]; let dano=1,vida=1,reac=1; { const pr=R.pressagio&&PRESSAGIOS.find(p=>p.id===R.pressagio); if(pr) chips.push("✦ "+pr.nome); if(R.maldicoes&&R.maldicoes.length) chips.push("☠ "+R.maldicoes.length); } const cc={},lc={},ec={};
   eq.forEach(s=>{ const cl=L(s).classe; cc[cl]=(cc[cl]||0)+1; const ex=classeExtraDe(s); if(ex) cc[ex]=(cc[ex]||0)+1;
     const li=linhagemDe(s); if(li!=="errante") lc[li]=(lc[li]||0)+1; const el=elementoDe(s); ec[el]=(ec[el]||0)+1; });
   const rm=relMods(); rm.nucleo.forEach(el=>ec[el]=(ec[el]||0)+1);
@@ -249,7 +249,7 @@ function calcularSinergia(){
   const pb=D.pacto.bonus[R.pacto.length]; if(pb&&pb.dano>1){ dano*=pb.dano; chips.push("Pacto Duplo"); }
   R.elos.forEach(e=>chips.push(e));
   SIN={dano:dano*rm.dano, vida:vida*rm.vida, cad:rm.cad, reac, chips, rm, cacadores:cc.cacador||0, invocadores:cc.invocador||0};
-  if(J){ const antes=J.vidaMax, nova=eq.reduce((t,s)=>t+atrib(s).vida,0)*SIN.vida*(1+passiva("vida")+custo("vida")); J.vidaMax=Math.max(1,nova); if(antes>1) J.vida=Math.min(J.vidaMax, J.vida*J.vidaMax/antes); }
+  if(J){ const antes=J.vidaMax, nova=eq.reduce((t,s)=>t+atrib(s).vida,0)*SIN.vida*(1+passiva("vida")+custo("vida"))*(1+MOD("vida")); J.vidaMax=Math.max(1,nova); if(antes>1) J.vida=Math.min(J.vidaMax, J.vida*J.vidaMax/antes); }
   $("chips").innerHTML=R.pacto.map(el=>`<span class="chip el" style="color:${COR[el]}">${NOME_EL(el)}</span>`).join("")+chips.map(c=>`<span class="chip">${c}</span>`).join("");
 }
 // ajuste fino por classe, a partir de 40 partidas simuladas: assassino, xamã, caçador e invocador chegavam ~2 mapas
@@ -294,11 +294,44 @@ function iniciarMapa(){
   aposAbertura(()=>{ const forte=ELS.find(k=>D.vantagem[k]===u.elemento), naReserva=R.reserva.find(m=>LINHA[m.id]&&LINHA[m.id].elemento===forte), naEquipe=ativos().some(s=>elementoDe(s)===forte);
     toast(`${u.nome}<br><small>Inimigos de ${NOME_EL(u.elemento)}. ${dicaVantagem(u.elemento)}${naReserva&&!naEquipe?`<br><b>${LINHA[naReserva.id].filhote}</b> está na reserva: toque num Selo para trocar (grátis agora).`:""}</small>`); });
   if(filaRamo.length||filaEsp.length) agendar(0.3,()=>{ if(!pausado) proximaEscolha(); });
+  if(R.profundidade===0&&!R.pressagio&&!SIM.ativo&&!R.teste) aposAbertura(()=>telaPressagio());
 }
+// ================================================================ modificadores da run: Presságio (escolhido no começo) e Cartas Proibidas
+// Cada um soma em R.mods; MOD(k) é lido pelos multiplicadores de dano, vida, crítico, XP, velocidade, área, recarga,
+// inimigos (vida, velocidade, quantidade), moedas, sorte nos ovos, carga do Despertar e dano das reações.
+function MOD(k){ return (R&&R.mods&&R.mods[k])||0; }
+function somarMods(m){ R.mods=R.mods||{}; for(const k in m) R.mods[k]=(R.mods[k]||0)+m[k]; if(typeof calcularSinergia==="function"&&J) calcularSinergia(); }
+const PRESSAGIOS=[
+  {id:"lua_sangue", nome:"Lua de Sangue", cor:"#e0464a", texto:"Inimigos com +40% de vida e 30% mais numerosos. <span class='bom'>XP +60% e moedas +50%.</span>", mods:{inimigoVida:0.4, horda:0.3, xp:0.6, ouro:0.5}},
+  {id:"mare_ouro", nome:"Maré de Ouro", cor:"#ffd34a", texto:"<span class='bom'>Moedas e Essência em dobro.</span> Inimigos 20% mais rápidos.", mods:{ouro:1, inimigoVel:0.2}},
+  {id:"vidro", nome:"Lâmina de Vidro", cor:"#9fe0ff", texto:"<span class='bom'>+50% de dano.</span> Você recebe 40% mais dano.", mods:{dano:0.5, danoRec:0.4}},
+  {id:"sorte", nome:"Estrela da Sorte", cor:"#b77cff", texto:"<span class='bom'>Ovos e baús muito mais raros.</span> XP -15%.", mods:{sorte:0.18, xp:-0.15}},
+  {id:"tempestade", nome:"Tempestade Elemental", cor:"#7fe0ff", texto:"<span class='bom'>Reações elementais com +70% de dano.</span> Ataques comuns -10%.", mods:{reacao:0.7, dano:-0.1}},
+  {id:"pes_ligeiros", nome:"Pés Ligeiros", cor:"#7fe8c0", texto:"<span class='bom'>+25% de velocidade e +20% de cadência.</span> Vida -20%.", mods:{velocidade:0.25, cadencia:0.2, vida:-0.2}},
+  {id:"colosso", nome:"Colosso", cor:"#d8a060", texto:"<span class='bom'>Vida +60%.</span> Velocidade -15% e dano -10%.", mods:{vida:0.6, velocidade:-0.15, dano:-0.1}},
+  {id:"enxame", nome:"Enxame", cor:"#a8d860", texto:"Hordas 70% maiores, mas cada inimigo com -35% de vida. <span class='bom'>XP +25%.</span>", mods:{horda:0.7, inimigoVida:-0.35, xp:0.25}},
+  {id:"cacador", nome:"Olho do Caçador", cor:"#ff9a3d", texto:"<span class='bom'>+20% de chance de crítico.</span> Área dos golpes -15%.", mods:{critico:0.2, area:-0.15}},
+  {id:"eco", nome:"Eco Ancestral", cor:"#ffe6a6", texto:"<span class='bom'>Despertar carrega 2x mais rápido.</span> Dano -10%.", mods:{despertar:1, dano:-0.1}},
+  {id:"vastidao", nome:"Vastidão", cor:"#c4ccd8", texto:"<span class='bom'>Área dos golpes +35%.</span> Recarga 10% mais lenta.", mods:{area:0.35, cadencia:-0.1}}];
+function telaPressagio(){ if(!J||SIM.ativo) return; const ops=embaralhar(PRESSAGIOS.slice()).slice(0,3); som("ding");
+  mostrarCartas("Presságio", "Os astros mudam as regras desta run. Escolha um.", ops.map(p=>({ titulo:p.nome, raridade:"epico", classe:"pressagio", texto:p.texto,
+    acao:()=>{ R.pressagio=p.id; somarMods(p.mods); anunciar({el:"luz"},p.nome,"Presságio desta run"); luzFlash(J.jogador.x,J.jogador.y,p.cor,90,0.6); som("ding"); pausado=false; fechar(); salvarRun(); } })), {revelar:true});
+  $("telaCartas").querySelectorAll(".carta.pressagio").forEach((b,i)=>b.style.setProperty("--rar",ops[i].cor)); }
+const MALDICOES=[
+  {id:"sangue", nome:"Pacto de Sangue", texto:"<span class='bom'>+35% de dano</span> para sempre nesta run. <span class='custo'>Vida máxima -25%.</span>", mods:{dano:0.35, vida:-0.25}},
+  {id:"vidro2", nome:"Coração de Vidro", texto:"<span class='bom'>+15% de chance de crítico.</span> <span class='custo'>Recebe 30% mais dano.</span>", mods:{critico:0.15, danoRec:0.3}},
+  {id:"ganancia", nome:"Ganância", texto:"<span class='bom'>Moedas +80%.</span> <span class='custo'>Inimigos com +20% de vida.</span>", mods:{ouro:0.8, inimigoVida:0.2}},
+  {id:"fome", nome:"Fome do Enxame", texto:"<span class='bom'>XP +40%.</span> <span class='custo'>Hordas 35% maiores.</span>", mods:{xp:0.4, horda:0.35}},
+  {id:"frenesi", nome:"Frenesi Selvagem", texto:"<span class='bom'>Cadência +30%.</span> <span class='custo'>Área -20%.</span>", mods:{cadencia:0.3, area:-0.2}},
+  {id:"tormenta", nome:"Olho da Tormenta", texto:"<span class='bom'>Reações +50%.</span> <span class='custo'>Inimigos 15% mais rápidos.</span>", mods:{reacao:0.5, inimigoVel:0.15}}];
+// carta proibida: às vezes aparece junto das cartas de nível; ganho grande e um preço que dura a run inteira
+function cartaProibida(){ if(SIM.ativo||!J||J.nivel<6||Math.random()>0.2) return null; const ops=MALDICOES.filter(m=>!(R.maldicoes||[]).includes(m.id)); if(!ops.length) return null; const m=escolha(ops);
+  return { titulo:"☠ "+m.nome, raridade:"lendario", classe:"maldita", texto:m.texto+"<br><small>Carta Proibida: escolha com cuidado.</small>",
+    acao:()=>{ (R.maldicoes=R.maldicoes||[]).push(m.id); somarMods(m.mods); som("jackpot"); tremor(8); luzFlash(J.jogador.x,J.jogador.y,"#c0304a",90,0.6); anunciar({el:"sombra"},m.nome,"Carta Proibida aceita"); proximaEscolha(); } }; }
 function dicaVantagem(el){ const forte=ELS.find(k=>D.vantagem[k]===el); return `${NOME_EL(forte)} é super efetivo aqui.`; }
 // Curva de dificuldade (calibrada com o bot: testes/bot.js + testes/rodar_bot.js; ver docs/ANALISE_EQUILIBRIO.md)
 const DIF={vida:1.33, dano:1.48, danoBase:9, hp:30, spawn:0.18, base:4, cresc:0.08, onda:22, ondaN:20, max:280,
-  rapido:42, rapidoCresc:5, rapidoMax:70, frente:0.2, frenteCresc:0.07, tiroElite:2.8, nivelAtrib:0.03, xpA:10, xpB:4, xpC:0.35,
+  rapido:42, rapidoCresc:5, rapidoMax:70, frente:0.2, frenteCresc:0.07, tiroElite:2.8, nivelAtrib:0.03, xpA:6, xpB:4, xpC:0.35,
   mini:80, chefe:560, guardiao:760, chefe1:0.5, chefeQueda:0.12, rampa:2.0, rampaK:2.2};   /* mais difícil (o jogo estava fácil): mais dano, mais inimigos desde o começo e rampa inicial mais forte */   // vida de mini-chefe, chefe e Guardião da Era (em inimigos comuns); o 1º chefe leva chefe1 disso
 // ameaças que crescem com a profundidade: começo suave, fim duro
 const velRapido=()=>Math.min(DIF.rapidoMax, DIF.rapido+DIF.rapidoCresc*R.profundidade);
@@ -322,7 +355,7 @@ function spawnInimigo(kForcado){
     dano:DIF.danoBase*danoDif()*(elite?2:1), tipo:k, el, elite, chefe:false, mini:false,
     spr:gerarSprite(u.id+"i"+k+el, base.n, mistura(COR[el],["#d8473b","#8a4fd0","#e0904a"][k],0.35), {olhos:"#fff2a0"}),
     status:null, lenta:0, congela:0, cego:0, dot:0, dotT:0, reacCd:0, vulner:0, flash:0, marca:0});
-  const e=J.inimigos[J.inimigos.length-1]; e.xpF=fatorXPDiretor(); if((R.talismas&&R.talismas.mascara)||custo("risco")){ e.max*=tal.riscoVida()*(1+custo("risco")); e.hp=e.max; e.v*=tal.riscoVel(); } e.cor=mistura(COR[el],["#d8473b","#8a4fd0","#e0904a"][k],0.35); prepararCriatura(e,defInimigo(k),[17,20,23][k]);
+  const e=J.inimigos[J.inimigos.length-1]; e.xpF=fatorXPDiretor(); if(R.mods){ e.max*=1+MOD("inimigoVida"); e.hp=e.max; e.v*=1+MOD("inimigoVel"); } if((R.talismas&&R.talismas.mascara)||custo("risco")){ e.max*=tal.riscoVida()*(1+custo("risco")); e.hp=e.max; e.v*=tal.riscoVel(); } e.cor=mistura(COR[el],["#d8473b","#8a4fd0","#e0904a"][k],0.35); prepararCriatura(e,defInimigo(k),[17,20,23][k]);
 }
 // Onda de cerco: um anel de inimigos fecha em volta do jogador (use a esquiva para atravessar)
 function ondaCerco(){ const n=Math.round(DIF.ondaN*(1+R.profundidade*0.15)), P=J.jogador, r=Math.min(VW,VH)*0.42;
@@ -388,8 +421,11 @@ function ferir(e,dano,el,o={}){
   const ef=eficacia(el,e.el), crit=o.crit||Math.random()<0.08+tal.critico()+(ativos().some(s=>s.berserk>0)?0.2:0);
   let d=dano*ef*(crit?1.8:1)*(e.vulner>0?1.2:1)*(e.bebado>0?1.5:1)*fadigaChefe(e)*multDanoLenda(e)*relDano(e);
   for(const z of J.zonas) if(z.tipo==="circulo"&&dist2(z,e)<z.r*z.r) d*=z.amp;
-  e.hp-=d; e.flash=0.08; e.golpeT=J.t; if(J.t-(e.dorT??-9)>0.6) e.dorT=J.t; R.st.porFonte[FONTE]=(R.st.porFonte[FONTE]||0)+d; R.st.dano+=d; R.st.golpes++; if(ef>1) R.st.superEf++; else if(ef<1) R.st.poucoEf++;
-  if(crit){ som("critico"); numero(e.x,e.y-6,d,"#ffe066",20,e); particulas(e.x,e.y,"#fff3a0",5,60); }
+  e.hp-=d; e.flash=0.08; e.golpeT=J.t;
+  // impacto: o inimigo dá um tranco para trás no desenho, proporcional ao golpe (crítico mais forte). Só visual: empurrar de verdade
+  // espalhava a horda, os golpes em área acertavam menos e as lutas ficavam até 7x mais longas
+  if(!e.chefe&&!e.estatua&&e.max>0){ const P=J.jogador, dx=e.x-P.x, dy=e.y-P.y, dd=Math.hypot(dx,dy)||1, k=Math.min(1,d/e.max*3)*(crit?3:1.8)*(e.elite||e.mini?0.5:1); e.rx=(e.rx||0)+dx/dd*k; e.ry=(e.ry||0)+dy/dd*k; const m=Math.hypot(e.rx,e.ry); if(m>3.5){ e.rx*=3.5/m; e.ry*=3.5/m; } }
+  if(crit){ som("critico"); numero(e.x,e.y-6,d,"#ffe066",20,e); anel(e.x,e.y-3,9,"#fff3c4",.16); particulas(e.x,e.y,"#fff3a0",5,60); }
   else if(ef>1){ numero(e.x,e.y-6,d,"#ff8a3d",17,e); }
   else if(ef<1){ numero(e.x,e.y-6,d,"#9a98a8",12,e); }
   else numero(e.x,e.y-6,d,"#fff8e6",13,e);
@@ -407,7 +443,7 @@ function reagir(e,a,b,dano){
 }
 function reagirEfeito(e,a,b,dano,r){ evento("reacao"); diaria("reacoes");
   if(!SIM.ativo&&!META.dicaReacao){ META.dicaReacao=true; gravar(); toast(`<b>Reação elemental!</b><br><small>${NOME_EL(a)} + ${NOME_EL(b)} no mesmo inimigo. Misturar elementos na equipe é a maior fonte de dano do jogo.</small>`); }
-  const p=Math.max(dano,6)*2.2*SIN.reac, cor=mistura(COR[a],COR[b],.5);
+  const p=Math.max(dano,6)*2.2*SIN.reac*(1+MOD("reacao")), cor=mistura(COR[a],COR[b],.5);
   R.st.reacoes[r.nome]=(R.st.reacoes[r.nome]||0)+1; textoUnico("r:"+r.nome,e.x,e.y-10,r.nome,cor,17); vfxReacao(e,a,b);
   switch(r.tipo){
     case "explosao": case "dano_area": anel(e.x,e.y,26,cor,.45); emArea(e.x,e.y,26,o=>{ if(o!==e) danoSimples(o,p); }); danoSimples(e,p); tremor(4); break;
@@ -435,7 +471,7 @@ function morrer(e){
   if(e.morto) return; e.morto=true; aoMorrerCriatura(e);
   if(temRel("Hidromel do Salão dos Heróis")){ J.hidro=J.hidro||[]; if(J.hidro.length<30) J.hidro.push(J.t+10); else { J.hidro.shift(); J.hidro.push(J.t+10); } }
   R.abates++; diaria("abates"); if(R.ancestral&&R.ancestral.estado==="chocando") R.ancestral.prog+=D.ancestral_regras.por_abate_seg; if(R.st.primeiroAbate==null) R.st.primeiroAbate=J.t; J.combo++; J.comboT=D.combo.janela_seg; J.comboMax=Math.max(J.comboMax,J.combo);
-  J.ult=Math.min(100,J.ult+(e.chefe?25:e.mini?10:e.elite?2:0.07)*(1+Math.min(1,J.combo/200)));
+  J.ult=Math.min(100,J.ult+(e.chefe?25:e.mini?10:e.elite?2:0.07)*(1+Math.min(1,J.combo/200))*(1+MOD("despertar")));
   const cor=COR[e.el]; particulas(e.x,e.y,cor,e.chefe?60:e.elite?22:9,e.chefe?150:90,e.elite?2:1);
   if(e.elite){ tremor(e.chefe?10:4); parar(e.chefe?0.2:0.05); }
   const val=(e.chefe?40:e.mini?15:e.elite?8:1+(e.tipo===2?1:0))*(1+0.12*R.profundidade)*(e.xpF||1);   // xpF: inimigos extras do diretor valem menos
@@ -465,7 +501,8 @@ function utilItem(k){ const at=ativos(); if(!R||!at.length) return 1;
 function itemUtil(lista){ const w=lista.map(utilItem), tot=w.reduce((a,b)=>a+b,0); let r=Math.random()*tot; for(let i=0;i<lista.length;i++){ r-=w[i]; if(r<=0) return lista[i]; } return lista[0]; }
 // algum item da bolsa serve agora? (o botão Bolsa brilha)
 function itemUsavelAgora(){ if(!R||!J) return false; const I=R.itens; return (I.incenso>0&&R.selos.some(s=>!s.mon))||(I.doce>0&&ativos().some(s=>NIV.some(n=>s.nivel===n-1)))||I.chamado>0||(I.pedra>0&&!R.pedraAtiva&&ativos().some(s=>s.mon.ramo==null&&s.nivel>=NIV[2]-1))||(I.pena>0&&R.reserva.length&&R.selos.some(s=>s.trocaCd>3)); }
-function darItem(k,e){ R.itens[k]++; texto(e.x,e.y-16,D.itens[k].nome,"#9fd6d0",13); particulas(e.x,e.y,"#9fd6d0",10,60); }
+function darItem(k,e){ R.itens[k]++; const lend=k==="chamado"; texto(e.x,e.y-16,D.itens[k].nome,lend?"#ffd34a":"#9fd6d0",lend?16:13); particulas(e.x,e.y,lend?"#ffd34a":"#9fd6d0",lend?30:10,lend?110:60);
+  if(lend&&!SIM.ativo){ anunciar({el:"luz"},"Item lendário!",D.itens[k].nome); som("jackpot"); luzFlash(e.x,e.y,"#ffd34a",90,0.7); anel(e.x,e.y,30,"#ffd34a",.6); } }
 
 // ================================================================ ataques: básico + habilidades por classe
 function ataqueBasico(s,a,el,cor){
@@ -638,6 +675,7 @@ function abrirNivel(){
   const RANK={comum:0,incomum:1,raro:2,epico:3,lendario:4}, especial=false;
   if(J.nivel%2===1&&!especial&&sorteadas.length&&!(META.escolhaManual)){ const c=cartas.slice(0,sorteadas.length).sort((a,b)=>(b.classe==="dourada")-(a.classe==="dourada")||(RANK[b.raridade]||0)-(RANK[a.raridade]||0))[0];
     if(!SIM.ativo) texto(J.jogador.x,J.jogador.y-30,`Nível ${J.nivel}: ${c.titulo}`,"#ffe6a6",13); c.acao(); return; }
+  { const cp=cartaProibida(); if(cp) cartas.push(cp); }
   mostrarCartas(`Nível ${J.nivel}`, "Escolha uma carta.", cartas, {revelar:true});
   if(R.rerolagens>0){ const b=document.createElement("button"); b.className="botao sec"; b.textContent=`Sortear de novo (${R.rerolagens})`; b.onclick=()=>{ R.rerolagens--; som("tic"); abrirNivel(); }; $("cartasRodape").appendChild(b); }
 }
@@ -660,7 +698,7 @@ function escolherMod(s,k){ const c=D.classes[L(s).classe][k];
     c.mods.map((m,i)=>({titulo:m.split(":")[0], texto:m.split(":").slice(1).join(":").trim(), raridade:"epico", acao:()=>{ s.mod[k]=i; proximaEscolha(); }}))); }
 
 // ================================================================ ovos, filhotes, reserva, troca
-function sortearRaridade(){ const r=Math.random(), o=D.ovos.raridades; const bonus=Math.min(0.15,R.profundidade*0.01);
+function sortearRaridade(){ const r=Math.random(), o=D.ovos.raridades; const bonus=Math.min(0.15,R.profundidade*0.01)+MOD("sorte");
   return r<o.lendario.chance+bonus*0.3?"lendario": r<o.lendario.chance+o.raro.chance+bonus?"raro":"comum"; }
 function receberMonstro(mon,origem){
   const vazio=R.selos.find(s=>!s.mon);
@@ -669,12 +707,17 @@ function receberMonstro(mon,origem){
     toast(`${LINHA[mon.id].filhote} (${RAR_NOME[mon.rar]}) entrou na equipe!${origem?`<br><small>${origem}</small>`:""}`);
     if(vazio.mon.ramo==null&&vazio.nivel>=NIV[2]) filaRamo.push(vazio); }
   else { R.reserva.push(mon); toast(`${LINHA[mon.id].filhote} (${RAR_NOME[mon.rar]}) foi para a reserva.${origem?`<br><small>${origem}</small>`:""}<br><small>Toque num retrato para trocar.</small>`); }
-  if(!META.liberados.includes(mon.id)) META.liberados.push(mon.id); registrarDex(mon.id,0,null,mon.rar);
+  const novo=!META.liberados.includes(mon.id); if(novo) META.liberados.push(mon.id); registrarDex(mon.id,0,null,mon.rar); if(novo) cenaDescoberta(mon);
   calcularSinergia(); desenharEquipe();
   if(filaRamo.length&&!pausado) proximaEscolha();
 }
 function efeitoInvocacao(s){ if(!J) return; const cor=COR[elementoDe(s)]; anel(s.x,s.y,10,"#ffffff",.4); anel(s.x,s.y,36,cor,.7); particulas(s.x,s.y,cor,26,110,2); tremor(3); }
+// seta na borda da tela apontando para algo valioso fora da vista
+function setaFora(x,y,cor){ if(x>=6&&y>=6&&x<=VW-6&&y<=VH-6) return; const cx=VW/2, cy=VH/2, ang=Math.atan2(y-cy,x-cx), m=Math.min((VW/2-10)/Math.abs(Math.cos(ang)||1e-6),(VH/2-10)/Math.abs(Math.sin(ang)||1e-6));
+  const ax=cx+Math.cos(ang)*m, ay=cy+Math.sin(ang)*m, p=1+0.15*Math.sin(J.t*8); lg.fillStyle=cor; lg.beginPath(); lg.moveTo(ax+Math.cos(ang)*7*p,ay+Math.sin(ang)*7*p);
+  lg.lineTo(ax+Math.cos(ang+2.5)*5*p,ay+Math.sin(ang+2.5)*5*p); lg.lineTo(ax+Math.cos(ang-2.5)*5*p,ay+Math.sin(ang-2.5)*5*p); lg.fill(); }
 function spawnOvo(rar,id,x,y){ const pool=poolPacto(); id=id||escolha(pool); rar=rar||sortearRaridade();
+  if(!SIM.ativo&&J){ if(rar==="lendario"){ anunciar({el:"luz"},"Ovo Lendário!","Siga a luz dourada."); som("jackpot"); } else if(rar==="raro") som("ding"); }
   const a=Math.random()*Math.PI*2, d=rnd(55,95); J.ovosMapa.push({x:x??J.jogador.x+Math.cos(a)*d, y:y??J.jogador.y+Math.sin(a)*d, id, rar, vida:35}); }
 function spawnFilhote(){ const id=escolha(poolPacto()), a=Math.random()*Math.PI*2, d=rnd(60,90);
   J.selvagens.push({x:J.jogador.x+Math.cos(a)*d, y:J.jogador.y+Math.sin(a)*d, id, rar:Math.random()<0.2?"incomum":"comum", vida:25}); if(!R.avisoFilhote){ R.avisoFilhote=true; toast("Um filhote selvagem apareceu! Encoste nele para capturar."); } else texto(J.selvagens[J.selvagens.length-1].x,J.selvagens[J.selvagens.length-1].y-14,"Filhote!","#fff3c4",12); }
@@ -802,6 +845,12 @@ function cenaChoco(mon){ if(SIM.ativo||!J) return; const l=LINHA[mon.id], cor=CO
   cenaTocar(`<div class="cine-raios" style="--cor:${cor}"></div><div class="cine-choco" style="--cor:${cor}"><img class="ovo" src="${ovo.toDataURL()}" alt=""><div class="racha"></div><img class="novo" src="${urlNovo}" alt=""></div><div class="cine-clarao choco"></div>
     <div class="cine-texto choco"><small>Chocou!${mon.rar!=="comum"?` · ${RAR_NOME[mon.rar]}`:""}</small><b style="color:${cor}">${l.filhote}</b><i>${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome}</i></div>`, "evolucao choco", 2800); }
 // ================================================================ cenas: evolução e chegada do chefe (o jogo para por um instante)
+// monstro nunca visto: a silhueta escura aparece, acende com um clarão e o nome é revelado
+function cenaDescoberta(mon){ if(SIM.ativo||!J) return; const l=LINHA[mon.id], cor=COR[l.elemento], q=quadrosForma(mon.id,0,null,mon.rar), img=(q&&q[0])||spriteLinha(mon.id,mon.rar);
+  let url=""; try{ url=(img._src&&!img._alvo? spriteUI(img):img).toDataURL(); }catch(e){}
+  cenaTocar(`<div class="cine-raios" style="--cor:${cor}"></div><div class="cine-descoberta" style="--cor:${cor}"><img src="${url}" alt=""></div><div class="cine-clarao descoberta"></div>
+    <div class="cine-texto descoberta"><small>Novo monstro descoberto!</small><b style="color:${cor}">${l.filhote}</b><i>${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome} · ${D.linhagens[l.linhagem].nome}</i><em>Agora ele aparece no Pacto, nos ovos e nos filhotes.</em></div>`, "evolucao descoberta", 3400);
+  som("jackpot"); }
 const CINE={ativa:false, fila:[]};
 function cenaTocar(html,classe,dur,aoFim){ if(SIM.ativo) return; CINE.fila.push({html,classe,dur,aoFim}); if(!CINE.ativa) cenaProxima(); }
 function cenaProxima(){ const c=CINE.fila.shift(); let el=$("cine"); if(!c){ CINE.ativa=false; if(el) el.className="cine"; return; }
@@ -823,7 +872,7 @@ function cenaChefe(e,nome,guardiao){ if(SIM.ativo) return; const u=UNIV[R.univer
     <div class="cine-texto chefe"><small>${guardiao?"Guardião da Era":"Chefe"} · ${u?u.nome.split(",")[0]:""}</small><b>${nome}</b><i>Inimigo de ${NOME_EL(e.el)}. ${dicaVantagem(e.el)}</i></div>`, "chefe", 2600); }
 
 // ================================================================ moedas, baús e a roleta de prêmios
-function soltarMoedas(x,y,n){ if(!J||n<=0) return; J.moedas=J.moedas||[]; for(let i=0;i<n;i++){ if(J.moedas.length>120) break; const a=Math.random()*Math.PI*2, v=rnd(30,80);
+function soltarMoedas(x,y,n){ if(!J||n<=0) return; { const m=n*(1+MOD("ouro")); n=Math.floor(m)+(Math.random()<m%1?1:0); } J.moedas=J.moedas||[]; for(let i=0;i<n;i++){ if(J.moedas.length>120) break; const a=Math.random()*Math.PI*2, v=rnd(30,80);
   J.moedas.push({x,y,z:4,vx:Math.cos(a)*v,vy:Math.sin(a)*v*0.6,vz:rnd(50,95),f:Math.random()*6,v:1,t:0}); } }
 function soltarBau(x,y,tipo){ if(!J) return; J.baus=J.baus||[]; if(J.baus.length>=4) return; J.baus.push({x,y,tipo,t:0}); texto(x,y-18,tipo==="ouro"?"Baú dourado!":"Baú!","#ffd34a",15); luzFlash(x,y,"#ffd34a",60,0.6); som("bau"); }
 function atualizarMoedasBaus(dt,ima){ const P=J.jogador;
@@ -1000,7 +1049,7 @@ function aplicarPortal(u,rec){
 function salvarRun(){ RUN_SALVA=JSON.parse(JSON.stringify({...R, selos:R.selos.map(s=>({nivel:s.nivel,pod:s.pod,mod:s.mod,esp:s.esp??null,mon:s.mon,trocaCd:0}))})); gravar(); }
 function carregarRun(s){ R=JSON.parse(JSON.stringify(s)); R.st=R.st||novoSt(); }
 function derrota(){
-  rodando=false; if(SIM.aoDerrota){ SIM.aoDerrota(); return; } const ess=Math.round((R.essenciaRun+Math.floor(R.abates/15))*(1+passiva("essencia"))*relMods().ess*bonusLoja("ganancia")); META.essencia+=ess; RUN_SALVA=null; gravar();
+  rodando=false; if(SIM.aoDerrota){ SIM.aoDerrota(); return; } const ess=Math.round((R.essenciaRun+Math.floor(R.abates/15))*(1+passiva("essencia"))*(1+MOD("ouro"))*relMods().ess*bonusLoja("ganancia")); META.essencia+=ess; RUN_SALVA=null; gravar();
   // fim de run que puxa para a próxima: recorde, quanto falta para a próxima melhoria e atalho para o Santuário
   const recorde=R.profundidade>(R.recordeAntes??0)&&R.profundidade>0;
   const prox=LOJA.filter(it=>nivelLoja(it.id)<it.max).sort((a,b)=>precoLoja(a)-precoLoja(b))[0], podem=lojaAcessivel();
@@ -1488,7 +1537,7 @@ function atualizar(dt){
   if(J.regen>0) curar(J.vidaMax*J.regenV*dt);
   // spawns: inimigos, ovos e filhotes
   if(!J.fim){
-    if(J.t<MAPA_SEG){ J.spawn+=dt*(DIF.base+J.t*DIF.cresc)*(1+R.profundidade*DIF.spawn)*multDiretor(); while(J.spawn>1&&J.inimigos.length<DIF.max){ J.spawn--; spawnInimigo(); }
+    if(J.t<MAPA_SEG){ J.spawn+=dt*(DIF.base+J.t*DIF.cresc)*(1+R.profundidade*DIF.spawn)*multDiretor()*(1+MOD("horda")); while(J.spawn>1&&J.inimigos.length<DIF.max){ J.spawn--; spawnInimigo(); }
       atualizarDiretor(dt); atualizarEventos(dt); }   // o diretor de horda decide densidade e ondas especiais (diretor.js)
     if(!J.miniFeito&&J.t>=MINI_SEG){ J.miniFeito=true; spawnChefe(true); }
     if(!J.chefeFeito&&J.t>=MAPA_SEG){ J.chefeFeito=true; spawnChefe(false); }
@@ -2916,9 +2965,9 @@ function textoUnico(chave,x,y,t,cor,tam){ R.vistos=R.vistos||{}; if(R.vistos[cha
 const PD=()=>D.poderes;
 function nivTal(id){ return (R.talismas&&R.talismas[id])||0; }
 function valTal(efeito){ let v=0; for(const id in (R.talismas||{})){ const t=PD().talismas[id]; if(t&&t.efeito===efeito) v+=t.valor*R.talismas[id]; } return v; }
-const tal={ dano:()=>1+valTal("dano"), defesa:()=>Math.max(0.5,1-valTal("defesa"))*((SIN.rm&&SIN.rm.danoRec)||1), recarga:()=>Math.max(0.6,1-valTal("recarga")), area:()=>1+valTal("area")+passiva("area")+custo("area"),
+const tal={ dano:()=>(1+valTal("dano"))*(1+MOD("dano")), defesa:()=>Math.max(0.5,1-valTal("defesa"))*((SIN.rm&&SIN.rm.danoRec)||1)*(1+MOD("danoRec")), recarga:()=>Math.max(0.45,(1-valTal("recarga"))*(1-MOD("cadencia"))), area:()=>1+valTal("area")+passiva("area")+custo("area")+MOD("area"),
   coleta:()=>1+valTal("coleta"), regen:()=>valTal("regen"), duracao:()=>1+valTal("duracao")+passiva("duracao"), projeteis:()=>{ const lv=nivTal("espelho"); return (lv>=2?1:0)+(lv>=5?1:0); },
-  velocidade:()=>1+valTal("velocidade"), critico:()=>valTal("critico"), xp:()=>1+valTal("xp")+valTal("risco")*1.25, riscoVida:()=>1+valTal("risco"), riscoVel:()=>1+valTal("risco")*0.5 };
+  velocidade:()=>(1+valTal("velocidade"))*(1+MOD("velocidade")), critico:()=>valTal("critico")+MOD("critico"), xp:()=>(1+valTal("xp")+valTal("risco")*1.25)*(1+MOD("xp")), riscoVida:()=>1+valTal("risco"), riscoVel:()=>1+valTal("risco")*0.5 };
 function talismasLiberados(){ const T=PD().talismas; return Object.keys(T).filter(id=>T[id].inicial||(META.talismas||[]).includes(id)||SIM.tudoLiberado); }
 function cartaTalisma(){ if(SIM.semTalismas||Math.random()>=PD().chance_carta+passiva("carta_extra")*0.35+((SIN.rm&&SIN.rm.talisma)||0)) return null; const tem=Object.keys(R.talismas||{}), cheio=tem.length>=PD().encaixes;
   const ops=talismasLiberados().filter(id=> cheio? (tem.includes(id)&&nivTal(id)<5) : nivTal(id)<5); if(!ops.length) return null;
@@ -3599,6 +3648,7 @@ function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||
   if(e.congela>0) lg.globalAlpha*=.75;
   const virar=e.x>P.x? true : false, img=e.flash>0? branco(spr) : spr;
   if(z<2&&!e.oculta&&clip>=1) sombraProjetada(spr,x+dx,y+h*0.35+h*(1-(spr.base||1)),w,h,virar,e.chefe||e.mini?1:0.85);
+  if(e.rx||e.ry){ dx+=e.rx; z-=e.ry*0.6; e.rx*=0.78; e.ry*=0.78; if(Math.abs(e.rx)+Math.abs(e.ry)<0.05){ e.rx=0; e.ry=0; } }   // tranco do golpe
   e._vis={spr,x:x+dx,y:y-z+h*0.35+h*(1-(spr.base||1)),w,h,virar,t:J.t};   // para o brilho noturno, desenhado depois da escuridão
   lg.save(); lg.translate(x+dx,y-z+h*0.35+h*(1-(spr.base||1))); if(e.caido>0&&!spr._src) lg.rotate(virar?-1.4:1.4); /* só o desenho por código deita girando; a arte pintada girada virava uma mancha achatada */ if(pose==="mania") lg.scale(Math.floor(J.t*5)%2?-1:1,1);
   lg.scale((virar?-1:1)*sx,sy);
@@ -4054,7 +4104,13 @@ function desenhar(dt){
   for(const a of J.armadilhas){ lg.fillStyle=a.cor; lg.fillRect(Math.round(a.x-ox)-1,Math.round(a.y-oy)-1,3,3); lg.fillStyle="#120e1a"; lg.fillRect(Math.round(a.x-ox),Math.round(a.y-oy),1,1); }
   // ovos e filhotes
   for(const o of J.ovosMapa){ const s=spriteOvo(LINHA[o.id].elemento,o.rar), b=Math.round(Math.sin(J.t*5+o.x)*1.5); sombra(o.x-ox,o.y-oy+6,8);
-    if(o.rar!=="comum"){ lg.globalCompositeOperation="lighter"; lg.globalAlpha=.25+.15*Math.sin(J.t*6); lg.fillStyle=o.rar==="lendario"?"#ffd34a":"#c4ccd8"; lg.beginPath(); lg.arc(o.x-ox,o.y-oy,9,0,Math.PI*2); lg.fill(); lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; }
+    if(o.rar!=="comum"){ const lend=o.rar==="lendario", cor=lend?"#ffd34a":"#8ab8ff", alt=lend?130:75, pul=0.5+0.5*Math.sin(J.t*4+o.x), X=o.x-ox, Y=o.y-oy;
+      lg.globalCompositeOperation="lighter";
+      const gr=lg.createLinearGradient(0,Y-alt,0,Y); gr.addColorStop(0,"rgba(255,255,255,0)"); gr.addColorStop(1,lend?`rgba(255,211,74,${0.38+0.2*pul})`:`rgba(138,184,255,${0.3+0.15*pul})`); lg.fillStyle=gr; lg.fillRect(X-(lend?5:3.5),Y-alt,lend?10:7,alt);   // coluna de luz
+      lg.globalAlpha=.3+.2*pul; lg.drawImage(bolhaCor(cor),X-(lend?18:13),Y-(lend?18:13),lend?36:26,lend?36:26); lg.globalAlpha=1;
+      if(Math.floor(J.t*8+o.x)%5===0){ lg.fillStyle="#ffffff"; lg.fillRect(Math.round(X+rnd(-7,7)),Math.round(Y-rnd(4,alt*0.6)),1,1); }   // faíscas subindo
+      lg.globalCompositeOperation="source-over";
+      if(lend) setaFora(X,Y,cor); }
     lg.drawImage(s,o.x-ox-5,o.y-oy-6+b,10,12); }
   if(J.ovoAnc){ const o=J.ovoAnc, x=o.x-ox, y=o.y-oy, sp=spriteOvo(o.el,"lendario"), pul=0.5+0.5*Math.sin(J.t*4);
     lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.2+0.2*pul; lg.fillStyle=COR[o.el]; lg.fillRect(Math.round(x-3),Math.round(y-70),6,70);

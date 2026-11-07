@@ -16,3 +16,5 @@ node_modules/
 # versão desktop: gerados pelo empacotamento
 desktop/jogo/
 desktop/dist/
+testes/fotos/
+testes/relatorio.md

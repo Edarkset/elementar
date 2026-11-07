@@ -48,7 +48,7 @@ canvas.mini{image-rendering:pixelated}
 @media (prefers-reduced-motion: reduce){ .circ.pronto,.combo.pop{animation:none} }
 .tela{position:absolute; inset:0; display:none; align-items:center; justify-content:center; padding:14px; background:rgba(12,10,22,.8)}
 .tela.ativa{display:flex}
-.painel{width:min(470px,100%); max-height:100%; overflow:auto; background:var(--surface); color:var(--text); border:2px solid var(--line); padding:16px 14px}
+.painel{width:min(470px,100%); max-height:100%; overflow:visible; display:flex; flex-direction:column; background:var(--surface); color:var(--text); border:2px solid var(--line); padding:16px 14px}
 .painel h1{font-size:44px; margin:0; font-weight:600; line-height:1; color:var(--ouro); text-shadow:2px 2px 0 var(--tinta)}
 .painel h2{font-size:21px; margin:0 0 4px; font-weight:600}
 .painel p{margin:6px 0; color:var(--muted); font-size:14px; line-height:1.4}
@@ -149,7 +149,7 @@ canvas.mini{image-rendering:pixelated}
 .carta canvas.retrato-grande, .cartas.grade .carta canvas.retrato-grande{width:min(36vw,128px); height:min(36vw,128px); border-radius:14px; padding:0; image-rendering:auto;
   background:radial-gradient(circle at 50% 62%, color-mix(in srgb, var(--rar) 35%, transparent), rgba(0,0,0,.35) 72%); box-shadow:0 0 0 1.5px var(--rar), inset 0 -10px 20px rgba(0,0,0,.35)}
 /* roda do Pacto */
-.roda-pacto{position:relative; width:min(100%,420px); aspect-ratio:1; margin:4px auto 0}
+.roda-pacto{position:relative; width:min(100%,420px,max(170px,100dvh - 250px)); aspect-ratio:1; margin:4px auto 0}
 .roda-pacto img{width:100%; height:100%; display:block; filter:drop-shadow(0 6px 18px rgba(0,0,0,.6))}
 .gema{position:absolute; width:19%; height:19%; transform:translate(-50%,-50%); border-radius:50%; border:0; background:transparent; cursor:pointer; padding:0; transition:box-shadow .2s, background .2s}
 .gema::after{content:""; position:absolute; inset:8%; border-radius:50%; transition:inherit}
@@ -305,9 +305,9 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 /* celular em pé: painel do menu mais baixo e compacto, para a cena em camadas aparecer */
 @media (max-width:520px) and (orientation:portrait){
   #telaMenu.com-arte .painel{padding:12px 14px; margin-bottom:1.5vh}
-  #telaMenu.com-arte .painel > p:first-of-type{display:none}
+  #telaMenu.com-arte .rolagem > p:first-of-type{display:none}
   #telaMenu.com-arte h1 img{width:min(78%,300px)!important}
-  #telaMenu.com-arte .painel > p:last-of-type{font-size:12px; margin-top:8px!important; opacity:.85}
+  #telaMenu.com-arte .rolagem > p:last-of-type{font-size:12px; margin-top:8px!important; opacity:.85}
 }
 
 /* Bolsa brilha quando há um item que serve agora */
@@ -337,3 +337,57 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
   #telaMenu.com-arte #menuBotoes .botao{padding:7px 12px; font-size:15px; margin-top:6px}
   #telaMenu.com-arte .meta{margin:6px 0 4px}
 }
+
+/* o conteúdo rola por dentro do painel; os losangos dourados de cima e de baixo ficam presos à moldura
+   (antes rolavam junto e apareciam no meio dos botões) */
+.painel > .rolagem{flex:1 1 auto; min-height:0; overflow:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; touch-action:pan-y}
+
+/* celular deitado (tela baixa): painéis mais largos e compactos, logotipo menor, botões do menu em duas colunas */
+@media (max-height:500px) and (orientation:landscape){
+  .tela{padding:8px max(10px,env(safe-area-inset-right,0px)) 8px max(10px,env(safe-area-inset-left,0px))}
+  .painel{width:min(720px,100%); padding:12px 14px 10px}
+  .painel h2{font-size:18px; margin-bottom:2px} .painel h2::after{margin-top:5px}
+  .painel p{font-size:13px; margin:4px 0}
+  .cartas{margin-top:6px; gap:7px}
+  .cartas:not(.grade){grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .cartas.grade{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .carta canvas.retrato-grande, .cartas.grade .carta canvas.retrato-grande{width:min(22vh,96px); height:min(22vh,96px)}
+  .botao{margin-top:6px; padding:7px 12px; font-size:15px}
+  #telaMenu.com-arte{align-items:center}
+  #telaMenu.com-arte .painel{width:min(640px,100%); margin-bottom:0; padding:10px 14px}
+  #telaMenu.com-arte h1 img{width:auto!important; max-width:min(70%,320px); max-height:24vh}
+  #telaMenu.com-arte .rolagem > p:first-of-type{display:none}
+  #telaMenu.com-arte .rolagem > p:last-of-type{font-size:12px; margin-top:6px!important; opacity:.85}
+  #telaMenu .meta{margin:4px 0 2px}
+  .roda-pacto{width:min(100%,max(170px,100dvh - 150px))}
+  #cartasRodape{display:flex; gap:8px} #cartasRodape .botao{flex:1}
+  #menuBotoes{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:8px}
+  #menuBotoes .botao{margin-top:6px; padding:6px 10px; font-size:14px}
+}
+
+/* retrato animado desenhado nos pixels reais da tela: o navegador não amplia de novo (era o que borrava) */
+.carta canvas.anim-retrato.nitido{image-rendering:pixelated}
+
+/* baú novo: proporção do desenho (120x112); a tampa abre para trás a partir da dobradiça e o interior aparece brilhando */
+.bau-arca{width:min(46vw,180px); height:auto; aspect-ratio:120/112}
+.bau-arca .tampa{transform-box:view-box; transform-origin:60px 11px; transition:transform .45s cubic-bezier(.3,1.5,.5,1)}
+.bau-tela.aberto .bau-arca .tampa{transform:scaleY(0); transform-origin:60px 50px; transition:transform .16s ease-in}
+.bau-arca .tampa-aberta{transform-box:view-box; transform-origin:60px 47px; transform:scaleY(0); transition:transform .35s .14s cubic-bezier(.3,1.6,.5,1)}
+.bau-tela.aberto .bau-arca .tampa-aberta{transform:none}
+.bau-arca .interior{opacity:0; transition:opacity .2s .05s} .bau-tela.aberto .bau-arca .interior{opacity:1}
+.bau-tela.aberto .bau-arca::after{top:22%}
+
+/* botões do HUD (Bolsa, pausa) grandes o bastante para o dedo: eram 26 px de altura */
+.btn-hud{min-height:36px; min-width:40px; padding:6px 12px; font-size:14px}
+/* baú no celular deitado: tudo cabe na tela (o botão Coletar ficava de fora) */
+@media (max-height:500px) and (orientation:landscape){
+  .bau-tela{gap:4px; padding:8px; justify-content:center}
+  .bau-titulo{font-size:20px; margin-bottom:0} .bau-titulo.jackpot{font-size:28px}
+  .bau-arca{width:min(22vh,110px)}
+  .bau-casas{max-width:none; flex-wrap:nowrap}
+  .casa{width:104px; min-height:0; padding:5px 4px} .casa img{width:40px; height:40px}
+  .bau-coletar{margin-top:2px; padding:6px 12px}
+}
+/* baú com 5 prêmios em tela pequena: cartas mais estreitas (3 por linha) e a tela rola se ainda faltar espaço */
+.bau-tela{overflow-y:auto}
+@media (max-width:520px) and (orientation:portrait){ .casa{width:min(30vw,112px); min-height:100px; padding:6px 4px} .casa img{width:48px; height:48px} .bau-arca{width:min(40vw,160px)} }

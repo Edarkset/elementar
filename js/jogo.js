@@ -2457,6 +2457,19 @@ function fundoAbismo(){ const img=folhaU("fundo"); if(img) return img; const C=J
   const c=document.createElement("canvas"); c.width=c.height=128; const g=c.getContext("2d"); g.fillStyle="#cfdcea"; g.fillRect(0,0,128,128);
   for(let i=0;i<26;i++){ const x=(i*53)%128, y=(i*37)%128, r=10+(i*7)%18; for(const [dx,dy] of [[0,0],[128,0],[-128,0],[0,128],[0,-128]]){ g.globalAlpha=0.55; g.drawImage(bolhaCor(i%3?"#ffffff":"#e8f0f8"),x-r+dx,y-r+dy,r*2,r*2); } }
   C.fundoProc=c; return c; }
+// paredão do abismo: a folha tem 4 rochas (linha 1) e 4 quadros de cachoeira (linha 2), cada uma com margem transparente dos lados.
+// Fatiar a célula inteira fazia uma fileira de blocos com buracos e topos repetidos; aqui cada rocha é recortada pelo desenho
+// (sem as bordas irregulares) e as 4 viram uma faixa contínua, alinhadas pelo topo da grama
+function faixaParedao(img){ if(!img) return null; if(img._faixa) return img._faixa;
+  const cw=img.width/4, ch=img.height/2, t=document.createElement("canvas"); t.width=img.width; t.height=img.height; const tg=t.getContext("2d"); tg.drawImage(img,0,0);
+  let d; try{ d=tg.getImageData(0,0,t.width,t.height).data; }catch(e){ return null; }
+  const caixa=(c,r)=>{ let x0=1e9,x1=-1,y0=1e9; for(let y=r*ch;y<(r+1)*ch;y++) for(let x=c*cw;x<(c+1)*cw;x++) if(d[(y*t.width+x)*4+3]>40){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; } return x1<0? null : {x0,x1,y0}; };
+  const linha=r=>{ const bs=[0,1,2,3].map(c=>caixa(c,r)).filter(Boolean); return bs.map(b=>{ const w=b.x1-b.x0+1, m=Math.round(w*0.12); return {sx:b.x0+m, sw:w-2*m, sy:b.y0}; }); };
+  const rochas=linha(0), quedas=linha(1); if(!rochas.length) return null;
+  const H=Math.round(ch*0.82), W=rochas.reduce((a,b)=>a+b.sw,0), c=document.createElement("canvas"); c.width=Math.max(W,quedas.reduce((a,b)=>a+b.sw,0)); c.height=H*2; const g=c.getContext("2d");
+  let x=0; for(const b of rochas){ g.drawImage(img,b.sx,b.sy,b.sw,H,x,0,b.sw,H); x+=b.sw; }
+  const qs=[]; x=0; for(const b of quedas){ g.drawImage(img,b.sx,b.sy,b.sw,H,x,H,b.sw,H); qs.push({x,w:b.sw}); x+=b.sw; }
+  img._faixa={c, w:W, h:H, quedas:qs.length?qs:[{x:0,w:W}]}; return img._faixa; }
 function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) return; const pec=folhaU("pecas"), feats=pecasPerto(ox+VW/2,oy+VH/2);
   // praças e lagos (planos, por baixo de tudo)
   for(const f of feats){ if(f.tipo==="praca"){ if(pec){ const w=f.rx*2.6; lg.drawImage(celulaArte(pec,2,2,0,0,Math.round(w),Math.round(w)),Math.round(f.x-ox-w/2),Math.round(f.y-oy-w/2)); }
@@ -2474,25 +2487,29 @@ function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) re
     lg.save(); buraco(); lg.clip(); const suave=lg.imageSmoothingEnabled; lg.imageSmoothingEnabled=true;
     const sx=((dx0%TF)+TF)%TF-TF, sy=((dy0%TF)+TF)%TF-TF; for(let y=sy;y<VH+TF;y+=TF) for(let x=sx;x<VW+TF;x+=TF) lg.drawImage(fundo,x,y,TF,TF);
     // profundidade: mais escuro junto ao paredão (fundo do precipício) e névoa subindo
-    const R2=Math.max(f.rx,f.ry)*1.25, gp=lg.createLinearGradient(0,ey-R2,0,ey+R2); gp.addColorStop(0,"rgba(4,4,12,.78)"); gp.addColorStop(0.45,"rgba(8,10,22,.45)"); gp.addColorStop(1,"rgba(10,14,30,.2)");
+    const R2=Math.max(f.rx,f.ry)*1.25, gp=lg.createLinearGradient(0,ey-R2,0,ey+R2); gp.addColorStop(0,"rgba(4,4,12,.5)"); gp.addColorStop(0.4,"rgba(8,10,22,.2)"); gp.addColorStop(1,"rgba(10,14,30,.05)");   /* mais claro: o mar de nuvens do fundo virava uma mancha cinza */
     lg.fillStyle=gp; lg.fillRect(ex-R2,ey-R2,R2*2,R2*2);
     lg.globalCompositeOperation="lighter"; for(let i=0;i<5;i++){ const q=((C.t*0.03+i/5)%1), mx=ex+Math.sin(i*2.3+C.t*0.2)*f.rx*0.5, my=ey+f.ry*0.6-q*f.ry*1.2; lg.globalAlpha=0.07*Math.sin(q*Math.PI); lg.drawImage(bolhaCor("#c8d4f0"),mx-f.rx*0.45,my-f.ry*0.22,f.rx*0.9,f.ry*0.44); } lg.globalCompositeOperation="source-over"; lg.globalAlpha=1;
     // paredão: acompanha a curva da borda de cima, em fatias finas; um trecho por buraco vira cachoeira
-    const par2=folhaU("paredao"), PW=34, PH=34, passo=2, hf=hash2(Math.round(f.x),Math.round(f.y),61), var0=Math.floor(hf*4);
+    const fx=faixaParedao(folhaU("paredao")), PH=34, passo=2, hf=hash2(Math.round(f.x),Math.round(f.y),61), var0=Math.floor(hf*4);
     const cach0=hf<0.55? (hash2(Math.round(f.x),3,7)-0.5)*f.rx*1.2 : null;
     const xMin=Math.min(...f.pts.map(p=>p[0])), xMax=Math.max(...f.pts.map(p=>p[0]));
     for(let wx=xMin;wx<xMax;wx+=passo){ const tp=topo(wx+passo/2); if(tp==null) continue; const yt=ey+tp, x=ex+wx;
       const agua=cach0!=null&&Math.abs(wx-cach0)<12;
-      if(par2){ const cw=par2.width/4, ch=par2.height/2, u=(((wx+f.x)%PW)+PW)%PW, col=agua? Math.floor(J.t*8)%4 : (var0+Math.floor((wx+f.x+1e4)/PW))%4;
-        lg.drawImage(par2,col*cw+u/PW*cw,(agua?1:0)*ch,cw*passo/PW,ch,x,yt-1,passo+0.6,PH); }
+      // nas laterais íngremes o paredão virava uma escada de fatias: some aos poucos (só a borda de trás mostra a parede)
+      { const t2=topo(wx+passo*1.5), incl=t2==null?9:Math.abs(t2-tp)/passo; lg.globalAlpha=Math.max(0,Math.min(1,1.8-incl*0.9)); if(lg.globalAlpha<=0.02){ lg.globalAlpha=1; continue; } }
+      if(fx){ const k=PH/fx.h;
+        if(agua){ const q=fx.quedas[Math.floor(J.t*8)%fx.quedas.length], u=(wx-cach0+12)/24; lg.drawImage(fx.c,q.x+u*q.w,fx.h,Math.max(1,q.w*passo/24),fx.h,x,yt-1,passo+0.6,PH); }
+        else { const SW=fx.w*k, u=((((wx+f.x+var0*37)%SW)+SW)%SW)/k; lg.drawImage(fx.c,u,0,Math.min(passo/k,fx.w-u),fx.h,x,yt-1,passo+0.6,PH); } }
       else { const g=lg.createLinearGradient(0,yt,0,yt+26); g.addColorStop(0,"#7a7680"); g.addColorStop(1,"rgba(40,38,46,0)"); lg.fillStyle=g; lg.fillRect(x,yt,passo+0.6,26); if(agua){ lg.fillStyle="rgba(220,240,255,.7)"; lg.fillRect(x,yt,passo+0.6,26+Math.sin(J.t*9+wx)*2); } }
+      lg.globalAlpha=1;
       if(agua&&Math.random()<.04&&C.ar.length<400){ const p=particulaAr("bolhas",x+ox,yt+oy+30,0); p.cor="#ffffff"; p.vz=6; } }
     // sombra interna na beira (o chão de cima projeta sombra no fundo)
     lg.strokeStyle="rgba(8,6,14,.6)"; lg.lineWidth=6; buraco(); lg.stroke(); lg.strokeStyle="rgba(8,6,14,.35)"; lg.lineWidth=12; buraco(); lg.stroke();
     lg.imageSmoothingEnabled=suave; lg.restore();
     // beirada: contorno escuro e uma luz fina na borda de baixo
     // beirada de pedra: lábio grosso escuro, luz fina na borda de baixo (a que está de frente) e cascalho ao longo da beira
-    lg.lineJoin="round"; lg.strokeStyle="rgba(30,22,16,.85)"; lg.lineWidth=2.6; buraco(); lg.stroke(); lg.strokeStyle="#140f1c"; lg.lineWidth=1; buraco(); lg.stroke();
+    lg.lineJoin="round"; lg.strokeStyle="rgba(40,30,22,.55)"; lg.lineWidth=1.6; buraco(); lg.stroke(); lg.strokeStyle="rgba(20,15,28,.5)"; lg.lineWidth=0.7; buraco(); lg.stroke();   /* beirada mais fina: o contorno preto grosso parecia recortado */
     lg.strokeStyle="rgba(255,240,210,.32)"; lg.lineWidth=0.8; lg.beginPath(); let ini=true; for(let i=0;i<NP;i++){ const [px,py]=f.pts[i]; if(py<f.ry*0.25){ ini=true; continue; } lg[ini?"moveTo":"lineTo"](ex+px,ey+py+1.2); ini=false; } lg.stroke();
     for(let i=0;i<NP;i+=2){ const h=hash2(Math.round(f.x)+i,Math.round(f.y),71); if(h>0.55) continue; const [px,py]=f.pts[i], k=1.12+h*0.25, sx=ex+px*k, sy=ey+py*k, rr=0.8+h*2.2;
       lg.fillStyle="rgba(20,14,10,.55)"; lg.beginPath(); lg.ellipse(sx+0.4,sy+0.6,rr,rr*0.6,0,0,Math.PI*2); lg.fill(); lg.fillStyle="#6a6058"; lg.beginPath(); lg.ellipse(sx,sy,rr,rr*0.62,h*3,0,Math.PI*2); lg.fill();

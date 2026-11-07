@@ -493,7 +493,7 @@ function mostrarCartas(titulo,sub,cartas,op={}){
   $("cartasRodape").innerHTML="";
   cartas.forEach((c,ci)=>{ const b=document.createElement("button"); b.className="carta r-"+(c.raridade||"comum"); b.style.setProperty("--i",Math.min(ci,10)); if(c.desab) b.disabled=true;
     if(c.classe) b.classList.add(c.classe);
-    if(c.quadros&&c.quadros.length){ const q0=c.quadros[0], cc=document.createElement("canvas"); cc.width=q0.width; cc.height=q0.height; cc.className="retrato-grande"; cc.getContext("2d").drawImage(q0,0,0); cc._quadros=c.quadros; b.appendChild(cc); animarRetratos(); }
+    if(c.quadros&&c.quadros.length){ const q0=c.quadros[0], cc=document.createElement("canvas"); cc.width=q0.width; cc.height=q0.height; cc.className=(c.classe==="medio"?"retrato-medio":"retrato-grande")+" anim-retrato"; cc.getContext("2d").drawImage(q0,0,0); cc._quadros=c.quadros; b.appendChild(cc); animarRetratos(); }
     else if(c.sprite){ const sp=spriteUI(c.sprite), cc=document.createElement("canvas"); cc.width=sp.width; cc.height=sp.height; cc.getContext("2d").drawImage(sp,0,0); if(c.suave||sp!==c.sprite) cc.style.imageRendering="auto"; if(c.classe==="grande") cc.className="retrato-grande"; b.appendChild(cc); }
     const t=document.createElement("div"); t.innerHTML=`<b>${c.titulo}</b>${c.texto?`<small>${c.texto}</small>`:""}`; b.appendChild(t);
     b.onclick=()=>{ if(c.desab) return; if(!c.manter) $("telaCartas").classList.remove("ativa"); c.acao(b); }; box.appendChild(b); });
@@ -503,13 +503,18 @@ function mostrarCartas(titulo,sub,cartas,op={}){
 function fechar(){ $("telaCartas").classList.remove("ativa"); }
 // retratos animados nas cartas (quadros "parado" da folha de animação), enquanto a tela estiver aberta
 let animRet=null;
-function animarRetratos(){ if(animRet) return; const passo=t=>{ const cs=[...document.querySelectorAll("#cartas canvas.retrato-grande")].filter(c=>c._quadros);
+function animarRetratos(){ if(animRet) return; const passo=t=>{ const cs=[...document.querySelectorAll("#cartas canvas.anim-retrato")].filter(c=>c._quadros);
     if(!cs.length||!$("telaCartas").classList.contains("ativa")){ animRet=null; return; }
     const f=Math.floor(t/1000*6); for(const c of cs){ const q=c._quadros[f%c._quadros.length], g=c.getContext("2d"); g.clearRect(0,0,c.width,c.height); g.drawImage(q,0,0); }
     animRet=requestAnimationFrame(passo); }; animRet=requestAnimationFrame(passo); }
 // quadros do monstro parado, em alta resolução, para a tela de escolha; sem folha de animação, usa a imagem fixa
-function quadrosRetrato(id){ const l=LINHA[id]; if(!l) return null; const img=ARTE_IMG[`arte/monstros/${l.elemento}/${id}__anim_1.png`]; if(!img||!img.pronta) return null;
-  const f=fatiarFolha(img,6,3); if(!f.valida||f.linhas[0].qs.length<2) return null; return f.linhas[0].qs.map((_,i)=>{ const q=quadroAnim(img,0,i,24); return versaoHi(q,8)||q; }); }
+function quadrosForma(id,e,ramo,rar){ const fa=folhaAnimMonstro(id,e,ramo,rar); if(!fa) return null; const f=fatiarFolha(fa.img,6,3); if(!f.valida||!f.linhas[0].qs.length) return null;
+  // escala 1: um pixel da arte = um pixel do quadro; a tela amplia em blocos nítidos (sem borrar)
+  const alvo=Math.round(Math.max(f.corpoW,f.corpoH*correcaoAltura(fa.img)));
+  // recorte justo em volta do corpo (o quadro do jogo tem folga para o efeito do golpe)
+  return f.linhas[0].qs.map((_,i)=>{ const q=quadroAnim(fa.img,0,i,alvo,fa.cor); if(!q) return null; const L=Math.round(alvo*1.12), c=document.createElement("canvas"); c.width=c.height=L;
+    c.getContext("2d").drawImage(q,Math.round((q.width-L)/2),Math.round(q._pe-alvo-(L-alvo)/2),L,L,0,0,L,L); return c; }).filter(Boolean); }
+function quadrosRetrato(id){ return quadrosForma(id,0,null,"comum"); }
 function proximaEscolha(){
   if(filaRamo.length) return escolherRamo(filaRamo.shift());
   if(filaEsp.length) return escolherEspecial(filaEsp.shift());
@@ -522,7 +527,7 @@ function escolherRamo(s){
   const l=L(s), ok=ramosElegiveis(s), pedra=R.pedraAtiva;
   mostrarCartas(`${l.jovem} vai virar Adulto`, pedra?"A Pedra Ancestral liberou os três caminhos.":"Escolha o caminho. Os bloqueados mostram o requisito.",
     l.ramos.map((r,i)=>({ titulo:r.nome+(r.linhagem!==l.linhagem?` · ${D.linhagens[r.linhagem].nome}`:""), raridade:ok.includes(i)?"raro":"comum", desab:!ok.includes(i),
-      texto:`${textoCondicao(r)}<br>Supremo: ${r.supremo}. ${r.ultimate}`, sprite:gerarSprite(s.mon.id+"#2#"+i,TAM[2],COR[r.elemento],{rar:s.mon.rar}),
+      texto:`${textoCondicao(r)}<br>Supremo: ${r.supremo}. ${r.ultimate}`, classe:"medio", quadros:quadrosForma(s.mon.id,2,i,s.mon.rar), sprite:arteMonstro(s.mon.id,2,i,s.mon.rar)||gerarSprite(s.mon.id+"#2#"+i,TAM[2],COR[r.elemento],{rar:s.mon.rar}),
       acao:()=>{ const antes=estBase(s); s.mon.ramo=i; if(pedra) R.pedraAtiva=false; checarEvolucao(s,antes); proximaEscolha(); } })));
 }
 function resumoPoderes(s){ const c=D.classes[L(s).classe]; return `Básico ${s.pod.b} · ${c.h1.nome} ${s.pod.h1} · ${c.h2.nome} ${s.pod.h2}`; }
@@ -659,10 +664,13 @@ function cenaProxima(){ const c=CINE.fila.shift(); let el=$("cine"); if(!c){ CIN
   el.onclick=fim; setTimeout(fim,c.dur); }
 function imgDe(spr){ const h=spriteUI(spr); try{ return h.toDataURL(); }catch(e){ return ""; } }
 function cenaEvolucao(s,antes,depois){ if(SIM.ativo||!J) return;
-  const velho=arteMonstro(s.mon.id,antes,s.mon.ramo,s.mon.rar)||gerarSprite(s.mon.id+"#"+antes+"#-",TAM[antes],COR[elementoDe(s)],{rar:s.mon.rar}), novo=spriteSelo(s), cor=COR[elementoDe(s)];
-  const etapa=["Filhote","Jovem","Adulto","Supremo"][depois];
-  cenaTocar(`<div class="cine-raios" style="--cor:${cor}"></div><div class="cine-evo"><img class="velho" src="${imgDe(velho)}" alt=""><img class="novo" src="${imgDe(novo)}" alt=""></div>
-    <div class="cine-texto"><small>Evoluiu para ${etapa}!</small><b style="color:${cor}">${nomeForma(s)}</b>${depois===3&&ramoObj(s)?`<i>${ramoObj(s).ultimate}</i>`:""}</div>`, "evolucao", 2400); }
+  const q=(e,r)=>{ const f=quadrosForma(s.mon.id,e,r,s.mon.rar); return f&&f[0]; };
+  const velho=q(antes,antes>=2?s.mon.ramo:null)||arteMonstro(s.mon.id,antes,s.mon.ramo,s.mon.rar)||gerarSprite(s.mon.id+"#"+antes+"#-",TAM[antes],COR[elementoDe(s)],{rar:s.mon.rar});
+  const novo=q(depois,s.mon.ramo)||spriteSelo(s), cor=COR[elementoDe(s)], etapa=["Filhote","Jovem","Adulto","Supremo"][depois];
+  const url=sp=>{ try{ return (sp._src&&!sp._alvo? spriteUI(sp) : sp).toDataURL(); }catch(e){ return ""; } };
+  const faiscas=Array.from({length:18},(_,i)=>`<i style="--a:${i*20+Math.random()*12}deg;--d:${90+Math.random()*90}px;--t:${0.5+Math.random()*0.5}s"></i>`).join("");
+  cenaTocar(`<div class="cine-raios" style="--cor:${cor}"></div><div class="cine-evo" style="--cor:${cor}"><div class="evo-aura"></div><img class="velho" src="${url(velho)}" alt=""><img class="novo" src="${url(novo)}" alt=""><div class="evo-faiscas">${faiscas}</div></div><div class="cine-clarao"></div>
+    <div class="cine-texto"><small>Evoluiu para ${etapa}!</small><b style="color:${cor}">${nomeForma(s)}</b>${depois===3&&ramoObj(s)?`<i>${ramoObj(s).ultimate}</i>`:""}</div>`, "evolucao", 3600); som("ding"); }
 function cenaChefe(e,nome,guardiao){ if(SIM.ativo) return; const u=UNIV[R.universo], spr=arteCriatura(e,"parado",0), cor=COR[e.el]||"#ff5a4a";
   cenaTocar(`<div class="cine-faixa" style="--cor:${cor}"></div><div class="cine-chefe">${spr?`<img src="${imgDe(spr)}" alt="">`:""}</div>
     <div class="cine-texto chefe"><small>${guardiao?"Guardião da Era":"Chefe"} · ${u?u.nome.split(",")[0]:""}</small><b>${nome}</b><i>Inimigo de ${NOME_EL(e.el)}. ${dicaVantagem(e.el)}</i></div>`, "chefe", 2600); }
@@ -721,14 +729,34 @@ function premioNivel(s){ if(!s||!s.mon) return; const lib=["b","h1",...((est(s)>
   if(lib.length){ const k=lib.sort((a,b)=>s.pod[a]-s.pod[b])[0]; s.pod[k]++; if(k!=="b"&&s.pod[k]===3&&s.mod[k]==null) s.mod[k]=Math.floor(Math.random()*2); }
   aplicarNivel(s,1); calcularSinergia(); desenharEquipe(); }
 // tela do baú: o baú treme, abre com moedas voando e as casas giram como uma roleta até parar uma por uma
+// baú desenhado: madeira com veios em degradê, cintas de metal com rebites, cantoneiras e fechadura (dourado no baú de ouro),
+// tampa curva separada (abre girando) e brilho de dentro que aparece quando ela levanta
+function svgBau(ouro){ const m=ouro?["#fff0a8","#e0a830","#8a5a10"]:["#eef2f8","#a8b0c0","#5a6070"], mad=ouro?["#7a2e6a","#4e1a46","#2e0c2a"]:["#9a5a2a","#6a3818","#3e1e0c"];
+  const reb=(x,y)=>`<circle cx="${x}" cy="${y}" r="1.6" fill="url(#bm)" stroke="${m[2]}" stroke-width=".5"/>`;
+  return `<svg viewBox="0 0 120 100" aria-hidden="true"><defs>
+    <linearGradient id="bw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mad[0]}"/><stop offset=".55" stop-color="${mad[1]}"/><stop offset="1" stop-color="${mad[2]}"/></linearGradient>
+    <linearGradient id="bt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mad[0]}"/><stop offset="1" stop-color="${mad[1]}"/></linearGradient>
+    <linearGradient id="bm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${m[0]}"/><stop offset=".5" stop-color="${m[1]}"/><stop offset="1" stop-color="${m[2]}"/></linearGradient>
+    <radialGradient id="bl" cx=".5" cy=".9" r=".7"><stop offset="0" stop-color="#fffbe0"/><stop offset=".4" stop-color="${ouro?"#ffd34a":"#ffe9a0"}" stop-opacity=".9"/><stop offset="1" stop-color="#ffd34a" stop-opacity="0"/></radialGradient></defs>
+    <ellipse cx="60" cy="95" rx="52" ry="5" fill="rgba(0,0,0,.45)"/>
+    <ellipse class="brilho-interno" cx="60" cy="44" rx="48" ry="26" fill="url(#bl)"/>
+    <g class="corpo"><rect x="10" y="48" width="100" height="44" rx="4" fill="url(#bw)" stroke="#1a0c06" stroke-width="2"/>
+      <path d="M12 60H108M12 74H108" stroke="#1a0c06" stroke-opacity=".45" stroke-width="1"/><path d="M14 54q20 2 40 0M64 66q22 2 42 0M16 82q24 2 46 0" stroke="#fff" stroke-opacity=".08" stroke-width="1" fill="none"/>
+      <rect x="22" y="48" width="9" height="44" fill="url(#bm)" stroke="${m[2]}" stroke-width=".8"/><rect x="89" y="48" width="9" height="44" fill="url(#bm)" stroke="${m[2]}" stroke-width=".8"/>
+      ${reb(26.5,53)}${reb(26.5,70)}${reb(26.5,87)}${reb(93.5,53)}${reb(93.5,70)}${reb(93.5,87)}
+      <path d="M10 82v10h12v-3h-9v-7zM110 82v10H98v-3h9v-7z" fill="url(#bm)" stroke="${m[2]}" stroke-width=".6"/>
+      <rect x="50" y="52" width="20" height="22" rx="3" fill="url(#bm)" stroke="${m[2]}" stroke-width="1"/><path d="M60 58a3 3 0 0 1 1.6 5.5l1 5h-5.2l1-5A3 3 0 0 1 60 58z" fill="#1a0c06"/></g>
+    <g class="tampa"><path d="M10 48V40Q10 20 60 18Q110 20 110 40V48Z" fill="url(#bt)" stroke="#1a0c06" stroke-width="2"/>
+      <path d="M14 34Q60 22 106 34" stroke="#fff" stroke-opacity=".12" stroke-width="2" fill="none"/>
+      <path d="M22 48V30Q22 23 31 22V48z" fill="url(#bm)" stroke="${m[2]}" stroke-width=".8"/><path d="M98 48V30Q98 23 89 22V48z" fill="url(#bm)" stroke="${m[2]}" stroke-width=".8"/>
+      <rect x="8" y="44" width="104" height="6" rx="2" fill="url(#bm)" stroke="${m[2]}" stroke-width=".8"/>${reb(26.5,30)}${reb(93.5,30)}
+      <path d="M53 44h14v8a7 7 0 0 1-14 0z" fill="url(#bm)" stroke="${m[2]}" stroke-width="1"/>${ouro?`<circle cx="60" cy="33" r="5" fill="#d84aff" stroke="${m[0]}" stroke-width="1.5"/><circle cx="58.5" cy="31.5" r="1.4" fill="#fff" opacity=".8"/>`:""}</g></svg>`; }
 function abrirBau(b){ const premios=sortearPremios(b.tipo);
   if(SIM.ativo){ premios.forEach(p=>p.aplicar()); return; }
   pausado=true; som("bau"); let tela=$("bau"); if(!tela){ tela=document.createElement("div"); tela.id="bau"; $("jogo").appendChild(tela); }
   const ouro=b.tipo==="ouro";
   tela.className="bau-tela"+(ouro?" ouro":""); tela.innerHTML=`<div class="bau-raios"></div><div class="bau-titulo">${ouro?"Baú dourado":"Baú"}</div>
-    <div class="bau-arca"><svg viewBox="0 0 120 100" aria-hidden="true"><g class="tampa"><path d="M8 44 Q60 2 112 44 L112 50 L8 50Z" fill="${ouro?"#9a4a9a":"#8a4a22"}" stroke="${ouro?"#ffd34a":"#e8ecf4"}" stroke-width="4"/></g>
-    <rect x="10" y="48" width="100" height="46" rx="5" fill="${ouro?"#6a2a6a":"#5e2e14"}" stroke="${ouro?"#ffd34a":"#e8ecf4"}" stroke-width="4"/><rect x="10" y="64" width="100" height="6" fill="${ouro?"#ffd34a":"#e8ecf4"}"/>
-    <rect x="51" y="44" width="18" height="24" rx="3" fill="${ouro?"#ffd34a":"#e8ecf4"}"/><circle cx="60" cy="56" r="3" fill="#2a1a10"/></svg></div>
+    <div class="bau-arca">${svgBau(ouro)}</div>
     <div class="bau-casas">${premios.map(()=>`<div class="casa"><img alt=""><span></span></div>`).join("")}</div><button class="botao bau-coletar">Coletar</button>`;
   const casas=[...tela.querySelectorAll(".casa")], todos=["estrela","gema","coracao","ampulheta","bolsa","trofeu","fogo","livro"];
   const mostrar=(c,p)=>{ const u=iconeHud(p.icone); const im=c.querySelector("img"); if(u) im.src=u; else im.removeAttribute("src"); c.querySelector("span").textContent=p.texto; };
@@ -769,13 +797,21 @@ function vencerChefe(e){
   toast(`Chefe derrotado! Pegue o ovo ${J.eraChefe?"Lendário":"Raro"} que ele deixou.`);
   J.portalEm=6;
 }
+// capa do portal: a arte de abertura do reino recortada, com moldura na cor do elemento
+function capaReino(u){ const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`]; if(!img||!img.pronta) return null;
+  const c=document.createElement("canvas"); c.width=240; c.height=150; const g=c.getContext("2d"), e=Math.max(c.width/img.width,c.height/img.height); g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
+  g.drawImage(img,(c.width-img.width*e)/2,(c.height-img.height*e)/2,img.width*e,img.height*e);
+  const vg=g.createRadialGradient(120,75,40,120,75,150); vg.addColorStop(0,"rgba(0,0,0,0)"); vg.addColorStop(1,"rgba(0,0,0,.55)"); g.fillStyle=vg; g.fillRect(0,0,240,150); return c; }
 function mostrarPortais(){
-  const era=D.eras_ordem[R.eraIdx], opcoes=embaralhar(D.universos.filter(u=>u.era===era&&u.id!==R.universo)).slice(0,3+((SIN.rm&&SIN.rm.portais)||0)+nivelLoja("oraculo"));
+  const era=D.eras_ordem[R.eraIdx], opcoes=mostrarPortais._ops||embaralhar(D.universos.filter(u=>u.era===era&&u.id!==R.universo)).slice(0,3+((SIN.rm&&SIN.rm.portais)||0)+nivelLoja("oraculo"));
   // adianta a arte da abertura e o chão de cada portal (o resto vem quando o mapa começa)
+  // as capas dos portais são a arte de abertura de cada reino: se ainda não chegaram, espera até 2,5 s (uma vez)
+  if(!mostrarPortais._jaEsperou&&opcoes.some(u=>{ const im=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`]; return im&&!im.pronta&&!im.falhou; })){
+    Promise.race([preCarregar(opcoes.map(u=>`arte/reinos/${u.era}/${u.id}__keyart.png`)),new Promise(ok=>setTimeout(ok,2500))]).then(()=>{ mostrarPortais._jaEsperou=true; mostrarPortais._ops=opcoes; mostrarPortais(); }); return; }
   opcoes.forEach(u=>preCarregar(artesQue(n=>n.startsWith(`arte/reinos/${u.era}/${u.id}__keyart`)||n.startsWith(`arte/reinos/${u.era}/${u.id}__piso`))));
-  const recs=embaralhar(["Recrutar","Cura total","Relíquia","Ovo Raro","Item"]); while(recs.length<opcoes.length) recs.push(escolha(["Relíquia","Ovo Raro","Item","Recrutar"]));
+  mostrarPortais._ops=null; mostrarPortais._jaEsperou=false; const recs=embaralhar(["Recrutar","Cura total","Relíquia","Ovo Raro","Item"]); while(recs.length<opcoes.length) recs.push(escolha(["Relíquia","Ovo Raro","Item","Recrutar"]));
   mostrarCartas("Escolha o portal", `Próximo: ${D.eras[era].nome}${R.mapaNaEra===MAPAS_POR_ERA-1?" · o Guardião da Era espera no fim deste mapa":""}. A run fica salva aqui e as trocas são livres.`,
-    opcoes.map((u,i)=>{ const rec=recs[i]; return { titulo:u.nome, raridade:"raro", sprite:gerarSprite(u.id+"portal",12,COR[u.elemento]),
+    opcoes.map((u,i)=>{ const rec=recs[i]; return { titulo:u.nome, raridade:"raro", classe:"portal", suave:true, sprite:capaReino(u)||gerarSprite(u.id+"portal",12,COR[u.elemento]),
       texto:`Inimigos de ${NOME_EL(u.elemento)}. ${dicaVantagem(u.elemento)}<br>Recompensa: ${rec}${rec==="Relíquia"?` (${u.reliquia.nome}: ${u.reliquia.efeito})`:""}`,
       acao:()=>aplicarPortal(u,rec) }; }));
 }
@@ -878,8 +914,19 @@ const CEL=8, INTER={}; D.interacoes.forEach(([el,de,vira])=>{ INTER[el+"|"+de]=v
 // chão que reage aos monstros: água molha, fogo chamusca, terra racha (somem sozinhos com o tempo)
 Object.assign(INTER,{"agua|chao":"molhado","agua|queimado":"molhado","agua|rachado":"lama","agua|molhado":"molhado",
   "fogo|chao":"queimado","fogo|molhado":"vapor","fogo|rachado":"queimado","raio|molhado":"eletrico","terra|chao":"rachado","terra|molhado":"lama",
-  "natureza|molhado":"grama","natureza|queimado":"grama","natureza|rachado":"grama","luz|molhado":"luz","sombra|molhado":"sombra","luz|queimado":"luz","sombra|queimado":"sombra"});
-const DUR={agua:40,lama:25,fogo:5,cinza:60,vapor:3,eletrico:4,grama:60,vinha:15,sombra:15,luz:15,gelo:60,chao:40,molhado:14,queimado:12,rachado:16};
+  "natureza|molhado":"grama","natureza|queimado":"grama","natureza|rachado":"grama","luz|molhado":"luz","sombra|molhado":"sombra","luz|queimado":"luz","sombra|queimado":"sombra",
+  // monstro gelado (forma de gelo, ou de Água num mapa frio): congela poça, lama e água eletrificada, apaga o fogo e condensa o vapor
+  "gelo|agua":"gelo","gelo|molhado":"gelo","gelo|lama":"gelo","gelo|eletrico":"gelo","gelo|fogo":"agua","gelo|vapor":"agua","gelo|queimado":"molhado",
+  "fogo|gelo":"agua","fogo|molhado":"vapor"});
+// formas de gelo (pelo nome do ramo): contam como "gelo" para o chão
+const GELADO=/gelo|neve|glacia|inverno|congel/i;
+function elementoNoSolo(s){ const el=elementoDe(s); if(el!=="agua") return el; const r=ramoObj(s); if((r&&GELADO.test(r.nome+" "+(r.supremo||"")))||frio()) return "gelo"; return el; }
+// o chão mudou embaixo de um monstro: um sinal pequeno para a mudança ser vista (com limite, para não poluir)
+const SINAL_SOLO={vapor:["#e8eef4",3,"fumaca"],gelo:["#cfefff",3,"estrela"],agua:["#7fc8ff",3,null],grama:["#7fd05a",2,"folha"],vinha:["#4f9a3c",2,"folha"],fogo:["#ffb040",3,"faisca"],
+  eletrico:["#fff3a0",2,"faisca"],cinza:["#9a9690",2,"fumaca"],lama:["#7a5a3a",2,null],luz:["#fff3c4",2,"estrela"],sombra:["#9070c0",2,"fumaca"],queimado:["#5a4a40",1,"fumaca"],molhado:["#9fd0ff",1,null]};
+function sinalSolo(cx,cy,vira){ const sg=SINAL_SOLO[vira]; if(!sg||SIM.ativo||J.parts.length>300) return; J._sinalT=J._sinalT||0; if(J.t-J._sinalT<0.05) return; J._sinalT=J.t;
+  for(let i=0;i<sg[1];i++){ const v=10+Math.random()*16, a=-Math.PI/2+rnd(-0.9,0.9); J.parts.push({x:cx*CEL+4+rnd(-3,3),y:cy*CEL+4+rnd(-2,2),vx:Math.cos(a)*v,vy:Math.sin(a)*v,vida:rnd(.5,.9),max:.9,cor:sg[0],tam:sg[2]==="fumaca"?3:1,forma:sg[2]||undefined}); } }
+const DUR={agua:40,lama:25,fogo:5,cinza:60,vapor:3,eletrico:4,grama:60,vinha:15,sombra:15,luz:15,gelo:60,chao:40,molhado:10,queimado:6,rachado:8};
 const DEPOIS={fogo:"cinza",eletrico:"agua",vinha:"grama"};
 function hash2(x,y,s){ let h=(x*374761393+y*668265263+s*982451653)|0; h=Math.imul(h^(h>>>13),1274126177); return ((h^(h>>>16))>>>0)/4294967296; }
 function ruido(x,y,s){ const xi=Math.floor(x), yi=Math.floor(y), fx=x-xi, fy=y-yi, u=fx*fx*(3-2*fx), v=fy*fy*(3-2*fy);
@@ -894,11 +941,11 @@ function aplicarElementoNoSolo(x,y,el){
   if(vira==="fogo?"){ if(Math.random()>0.15) return; vira="fogo"; }
   if(vira==="fogo+"){ for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const v=soloEm(cx+dx,cy+dy); if(v==="grama"||v==="vinha") J.solo.set((cx+dx)+","+(cy+dy),{t:"fogo",ate:J.t+DUR.fogo}); } return; }
   if(el==="agua"&&frio()&&(vira==="lama"||vira==="agua"||vira==="molhado")) vira="gelo";
-  if(vira!==atual){ J.solo.set(cx+","+cy,{t:vira,ate:J.t+(DUR[vira]??30)}); R.st.transformacoes++; }
+  if(vira!==atual){ J.solo.set(cx+","+cy,{t:vira,ate:J.t+(DUR[vira]??30)}); R.st.transformacoes++; sinalSolo(cx,cy,vira); }
 }
 function atualizarSolo(dt){
   // cada monstro marca o chão embaixo dele e um pouco em volta (rastro largo, não uma célula só)
-  J.tSolo-=dt; if(J.tSolo<=0){ J.tSolo=0.2; ativos().forEach(s=>{ const el=elementoDe(s); aplicarElementoNoSolo(s.x,s.y+3,el); for(let i=0;i<2;i++) aplicarElementoNoSolo(s.x+rnd(-9,9),s.y+3+rnd(-6,6),el); }); }
+  J.tSolo-=dt; if(J.tSolo<=0){ J.tSolo=0.2; ativos().forEach(s=>{ const el=elementoNoSolo(s); aplicarElementoNoSolo(s.x,s.y+3,el); for(let i=0;i<3;i++) aplicarElementoNoSolo(s.x+rnd(-10,10),s.y+3+rnd(-7,7),el); }); }
   J.tFogo-=dt; if(J.tFogo<=0){ J.tFogo=0.5; const fogos=[]; J.solo.forEach((m,k)=>{ if(m.t==="fogo"&&m.ate>J.t) fogos.push(k); });
     const vivo=ativos().some(s=>elementoDe(s)==="ar")?2:1;
     // cada vizinho de grama ou vinha tem 15% de chance de pegar fogo a cada meio segundo (o dobro com vento)
@@ -967,7 +1014,7 @@ function texturaBrilho(){ if(TEX_BRILHO) return TEX_BRILHO; const N=TEX_N, c=doc
   TEX_BRILHO=c; return c; }
 // força do terreno natural sobre um piso pintado (o piso já tem a própria textura; areia nele seria só uma mancha cinza)
 const SOLO_NAT_PINTADO={areia:0, grama:0, cinza:0, sombra:0.5, gelo:0.6};
-const ALFA_SOLO={molhado:0.85, queimado:0.9, rachado:0.95, agua:0.8, lama:0.85, fogo:0.95, gelo:0.8, grama:0.72, cinza:0.75, vapor:0.6, sombra:0.72, luz:0.55, eletrico:0.9, vinha:0.88, areia:0.7};
+const ALFA_SOLO={molhado:0.6, queimado:0.42, rachado:0.6, agua:0.8, lama:0.8, fogo:0.95, gelo:0.85, grama:0.72, cinza:0.55, vapor:0.42, sombra:0.72, luz:0.55, eletrico:0.9, vinha:0.88, areia:0.7};
 const cacheSolo=new Map(), SOLO_FOLGA=8;
 // A camada é montada para uma área maior que a tela (folga de 8 células, ancorada numa grade de 8): andar não obriga a refazer.
 // Refaz só quando a âncora muda ou o terreno daquele tipo muda (no máximo ~6 vezes por segundo por tipo).
@@ -1166,7 +1213,7 @@ const FOLGA_ANIM=1.6;
 function quadroAnim(img,row,i,alvo,cor){ const fo=cor||img, k=(fo._id||(fo._id=++ID_IMG))+"|q"+row+"|"+i+"|"+alvo; if(cacheArte.has(k)) return cacheArte.get(k);
   const f=fatiarFolha(img,6,3), L=f.linhas[row], q=L&&L.qs[i]; if(!q) return null;
   const ky=correcaoAltura(img), s=Math.min(alvo/f.corpoW,alvo/(f.corpoH*ky)), A=Math.round(alvo*FOLGA_ANIM), peD=A/2+alvo/2;
-  const dx=A/2+(q.x0-q.ref-L.centro)*s, dy=peD+(q.y0-L.pe)*s*ky, dw=(q.x1-q.x0)*s, dh=(q.y1-q.y0)*s*ky;
+  let dx=A/2+(q.x0-q.ref-L.centro)*s, dy=peD+(q.y0-L.pe)*s*ky; const dw=(q.x1-q.x0)*s, dh=(q.y1-q.y0)*s*ky; if(Math.abs(s-1)<1e-6&&ky===1){ dx=Math.round(dx); dy=Math.round(dy); }
   const c=document.createElement("canvas"); c.width=c.height=A; const g=c.getContext("2d"); g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
   g.drawImage(fo,q.x0,q.y0,q.x1-q.x0,q.y1-q.y0,dx,dy,dw,dh); c._src={img:fo,sx:q.x0,sy:q.y0,sw:q.x1-q.x0,sh:q.y1-q.y0,dest:[dx/A,dy/A,dw/A,dh/A]}; c._alvo=alvo; c._pe=peD;
   cacheArte.set(k,c); return c; }
@@ -1974,6 +2021,7 @@ function desenharCenaBrilho(ox,oy){ const C=J.cena; if(!C) return; ctx.globalCom
   let n=0; for(const p of C.lista){ if(p.queima>0&&n++<6) luz(p.x,p.y-p.r,34,"255,150,60",0.22+0.05*Math.sin(J.t*17+p.x)); if(p.tipo==="luz") luz(p.x,p.y-12,44,"255,190,110",0.2+0.04*Math.sin(J.t*9+p.x)); }
   for(const w of C.vort) if(w.fogo) luz(w.x,w.y-8,44,"255,140,50",0.3);
   for(const l of C.luzes||[]) luz(l.x,l.y,l.r,l.cor,0.5*l.vida/l.max);
+  if(QUAL>=1&&!SIM.ativo&&J.inimigos){ for(const s of R.selos){ if(!s.mon||s.x==null) continue; const [r,g,b]=hexRgb(COR[elementoDe(s)]); luz(s.x,s.y,34,`${r},${g},${b}`,0.1+0.08*nivelEscuro()); } }
   // golpes e projéteis iluminam o chão em volta, de dia também; com muita coisa na tela cada luz fica mais fraca (não estoura em branco)
   if(QUAL>=1&&!SIM.ativo){ const fl=J.flashes||[], np=Math.min(24,J.proj.length), tot=fl.length+np*0.5, orc=Math.min(1,7/Math.max(1,tot)), dia=1-nivelEscuro();
     for(const f of fl){ const q=f.t/f.max, [r,g,b]=hexRgb(f.cor&&f.cor[0]==="#"?f.cor:"#ffe9a0"); luz(f.x,f.y,f.r*0.9,`${r},${g},${b}`,(1-q)*(1-q)*0.32*orc*(0.6+dia*0.4)); }
@@ -1981,7 +2029,7 @@ function desenharCenaBrilho(ox,oy){ const C=J.cena; if(!C) return; ctx.globalCom
   ctx.globalCompositeOperation="source-over"; }
 // sombras de nuvens passando devagar pelo chão (só nos mapas a céu aberto e de dia)
 const SEM_CEU=new Set(["centro_terra","mar_profundo","atlantida","laboratorio","xibalba"]); let NUVENS=null;
-function desenharNuvens(ox,oy){ const u=UNIV[R.universo]; if(QUAL<2||SIM.ativo||!u||SEM_CEU.has(u.id)||(u.luz&&u.luz.noite)) return; const A=0.2*(1-crepusculo()*0.6); if(A<0.03) return;
+function desenharNuvens(ox,oy){ const u=UNIV[R.universo]; if(QUAL<2||SIM.ativo||!u||SEM_CEU.has(u.id)||(u.luz&&u.luz.noite)) return; const A=0.13*(1-crepusculo()*0.6); if(A<0.03) return;
   if(!NUVENS){ const T=128, c=document.createElement("canvas"); c.width=c.height=T; const g=c.getContext("2d"), r=semente("nuvens");
     // manchas macias espalhadas, repetidas nas bordas para emendar
     for(let i=0;i<22;i++){ const x=r()*T, y=r()*T, rr=10+r()*26, a=0.25+r()*0.35; for(const dx of [-T,0,T]) for(const dy of [-T,0,T]){ const gr=g.createRadialGradient(x+dx,y+dy,0,x+dx,y+dy,rr); gr.addColorStop(0,`rgba(0,0,0,${a})`); gr.addColorStop(1,"rgba(0,0,0,0)"); g.fillStyle=gr; g.fillRect(x+dx-rr,y+dy-rr,rr*2,rr*2); } }
@@ -2774,7 +2822,7 @@ function desenharMapaLuz(ox,oy){ if(QUAL===0||SIM.ativo||J.escuro>0.05) return; 
   g.globalAlpha=1; g.globalCompositeOperation="source-over";
   const suave=lg.imageSmoothingEnabled; lg.imageSmoothingEnabled=true; lg.imageSmoothingQuality="low"; lg.drawImage(LMAP,-1,-1,w/k,h/k); lg.imageSmoothingEnabled=suave; lg.imageSmoothingQuality="high"; }
 // sombra projetada no chão (luz vinda de cima à esquerda): silhueta escura, achatada e inclinada a partir dos pés
-function sombraProjetada(spr,x,yPe,w,h,virar,forca){ if(!spr||QUAL===0||SIM.ativo) return; const A=nivelEscuro(), a=(0.26-A*0.22)*(forca||1); if(a<0.03) return;
+function sombraProjetada(spr,x,yPe,w,h,virar,forca){ if(!spr||QUAL===0||SIM.ativo) return; const A=nivelEscuro(), a=(0.36-A*0.3)*(forca||1); if(a<0.03) return;
   const sil=silhueta(spr,"#05030a"), a0=lg.globalAlpha; lg.save(); lg.globalAlpha=a0*a; lg.translate(x,yPe); lg.transform(1,0,-0.55,-0.36,0,0); if(virar) lg.scale(-1,1);
   lg.drawImage(sil,-w/2,-(spr._pe||spr.height)*h/spr.height,w,h); lg.restore(); lg.globalAlpha=a0; }
 // tom ambiente: multiplica a cena pela cor da luz do universo; perto do fim do mapa caminha para o crepúsculo
@@ -3598,7 +3646,7 @@ function desenhar(dt){
   lg.imageSmoothingEnabled=false;
   desenharDetalhesChao(ox,oy); desenharEstrutura(ox,oy);
   desenharSolo(ox,oy); desenharFauna(ox,oy,"agua"); desenharCenaChao(ox,oy); desenharFauna(ox,oy,"chao"); desenharPerigos(ox,oy); desenharVfx(ox,oy,"chao"); desenharCadaveres(ox,oy); desenharQuedasAbismo(ox,oy);
-  const sombra=(x,y,w)=>sombraContato(x,y+0.5,w*1.15,0.42);
+  const sombra=(x,y,w)=>sombraContato(x,y+0.5,w*1.2,0.55);
   // zonas no chão
   for(const z of J.zonas){ if(z.tipo==="circulo"||z.tipo==="rastro"||z.tipo==="chuva"){ lg.globalAlpha=0.18+0.06*Math.sin(J.t*8); lg.fillStyle=z.cor; lg.beginPath(); lg.arc(z.x-ox,z.y-oy,z.r,0,Math.PI*2); lg.fill(); lg.globalAlpha=1; }
     if(z.tipo==="portal"){ lg.strokeStyle=z.cor; lg.beginPath(); lg.arc(z.x-ox,z.y-oy,6+Math.sin(J.t*10)*1.5,0,Math.PI*2); lg.stroke(); } }
@@ -3697,9 +3745,14 @@ function desenharSelo(s,ox,oy,sombra){ movSelo(s);
   if(s._vira>0){ const v=Math.sin(s._vira*Math.PI); sy*=1-0.1*v; sx*=1+0.07*v; hop+=v*1.2; }   // virou de lado: agacha e dá um pulinho
   const pk=1-s._pop, esc=s._pop>0? 1+0.32*Math.sin(pk*Math.PI*3)*(1-pk) : 1, fx=fxAlvo;
   sombra(x+lunge*fxAlvo*0.6,pe-1,alvo*0.75*(1-hop*0.06)*Math.min(1.2,esc)); sombraProjetada(spr,x,pe,spr.width,spr.height,s._fx<0,1);
-  if(J.desp>0){ lg.globalCompositeOperation="lighter"; lg.globalAlpha=.3+.15*Math.sin(t*12); lg.fillStyle=COR[elementoDe(s)]; lg.beginPath(); lg.arc(x,y,alvo*0.8,0,Math.PI*2); lg.fill(); lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; }
+  // luz do elemento: brilho no chão em volta dos pés (respira devagar; mais forte no Despertar e à noite)
+  if(!SIM.ativo&&QUAL>0){ const cor=COR[elementoDe(s)], r=alvo*(J.desp>0?1.25:0.95), pul=0.5+0.5*Math.sin(t*2.4+s.x*0.05), a=(0.16+0.1*nivelEscuro()+0.06*pul)*(J.desp>0?2:1);
+    lg.globalCompositeOperation="lighter"; lg.globalAlpha=Math.min(0.6,a); lg.drawImage(bolhaCor(cor),x-r,pe-r*0.42,r*2,r*0.84); lg.globalAlpha=Math.min(0.35,a*0.55); lg.drawImage(bolhaCor(cor),x-r*0.7,pe-alvo*0.55-r*0.5,r*1.4,r); lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; }
   const w=spr.width, h=spr.height, peS=spr._pe||h;
   lg.save(); lg.translate(x+lunge*fxAlvo,pe-hop); lg.rotate(rot); lg.scale(fx*sx*esc,sy*esc);
+  // contorno de luz na cor do elemento, por trás do corpo (lê em chão claro e brilha à noite)
+  if(!SIM.ativo&&QUAL>0){ const sil=silhueta(spr,COR[elementoDe(s)]), d=0.9, a0=0.38+0.12*Math.sin(t*3+s.x*0.1);
+    lg.globalAlpha=a0; for(const [ddx,ddy] of [[-d,0],[d,0],[0,-d],[0,d]]) lg.drawImage(sil,-w/2+ddx,-peS+ddy,w,h); lg.globalAlpha=1; }
   desenharSprite(spr,-w/2,-peS,w,h);
   if(s._pop>0){ lg.globalCompositeOperation="lighter"; lg.globalAlpha=Math.min(1,s._pop*1.2)*0.85; lg.drawImage(branco(spr),-w/2,-peS,w,h); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1; }
   lg.restore();

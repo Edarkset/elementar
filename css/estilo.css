@@ -312,3 +312,20 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 
 /* Bolsa brilha quando há um item que serve agora */
 .btn-hud.util{border-color:#ffd34a; color:#fff3c4; box-shadow:0 0 0 1px rgba(255,211,74,.5), 0 0 12px rgba(255,211,74,.55); animation:pulsaArte .9s infinite alternate}
+
+/* choco: o ovo treme cada vez mais, racha, clarão e o filhote aparece */
+.cine-choco{position:relative; width:min(56vw,220px); aspect-ratio:1}
+.cine-choco img{position:absolute; inset:0; width:100%; height:100%; object-fit:contain}
+.cine-choco .ovo{image-rendering:auto; transform-origin:50% 85%; animation:ovoTreme 1.5s ease-in forwards, ovoSome .25s 1.45s forwards}
+.cine-choco .novo{image-rendering:pixelated; opacity:0; animation:evoRevela .7s 1.55s cubic-bezier(.2,1.6,.4,1) forwards}
+.cine-choco .racha{position:absolute; left:30%; right:30%; top:22%; bottom:20%; opacity:0; animation:rachaAparece .5s 1s forwards;
+  background:linear-gradient(115deg,transparent 46%,#fff8d8 47%,#fff8d8 50%,transparent 51%), linear-gradient(65deg,transparent 46%,#fff8d8 47%,#fff8d8 49%,transparent 50%);
+  filter:drop-shadow(0 0 6px var(--cor)) drop-shadow(0 0 12px #fff)}
+.cine-clarao.choco{animation-delay:1.4s}
+.cine.choco .cine-texto{animation-delay:1.75s}
+@keyframes ovoTreme{0%{transform:rotate(0)} 10%{transform:rotate(-6deg)} 20%{transform:rotate(6deg)} 30%{transform:rotate(0)} 45%{transform:rotate(-9deg)} 52%{transform:rotate(9deg)} 60%{transform:rotate(-9deg)} 66%{transform:rotate(0)}
+  74%{transform:rotate(-12deg) scale(1.03)} 78%{transform:rotate(12deg) scale(1.05)} 82%{transform:rotate(-12deg) scale(1.05)} 86%{transform:rotate(12deg) scale(1.07)} 90%{transform:rotate(-8deg) scale(1.08)} 100%{transform:rotate(0) scale(1.12); filter:brightness(1.8) drop-shadow(0 0 20px #fff)}}
+@keyframes ovoSome{to{opacity:0; transform:scale(1.4)}}
+@keyframes rachaAparece{to{opacity:1}}
+
+.prog-diaria{height:6px; margin-top:5px; border-radius:3px; background:rgba(0,0,0,.4); overflow:hidden} .prog-diaria b{display:block; height:100%; background:linear-gradient(90deg,#d6ab4f,#ffe296)}

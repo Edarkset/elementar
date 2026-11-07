@@ -58,6 +58,8 @@ const salvo=lerSave()||{};
 function liberadosIniciais(){ const ini=new Set(D.linhas.filter(l=>D.universos.find(u=>u.id===l.universo).era==="berco"||l.universo==="amazonia").map(l=>l.id));
   ELS.forEach(el=>D.linhas.filter(l=>l.elemento===el).slice(0,3).forEach(l=>ini.add(l.id))); return [...ini]; }
 let META=Object.assign({essencia:0, recorde:0, liberados:liberadosIniciais()}, salvo.meta||{});
+// saves de antes do Bestiário: os filhotes já liberados entram como vistos (sem avisos nem presentes por eles)
+if(!META.dex){ META.dex={}; for(const id of META.liberados) META.dex[id]={f:1,r:["comum"]}; META.dexMarco=Math.floor(META.liberados.length/10); }
 let RUN_SALVA=salvo.run||null;
 
 // ================================================================ sprites procedurais (placeholders da arte final)
@@ -150,7 +152,7 @@ function novoSelo(){ return {nivel:1, pod:{b:1,h1:0,h2:0}, mod:{h1:null,h2:null}
 function novaRun(pacto, inicial){
   R={pacto, selos:[novoSelo(),novoSelo(),novoSelo()], reserva:[], ninho:[], ancestral:{estado:"nenhum"}, itens:{incenso:0,chamado:0,doce:0,pedra:0,pena:0}, pedraAtiva:false,
      profundidade:0, eraIdx:0, mapaNaEra:0, universo:"grecia", reliquias:[], chefesVencidos:0, ciclo:0, abates:0, essenciaRun:0, elos:[], vidaFrac:1};
-  R.selos[0].mon={id:inicial, rar:"comum", ramo:null}; R.st=novoSt();
+  R.selos[0].mon={id:inicial, rar:"comum", ramo:null}; R.st=novoSt(); if(typeof registrarDex==="function") registrarDex(inicial,0,null,"comum");
   for(let i=0;i<nivelLoja("heranca");i++){ R.selos[0].nivel++; R.selos[0].pod.b=Math.min(5,R.selos[0].pod.b+1); }   // Herança do Santuário
   R.reviverMeta=nivelLoja("chance"); R.recordeAntes=META.recorde;
 }
@@ -396,7 +398,7 @@ function reagir(e,a,b,dano){
   const r=REAC[[a,b].sort().join("|")]; if(!r) return;
   const fonteAnt=FONTE; FONTE="reacao"; reagirEfeito(e,a,b,dano,r); FONTE=fonteAnt;
 }
-function reagirEfeito(e,a,b,dano,r){ evento("reacao");
+function reagirEfeito(e,a,b,dano,r){ evento("reacao"); diaria("reacoes");
   if(!SIM.ativo&&!META.dicaReacao){ META.dicaReacao=true; gravar(); toast(`<b>Reação elemental!</b><br><small>${NOME_EL(a)} + ${NOME_EL(b)} no mesmo inimigo. Misturar elementos na equipe é a maior fonte de dano do jogo.</small>`); }
   const p=Math.max(dano,6)*2.2*SIN.reac, cor=mistura(COR[a],COR[b],.5);
   R.st.reacoes[r.nome]=(R.st.reacoes[r.nome]||0)+1; textoUnico("r:"+r.nome,e.x,e.y-10,r.nome,cor,19); tremor(2.5); vfxReacao(e,a,b);
@@ -419,13 +421,13 @@ function reagirEfeito(e,a,b,dano,r){ evento("reacao");
   }
 }
 function morrer(e){
-  if(e.fugitivo&&!e._pagou){ e._pagou=true; soltarBau(e.x,e.y,"ouro"); anunciar({el:"luz"},"Fugitivo derrotado!","Ele deixou um baú dourado."); }
+  if(e.fugitivo&&!e._pagou){ e._pagou=true; diaria("eventos"); soltarBau(e.x,e.y,"ouro"); anunciar({el:"luz"},"Fugitivo derrotado!","Ele deixou um baú dourado."); }
   // todo chefe mostra a segunda fase: um golpe que pularia a metade da vida para na fase 2
   if(e.chefe&&e.def&&e.def.fase2&&e.ia&&e.ia.fase===1&&!e.morto){ e.hp=e.max*0.45; e.ia.fase=2; faseDois(e,e.def.fase2); e.ia.ocupado=1.4; e.parado=true; return; }
   if(e.imortal){ e.hp=1; if(Math.random()<.15) texto(e.x,e.y-20,"Imortal! Quebre o carvalho.","#c8c8e0",13); return; }
   if(e.morto) return; e.morto=true; aoMorrerCriatura(e);
   if(temRel("Hidromel do Salão dos Heróis")){ J.hidro=J.hidro||[]; if(J.hidro.length<30) J.hidro.push(J.t+10); else { J.hidro.shift(); J.hidro.push(J.t+10); } }
-  R.abates++; if(R.ancestral&&R.ancestral.estado==="chocando") R.ancestral.prog+=D.ancestral_regras.por_abate_seg; if(R.st.primeiroAbate==null) R.st.primeiroAbate=J.t; J.combo++; J.comboT=D.combo.janela_seg; J.comboMax=Math.max(J.comboMax,J.combo);
+  R.abates++; diaria("abates"); if(R.ancestral&&R.ancestral.estado==="chocando") R.ancestral.prog+=D.ancestral_regras.por_abate_seg; if(R.st.primeiroAbate==null) R.st.primeiroAbate=J.t; J.combo++; J.comboT=D.combo.janela_seg; J.comboMax=Math.max(J.comboMax,J.combo);
   J.ult=Math.min(100,J.ult+(e.chefe?25:e.mini?10:e.elite?2:0.07)*(1+Math.min(1,J.combo/200)));
   const cor=COR[e.el]; particulas(e.x,e.y,cor,e.chefe?60:e.elite?22:9,e.chefe?150:90,e.elite?2:1);
   if(e.elite){ tremor(e.chefe?10:4); parar(e.chefe?0.2:0.05); }
@@ -519,7 +521,7 @@ function checarEvolucao(s,antes){
   if(s.mon.ramo==null&&s.nivel>=NIV[2]&&!filaRamo.includes(s)) filaRamo.push(s);
   if(s.esp==null&&s.nivel>=NIV[1]&&!filaEsp.includes(s)) filaEsp.push(s);
   const depois=estBase(s);
-  if(depois>antes){ R.st.evolucoes[depois]++; efeitoEvolucao(s); som("evolucao"); cenaEvolucao(s,antes,depois); calcularSinergia(); desenharEquipe(); }
+  if(depois>antes){ if(depois===2) diaria("evolucoes"); registrarDex(s.mon.id,depois,s.mon.ramo,s.mon.rar); R.st.evolucoes[depois]++; efeitoEvolucao(s); som("evolucao"); cenaEvolucao(s,antes,depois); calcularSinergia(); desenharEquipe(); }
 }
 function efeitoEvolucao(s){ if(!J) return; anel(s.x,s.y,30,"#ffffff",.6); anel(s.x,s.y,50,COR[elementoDe(s)],.8); particulas(s.x,s.y,COR[elementoDe(s)],30,120,2); particulas(s.x,s.y,"#fff3c4",14,90); tremor(5); parar(0.08); }
 function ramosElegiveis(s,ignorarPedra,base){
@@ -645,7 +647,7 @@ function receberMonstro(mon,origem){
     toast(`${LINHA[mon.id].filhote} (${RAR_NOME[mon.rar]}) entrou na equipe!${origem?`<br><small>${origem}</small>`:""}`);
     if(vazio.mon.ramo==null&&vazio.nivel>=NIV[2]) filaRamo.push(vazio); }
   else { R.reserva.push(mon); toast(`${LINHA[mon.id].filhote} (${RAR_NOME[mon.rar]}) foi para a reserva.${origem?`<br><small>${origem}</small>`:""}<br><small>Toque num retrato para trocar.</small>`); }
-  if(!META.liberados.includes(mon.id)) META.liberados.push(mon.id);
+  if(!META.liberados.includes(mon.id)) META.liberados.push(mon.id); registrarDex(mon.id,0,null,mon.rar);
   calcularSinergia(); desenharEquipe();
   if(filaRamo.length&&!pausado) proximaEscolha();
 }
@@ -672,7 +674,7 @@ function checarAncestral(){ const A=R.ancestral; if(!A||A.estado!=="chocando"||A
   A.estado="chocado"; const l=LINHA[A.id]; R.st.dragaoChocado=1;
   if(J){ particulas(J.jogador.x,J.jogador.y,COR[A.el],80,180,2); anel(J.jogador.x,J.jogador.y,90,COR[A.el],.6); tremor(10); parar(0.15); }
   receberMonstro({id:A.id, rar:"lendario", ramo:null}, `O ${l.ovo} chocou! Um Dragão Ancestral foi liberado.`); desenharNinho(); }
-function chocar(ov){ R.st.chocados++; const mon={id:ov.id, rar:ov.rar==="raro"?"raro":ov.rar, ramo:null};
+function chocar(ov){ R.st.chocados++; diaria("chocados"); const mon={id:ov.id, rar:ov.rar==="raro"?"raro":ov.rar, ramo:null}; cenaChoco(mon);
   particulas(J.jogador.x,J.jogador.y,"#fff3c4",30,120,2); anel(J.jogador.x,J.jogador.y,30,COR[LINHA[ov.id].elemento],.7); tremor(4);
   receberMonstro(mon,"Chocou no Ninho"); }
 function abrirEquipe(seloIdx){
@@ -712,6 +714,71 @@ function usarItem(k){
   if(k==="doce"){ mostrarCartas("Mel Ancestral","Qual Selo ganha +1 nível?", ativos().map(s=>({titulo:nomeForma(s), sprite:spriteSelo(s), texto:`Nível ${s.nivel} → ${s.nivel+1}`, acao:()=>{ aplicarNivel(s,1); proximaEscolha(); }}))); }
 }
 
+// ================================================================ missões do dia: 3 objetivos sorteados pela data, Essência por missão e sequência de dias
+const TIPOS_DIARIA={abates:{txt:n=>`Derrote ${n} inimigos`,alvos:[300,500,800]}, capturas:{txt:n=>`Capture ${n} filhotes selvagens`,alvos:[2,3,5]}, chocados:{txt:n=>`Choque ${n} ovos`,alvos:[2,3,4]},
+  evolucoes:{txt:n=>`Evolua ${n} monstros para Adulto`,alvos:[1,2,3]}, reacoes:{txt:n=>`Provoque ${n} reações elementais`,alvos:[30,60,100]}, chefes:{txt:n=>`Derrote ${n} chefes`,alvos:[1,2,3]}, eventos:{txt:n=>`Complete ${n} eventos do mapa`,alvos:[2,3,5]}};
+function hojeStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function diarias(){ const hoje=hojeStr(); let D2=META.diarias; if(!D2||D2.dia!==hoje){ const r=semente("diaria"+hoje), tipos=Object.keys(TIPOS_DIARIA), lista=[];
+    while(lista.length<3){ const t=tipos[Math.floor(r()*tipos.length)]; if(lista.some(x=>x.t===t)) continue; const al=TIPOS_DIARIA[t].alvos; lista.push({t,alvo:al[Math.floor(r()*al.length)],prog:0,feito:false}); }
+    const ontem=new Date(Date.now()-864e5), ontemStr=ontem.getFullYear()+"-"+String(ontem.getMonth()+1).padStart(2,"0")+"-"+String(ontem.getDate()).padStart(2,"0");
+    const seq=D2&&D2.ultimoDiaFeito&&(D2.ultimoDiaFeito===ontemStr||D2.ultimoDiaFeito===hoje)? (D2.seq||0) : 0;
+    D2=META.diarias={dia:hoje,lista,seq,ultimoDiaFeito:D2&&D2.ultimoDiaFeito}; } return D2; }
+function diaria(t,n){ if(SIM.ativo||!R||R.teste) return; const D2=diarias(); let mudou=false;
+  for(const m of D2.lista){ if(m.t!==t||m.feito) continue; m.prog=Math.min(m.alvo,m.prog+(n||1)); mudou=true;
+    if(m.prog>=m.alvo){ m.feito=true; META.essencia+=40; toast(`<b>Missão do dia completa!</b><br><small>${TIPOS_DIARIA[t].txt(m.alvo)} · +40 de Essência</small>`); som("ding");
+      if(D2.lista.every(x=>x.feito)){ D2.seq=(D2.seq||0)+1; D2.ultimoDiaFeito=hojeStr(); const bonus=60+Math.min(7,D2.seq)*10; META.essencia+=bonus; setTimeout(()=>toast(`<b>As 3 missões de hoje!</b><br><small>+${bonus} de Essência · sequência de ${D2.seq} dia${D2.seq>1?"s":""}</small>`),2600); } } }
+  if(mudou&&Math.random()<0.1) gravar(); }
+function telaDiarias(){ $("telaMenu").classList.remove("ativa"); const D2=diarias(), feitas=D2.lista.filter(m=>m.feito).length;
+  mostrarCartas("Missões do dia", `Renovam à meia-noite. Cada uma vale 40 de Essência; as três juntas dão um bônus que cresce com a sequência de dias (agora: ${D2.seq||0}).`,
+    [...D2.lista.map(m=>({titulo:TIPOS_DIARIA[m.t].txt(m.alvo), raridade:m.feito?"lendario":"raro", manter:true, texto:m.feito?"Completa!":`${m.prog}/${m.alvo}<div class="prog-diaria"><b style="width:${m.prog/m.alvo*100}%"></b></div>`, acao:()=>{} })),
+     {titulo:"Voltar",texto:feitas===3?"Volte amanhã para novas missões.":"",acao:()=>menu()}]); }
+// ================================================================ Bestiário: cada forma descoberta (8 por linhagem) e cada raridade vista
+// META.dex[id] = {f: bits das 8 formas (0 filhote, 1 jovem, 2-4 adultos, 5-7 supremos), r: raridades vistas}.
+// A cada 10 formas novas, Essência de presente. Descobrir algo novo mostra "Novo no Bestiário!".
+const FORMAS_TOTAL=()=>D.linhas.length*8;
+function celulaForma(e,ramo){ return e<=1? e : e===2? 2+(ramo??0) : 5+(ramo??0); }
+function registrarDex(id,e,ramo,rar){ if(SIM.ativo&&!SIM.dex) return; META.dex=META.dex||{}; const d=META.dex[id]||(META.dex[id]={f:0,r:[]}); const c=celulaForma(e,ramo); let novo=false;
+  if(!(d.f&(1<<c))){ d.f|=1<<c; novo=true; } if(rar&&!d.r.includes(rar)){ d.r.push(rar); if(rar!=="comum") novo=true; }
+  if(novo&&J&&!SIM.ativo){ const l=LINHA[id]; texto(J.jogador.x,J.jogador.y-38,"Novo no Bestiário!","#9fe0ff",14); som("ding"); }
+  const tot=formasVistas(), marco=Math.floor(tot/10); META.dexMarco=META.dexMarco??marco;
+  if(marco>META.dexMarco){ const ganho=(marco-META.dexMarco)*50; META.dexMarco=marco; META.essencia+=ganho; if(!SIM.ativo) toast(`<b>Bestiário: ${tot} formas descobertas!</b><br><small>+${ganho} de Essência</small>`); }
+  if(!SIM.ativo) gravar(); }
+function formasVistas(){ let n=0; for(const id in (META.dex||{})){ let f=META.dex[id].f; while(f){ n+=f&1; f>>=1; } } return n; }
+function nomeFormaCel(l,c){ return c===0? l.filhote : c===1? l.jovem : c<5? l.ramos[c-2].nome : l.ramos[c-5].supremo; }
+function telaBestiario(){ $("telaMenu").classList.remove("ativa"); const dex=META.dex||{}, tot=formasVistas(), prox=(Math.floor(tot/10)+1)*10;
+  const cartas=D.linhas.map(l=>{ const d=dex[l.id], n=d? [...Array(8)].reduce((a,_,i)=>a+((d.f>>i)&1),0) : 0, conhecido=META.liberados.includes(l.id)||n>0;
+    let melhor=0; if(d) for(let c=7;c>=0;c--) if(d.f&(1<<c)){ melhor=c; break; }
+    const e=melhor<=1?melhor:melhor<5?2:3, ramo=melhor>=5?melhor-5:melhor>=2?melhor-2:null, spr=conhecido? (arteMonstro(l.id,e,ramo,"comum")||spriteLinha(l.id,"comum")) : null;
+    return { titulo: conhecido? nomeFormaCel(l,melhor) : "???", raridade: n>=8?"lendario":n>=5?"epico":n>=2?"raro":"comum", sprite: spr? (conhecido&&n? spr : silhueta(spr,"#1a1426")) : gerarSprite("dex?",12,"#2a2238"),
+      texto: conhecido? `<span style="color:${COR[l.elemento]}">${NOME_EL(l.elemento)}</span> · formas ${n}/8${d&&d.r.length>1?` · ${d.r.length} raridades`:""}` : "Ainda não encontrado", manter:true, acao:()=>telaDexLinha(l) }; });
+  mostrarCartas("Bestiário", `Formas descobertas: <b>${tot}</b> de ${FORMAS_TOTAL()} · próxima recompensa em ${prox} (+50 de Essência). Evolua, capture e choque ovos para completar.`,
+    [...cartas,{titulo:"Voltar",texto:"",acao:()=>menu()}],{grade:true,fundo:"ui__livro"}); }
+function telaDexLinha(l){ const d=(META.dex||{})[l.id]||{f:0,r:[]};
+  const formas=[...Array(8)].map((_,c)=>{ const e=c<=1?c:c<5?2:3, ramo=c>=5?c-5:c>=2?c-2:null, visto=!!(d.f&(1<<c)), spr=arteMonstro(l.id,e,ramo,"comum")||gerarSprite(l.id+"#"+e+"#"+(ramo??"-"),TAM[e],COR[l.elemento]);
+    return { titulo: visto? nomeFormaCel(l,c) : "???", raridade: visto?(c>=5?"lendario":c>=2?"epico":"raro"):"comum", sprite: visto? spr : silhueta(spr,"#1a1426"),
+      texto: ["Filhote","Jovem","Adulto","Adulto","Adulto","Supremo","Supremo","Supremo"][c]+(visto&&c>=2?` · ${NOME_EL(l.ramos[(c-2)%3].elemento)}`:""), manter:true, acao:()=>{} }; });
+  mostrarCartas(l.filhote, `Raridades vistas: ${d.r.length? d.r.map(r=>RAR_NOME[r]).join(", ") : "nenhuma"}. Cada caminho de evolução leva a um Adulto e a um Supremo diferentes.`,
+    [...formas,{titulo:"Voltar",texto:"",acao:()=>telaBestiario()}],{grade:true,fundo:"ui__livro"}); }
+
+// ================================================================ captura com suspense e choco animado
+// o filhote é selado num sigilo que balança três vezes; incomum e acima podem escapar (e fugir mais rápido; dá para tentar de novo)
+function tentarCaptura(f){ if(f.selando) return; f.selando=true; const chance=f.rar==="comum"?1:f.rar==="incomum"?0.72:0.55, ok=Math.random()<chance, x0=f.x, y0=f.y, cor=COR[LINHA[f.id].elemento];
+  f.vida=99; particulas(x0,y0,"#fff3c4",10,60); tremor(2);
+  vfx({max:1.5,desenhar(ox,oy,q){ const x=x0-ox, y=y0-oy, t=q*1.5, enc=Math.min(1,t/0.3), bal=t>0.35&&t<1.25? Math.sin((t-0.35)/0.3*Math.PI)*Math.max(0,1-(t-0.35)/0.9)*0.45 : 0;
+    lg.save(); lg.translate(x,y-4*(1-enc)); lg.rotate(bal); lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.5+0.3*Math.sin(t*20); lg.drawImage(bolhaCor(cor),-10,-10,20,20); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1;
+    // sigilo: disco dourado com runa do elemento
+    lg.fillStyle="#3a2a12"; lg.beginPath(); lg.arc(0,0,4.6,0,Math.PI*2); lg.fill(); const g=lg.createRadialGradient(-1.4,-1.6,0.4,0,0,4.4); g.addColorStop(0,"#fff4c4"); g.addColorStop(0.6,"#e0b65a"); g.addColorStop(1,"#8a5a12");
+    lg.fillStyle=g; lg.beginPath(); lg.arc(0,0,4,0,Math.PI*2); lg.fill(); lg.fillStyle=cor; lg.beginPath(); lg.arc(0,0,1.6,0,Math.PI*2); lg.fill(); lg.strokeStyle="#5a3a0a"; lg.lineWidth=0.4; lg.beginPath(); lg.moveTo(-4,0); lg.lineTo(4,0); lg.stroke();
+    lg.restore(); }});
+  agendar(1.3,()=>{ if(!J) return;
+    if(ok){ f.vida=0; particulas(x0,y0,cor,22,90,2); particulas(x0,y0,"#ffe9a0",12,60); anel(x0,y0,22,"#ffd34a",.5); tremor(3); som("ding"); R.st.capturas++; diaria("capturas"); if(!SIM.ativo) texto(x0,y0-16,"Capturado!","#ffd34a",16);
+      receberMonstro({id:f.id, rar:f.rar, ramo:null},"Capturado!"); }
+    else { f.selando=false; f.vida=14; f.fugaRapida=1; f.imune=1; particulas(x0,y0,"#ffffff",14,80); tremor(2); if(!SIM.ativo) texto(x0,y0-14,"Escapou! Tente de novo","#ff9a7a",13); } }); }
+// ovo chocando: treme cada vez mais, racha, clarão e o monstro aparece (a cena dura ~2,6 s; um toque pula)
+function cenaChoco(mon){ if(SIM.ativo||!J) return; const l=LINHA[mon.id], cor=COR[l.elemento], ovo=spriteOvo(l.elemento,mon.rar==="lendario"?"lendario":mon.rar==="comum"||mon.rar==="incomum"?"comum":"raro");
+  const q=quadrosForma(mon.id,0,null,mon.rar), novo=(q&&q[0])||spriteLinha(mon.id,mon.rar); let urlNovo=""; try{ urlNovo=(novo._src&&!novo._alvo? spriteUI(novo):novo).toDataURL(); }catch(e){}
+  cenaTocar(`<div class="cine-raios" style="--cor:${cor}"></div><div class="cine-choco" style="--cor:${cor}"><img class="ovo" src="${ovo.toDataURL()}" alt=""><div class="racha"></div><img class="novo" src="${urlNovo}" alt=""></div><div class="cine-clarao choco"></div>
+    <div class="cine-texto choco"><small>Chocou!${mon.rar!=="comum"?` · ${RAR_NOME[mon.rar]}`:""}</small><b style="color:${cor}">${l.filhote}</b><i>${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome}</i></div>`, "evolucao choco", 2800); }
 // ================================================================ cenas: evolução e chegada do chefe (o jogo para por um instante)
 const CINE={ativa:false, fila:[]};
 function cenaTocar(html,classe,dur,aoFim){ if(SIM.ativo) return; CINE.fila.push({html,classe,dur,aoFim}); if(!CINE.ativa) cenaProxima(); }
@@ -835,7 +902,7 @@ function chuvaMoedas(el,n){ for(let i=0;i<n;i++){ const m=document.createElement
     m.style.setProperty("--d",(0.8+Math.random()*0.7)+"s"); m.style.setProperty("--r",(Math.random()*720-360)+"deg"); m.style.animationDelay=(Math.random()*0.25)+"s"; el.appendChild(m); setTimeout(()=>m.remove(),1800); } }
 
 // ================================================================ fim de mapa, portais, derrota
-function vencerChefe(e){
+function vencerChefe(e){ diaria("chefes");
   eventosVitoria(e);
   J.escuroFixo=0; J.escuroAlvo=0; J.perigos=[]; e.puxao=false;
   R.xp=J.xp; R.nivel=J.nivel;
@@ -1447,7 +1514,8 @@ function atualizar(dt){
   if(J.ovoAnc&&dist2(J.ovoAnc,P)<144){ const o=J.ovoAnc; J.ovoAnc=null; pegarOvoAncestral(o); }
   if(R.ancestral.estado==="chocando"&&!J.fim){ R.ancestral.prog+=dt; checarAncestral(); J.tAncUI=(J.tAncUI||0)+dt; if(J.tAncUI>1){ J.tAncUI=0; desenharNinho(); } }
   for(const f of J.selvagens){ f.vida-=dt; const dx=f.x-P.x, dy=f.y-P.y, d=Math.hypot(dx,dy)||1; if(d<70){ f.x+=dx/d*36*dt; f.y+=dy/d*36*dt; } else { f.x+=Math.sin(J.t*2+f.x)*10*dt; }
-    if(d<8){ f.vida=0; particulas(f.x,f.y,COR[LINHA[f.id].elemento],20,90,2); anel(f.x,f.y,20,"#ffffff",.5); tremor(3); R.st.capturas++; receberMonstro({id:f.id, rar:f.rar, ramo:null},"Capturado!"); } }
+    if(f.selando){ f.x-=dx/d*36*dt; f.y-=dy/d*36*dt; continue; } if(f.fugaRapida>0){ f.fugaRapida-=dt; f.x+=dx/d*40*dt; f.y+=dy/d*40*dt; } if(f.imune>0) f.imune-=dt;
+    if(d<8&&!(f.imune>0)) tentarCaptura(f); }
   J.selvagens=J.selvagens.filter(f=>f.vida>0);
   // cristais
   const ima=22*rm.ima*tal.coleta();
@@ -2724,7 +2792,7 @@ function vfxCombinado(c,P){ const chave=c.chave||c.a||"luz"; luzFlash(P.x,P.y,"#
 const EVENTOS=["meteoros","fugitivo","altar","cristais"];
 function atualizarEventos(dt){ if(J.fim||J.chefeVivo||J.t>MAPA_SEG-12||J.t<18) return;
   if(J.altar){ const a=J.altar, P=J.jogador; a.t-=dt; const dentro=Math.hypot(P.x-a.x,P.y-a.y)<a.r; if(dentro&&J.desp<=0){ J.ult=Math.min(100,J.ult+dt*28); if(Math.random()<.3) particulasEl(P.x,P.y,a.el,1,40); }
-    if(a.t<=0||J.ult>=100&&dentro){ if(J.ult>=100&&dentro) texto(a.x,a.y-16,"Despertar pronto!","#ffd34a",14); J.altar=null; } }
+    if(a.t<=0||J.ult>=100&&dentro){ if(J.ult>=100&&dentro){ diaria("eventos"); } if(J.ult>=100&&dentro) texto(a.x,a.y-16,"Despertar pronto!","#ffd34a",14); J.altar=null; } }
   J.tEvento=(J.tEvento??rnd(26,34))-dt; if(J.tEvento>0) return; J.tEvento=rnd(36,46);
   const k=escolha(EVENTOS.filter(x=>x!==J.ultEvento)); J.ultEvento=k; const P=J.jogador, el=UNIV[R.universo].elemento;
   if(k==="meteoros"){ if(!SIM.ativo) anunciar({el:"fogo"},"Chuva de meteoros!","Saia dos círculos: as pedras ferem todos que estiverem dentro.");
@@ -2737,7 +2805,8 @@ function atualizarEventos(dt){ if(J.fim||J.chefeVivo||J.t>MAPA_SEG-12||J.t<18) r
     agendar(18,()=>{ if(J&&e.hp>0&&!e._pagou){ e.hp=0; e.semCadaver=true; particulas(e.x,e.y,"#ffd34a",16,80); J.inimigos=J.inimigos.filter(x=>x!==e); if(!SIM.ativo) texto(e.x,e.y-12,"Escapou!","#ffd34a",13); } }); }
   else if(k==="altar"){ const a=Math.random()*6.28, d=Math.min(VW,VH)*0.3; J.altar={x:P.x+Math.cos(a)*d,y:P.y+Math.sin(a)*d,r:16,t:14,el:ativos()[0]?elementoDe(ativos()[0]):el};
     if(!SIM.ativo) anunciar({el:J.altar.el},"Altar elemental!","Fique sobre ele para carregar o Despertar."); }
-  else if(k==="cristais"){ if(!SIM.ativo) anunciar({el:"luz"},"Chuva de cristais!","Corra para pegar a experiência.");
+  if(k==="meteoros"||k==="cristais") agendar(8,()=>{ if(J&&!J.fim) diaria("eventos"); });
+  if(k==="cristais"){ if(!SIM.ativo) anunciar({el:"luz"},"Chuva de cristais!","Corra para pegar a experiência.");
     for(let i=0;i<24;i++){ const x=P.x+rnd(-VW*0.45,VW*0.45), y=P.y+rnd(-VH*0.4,VH*0.4); J.gemas.push({x,y,vx:0,vy:0,v:3+R.profundidade*0.6,cor:"#9fe0ff"}); } } }
 function desenharAltar(ox,oy){ const a=J.altar; if(!a) return; const x=a.x-ox, y=a.y-oy, cor=COR[a.el]||"#ffd34a", pul=0.5+0.5*Math.sin(J.t*4);
   lg.save(); lg.translate(x,y); lg.scale(1,0.55); lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.25+0.15*pul; lg.drawImage(bolhaCor(cor),-a.r*1.3,-a.r*1.3,a.r*2.6,a.r*2.6);
@@ -3876,7 +3945,7 @@ function desenhar(dt){
     if(x<6||y<6||x>VW-6||y>VH-6){ const cx=VW/2, cy=VH/2, ang=Math.atan2(y-cy,x-cx), m=Math.min((VW/2-10)/Math.abs(Math.cos(ang)||1e-6),(VH/2-10)/Math.abs(Math.sin(ang)||1e-6));
       const ax=cx+Math.cos(ang)*m, ay=cy+Math.sin(ang)*m; lg.fillStyle=COR[o.el]; lg.beginPath(); lg.moveTo(ax+Math.cos(ang)*6,ay+Math.sin(ang)*6);
       lg.lineTo(ax+Math.cos(ang+2.5)*5,ay+Math.sin(ang+2.5)*5); lg.lineTo(ax+Math.cos(ang-2.5)*5,ay+Math.sin(ang-2.5)*5); lg.fill(); } }
-  for(const f of J.selvagens){ const s=spriteLinha(f.id,f.rar); sombra(f.x-ox,f.y-oy+5,8); lg.drawImage(s,Math.round(f.x-ox-s.width/2),Math.round(f.y-oy-s.height/2)+Math.round(Math.abs(Math.sin(J.t*10))*-2));
+  for(const f of J.selvagens){ if(f.selando) continue; const s=spriteLinha(f.id,f.rar); sombra(f.x-ox,f.y-oy+5,8); lg.drawImage(s,Math.round(f.x-ox-s.width/2),Math.round(f.y-oy-s.height/2)+Math.round(Math.abs(Math.sin(J.t*10))*-2));
     lg.fillStyle="#fff3c4"; if(Math.floor(J.t*4)%2) lg.fillRect(Math.round(f.x-ox),Math.round(f.y-oy-s.height/2)-4,1,2); }
   desenharMoedasBaus(ox,oy);
   // gemas de XP: cristal pequeno (losango) com face clara e brilho piscando
@@ -4105,6 +4174,8 @@ function menu(){
   const n=document.createElement("button"); n.className="botao"+(RUN_SALVA?" sec":""); n.textContent="Nova run: fechar Pacto"; n.onclick=telaPacto; box.appendChild(n);
   { const pode=lojaAcessivel().length, sa=document.createElement("button"); sa.className="botao"+(pode?"":" sec"); sa.textContent=`Santuário (${META.essencia} de Essência)${pode?` · ${pode} melhoria${pode>1?"s":""} disponível${pode>1?"is":""}`:""}`; sa.onclick=telaSantuario; box.appendChild(sa); }
   metaConq(); META.cont.colecao=META.liberados.length; checarGlobais("colecao");
+  { const D2=diarias(), f=D2.lista.filter(m=>m.feito).length, bm=document.createElement("button"); bm.className="botao"+(f<3?"":" sec"); bm.textContent=`Missões do dia (${f}/3)${D2.seq?` · ${D2.seq} dia${D2.seq>1?"s":""} seguido${D2.seq>1?"s":""}`:""}`; bm.onclick=telaDiarias; box.appendChild(bm); }
+  { const bd=document.createElement("button"); bd.className="botao sec"; bd.textContent=`Bestiário (${formasVistas()}/${FORMAS_TOTAL()} formas)`; bd.onclick=telaBestiario; box.appendChild(bd); }
   const cq=document.createElement("button"); cq.className="botao sec"; cq.textContent=`Conquistas e Lendas (${Object.keys(META.conq).length}/${D.conquistas.length})`; cq.onclick=telaConquistas; box.appendChild(cq);
   if(MODERADOR_DISPONIVEL&&META.moderador){ const md=document.createElement("button"); md.className="botao sec"; md.textContent="Modo moderador"; md.onclick=telaModerador; box.appendChild(md); }
   gravar();

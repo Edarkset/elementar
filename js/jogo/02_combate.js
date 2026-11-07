@@ -22,7 +22,7 @@ function iniciarMapa(){
   if(temRel("Taça de Jamshid")&&R.profundidade>0){ J.vida=Math.min(J.vidaMax,J.vida+J.vidaMax*0.25); J.escudo+=J.vidaMax*0.15; }
   ativos().forEach(s=>{ s.cdEsp=10; if(s.esp==null&&s.nivel>=NIV[1]&&!filaEsp.includes(s)) filaEsp.push(s); if(s.mon.ramo==null&&s.nivel>=NIV[2]&&!filaRamo.includes(s)) filaRamo.push(s); if(D.classes[L(s).classe].nome==="Místico"&&s.pod.h2>0) J.renascer=1; });
   gerarChao(u); iniciarCena(u); iniciarAbertura(); J.abates0=R.abates; evento("era:"+u.era); J.escudoGolpes=passiva("escudo_golpes");
-  for(let i=0;i<(R.profundidade===0?3:6);i++) spawnInimigo(); if(R.profundidade===0) J.invuln=Math.max(J.invuln,2.5);
+  for(let i=0;i<(R.profundidade===0?2:4);i++) spawnInimigo(); if(R.profundidade===0) J.invuln=Math.max(J.invuln,2.5);
   $("lugar").textContent=`${u.nome} · ${D.eras[u.era].nome}${R.ciclo?` · ciclo ${R.ciclo+1}`:""} · mapa ${R.profundidade+1}`;
   if(!J.intro){ $("hud").style.display=""; $("hudBase").style.display=""; }
   desenharEquipe(); desenharNinho(); rodando=true; pausado=false;
@@ -65,7 +65,7 @@ function cartaProibida(){ if(SIM.ativo||!J||J.nivel<6||Math.random()>0.2) return
     acao:()=>{ (R.maldicoes=R.maldicoes||[]).push(m.id); somarMods(m.mods); som("jackpot"); tremor(8); luzFlash(J.jogador.x,J.jogador.y,"#c0304a",90,0.6); anunciar({el:"sombra"},m.nome,"Carta Proibida aceita"); proximaEscolha(); } }; }
 function dicaVantagem(el){ const forte=ELS.find(k=>D.vantagem[k]===el); return `${NOME_EL(forte)} é super efetivo aqui.`; }
 // Curva de dificuldade (calibrada com o bot: testes/bot.js + testes/rodar_bot.js; ver docs/ANALISE_EQUILIBRIO.md)
-const DIF={vida:1.33, dano:1.48, danoBase:9, hp:30, spawn:0.18, base:4, cresc:0.08, onda:22, ondaN:20, max:280,
+const DIF={vida:1.33, dano:1.48, danoBase:11, hp:38, spawn:0.15, base:1.6, cresc:0.1, onda:22, ondaN:20, max:280,
   rapido:42, rapidoCresc:5, rapidoMax:70, frente:0.2, frenteCresc:0.07, tiroElite:2.8, nivelAtrib:0.03, xpA:6, xpB:4, xpC:0.35,
   mini:80, chefe:560, guardiao:760, chefe1:0.5, chefeQueda:0.12, rampa:2.0, rampaK:2.2};   /* mais difícil (o jogo estava fácil): mais dano, mais inimigos desde o começo e rampa inicial mais forte */   // vida de mini-chefe, chefe e Guardião da Era (em inimigos comuns); o 1º chefe leva chefe1 disso
 // ameaças que crescem com a profundidade: começo suave, fim duro
@@ -205,11 +205,15 @@ function morrer(e){
   if(e.imortal){ e.hp=1; if(Math.random()<.15) texto(e.x,e.y-20,"Imortal! Quebre o carvalho.","#c8c8e0",13); return; }
   if(e.morto) return; e.morto=true; aoMorrerCriatura(e);
   if(temRel("Hidromel do Salão dos Heróis")){ J.hidro=J.hidro||[]; if(J.hidro.length<30) J.hidro.push(J.t+10); else { J.hidro.shift(); J.hidro.push(J.t+10); } }
+  // abates em sequência: matar muitos em pouco tempo solta um "Massacre" com som subindo e moedas extras
+  if(!SIM.ativo){ J.janelaAbates=(J.janelaAbates||[]).filter(t=>J.t-t<1.4); J.janelaAbates.push(J.t); const n=J.janelaAbates.length;
+    if(n===8||n===15||n===25||n===40){ const nome=n>=40?"Aniquilação":n>=25?"Carnificina":n>=15?"Massacre":"Sequência"; texto(J.jogador.x,J.jogador.y-34,`${nome} x${n}!`,n>=25?"#ff6a8a":n>=15?"#ffb040":"#ffe680",n>=25?20:16);
+      som(n>=25?"jackpot":"combo"); soltarMoedas(e.x,e.y,Math.floor(n/8)); luzFlash(J.jogador.x,J.jogador.y,"#ffd34a",60,0.4); } }
   R.abates++; diaria("abates"); if(R.ancestral&&R.ancestral.estado==="chocando") R.ancestral.prog+=D.ancestral_regras.por_abate_seg; if(R.st.primeiroAbate==null) R.st.primeiroAbate=J.t; J.combo++; J.comboT=D.combo.janela_seg; J.comboMax=Math.max(J.comboMax,J.combo);
   J.ult=Math.min(100,J.ult+(e.chefe?25:e.mini?10:e.elite?2:0.07)*(1+Math.min(1,J.combo/200))*(1+MOD("despertar")));
   const cor=COR[e.el]; particulas(e.x,e.y,cor,e.chefe?60:e.elite?22:9,e.chefe?150:90,e.elite?2:1);
-  if(e.elite){ tremor(e.chefe?10:4); parar(e.chefe?0.2:0.05); }
-  const val=(e.chefe?40:e.mini?15:e.elite?8:1+(e.tipo===2?1:0))*(1+0.12*R.profundidade)*(e.xpF||1);   // xpF: inimigos extras do diretor valem menos
+  if(e.elite){ tremor(e.chefe?10:4); parar(e.chefe?0.2:0.05); rajada(e.x,e.y,e.chefe?80:35,e.chefe?2:1); }
+  const val=(e.chefe?40:e.mini?15:e.elite?8:1.6*(1+(e.tipo===2?1:0)))*(1+0.12*R.profundidade)*(e.xpF||1);   // inimigo comum vale mais: a horda é menor   // xpF: inimigos extras do diretor valem menos
   const nG=Math.min(6,Math.ceil(val/3)); for(let i=0;i<nG;i++){ const a=Math.random()*Math.PI*2; J.gemas.push({x:e.x,y:e.y,vx:Math.cos(a)*rnd(20,50),vy:Math.sin(a)*rnd(20,50),v:val/nG,cor}); }
   if(e.marca>0){ anel(e.x,e.y,24,"#c070ff",.35); emArea(e.x,e.y,24,o=>danoSimples(o,e.marca)); }
   if(e.elite&&!e.chefe&&!e.mini&&Math.random()<(e.daOnda?0.1:0.3)) darItem(itemUtil(["incenso","doce","pena","doce"]), e);
@@ -284,12 +288,17 @@ const HAB={
   xama:{ h1:{cd:8, f(s,a,el,cor,lv,mod){ J.canto=5; if(mod===0) J.fervor=5; anel(J.jogador.x,J.jogador.y,40,cor,.6); if(mod===1) emArea(J.jogador.x,J.jogador.y,45,e=>{const dx=e.x-J.jogador.x,dy=e.y-J.jogador.y,d=Math.hypot(dx,dy)||1; e.x+=dx/d*25; e.y+=dy/d*25;}); }},
          h2:{cd:10,f(s,a,el,cor,lv,mod){ J.zonas.push({fonte:FONTE,tipo:"espirito",x:J.jogador.x,y:J.jogador.y,r:4,ang:0,cor,el,el2:mod===0?escolha(ELS.filter(x=>x!==el)):null,cadeia:mod===1,dano:a.dano*1.2*fNivel(lv),vida:6,cd:0}); }} },
 };
+// força visual de um monstro: cresce com o estágio (filhote -> supremo), o nível do poder e a raridade.
+// Os efeitos (corte, onda, raio, selo) usam isso para ficar maiores, mais grossos e com mais partículas: um Supremo
+// lendário com poder 5 parece outra criatura perto de um filhote comum
+let VFX_K=1;
+function forcaVisual(s,k){ const rar={comum:0,incomum:0.05,raro:0.12,epico:0.2,lendario:0.32}[s.mon.rar]||0; return 1+est(s)*0.28+((s.pod[k]||1)-1)*0.09+rar; }
 function agirSelo(s,dt){
   const a=atrib(s), el=elementoDe(s), cor=COR[el], cls=L(s).classe;
   if(s.esp!=null&&!SIM.semEspeciais){ s.cdEsp=(s.cdEsp??10)-dt; if(s.cdEsp<=0){ FONTE="especial"; dispararEspecial(s,a,el,cor); s.cdEsp=recargaEspecial(s); } }
   if(s.furia>0){ s.furia-=dt; if(s.furiaMod===0) curar(J.vidaMax*0.02*dt); if(s.furiaMod===1) J.imparavel=0.2; }
-  s.cd-=dt*a.cad*(J.cantoGuerra>0?1.2:1); if(s.cd<=0){ FONTE="basico"; s.cd=ataqueBasico(s,atribPoder(a,s,"b"),el,cor)*tal.recarga(); aoDisparar(s,"b",a,el,cor); if(J.t-(s.atkT??-9)>0.5) s.atkT=J.t; }
+  s.cd-=dt*a.cad*(J.cantoGuerra>0?1.2:1); if(s.cd<=0){ FONTE="basico"; VFX_K=forcaVisual(s,"b"); s.cd=ataqueBasico(s,atribPoder(a,s,"b"),el,cor)*tal.recarga(); VFX_K=1; aoDisparar(s,"b",a,el,cor); if(J.t-(s.atkT??-9)>0.5) s.atkT=J.t; }
   for(const k of ["h1","h2"]){ const lv=s.pod[k]; if(!lv) continue; if(k==="h2"&&est(s)<1) continue;
     const def=HAB[cls][k]; const key=k==="h1"?"cd1":"cd2"; s[key]-=dt*(J.desp>0?1.4:1);
-    if(s[key]<=0){ FONTE="habilidade"; const r=def.f(s,atribPoder(a,s,k),el,cor,lv,s.mod[k]); s[key]= r===false? 0.6 : def.cd*fRecarga(lv)*tal.recarga()*((SIN.rm&&SIN.rm.recarga)||1); if(r!==false) aoDisparar(s,k,a,el,cor); } }
+    if(s[key]<=0){ FONTE="habilidade"; VFX_K=forcaVisual(s,k)*1.1; const r=def.f(s,atribPoder(a,s,k),el,cor,lv,s.mod[k]); VFX_K=1; s[key]= r===false? 0.6 : def.cd*fRecarga(lv)*tal.recarga()*((SIN.rm&&SIN.rm.recarga)||1); if(r!==false) aoDisparar(s,k,a,el,cor); } }
 }

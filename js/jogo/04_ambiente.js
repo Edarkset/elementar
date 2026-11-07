@@ -122,8 +122,11 @@ function desenharSolo(ox,oy){
     let a=ALFA_SOLO[t]??0.8; if(t==="fogo") a*=0.85+0.15*Math.sin(J.t*9); else if(t==="eletrico") a*=Math.floor(J.t*14)%3? 1 : 0.6; else if(t==="agua") a*=0.94+0.06*Math.sin(J.t*2.2); else if(t==="queimado") a*=0.9+0.1*Math.sin(J.t*5);
     const suave=lg.imageSmoothingEnabled; lg.imageSmoothingEnabled=true; lg.imageSmoothingQuality="low"; lg.globalAlpha=a;
     // só o trecho visível da camada (ampliação simples: a textura já é suave, e a de alta qualidade custa caro a cada quadro)
-    const sx=(ox-c0*CEL)*Kb, sy=(oy-r0*CEL)*Kb; if(SOLO_MULT[t]) lg.globalCompositeOperation="multiply"; lg.drawImage(ent.b,sx,sy,VW*Kb,VH*Kb,0,0,VW,VH); lg.globalCompositeOperation="source-over";
-    if(ent.b2&&t==="molhado"){ lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.32+0.08*Math.sin(J.t*1.7); lg.drawImage(ent.b2,sx,sy,VW*Kb,VH*Kb,0,0,VW,VH); lg.globalCompositeOperation="source-over"; }
+    // só a área que tem esse tipo de chão (antes cada tipo cobria a tela inteira, mesmo com 2 ladrilhos)
+    const cb=ent.caixa; let x0=0, y0=0, x1=VW, y1=VH; if(cb){ x0=Math.max(0,(c0+cb[0]-1)*CEL-ox); y0=Math.max(0,(r0+cb[1]-1)*CEL-oy); x1=Math.min(VW,(c0+cb[2]+2)*CEL-ox); y1=Math.min(VH,(r0+cb[3]+2)*CEL-oy); }
+    if(x1<=x0||y1<=y0){ lg.imageSmoothingEnabled=suave; lg.imageSmoothingQuality="high"; continue; }
+    const sx=(ox-c0*CEL+x0)*Kb, sy=(oy-r0*CEL+y0)*Kb, w=x1-x0, h=y1-y0; if(SOLO_MULT[t]) lg.globalCompositeOperation="multiply"; lg.drawImage(ent.b,sx,sy,w*Kb,h*Kb,x0,y0,w,h); lg.globalCompositeOperation="source-over";
+    if(ent.b2&&t==="molhado"){ lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.32+0.08*Math.sin(J.t*1.7); lg.drawImage(ent.b2,sx,sy,w*Kb,h*Kb,x0,y0,w,h); lg.globalCompositeOperation="source-over"; }
     lg.imageSmoothingEnabled=suave; lg.imageSmoothingQuality="high"; }
   lg.globalAlpha=1;
 }
@@ -131,18 +134,18 @@ function montarSolo(c0,r0,W2,H2,UK,Kb,ancora){ const ES=desenharSolo.es; ES.anco
   const est=estruturaU()&&J.cena, lagoArte=est&&folhaU("pecas"), pintado=!!(chao&&chao.suave);
   const n=W2*H2, G=desenharSolo.G&&desenharSolo.G.length>=n? desenharSolo.G : (desenharSolo.G=new Array(n));
   const F=desenharSolo.F&&desenharSolo.F.length>=n? desenharSolo.F : (desenharSolo.F=new Float32Array(n));
-  const tipos=new Map();
+  const tipos=new Map(), caixas=new Map();   // caixas: área ocupada por cada tipo (o desenho só copia essa área)
   for(let j=0;j<H2;j++) for(let i=0;i<W2;i++){ const cx=c0+i, cy=r0+j, idx=j*W2+i; let t=soloEm(cx,cy), f=1;
     if(t!=="chao"){ const din=J.solo.has(cx+","+cy);
       if(est&&abismoEm(cx*CEL+4,cy*CEL+4,0)) t="chao";
       else if(lagoArte&&t===soloLago()&&!din&&lagoEm(cx*CEL+4,cy*CEL+4)) t="chao";
       else if(!din&&pintado&&SOLO_NAT_PINTADO[t]!=null){ f=SOLO_NAT_PINTADO[t]; if(f<=0) t="chao"; } }
     if(!COR_SOLO[t]) t="chao"; G[idx]=t; F[idx]=f;
-    if(t!=="chao"){ const h=tipos.get(t)||0; tipos.set(t,(Math.imul(h,31)+idx*7+Math.round(f*10))|0); } }
+    if(t!=="chao"){ const h=tipos.get(t)||0; tipos.set(t,(Math.imul(h,31)+idx*7+Math.round(f*10))|0); const b=caixas.get(t); if(b){ if(i<b[0])b[0]=i; if(j<b[1])b[1]=j; if(i>b[2])b[2]=i; if(j>b[3])b[3]=j; } else caixas.set(t,[i,j,i,j]); } }
   for(const k of cacheSolo.keys()) if(!tipos.has(k)) cacheSolo.delete(k);
   const uw=W2*UK, uh=H2*UK, wx0=c0*CEL, wy0=r0*CEL;
   for(const [t,assin] of tipos){
-    let ent=cacheSolo.get(t); if(!ent){ ent={}; cacheSolo.set(t,ent); }
+    let ent=cacheSolo.get(t); if(!ent){ ent={}; cacheSolo.set(t,ent); } ent.caixa=caixas.get(t);
     if(ent.ancora!==ancora||ent.assin!==assin){ ent.ancora=ancora; ent.assin=assin;
       // 1) campo suave em 4 px por célula, com borda irregular
       if(!ent.u||ent.u.width!==uw||ent.u.height!==uh){ ent.u=document.createElement("canvas"); ent.u.width=uw; ent.u.height=uh; ent.ug=ent.u.getContext("2d"); ent.id=ent.ug.createImageData(uw,uh); }

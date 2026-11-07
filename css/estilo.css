@@ -411,3 +411,42 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 @media (prefers-reduced-motion: reduce){ .carta.maldita{animation:none} .cine-descoberta img{animation:none; filter:none} }
 .carta small .bom{color:#9ff0b8; font-weight:800} .carta small .custo{color:#ff9a8a; font-weight:800}
 .cine-descoberta img{image-rendering:auto}
+
+/* subida de nível: "Nível X!" grande que entra com pulo e some subindo */
+.nivel-pop{position:absolute; left:0; right:0; top:38%; text-align:center; pointer-events:none; opacity:0; z-index:5;
+  font-family:"Cinzel",Georgia,serif; font-weight:800; font-size:34px; letter-spacing:1px; color:#fff3c4;
+  text-shadow:0 3px 0 #2a1a08, 0 0 18px rgba(255,200,80,.9), 0 0 40px rgba(255,180,60,.6)}
+.nivel-pop.vis{animation:nivelPop 1.3s cubic-bezier(.2,1.4,.4,1) forwards}
+@keyframes nivelPop{0%{opacity:0; transform:scale(.4)} 18%{opacity:1; transform:scale(1.15)} 30%{transform:scale(1)} 75%{opacity:1; transform:translateY(-8px)} 100%{opacity:0; transform:translateY(-26px)}}
+/* barra de XP: brilho que corre e pulsa a cada cristal */
+.barra.xp{overflow:hidden} .barra.xp > i{transition:width .12s ease-out; box-shadow:0 0 8px rgba(127,232,192,.7)}
+.barra.xp > i::after{content:""; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent); background-size:40% 100%; background-repeat:no-repeat; animation:brilhoXp 1.8s linear infinite}
+@keyframes brilhoXp{from{background-position:-40% 0} to{background-position:140% 0}}
+.barra.xp.pulso{box-shadow:0 0 10px rgba(127,232,192,.9)}
+@media (prefers-reduced-motion: reduce){ .nivel-pop.vis{animation-duration:.01s} .barra.xp > i::after{animation:none} }
+
+/* bolinhas do nível do poder nas cartas: cheias (já tem), brilhando (o que a carta dá) e vazias */
+.pips{display:flex; gap:3px; margin:2px 0 4px} .cartas.grade .pips{justify-content:center}
+.pips i{width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.12); box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.pips i.tem{background:#ffd34a; box-shadow:0 0 4px rgba(255,211,74,.7)}
+.pips i.novo{background:#9ff0b8; box-shadow:0 0 8px #7fe8c0; animation:pipNovo .8s ease-in-out infinite alternate}
+@keyframes pipNovo{from{transform:scale(.85)} to{transform:scale(1.2)}}
+/* carta escolhida: cresce e brilha antes de a tela fechar */
+.carta.escolhida{animation:cartaEscolhida .28s ease-out forwards!important; z-index:2}
+@keyframes cartaEscolhida{to{transform:scale(1.06); filter:brightness(1.35); box-shadow:0 0 26px var(--rar,#ffd34a)}}
+@media (prefers-reduced-motion: reduce){ .pips i.novo{animation:none} }
+
+/* ---------------------------------------------------------------- acabamento de menus */
+/* botões do menu com ícone à esquerda (pelo texto do botão) */
+#menuBotoes .botao{position:relative; padding-left:38px}
+#menuBotoes .botao::before{position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:16px; color:#ffe6a6; text-shadow:0 0 8px rgba(255,211,74,.7); content:attr(data-icone)}
+/* Santuário: melhorias que dá para comprar pulsam */
+.carta.pode{animation:cartaEntra .32s ease-out both, podeComprar 1.6s ease-in-out .4s infinite alternate}
+@keyframes podeComprar{from{box-shadow:0 0 6px var(--rar)} to{box-shadow:0 0 18px var(--rar), inset 0 0 12px rgba(106,168,240,.15)}}
+/* Bestiário: barra de formas por monstro, os ainda não vistos apagados, os completos dourados */
+.prog-dex{display:block; height:5px; margin:5px auto 0; width:80%; border-radius:3px; background:rgba(0,0,0,.45); overflow:hidden} .prog-dex b{display:block; height:100%; box-shadow:0 0 6px currentColor}
+.carta.oculto{filter:grayscale(.6) brightness(.7)} .carta.oculto b{color:#8a84a0}
+.carta.completo{box-shadow:0 0 14px #ffcc4a, inset 0 0 0 1px #fff3c4}
+/* painéis: brilho suave no título */
+.painel h2{background:linear-gradient(180deg,#fff6d8,#ffd370 70%,#d89a3a); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:none; filter:drop-shadow(0 2px 0 #0b0916) drop-shadow(0 0 10px rgba(255,200,90,.35))}
+@media (prefers-reduced-motion: reduce){ .carta.pode{animation:none} }

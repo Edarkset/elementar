@@ -17,7 +17,8 @@ function multDiretor(){ const d=J.diretor; if(!d) return 1; return d.respiro>0? 
 function contarTela(){ const P=J.jogador; let n=0, col=0; for(const e of J.inimigos){ if(e.hp<=0) continue; const dx=Math.abs(e.x-P.x), dy=Math.abs(e.y-P.y); if(dx<VW/2&&dy<VH/2){ n++; if(dx<40&&dy<40) col++; } } return [n,col]; }
 function atualizarDiretor(dt){ if(!J.diretor) iniciarDiretor(); const d=J.diretor; d.tick-=dt;
   if(d.tick<=0){ d.tick=0.5; const [n,col]=contarTela(), vida=J.vida/J.vidaMax; d.n=n; d.vida=vida;
-    d.alvo=Math.min(150,24+R.profundidade*16+J.t*0.22)*(R.profundidade===0&&!R.teste? Math.min(1,0.4+J.t/60) : 1);   // primeiro mapa: a horda cresce aos poucos
+    // a horda começa pequena em todo mapa (poucos inimigos, mais perigosos) e cresce aos poucos com o tempo e a profundidade
+    d.alvo=Math.min(120,7+R.profundidade*7+J.t*(0.3+R.profundidade*0.04))*(R.profundidade===0&&!R.teste? Math.min(1,0.5+J.t/80) : 1);
     if(col>22&&vida<0.45&&d.respiro<=0){ d.respiro=3; }                  // afogado: respiro curto
     let m=d.mult; if(n>d.alvo*1.6) m-=0.15; else if(n<d.alvo*0.7&&vida>0.5) m+=0.12; else if(n<d.alvo) m+=0.04; else m-=0.03;
     d.mult=Math.max(0.3,Math.min(2.6,m));
@@ -92,35 +93,58 @@ function desenharParticula(p,ox,oy){ const x=p.x-ox, y=p.y-oy; if(x<-4||y<-4||x>
     default: { const r=Math.max(0.5,p.tam*0.6); if(r>0.9){ lg.globalAlpha=a*0.35; lg.beginPath(); lg.arc(x,y,r*2,0,Math.PI*2); lg.fill(); lg.globalAlpha=a; } lg.beginPath(); lg.arc(x,y,r,0,Math.PI*2); lg.fill(); } }
   lg.lineCap="butt"; }
 // efeitos curtos com desenho próprio (cortes, ondas, feixes, selos)
+// ---------------------------------------------------------------- círculo de invocação no chão
+// Desenho do círculo (anel duplo, runas, estrela de 6 pontas e marcas) feito uma vez por elemento num canvas; no jogo ele
+// é achatado em perspectiva, gira, cresce ao abrir e some com brilho. Usado ao invocar um monstro e ao lançar habilidades
+const cacheCirculo=new Map();
+function artCirculo(el){ if(cacheCirculo.has(el)) return cacheCirculo.get(el); const N=160, c=document.createElement("canvas"); c.width=c.height=N; const g=c.getContext("2d"), cor=COR[el]||"#ffd34a", R=N/2-4;
+  g.translate(N/2,N/2); g.lineCap="round"; g.shadowColor=cor; g.shadowBlur=8; g.strokeStyle=mistura(cor,"#ffffff",0.45);
+  g.lineWidth=3; g.beginPath(); g.arc(0,0,R,0,Math.PI*2); g.stroke(); g.lineWidth=1.5; g.beginPath(); g.arc(0,0,R-9,0,Math.PI*2); g.stroke();
+  for(let i=0;i<24;i++){ const a=i/24*Math.PI*2, l=i%3===0?7:3.5; g.beginPath(); g.moveTo(Math.cos(a)*(R-1),Math.sin(a)*(R-1)); g.lineTo(Math.cos(a)*(R-1-l),Math.sin(a)*(R-1-l)); g.stroke(); }   // marcas entre os anéis
+  g.lineWidth=2; for(const d of [0,Math.PI]){ g.beginPath(); for(let i=0;i<=3;i++){ const a=d+i/3*Math.PI*2-Math.PI/2; const x=Math.cos(a)*(R-12), y=Math.sin(a)*(R-12); i?g.lineTo(x,y):g.moveTo(x,y); } g.stroke(); }   // estrela de 6 pontas
+  g.lineWidth=1.5; g.beginPath(); g.arc(0,0,R*0.42,0,Math.PI*2); g.stroke();
+  for(let i=0;i<6;i++){ const a=i/6*Math.PI*2+Math.PI/6; g.beginPath(); g.arc(Math.cos(a)*R*0.62,Math.sin(a)*R*0.62,4,0,Math.PI*2); g.stroke(); }   // runas nas pontas
+  g.fillStyle=cor; g.globalAlpha=0.18; g.beginPath(); g.arc(0,0,R,0,Math.PI*2); g.fill();
+  cacheCirculo.set(el,c); return c; }
+function circuloInvocacao(x,y,el,r,dur,forte){ if(SIM.ativo||!J) return; const art=artCirculo(el), cor=COR[el]||"#ffd34a";
+  vfx({max:dur||0.9,camada:"chao",desenhar(ox,oy,q){ const abre=Math.min(1,q/0.18), some=q>0.7?(1-q)/0.3:1, esc=r*(0.55+0.45*(1-Math.pow(1-abre,3))), a=J.t*(forte?1.6:1.1);
+    lg.save(); lg.translate(x-ox,y-oy); lg.scale(1,0.5); lg.globalCompositeOperation="lighter";
+    lg.globalAlpha=0.9*some; lg.rotate(a); lg.drawImage(art,-esc,-esc,esc*2,esc*2);
+    lg.rotate(-a*2.2); lg.globalAlpha=0.45*some; lg.drawImage(art,-esc*0.6,-esc*0.6,esc*1.2,esc*1.2);   // círculo interno girando ao contrário
+    lg.restore(); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1;
+    if(forte&&q<0.6){ lg.globalCompositeOperation="lighter"; const g=lg.createLinearGradient(0,y-oy-70,0,y-oy); g.addColorStop(0,"rgba(255,255,255,0)"); g.addColorStop(1,cor); lg.globalAlpha=0.4*(1-q/0.6); lg.fillStyle=g; lg.fillRect(x-ox-esc*0.35,y-oy-70,esc*0.7,70); lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; } }}); }
 function vfx(o){ J.vfx=J.vfx||[]; if(J.vfx.length>80) J.vfx.shift(); o.t=0; J.vfx.push(o); return o; }
 function atualizarVfx(dt){ if(!J.vfx) return; for(const v of J.vfx) v.t+=dt; J.vfx=J.vfx.filter(v=>v.t<v.max); }
 function desenharVfx(ox,oy,camada){ if(!J.vfx) return; for(const v of J.vfx) if((v.camada||"luz")===camada) v.desenhar(ox,oy,v.t/v.max); lg.globalAlpha=1; lg.lineWidth=1; }
 
 // ---------------------------------------------------------------- ataques básicos por classe
-function vfxCorte(s,el,r){ const alvo=maisProximo(s,r+20), ang=alvo? Math.atan2(alvo.y-s.y,alvo.x-s.x) : Math.atan2(J.dir.y||0,J.dir.x||1), v=vEl(el), lado=Math.random()<.5?1:-1;
+function vfxCorte(s,el,r){ const K=VFX_K; const alvo=maisProximo(s,r+20), ang=alvo? Math.atan2(alvo.y-s.y,alvo.x-s.x) : Math.atan2(J.dir.y||0,J.dir.x||1), v=vEl(el), lado=Math.random()<.5?1:-1;
   // lua crescente: o traço é largo no meio e fino nas pontas; brilho por baixo e fio branco por cima; a ponta corre na frente do rastro
   vfx({max:.22,desenhar(ox,oy,q){ const x=s.x-ox, y=s.y-oy, ab=2.3, ini=ang-ab/2*lado, frente=Math.min(1,q*2.4), tras=Math.max(0,q*1.6-0.35), N=12, rr=r*0.85;
     lg.lineCap="round"; lg.globalCompositeOperation="lighter";
-    for(const [cor,lw,al] of [[v.c1,4.2,0.35],[v.c2,2.2,0.9],["#ffffff",0.8,1]]){ lg.strokeStyle=cor;
+    for(const [cor,lw0,al] of [[v.c1,4.2,0.35],[v.c2,2.2,0.9],["#ffffff",0.8,1]]){ const lw=lw0*K; lg.strokeStyle=cor;
       for(let i=0;i<N;i++){ const u0=tras+(frente-tras)*i/N, u1=tras+(frente-tras)*(i+1)/N; if(u1<=u0) continue; const um=(u0+u1)/2, larg=Math.sin(Math.min(1,(um-tras)/Math.max(0.01,frente-tras))*Math.PI);
         lg.globalAlpha=al*(1-q*0.7); lg.lineWidth=Math.max(0.2,lw*larg*(1-q*0.4)); lg.beginPath(); lg.arc(x,y,rr+(cor==="#ffffff"?0.6:0),ini+ab*lado*u0,ini+ab*lado*u1,lado<0); lg.stroke(); } }
     lg.globalCompositeOperation="source-over"; lg.lineCap="butt"; }});
-  for(let i=0;i<4;i++){ const a=ang+rnd(-1,1); particulasEl(s.x+Math.cos(a)*r*0.8,s.y+Math.sin(a)*r*0.8,el,1,40); } }
-function vfxOnda(s,el,r){ const v=vEl(el), x0=s.x, y0=s.y;
-  vfx({max:.35,camada:"chao",desenhar(ox,oy,q){ lg.globalAlpha=(1-q)*0.8; lg.strokeStyle=v.c2; lg.lineWidth=2; lg.beginPath(); lg.ellipse(x0-ox,y0-oy,r*q,r*q*0.8,0,0,Math.PI*2); lg.stroke();
+  for(let i=0;i<Math.round(4*K);i++){ const a=ang+rnd(-1,1); particulasEl(s.x+Math.cos(a)*r*0.8,s.y+Math.sin(a)*r*0.8,el,1,40*K); }
+  if(K>1.6) luzFlash(s.x,s.y,v.c2,r*1.2,0.18); }
+function vfxOnda(s,el,r){ const v=vEl(el), x0=s.x, y0=s.y, K=VFX_K; rajada(x0,y0,r*1.2,0.5*K);
+  vfx({max:.35,camada:"chao",desenhar(ox,oy,q){ lg.globalAlpha=(1-q)*0.8; lg.strokeStyle=v.c2; lg.lineWidth=2*K; lg.beginPath(); lg.ellipse(x0-ox,y0-oy,r*q,r*q*0.8,0,0,Math.PI*2); lg.stroke();
+    if(K>1.5){ lg.globalCompositeOperation="lighter"; lg.globalAlpha=(1-q)*0.25*(K-1); lg.fillStyle=v.c2; lg.beginPath(); lg.ellipse(x0-ox,y0-oy,r*q,r*q*0.8,0,0,Math.PI*2); lg.fill(); lg.globalCompositeOperation="source-over"; }
     lg.globalAlpha=(1-q)*0.4; lg.strokeStyle=v.c1; lg.lineWidth=1; lg.beginPath(); lg.ellipse(x0-ox,y0-oy,r*q*0.7,r*q*0.56,0,0,Math.PI*2); lg.stroke(); }});
-  for(let i=0;i<8;i++){ const a=i/8*Math.PI*2; particulasEl(x0+Math.cos(a)*r,y0+Math.sin(a)*r*0.8,el,1,30); } }
-function vfxFeixe(s,e,el){ const v=vEl(el), pts=[]; const n=6; for(let i=0;i<=n;i++){ const t=i/n; pts.push([t,(i&&i<n)?rnd(-3,3):0]); }
+  const nP=Math.round(8*K); for(let i=0;i<nP;i++){ const a=i/nP*Math.PI*2; particulasEl(x0+Math.cos(a)*r,y0+Math.sin(a)*r*0.8,el,1,30*K); } }
+function vfxFeixe(s,e,el){ const v=vEl(el), K=VFX_K, pts=[]; const n=6; for(let i=0;i<=n;i++){ const t=i/n; pts.push([t,(i&&i<n)?rnd(-3,3):0]); }
   vfx({max:.16,desenhar(ox,oy,q){ const dx=e.x-s.x, dy=e.y-s.y, d=Math.hypot(dx,dy)||1, nx=-dy/d, ny=dx/d;
-    for(const [lw,cor,al] of [[3,v.c2,.45],[1,v.c1,1]]){ lg.globalAlpha=al*(1-q); lg.strokeStyle=cor; lg.lineWidth=lw; lg.beginPath();
+    for(const [lw0,cor,al] of [[3,v.c2,.45],[1,v.c1,1],[0.5,"#ffffff",K>1.5?0.9:0]]){ const lw=lw0*K; lg.globalAlpha=al*(1-q); lg.strokeStyle=cor; lg.lineWidth=lw; lg.beginPath();
       pts.forEach(([t,o],i)=>{ const x=s.x+dx*t+nx*o-ox, y=s.y+dy*t+ny*o-oy; i?lg.lineTo(x,y):lg.moveTo(x,y); }); lg.stroke(); } }});
   particulasEl(e.x,e.y,el,4,50); }
-function vfxX(e,el){ const v=vEl(el), x0=e.x, y0=e.y;
-  vfx({max:.22,desenhar(ox,oy,q){ const L=9*Math.min(1,q*3); lg.globalAlpha=1-q; lg.strokeStyle="#ffffff"; lg.lineWidth=1; lg.beginPath(); lg.moveTo(x0-ox-L,y0-oy-L); lg.lineTo(x0-ox+L,y0-oy+L); lg.moveTo(x0-ox+L,y0-oy-L); lg.lineTo(x0-ox-L,y0-oy+L); lg.stroke();
+function vfxX(e,el){ const v=vEl(el), x0=e.x, y0=e.y, K=VFX_K;
+  vfx({max:.22,desenhar(ox,oy,q){ const L=9*K*Math.min(1,q*3); lg.globalAlpha=1-q; lg.strokeStyle="#ffffff"; lg.lineWidth=1; lg.beginPath(); lg.moveTo(x0-ox-L,y0-oy-L); lg.lineTo(x0-ox+L,y0-oy+L); lg.moveTo(x0-ox+L,y0-oy-L); lg.lineTo(x0-ox-L,y0-oy+L); lg.stroke();
     lg.strokeStyle=v.c2; lg.globalAlpha=(1-q)*0.6; lg.lineWidth=3; lg.beginPath(); lg.moveTo(x0-ox-L,y0-oy-L); lg.lineTo(x0-ox+L,y0-oy+L); lg.stroke(); }}); }
-function vfxSelo(x0,y0,el,r){ const v=vEl(el);
-  vfx({max:.5,camada:"chao",desenhar(ox,oy,q){ lg.globalAlpha=Math.sin(q*Math.PI)*0.8; lg.strokeStyle=v.c1; lg.lineWidth=1; lg.beginPath(); lg.ellipse(x0-ox,y0-oy,r,r*0.6,0,0,Math.PI*2); lg.stroke();
-    for(let i=0;i<5;i++){ const a=q*2+i/5*Math.PI*2; lg.fillStyle=v.c2; lg.fillRect(Math.round(x0-ox+Math.cos(a)*r),Math.round(y0-oy+Math.sin(a)*r*0.6),2,1); } }}); }
+function vfxSelo(x0,y0,el,r){ const v=vEl(el), K=VFX_K;
+  vfx({max:.5,camada:"chao",desenhar(ox,oy,q){ lg.globalAlpha=Math.sin(q*Math.PI)*0.8; lg.strokeStyle=v.c1; lg.lineWidth=K; lg.beginPath(); lg.ellipse(x0-ox,y0-oy,r,r*0.6,0,0,Math.PI*2); lg.stroke();
+    if(K>1.5){ lg.beginPath(); lg.ellipse(x0-ox,y0-oy,r*0.7,r*0.42,0,0,Math.PI*2); lg.stroke(); }
+    for(let i=0;i<Math.round(5*K);i++){ const a=q*2+i/5*Math.PI*2; lg.fillStyle=v.c2; lg.fillRect(Math.round(x0-ox+Math.cos(a)*r),Math.round(y0-oy+Math.sin(a)*r*0.6),2,1); } }}); }
 
 // ---------------------------------------------------------------- projéteis com forma e rastro
 // projéteis: forma suave por elemento + halo de luz + rastro afinando (desenhado em modo aditivo)
@@ -263,6 +287,7 @@ const tal={ dano:()=>(1+valTal("dano"))*(1+MOD("dano")), defesa:()=>Math.max(0.5
   coleta:()=>1+valTal("coleta"), regen:()=>valTal("regen"), duracao:()=>1+valTal("duracao")+passiva("duracao"), projeteis:()=>{ const lv=nivTal("espelho"); return (lv>=2?1:0)+(lv>=5?1:0); },
   velocidade:()=>(1+valTal("velocidade"))*(1+MOD("velocidade")), critico:()=>valTal("critico")+MOD("critico"), xp:()=>(1+valTal("xp")+valTal("risco")*1.25)*(1+MOD("xp")), riscoVida:()=>1+valTal("risco"), riscoVel:()=>1+valTal("risco")*0.5 };
 function talismasLiberados(){ const T=PD().talismas; return Object.keys(T).filter(id=>T[id].inicial||(META.talismas||[]).includes(id)||SIM.tudoLiberado); }
+function efeitoTalismaTxt(t,lv){ const v=t.valor*lv*100, sinal=t.efeito==="defesa"||t.efeito==="recarga"? "−" : "+"; return lv? `${sinal}${Math.round(v)}%` : "0%"; }
 function cartaTalisma(){ if(SIM.semTalismas||Math.random()>=PD().chance_carta+passiva("carta_extra")*0.35+((SIN.rm&&SIN.rm.talisma)||0)) return null; const tem=Object.keys(R.talismas||{}), cheio=tem.length>=PD().encaixes;
   const ops=talismasLiberados().filter(id=> cheio? (tem.includes(id)&&nivTal(id)<5) : nivTal(id)<5); if(!ops.length) return null;
   const util=ops.filter(id=>PD().despertos.some(d=>d.talisma===id&&ativos().some(s=>L(s).classe===d.classe)));   // prefere os que abrem Desperto da equipe
@@ -270,7 +295,7 @@ function cartaTalisma(){ if(SIM.semTalismas||Math.random()>=PD().chance_carta+pa
   const par=paresPendentes(), falta=ops.filter(id=>par.some(p=>p.talisma===id));
   const id=falta.length&&Math.random()<0.6? escolha(falta) : escolha(util.length&&Math.random()<0.7?util:ops), t=PD().talismas[id], lv=nivTal(id), abre=PD().despertos.filter(d=>d.talisma===id).map(d=>d.nome).join(" e ");
   const uniao=paresPendentes().find(p=>p.talisma===id);
-  return {titulo:`Talismã: ${t.nome} ${lv?`${lv} → ${lv+1}`:"(novo)"}`, raridade:"epico", sprite:iconeTalisma(id), suave:true, texto:`${t.texto} por nível. Abre os Despertos ${abre}.${uniao?` Completa o caminho da União ${uniao.uniao}.`:""} Encaixes: ${tem.length+(lv?0:1)}/${PD().encaixes}.`,
+  return {titulo:`Talismã: ${t.nome} ${lv?`${lv} → ${lv+1}`:"(novo)"}`, raridade:"epico", sprite:iconeTalisma(id), suave:true, texto:`${t.texto} por nível <span class='bom'>(total ${efeitoTalismaTxt(t,lv)} → ${efeitoTalismaTxt(t,lv+1)})</span>. Abre os Despertos ${abre}.${uniao?` Completa o caminho da União ${uniao.uniao}.`:""} Encaixes: ${tem.length+(lv?0:1)}/${PD().encaixes}.`,
     acao:()=>{ R.talismas=R.talismas||{}; R.talismas[id]=lv+1; R.st.talismas=(R.st.talismas||0)+1; if(J) texto(J.jogador.x,J.jogador.y-20,t.nome,"#e0b0ff",14); proximaEscolha(); } }; }
 function despertoDe(s,k){ return PD().despertos.find(d=>d.classe===L(s).classe&&d.poder===k); }
 function podeDespertar(s,k){ const d=despertoDe(s,k); return !!d&&!(s.desp&&s.desp[k])&&s.pod[k]>=5&&nivTal(d.talisma)>0&&estBase(s)>=2; }
@@ -322,7 +347,8 @@ const COMPORTAMENTO={
   xama:{ b(s){ const t=J.totens.filter(x=>x.dono===s).pop(); if(t) puxar(t.x,t.y,50,4); },
          h1(){ J.cantoGuerra=4; },
          h2(s,a,el){ const P=J.jogador; for(const g of J.gemas) if(dist2(g,P)<110*110){ g.vx+=(P.x-g.x)*0.8; g.vy+=(P.y-g.y)*0.8; } const p=pontoDenso(s,120); if(p) for(let i=0;i<4;i++) aplicarElementoNoSolo(p.x+rnd(-10,10),p.y+rnd(-10,10),el); } } };
-function aoDisparar(s,k,a,el,cor){ if(!(s.desp&&s.desp[k])) return; const f=(COMPORTAMENTO[L(s).classe]||{})[k]; if(f) try{ f(s,atribPoder(a,s,k),el,cor); }catch(err){} }
+function aoDisparar(s,k,a,el,cor){ if(k!=="b"&&!SIM.ativo) circuloInvocacao(s.x,s.y+3,el,10+est(s)*2.5,0.6,false);   // habilidade: círculo pequeno sob o monstro
+ if(!(s.desp&&s.desp[k])) return; const f=(COMPORTAMENTO[L(s).classe]||{})[k]; if(f) try{ f(s,atribPoder(a,s,k),el,cor); }catch(err){} }
 // efeitos contínuos: Fênix, Fúria Berserker, Canto de Guerra e as Uniões
 function atualizarArvore(dt){ if(!J) return; J.danoRec=Math.max(0,(J.danoRec||0)-(J.danoRec||0)*dt/3); if(J.cantoGuerra>0) J.cantoGuerra-=dt;
   for(const s of ativos()){ if(s.berserk>0) s.berserk-=dt;
@@ -389,16 +415,27 @@ function muralSprite(uid,n){ const l=D.lendas.find(x=>x.universo===uid), c=docum
 const LENDA=()=>R&&R.lenda? (D.lendas.find(l=>l.id===R.lenda)||D.panteao.find(p=>p.id===R.lenda)) : null;
 function passiva(ef){ const l=LENDA(); return l&&l.passiva.efeito===ef? l.passiva.valor : 0; }
 function custo(ef){ const l=LENDA(); return l&&l.passiva.custo&&l.passiva.custo[ef]||0; }
-function telaInvocador(pacto,id){ metaConq(); const livres=[...D.panteao.filter(g=>(META.deuses||[]).includes(g.id)), ...D.lendas.filter(l=>META.lendas.includes(l.universo))];
+// escolha do herói da run: o Invocador básico ou uma Lenda/deus já liberado. Cada carta mostra a arte, o poder e a
+// afinidade com o Pacto (quantos elementos em comum), para a escolha ter peso; as bloqueadas dizem como liberar
+function arteHeroiLenda(l){ const img=folhaArte(l.dom?`arte/panteao/${l.id}.png`:`arte/lendas/${l.id}.png`); if(!img||!fatiarFolha(img,6,3).valida) return null; return quadroAnim(img,0,0,64); }
+function telaInvocador(pacto,id,esperou){ metaConq(); const livres=[...D.panteao.filter(g=>(META.deuses||[]).includes(g.id)), ...D.lendas.filter(l=>META.lendas.includes(l.universo))];
   if(!livres.length){ novaRun(pacto,id); salvarRun(); iniciarMapa(); return; }
+  const nomes=livres.map(l=>l.dom?`arte/panteao/${l.id}.png`:`arte/lendas/${l.id}.png`);
+  if(!esperou&&nomes.some(n=>{ const im=ARTE_IMG[n]; return im&&!im.pronta&&!im.falhou; })){ Promise.race([preCarregar(nomes),new Promise(ok=>setTimeout(ok,2500))]).then(()=>telaInvocador(pacto,id,true)); return; }
   const ir=lid=>{ novaRun(pacto,id); R.lenda=lid; R.lendaNv=lid?1:0; salvarRun(); iniciarMapa(); };
-  mostrarCartas("Quem comanda a equipe?","As Lendas trazem um poder próprio e uma passiva.",[{titulo:"Invocador", texto:"O Invocador de sempre.", acao:()=>ir(null)},
-    ...livres.map(l=>({titulo:l.nome, raridade:"lendario", texto:`${NOME_EL(l.elementos[0])} e ${NOME_EL(l.elementos[1])} · ${l.poder.nome} · ${l.dom?`Dom: ${l.dom.nome} · Fardo: ${l.fardo}`:l.passiva.nome}`, acao:()=>ir(l.id)}))]); }
+  const total=D.lendas.length+D.panteao.length, estrelas=l=>pacto.filter(el=>l.elementos.includes(el)).length;
+  const cartas=livres.map(l=>{ const n=estrelas(l), arte=arteHeroiLenda(l);
+    return {titulo:l.nome, raridade:l.dom?"lendario":"epico", sprite:arte||undefined, suave:true, classe:arte?"grande":null,
+      texto:`<span style="color:${COR[l.elementos[0]]}">${NOME_EL(l.elementos[0])}</span> e <span style="color:${COR[l.elementos[1]]}">${NOME_EL(l.elementos[1])}</span> · ${l.poder.nome} · ${l.dom?`Dom: ${l.dom.nome} · Fardo: ${l.fardo}`:l.passiva.nome}<br>`+
+        (n? `<span class='bom'>Combina com o seu Pacto</span>: cada monstro de ${l.elementos.map(NOME_EL).join(" ou ")} na equipe dá ★ (mais dano e poder).` : `Sem elemento em comum com o Pacto: pouca afinidade.`)+(l.universo?` Terra Natal: ${UNIV[l.universo]?UNIV[l.universo].nome:""}.`:""),
+      acao:()=>ir(l.id), _n:n}; }).sort((a,b)=>b._n-a._n);
+  mostrarCartas("Quem comanda a equipe?",`Lendas e deuses liberados: ${livres.length}/${total}. Complete os murais dos reinos para liberar mais.`,
+    [{titulo:"Invocador", texto:"O herói básico, sem poder próprio.", sprite:quadroHeroi("p",0,false,COR[pacto[0]]), classe:"grande", acao:()=>ir(null)}, ...cartas],{grade:cartas.length>3}); }
 function cartaLenda(){ const l=LENDA(); if(!l||(R.lendaNv||1)>=5||Math.random()>0.3) return null;
   return {titulo:`${l.poder.nome} ${R.lendaNv} → ${R.lendaNv+1}`, raridade:"lendario", texto:`Poder da Lenda (${TIPOS_LENDA_TXT[l.poder.tipo]||""}): +25% de dano e −5% de recarga.`, acao:()=>{ R.lendaNv++; proximaEscolha(); }}; }
 const TIPOS_LENDA_TXT={orbita:"gira em volta",projetil:"arremesso",onda:"onda de choque",invocar:"aliados",raio:"raio em cadeia",barril:"explosivo",investida:"avanço",area:"zona no chão",drenar:"rouba vida",dardos:"disparos rápidos"};
 function atualizarLenda(dt){ const l=LENDA(); if(!l||!J||J.fim) return; if(J.lendaPose){ J.lendaPose.t+=dt; if(J.lendaPose.t>=J.lendaPose.dur) J.lendaPose=null; } atualizarDom(dt); const p=l.poder, nv=R.lendaNv||1, P=J.jogador, el=l.elementos[0], el2=l.elementos[1], cor=COR[el];
-  const base=(ativos().reduce((t,s)=>t+atrib(s).dano,0)/Math.max(1,ativos().length))*p.dano*(1+0.25*(nv-1))*(1+custo("dano_dia")*(UNIV[R.universo].luz&&!UNIV[R.universo].luz.noite?1:0));
+  const base=(ativos().reduce((t,s)=>t+atrib(s).dano,0)/Math.max(1,ativos().length))*p.dano*(1+0.25*(nv-1))*(1+custo("dano_dia")*(UNIV[R.universo].luz&&!UNIV[R.universo].luz.noite?1:0))*(SIN.lendaPoder||1);   // afinidade e Terra Natal
   if(p.tipo==="orbita"){ J.lendaAng=(J.lendaAng||0)+dt*3.2; J.lendaHit=(J.lendaHit||0)-dt; if(J.lendaHit<=0){ J.lendaHit=p.cd; FONTE="lenda"; J.lendaGiros=(J.lendaGiros||0)+1; if(J.lendaGiros%8===1&&!J.lendaPose) J.lendaPose={t:0,dur:0.5};
       for(let i=0;i<p.n;i++){ const a=J.lendaAng+i/p.n*Math.PI*2, x=P.x+Math.cos(a)*p.r, y=P.y+Math.sin(a)*p.r*0.8; emArea(x,y,12,e=>ferir(e,base,i%2?el2:el)); } }
     if(!J.lendaVfx){ J.lendaVfx=vfx({max:1e9,desenhar(ox,oy){ const v=VFX_EL[el]||VFX_EL.luz; for(let i=0;i<p.n;i++){ const a=J.lendaAng+i/p.n*Math.PI*2, x=P.x+Math.cos(a)*p.r-ox, y=P.y+Math.sin(a)*p.r*0.8-oy;
@@ -425,20 +462,14 @@ function multDanoLenda(e){ let f=1; if(e.chefe||e.mini) f*=1+passiva("dano_chefe
   if(passiva("dano_serpentes")&&e.def&&(e.def.corpo==="serpente"||e.def.corpo==="bipede")) f*=1+passiva("dano_serpentes"); return f; }
 // a Lenda (ou o deus) anda junto com a equipe, na posição do jogador. Folha 6x3 (arte/lendas/<id>.png ou arte/panteao/<id>.png):
 // linha 1 parado (4), linha 2 andando (6), linha 3 lançando o poder ou o Dom Divino (6). Sem a folha, uma figura animada por código.
-function desenharLenda(ox,oy){ const l=LENDA(); if(!l||!J) return; const P=J.jogador, x=Math.round(P.x-ox-10), y=Math.round(P.y-oy+2), img=folhaArte(l.dom?`arte/panteao/${l.id}.png`:`arte/lendas/${l.id}.png`);
-  const andando=Math.hypot(J.pvx||0,J.pvy||0)>5, pose=J.lendaPose, lancando=!!pose, dom=!!(pose&&pose.dom), esq=(J.pvx||0)<-1;
-  lg.fillStyle="rgba(0,0,0,.3)"; lg.beginPath(); lg.ellipse(x,y+1,6,2,0,0,Math.PI*2); lg.fill();
+// a Lenda é o herói do centro: desenhada na posição do jogador, do tamanho de um herói (devolve false sem a arte, e entra o Invocador)
+function desenharLenda(ox,oy){ const l=LENDA(); if(!l||!J) return false; const P=J.jogador, x=Math.round(P.x-ox), y=Math.round(P.y-oy+6), img=folhaArte(l.dom?`arte/panteao/${l.id}.png`:`arte/lendas/${l.id}.png`);
+  const andando=Math.hypot(J.pvx||0,J.pvy||0)>5, pose=J.lendaPose, lancando=!!pose, esq=(J.pvx||0)<-1;
   if(img&&fatiarFolha(img,6,3).valida){ const f=fatiarFolha(img,6,3); let lin=lancando?2:andando?1:0; if(f.linhas[lin].qs.length<1) lin=0; const n=f.linhas[lin].qs.length;
-    const q=lin===2? Math.min(n-1,Math.floor(pose.t/pose.dur*n)) : Math.floor(J.t*(lin===1?10:6))%n, s=quadroAnim(img,lin,q,30);
-    if(s){ const resp=lin===0? 1+0.012*Math.sin(J.t*2.4) : 1; lg.save(); lg.translate(x,y+1); lg.rotate(Math.max(-0.08,Math.min(0.08,(J.pvx||0)/400))); lg.scale(esq?-1:1,resp); desenharSprite(s,-s.width/2,-s._pe,s.width,s.height); lg.restore(); return; } }
-  // figura por código: respiração, passos, capa balançando e braço erguido ao lançar
-  const c1=COR[l.elementos[0]], c2=COR[l.elementos[1]], t=J.t, passo=andando?Math.sin(t*14):0, resp=andando?0:Math.round(Math.sin(t*3)*0.6), lev=(lancando||dom)?1:0, s=esq?-1:1, X=v=>x+v*s;
-  lg.fillStyle=tom(c2,0.55); const capa=Math.round(Math.sin(t*(andando?10:3))*1.5); lg.fillRect(Math.min(X(-3),X(-3-capa)),y-10+resp,3,9);
-  lg.fillStyle="#2a2433"; lg.fillRect(X(-2)-(s<0?1:0),y-3,2,3+Math.round(passo)); lg.fillRect(X(1)-(s<0?1:0),y-3,2,3-Math.round(passo));
-  lg.fillStyle=c1; lg.fillRect(x-3,y-10+resp,6,7); lg.fillStyle=tom(c1,1.3); lg.fillRect(x-3,y-10+resp,6,1);
-  lg.fillStyle="#f0d8b8"; lg.fillRect(x-2,y-14+resp,4,4); lg.fillStyle=c2; lg.fillRect(x-2,y-15+resp,4,1); if(l.dom){ lg.fillStyle="#ffd34a"; lg.fillRect(x-2,y-16+resp,1,1); lg.fillRect(x,y-17+resp,1,2); lg.fillRect(x+1,y-16+resp,1,1); }
-  lg.fillStyle="#f0d8b8"; if(lev){ lg.fillRect(X(3),y-15,1,5); lg.globalAlpha=0.5+0.5*Math.sin(t*20); lg.fillStyle=c2; lg.fillRect(X(3)-1,y-18,3,3); lg.globalAlpha=1; } else lg.fillRect(X(3),y-9+resp+Math.round(passo*0.5),1,4); }
-
+    const q=lin===2? Math.min(n-1,Math.floor(pose.t/pose.dur*n)) : Math.floor(J.t*(lin===1?10:6))%n, s=quadroAnim(img,lin,q,34);
+    if(s){ const resp=lin===0? 1+0.012*Math.sin(J.t*2.4) : 1; lg.save(); lg.translate(x,y+1); lg.rotate(Math.max(-0.08,Math.min(0.08,(J.pvx||0)/400))); lg.scale(esq?-1:1,resp); desenharSprite(s,-s.width/2,-s._pe,s.width,s.height); lg.restore(); return true; } }
+  return false;   // sem a arte da Lenda: o Invocador entra no lugar
+}
 // ================================================================ Panteão: deuses jogáveis (Dom Divino, Fardo e Provação)
 const DEUS=()=>R&&R.lenda? D.panteao.find(p=>p.id===R.lenda) : null;
 function metaDeuses(){ metaConq(); META.deuses=META.deuses||[]; return META.deuses; }

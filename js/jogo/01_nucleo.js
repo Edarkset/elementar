@@ -32,17 +32,17 @@ function somNota(f,dur,tipo,vol,atraso,f2){ const c=SOM.ctx, t=c.currentTime+(at
 function somRuido(dur,vol,atraso,corte){ const c=SOM.ctx, t=c.currentTime+(atraso||0), n=Math.ceil(c.sampleRate*dur), buf=c.createBuffer(1,n,c.sampleRate), d=buf.getChannelData(0); for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*(1-i/n);
   const s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain(); f.type="lowpass"; f.frequency.value=corte||2000; g.gain.value=vol; s.buffer=buf; s.connect(f); f.connect(g); g.connect(SOM.mestre); s.start(t); }
 // cada som tem um intervalo mínimo para não virar chiado quando muita coisa acontece junto
-function som(nome,x){ if(!SOM.ctx||SIM.ativo||(META.som&&META.som.mudo)) return; const agora=performance.now(), min={acerto:45,moeda:35,tic:30,gema:40,critico:70}[nome]||0;
+function som(nome,x){ if(!SOM.ctx||SIM.ativo||(META.som&&META.som.mudo)) return; const agora=performance.now(), min={acerto:45,moeda:35,tic:30,gema:28,critico:70}[nome]||0;
   if(agora-(SOM.ult[nome]||0)<min) return; SOM.ult[nome]=agora; const v=(META.som&&META.som.vol!=null? META.som.vol : 1);
   switch(nome){
     case "moeda": somNota(1568,0.07,"square",0.05*v); somNota(2093,0.16,"square",0.05*v,0.06); break;
-    case "gema": somNota(1200+Math.random()*500,0.06,"sine",0.04*v); break;
+    case "gema": { const ESC=[0,2,4,7,9,12,14,16,19,21,24], n=Math.min(ESC.length-1,x||0), f=880*Math.pow(2,ESC[n]/12); somNota(f,0.07,"sine",0.045*v); somNota(f*2,0.05,"triangle",0.015*v,0.01); break; }   // escala pentatônica: a cadeia de coleta sobe nota a nota
     case "tic": somNota(1100,0.025,"square",0.035*v); break;
     case "ding": somNota(1319,0.25,"triangle",0.12*v); somNota(1976,0.3,"sine",0.06*v,0.02); break;
     case "jackpot": [523,659,784,1047,1319,1568].forEach((f,i)=>somNota(f,0.35,"triangle",0.11*v,i*0.07)); somNota(2093,0.8,"sine",0.08*v,0.45); somRuido(0.6,0.05*v,0.42,6000); break;
     case "bau": somNota(110,0.25,"sine",0.25*v,0,70); somRuido(0.18,0.15*v,0,900); somNota(330,0.5,"sawtooth",0.04*v,0.1,1320); break;
     case "abrir": somRuido(0.35,0.18*v,0,4000); [784,988,1175,1568].forEach((f,i)=>somNota(f,0.25,"triangle",0.09*v,0.05+i*0.05)); break;
-    case "nivel": [523,659,784,1047].forEach((f,i)=>somNota(f,0.22,"triangle",0.1*v,i*0.06)); break;
+    case "nivel": [523,659,784,1047,1319].forEach((f,i)=>somNota(f,0.26,"triangle",0.1*v,i*0.055)); somNota(2093,0.6,"sine",0.06*v,0.3); somRuido(0.4,0.03*v,0.25,7000); break;
     case "evolucao": [392,523,659,784,1047].forEach((f,i)=>somNota(f,0.5,"triangle",0.09*v,i*0.09)); somNota(1568,1,"sine",0.06*v,0.5); break;
     case "acerto": somRuido(0.05,0.05*v,0,1600); break;
     case "critico": somNota(880,0.08,"square",0.06*v,0,1760); somRuido(0.06,0.08*v,0,3000); break;
@@ -199,12 +199,13 @@ const nivelLoja=id=>(META.loja&&META.loja[id])||0;
 function bonusLoja(id){ const it=LOJA.find(x=>x.id===id); return 1+(it? it.val*nivelLoja(id) : 0); }
 const precoLoja=it=>Math.round(it.base*Math.pow(1.85,nivelLoja(it.id)));
 function lojaAcessivel(){ return LOJA.filter(it=>nivelLoja(it.id)<it.max&&precoLoja(it)<=META.essencia); }
+function pipsLoja(n,max,pode){ let h="<span class='pips'>"; for(let i=1;i<=max;i++) h+=`<i class='${i<=n?"tem":i===n+1&&pode?"novo":""}'></i>`; return h+"</span>"; }
 function telaSantuario(){
   $("telaMenu").classList.remove("ativa"); META.loja=META.loja||{};
   mostrarCartas("Santuário", `Essência: <b>${META.essencia}</b>. Melhorias permanentes: valem para todas as próximas runs.`,
     LOJA.map(it=>{ const n=nivelLoja(it.id), cheio=n>=it.max, p=precoLoja(it), pode=!cheio&&p<=META.essencia;
-      return { titulo:`${it.nome} ${n}/${it.max}`, raridade: cheio?"lendario": pode?"raro":"comum", desab:!pode, manter:true,
-        texto:`${it.txt}${it.max>1?" por nível":""}.<br>${cheio?"Completo.":`Custa ${p} de Essência${pode?"":` (faltam ${p-META.essencia})`}.`}`,
+      return { titulo:it.nome, raridade: cheio?"lendario": pode?"raro":"comum", desab:!pode, manter:true, classe:pode?"pode":null,
+        texto:`${pipsLoja(n,it.max,pode)}${it.txt}${it.max>1?" por nível":""}.<br>${cheio?"Completo.":`Custa ${p} de Essência${pode?"":` (faltam ${p-META.essencia})`}.`}`,
         acao:()=>{ if(!pode) return; META.essencia-=p; META.loja[it.id]=n+1; gravar(); toast(`${it.nome} ${n+1}/${it.max}`); telaSantuario(); } }; }),{fundo:"ui__refugio"});
   const v=document.createElement("button"); v.className="botao sec"; v.textContent="Voltar"; v.onclick=()=>menu(); $("cartasRodape").appendChild(v);
 }
@@ -236,6 +237,15 @@ function atualizarReliquias(dt){ if(!R.reliquias.length||J.fim) return; const P=
       if(alvo){ const f=FONTE; FONTE="reliquia"; ferir(alvo,danoMedioEquipe()*6,"raio"); FONTE=f; J.efeitos.push({x:alvo.x+rnd(-8,8),y:alvo.y-90,x2:alvo.x,y2:alvo.y,linha:true,cor:"#fff6b0",vida:.25,max:.25}); anel(alvo.x,alvo.y,14,"#fff6b0",.6); tremor(2); } } }
   if(temRel("Espelho Mágico")){ J.tEsp=(J.tEsp||0)-dt; const dr=J.danoRec||0; if(J.tEsp<=0&&dr>(J._drEsp||0)+0.5){ J.tEsp=1; J._drEsp=dr; const f=FONTE; FONTE="reliquia"; const dm=danoMedioEquipe()*3;
       emArea(P.x,P.y,32,e=>ferir(e,dm,"luz")); FONTE=f; anel(P.x,P.y,32,"#e8f4ff",.6); } else if(J.tEsp<=0) J._drEsp=dr; } }
+// Afinidade da Lenda: cada monstro da equipe com um dos 2 elementos da Lenda reforça a equipe, com retorno decrescente
+// (+6%, +11%, +15% de dano; com os 3, +8% de vida), e o poder da Lenda cresce junto (+10% por monstro afim).
+// No reino de origem da Lenda (Terra Natal), o poder dela ganha +25%. Valores pequenos de propósito: somam com as
+// sinergias de classe, linhagem e elemento sem desequilibrar (conferido com o robô em testes/rodar_bot.js).
+const AFIN_LENDA={dano:[1,1.06,1.11,1.15], vida:[1,1,1,1.08], poderPorAfim:0.1, terraNatal:0.25};
+function afinidadeLenda(eq){ const l=typeof LENDA==="function"&&LENDA(); if(!l) return {dano:1,vida:1,poder:1,n:0,chip:null};
+  const n=Math.min(3,eq.filter(s=>l.elementos.includes(elementoDe(s))).length), natal=!!(l.universo&&R.universo===l.universo);
+  const poder=(1+n*AFIN_LENDA.poderPorAfim)*(natal?1+AFIN_LENDA.terraNatal:1);
+  return {dano:AFIN_LENDA.dano[n], vida:AFIN_LENDA.vida[n], poder, n, natal, chip: n||natal? `${l.nome.split(",")[0].split(" ")[0]} ${"★".repeat(n)}${natal?" · Terra Natal":""}` : null}; }
 function calcularSinergia(){
   const rg=D.regras, eq=ativos(), chips=[]; let dano=1,vida=1,reac=1; { const pr=R.pressagio&&PRESSAGIOS.find(p=>p.id===R.pressagio); if(pr) chips.push("✦ "+pr.nome); if(R.maldicoes&&R.maldicoes.length) chips.push("☠ "+R.maldicoes.length); } const cc={},lc={},ec={};
   eq.forEach(s=>{ const cl=L(s).classe; cc[cl]=(cc[cl]||0)+1; const ex=classeExtraDe(s); if(ex) cc[ex]=(cc[ex]||0)+1;
@@ -250,7 +260,8 @@ function calcularSinergia(){
   if(pap.has("frente")&&pap.has("suporte")&&(pap.has("dano_fisico")||pap.has("dano_magico"))){ dano*=rg.trindade.dps; vida*=rg.trindade.ehp; chips.push("Trindade"); }
   const pb=D.pacto.bonus[R.pacto.length]; if(pb&&pb.dano>1){ dano*=pb.dano; chips.push("Pacto Duplo"); }
   R.elos.forEach(e=>chips.push(e));
-  SIN={dano:dano*rm.dano, vida:vida*rm.vida, cad:rm.cad, reac, chips, rm, cacadores:cc.cacador||0, invocadores:cc.invocador||0};
+  const af=afinidadeLenda(eq); dano*=af.dano; vida*=af.vida; if(af.chip) chips.push(af.chip);
+  SIN={dano:dano*rm.dano, vida:vida*rm.vida, cad:rm.cad, reac, chips, rm, cacadores:cc.cacador||0, invocadores:cc.invocador||0, lendaPoder:af.poder};
   if(J){ const antes=J.vidaMax, nova=eq.reduce((t,s)=>t+atrib(s).vida,0)*SIN.vida*(1+passiva("vida")+custo("vida"))*(1+MOD("vida")); J.vidaMax=Math.max(1,nova); if(antes>1) J.vida=Math.min(J.vidaMax, J.vida*J.vidaMax/antes); }
   $("chips").innerHTML=R.pacto.map(el=>`<span class="chip el" style="color:${COR[el]}">${NOME_EL(el)}</span>`).join("")+chips.map(c=>`<span class="chip">${c}</span>`).join("");
 }

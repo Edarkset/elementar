@@ -229,6 +229,18 @@ async function verificarMecanicas(b, base) {
     if (r) nota("mecânica", "chefe de " + u, r); else chefesOk++;
     await p.evaluate(() => { fechar(); const bt = document.getElementById("bau"); if (bt) bt.classList.remove("vis"); pausado = false; });
   }
+  // inimigos, mini-chefes e chefes de cada reino: definições completas, folhas carregam, recorte válido e altura dos quadros de andar estável
+  for (const u of unis) {
+    const r = await p.evaluate(async u => { const out = []; fechar(); novaRun(["fogo", "agua"], D.linhas[0].id); R.universo = u; const U = UNIV[u], comb = U.combate || {};
+      await preCarregar(["inimigos", "mini", "chefe"].map(k => `arte/reinos/${U.era}/${U.id}__${k}.png`));
+      if (!comb.inimigos || comb.inimigos.length < 3) out.push("faltam definições de inimigos"); if (!comb.mini) out.push("sem mini-chefe"); if (!comb.chefe || !(comb.chefe.golpes || []).length) out.push("chefe sem golpes");
+      const img = folhaU("inimigos"); if (!img) out.push("folha de inimigos não carregou");
+      for (let t = 0; t < 3 && img; t++) { const hs = []; for (let c = 2; c < 6; c++) { const q = celulaArte(img, 8, 6, c, 2 * t, 60, 60, 0.85), dd = q.getContext("2d").getImageData(0, 0, 60, 60).data; let y0 = 60, y1 = 0; for (let y = 0; y < 60; y++) { let n = 0; for (let x = 0; x < 60; x++) if (dd[(y * 60 + x) * 4 + 3] > 40) n++; if (n >= 3) { y0 = Math.min(y0, y); y1 = Math.max(y1, y); } } hs.push(y1 - y0 + 1); }   // mede o quadro como o jogo desenha
+        const mn = Math.min(...hs), mx = Math.max(...hs); if (mx > mn * 1.8) out.push(`inimigo ${t}: quadros de andar com alturas muito diferentes (${mn.toFixed(0)}-${mx.toFixed(0)} px)`); }
+      for (const [k, rows] of [["mini", 5], ["chefe", 6]]) { const im = folhaU(k); if (!im) { out.push(`folha de ${k} não carregou`); continue; } const f = fatiarFolha(im, 6, rows); if (!f.valida) out.push(`${k}: recorte inválido`); else f.linhas.forEach((L, i) => { if (!L.qs.length) out.push(`${k}: linha ${i} sem quadros`); }); }
+      return out; }, u).catch(e => ["a página caiu: " + e.message.split("\n")[0]]);
+    for (const m of r) nota("mecânica", "criaturas de " + u, m);
+  }
   // itens: cada um usado com a equipe cheia
   const itens = await p.evaluate(() => { const out = []; fechar(); novaRun(["fogo", "agua"], D.linhas.find(l => l.elemento === "fogo").id); iniciarMapa(); J.intro = null;
     for (const k of Object.keys(D.itens)) { try { R.itens[k] = 1; usarItem(k); fechar(); pausado = false; tick(1 / 30); } catch (e) { out.push(`${k}: ${e.message}`); } } return out; });

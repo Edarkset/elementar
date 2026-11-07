@@ -51,7 +51,7 @@ if(window.ARTE_MANIFESTO){ const av=document.createElement("div");
       let feitos=0; const total=base.length;
       // em blocos de 24 para não sufocar a rede do celular
       for(let i=0;i<total;i+=24){ await preCarregar(base.slice(i,i+24)); feitos=Math.min(total,i+24); av.textContent=`Carregando artes ${feitos}/${total}…`; }
-      av.textContent="Artes carregadas";
+      av.textContent="Artes carregadas"; setTimeout(()=>{ av.style.transition="opacity .6s"; av.style.opacity="0"; setTimeout(()=>av.remove(),700); },1200);   // some sozinho (ficava em cima do logo)
       if(J&&R) preCarregar(artesDoMapa(UNIV[R.universo]));
     }catch(e){ console.warn("manifesto de artes",e); av.textContent="Sem artes: usando o desenho por código"; }
     setTimeout(()=>{ av.style.opacity="0"; setTimeout(()=>av.remove(),450); },1800); })(); }
@@ -71,7 +71,11 @@ function arteMonstro(id,e,ramo,rar){
 // As folhas não seguem a grade à risca: o desenho de uma linha às vezes passa da marca de 1/3 (pés cortados,
 // pedaço do quadro de cima aparecendo no de baixo). Por isso cada folha é "fatiada" uma vez: os cortes vão para a
 // linha (e a coluna) vazia mais próxima da grade, e cada quadro é alinhado pelos pés e pelo centro do corpo.
-const FPS_ANIM=[6,11,15], cacheFatia=new Map();
+const FPS_ANIM=[5,10,12], cacheFatia=new Map();
+// ritmo por classe: guardiões e místicos são calmos, assassinos e caçadores inquietos (o mesmo quadro ganha personalidade)
+const RITMO_CLASSE={guardiao:0.75, mistico:0.85, xama:0.9, mago:0.9, invocador:0.95, guerreiro:1, cacador:1.12, assassino:1.25};
+// ataque com peso: segura o primeiro quadro (preparo), passa rápido pelo golpe e segura o último (impacto)
+function progressoAtaque(k){ return k<0.3? k*0.5 : k<0.7? 0.15+(k-0.3)/0.4*0.75 : 0.9+(k-0.7)/0.3*0.1; }
 const alfaDe=img=>{ const c=document.createElement("canvas"); c.width=img.width; c.height=img.height; const g=c.getContext("2d"); g.drawImage(img,0,0); return g.getImageData(0,0,c.width,c.height).data; };
 // melhor corte perto de "nom" (entre lo e hi): linha sem desenho vale muito mais do que ficar perto da grade
 function melhorCorte(cont,nom,lo,hi){ let best=nom, bc=1e18; for(let b=Math.max(1,Math.round(lo));b<=Math.min(cont.length-1,Math.round(hi));b++){ const c=(cont[b]>0?1e6+cont[b]*100:0)+Math.abs(b-nom); if(c<bc){ bc=c; best=b; } } return best; }
@@ -130,7 +134,17 @@ function folhaRecolorida(anim,base,alvo,celula){ const k=(anim._id||(anim._id=++
   cacheRecor.set(k,out); return out; }
 // As folhas dos dragões ancestrais vieram de originais 3:2 (1536x1024) reduzidos para 2:1 (384x192): o desenho ficou 25% mais baixo.
 // Enquanto não forem convertidas de novo (ferramentas/converter_artes mantém a proporção), a altura é corrigida aqui.
-function correcaoAltura(img){ if(img._ky!=null) return img._ky; let k=1; for(const [n,i] of Object.entries(ARTE_IMG)) if(i===img){ if(n.startsWith("arte/lendarios/")&&Math.abs(img.width/img.height-2)<0.01) k=4/3; break; } return img._ky=k; }
+// folhas que a conversão antiga achatou: originais em 3:2 (1536x1024) foram forçados ao tamanho antigo, e o desenho ficou
+// 25% mais baixo (ou 33% mais largo). Reconhecidas pelo caminho E pelo tamanho exato da conversão antiga: uma arte
+// reconvertida com a proporção certa tem outro tamanho e não é esticada. Medido comparando escudos redondos e corpos.
+const ARTE_ACHATADA=[
+  [/^arte\/monstros\/.*__anim_\d+\.png$/,384,192], [/^arte\/monstros\/.*__(base|epico|lendario)\.png$/,256,128],
+  [/^arte\/lendarios\/.*__anim_\d+\.png$/,384,192], [/^arte\/(lendas|panteao)\/[a-z0-9_]+\.png$/,384,192],
+  [/^arte\/reinos\/.*__inimigos\.png$/,384,288], [/^arte\/reinos\/.*__mini\.png$/,384,320], [/^arte\/reinos\/.*__chefe\.png$/,576,576],
+  [/^arte\/reinos\/.*guardiao_[a-z_]+__anim\.png$/,576,576]];
+function correcaoAltura(img){ if(!img) return 1; if(img._ky!=null) return img._ky; let k=1;
+  for(const [n,i] of Object.entries(ARTE_IMG)) if(i===img){ if(!/__retrato\.png$/.test(n)&&ARTE_ACHATADA.some(([re,w,h])=>re.test(n)&&img.width===w&&img.height===h)) k=4/3; break; }
+  return img._ky=k; }
 // quadro (linha, índice do quadro) da folha, num canvas quadrado com folga: corpo na escala "alvo", pés na mesma linha em todos
 const FOLGA_ANIM=1.6;
 function quadroAnim(img,row,i,alvo,cor,rows,folga){ rows=rows||3; folga=folga||FOLGA_ANIM; const fo=cor||img, k=(fo._id||(fo._id=++ID_IMG))+"|q"+row+"|"+i+"|"+alvo+"|"+rows+"|"+folga; if(cacheArte.has(k)) return cacheArte.get(k);
@@ -163,5 +177,11 @@ function quadroAnimSelo(s){ if(SIM.ativo||!J||!s.mon) return null; const e=est(s
   // andando: a cadência acompanha a velocidade (pés não "patinam" no chão)
   const dtF=Math.min(0.1,Math.max(0,J.t-(s._tf??J.t))); s._tf=J.t;
   if(row===1) s._fase=(s._fase||0)+dtF*FPS_ANIM[1]*Math.max(0.6,Math.min(1.8,(s._vel||0)/45));
-  const fr= row===2? Math.min(n-1,Math.floor((J.t-s._t0)*FPS_ANIM[2])) : row===1? Math.floor(s._fase)%n : Math.floor((J.t-s._t0)*FPS_ANIM[0])%n;
-  return quadroAnim(fa.img,row,fr,ALVO_ARTE[e]*(LINHA[s.mon.id].ancestral?1.15:1),fa.cor); }
+  const rc=RITMO_CLASSE[L(s).classe]||1, alvoA=ALVO_ARTE[e]*(LINHA[s.mon.id].ancestral?1.15:1);
+  let fr, prox=null, mix=0;
+  if(row===2){ const dur=n/(FPS_ANIM[2]*rc)*1.25, k=Math.min(1,(J.t-s._t0)/dur); fr=Math.min(n-1,Math.floor(progressoAtaque(k)*n)); }
+  else if(row===1){ fr=Math.floor(s._fase)%n; if(QUAL>0){ prox=quadroAnim(fa.img,row,(fr+1)%n,alvoA,fa.cor); mix=(s._fase%1)*0.7; } }   // andando: também mistura com o próximo passo
+  else { // parado: vai e volta pelos quadros (0,1,2,3,2,1...), num ritmo próprio de cada monstro, com mistura suave entre um quadro e o próximo
+    const per=Math.max(1,2*n-2), pos=((J.t-s._t0)*FPS_ANIM[0]*rc*(0.9+0.2*((s.mon.id.length*7)%5)/5))%per, a=Math.floor(pos), b=(a+1)%per, ida=i=>i<n? i : per-i;
+    fr=ida(a); if(QUAL>0){ prox=quadroAnim(fa.img,row,ida(b),alvoA,fa.cor); mix=pos-a; } }
+  const q=quadroAnim(fa.img,row,fr,alvoA,fa.cor); if(q){ s._prox=prox; s._mix=mix; } return q; }

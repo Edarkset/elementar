@@ -329,6 +329,8 @@ function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||
   if(d.andar==="corre"&&pose==="anda"){ sx=1.06; sy=0.95; }
   if(d.andar==="rasteja"){ sx=1+Math.sin(e.fase)*0.07; sy=1-Math.sin(e.fase)*0.06; }
   if(d.andar==="cambaleia") dx=Math.round(Math.sin(e.fase*0.4)*1);
+  if((d.andar==="caminha"||d.andar==="marcha")&&pose==="anda"){ const pa=Math.abs(Math.sin((e.fase||0)*1.2)); z+=pa*0.8; sy*=1-0.04*(1-pa); sx*=1+0.03*(1-pa); }   // passada: sobe e desce no ritmo dos pés
+  if(pose==="pisca"||(pose==="anda"&&Math.hypot(e.vx||0,e.vy||0)<3)){ const b=Math.sin(J.t*2.4+(e.fase||0)); sy*=1+0.025*b; }   // parado: respira
   if(pose==="atk"&&!e.chefe) dx+=Math.sin(J.t*30+e.fase)*0.5;   // tremor leve e contínuo (antes sorteava a cada quadro e o bicho 'pulava')
   if(e.chefe||e.mini) z+=Math.sin(J.t*2.2)*1.2;
   if(e.giro>0) sx=Math.cos(J.t*18);
@@ -348,7 +350,10 @@ function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||
   if(clip<1){ lg.globalAlpha*=clip; lg.translate(0,(1-clip)*3); }
   if(rim&&e.flash<=0){ const a0=lg.globalAlpha; lg.globalAlpha=a0*0.6; lg.drawImage(silhueta(spr,rim),-w/2-1,-h-1,w+2,h+2); lg.globalAlpha=a0; }   // contorno de leitura
   // levou golpe: brilho branco por cima do corpo (mais leve em chefe, que apanha o tempo todo)
-  desenharSprite(spr,-w/2,-h,w,h); if(!e.chefe&&!e.mini&&!e.elite&&QUAL>0&&!SIM.ativo){ const a0=lg.globalAlpha; lg.globalAlpha=a0*0.16; lg.drawImage(silhueta(spr,"#140c1c"),-w/2,-h,w,h); lg.globalAlpha=a0; }
+  desenharSprite(spr,-w/2,-h,w,h);
+  // quadro intermediário: no andar, mistura com o próximo passo pela fração do ciclo (animação mais fluida com os mesmos quadros)
+  if(QUAL>0&&!SIM.ativo&&pose==="anda"&&spr._src&&!e.eco&&!e.estatua){ const f=(e.passo||0)%1; if(f>0.15){ const nx=spriteDe(e,pose,(q+1)%4); if(nx&&nx!==spr){ const a0=lg.globalAlpha; lg.globalAlpha=a0*f*0.7; desenharSprite(nx,-w/2,-h,w,h); lg.globalAlpha=a0; } } }
+  if(!e.chefe&&!e.mini&&!e.elite&&QUAL>0&&!SIM.ativo){ const a0=lg.globalAlpha; lg.globalAlpha=a0*0.16; lg.drawImage(silhueta(spr,"#140c1c"),-w/2,-h,w,h); lg.globalAlpha=a0; }
   if(img!==spr){ const a0=lg.globalAlpha; lg.globalCompositeOperation="lighter"; lg.globalAlpha=a0*(e.chefe||e.mini?0.4:0.75)*Math.min(1,e.flash/0.05); lg.drawImage(img,-w/2,-h,w,h); lg.globalAlpha=a0; lg.globalCompositeOperation="source-over"; }
   if(e.virouElite>0){ lg.globalAlpha=Math.min(1,e.virouElite*2)*0.7; lg.globalCompositeOperation="lighter"; lg.drawImage(silhueta(spr,"#ffd34a"),-w/2,-h,w,h); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1; }
   if(e.chefe&&e.ia&&e.ia.fase===2){ lg.globalAlpha=0.18+0.12*Math.sin(J.t*6); lg.globalCompositeOperation="lighter"; lg.drawImage(silhueta(spr,COR[e.el]||"#ff5a4a"),-w/2,-h,w,h); lg.globalCompositeOperation="source-over"; }

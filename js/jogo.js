@@ -142,6 +142,11 @@ function redimensionar(){ W=cv.clientWidth; H=cv.clientHeight; const dpr=Math.mi
   { const cheio=S*dpr, lim=PIXELS_MAX*Math.pow(typeof QUAL==='number'?ESC_QUAL[QUAL]:1,2), k=Math.max(1,Math.ceil(Math.sqrt(VW*VH*cheio*cheio/lim)-1e-9)); Q=SIM.ativo? 1 : Math.max(1,cheio/k); }
   lo.width=Math.round(VW*Q); lo.height=Math.round(VH*Q); lg.setTransform(Q,0,0,Q,0,0); }
 addEventListener("resize",redimensionar);
+// altura real do HUD do topo (muda com a largura da tela e com os chips): o combo e a barra do chefe ficam logo abaixo dele,
+// senão no celular deitado o nome do chefe ficava escondido atrás dos chips
+let HUD_BAIXO=96;
+function medirHud(){ const h=$("hud"); if(!h||!h.offsetHeight) return; HUD_BAIXO=h.offsetTop+h.offsetHeight; $("combo").style.top=(HUD_BAIXO+4)+"px"; }
+if(typeof ResizeObserver==="function") new ResizeObserver(medirHud).observe($("hud"));
 let R=null, J=null, rodando=false, pausado=false;
 // Ganchos para simulação e testes automatizados (não afetam o jogo normal)
 const SIM={ativo:false, entrada:null, aoDerrota:null, semEspeciais:false};
@@ -546,6 +551,7 @@ function mostrarCartas(titulo,sub,cartas,op={}){
   pausado=true; { const tc=$("telaCartas"), f=op.fundo&&UI_ARQ(op.fundo); tc.style.backgroundImage=f? `linear-gradient(180deg,rgba(8,6,16,.35),rgba(8,6,16,.78)), url(${f.src})` : ""; tc.classList.toggle("com-fundo",!!f); }
   $("cartasTitulo").textContent=titulo; $("cartasSub").innerHTML=sub||""; const box=$("cartas"); box.innerHTML=""; box.className="cartas"+(op.grade?" grade":"");
   $("cartasRodape").innerHTML="";
+  { const rl=$("telaCartas").querySelector(".rolagem"); if(rl&&rl.dataset.t!==titulo){ rl.scrollTop=0; rl.dataset.t=titulo; } }   // tela nova começa do topo
   cartas.forEach((c,ci)=>{ const b=document.createElement("button"); b.className="carta r-"+(c.raridade||"comum"); b.style.setProperty("--i",Math.min(ci,10)); if(c.desab) b.disabled=true;
     if(c.classe) b.classList.add(c.classe);
     if(c.quadros&&c.quadros.length){ const q0=c.quadros[0], cc=document.createElement("canvas"); cc.width=q0.width; cc.height=q0.height; cc.className=(c.classe==="medio"?"retrato-medio":"retrato-grande")+" anim-retrato"; cc.getContext("2d").drawImage(q0,0,0); cc._quadros=c.quadros; b.appendChild(cc); animarRetratos(); }
@@ -1047,7 +1053,7 @@ Object.assign(INTER,{"agua|chao":"molhado","agua|queimado":"molhado","agua|racha
   "natureza|molhado":"grama","natureza|queimado":"grama","natureza|rachado":"grama","luz|molhado":"luz","sombra|molhado":"sombra","luz|queimado":"luz","sombra|queimado":"sombra",
   // monstro gelado (forma de gelo, ou de Água num mapa frio): congela poça, lama e água eletrificada, apaga o fogo e condensa o vapor
   "gelo|agua":"gelo","gelo|molhado":"gelo","gelo|lama":"gelo","gelo|eletrico":"gelo","gelo|fogo":"agua","gelo|vapor":"agua","gelo|queimado":"molhado",
-  "fogo|gelo":"agua","fogo|molhado":"vapor"});
+  "fogo|gelo":"agua"});
 // formas de gelo (pelo nome do ramo): contam como "gelo" para o chão
 const GELADO=/gelo|neve|glacia|inverno|congel/i;
 function elementoNoSolo(s){ const el=elementoDe(s); if(el!=="agua") return el; const r=ramoObj(s); if((r&&GELADO.test(r.nome+" "+(r.supremo||"")))||frio()) return "gelo"; return el; }
@@ -3896,12 +3902,12 @@ function desenharEscuridao(ox,oy){ if(!(J.escuro>0.02)||passiva("imune_escuro"))
   lg.drawImage(ESCURO,-1,-1,VW+2,VH+2); }
 // barra do chefe e anúncio do golpe
 // aviso grande no alto da tela (chefe, eventos do mapa); sem chefe, fica um pouco abaixo do HUD
-function desenharAnuncio(y){ if(!J.anuncio) return; if(y==null) y=Math.round(H*0.2)+28;
+function desenharAnuncio(y){ if(!J.anuncio) return; if(y==null) y=Math.max(Math.round(H*0.2)+28, HUD_BAIXO+70);
   if(J.anuncio){ const a=J.anuncio; ctx.globalAlpha=Math.min(1,a.vida*1.5); ctx.textAlign="center"; ctx.font=`800 20px "Cinzel", Georgia, serif`; ctx.lineWidth=4; ctx.lineJoin="round"; ctx.strokeStyle="rgba(18,14,26,.9)"; ctx.strokeText(a.txt,W/2,y+36); ctx.fillStyle=a.cor; ctx.fillText(a.txt,W/2,y+36);
     if(a.sub){ ctx.font=`13px "Nunito", system-ui, sans-serif`; ctx.fillStyle="#f2e7c9"; const pal=a.sub.split(" "), linhas=[]; let l=""; for(const p of pal){ if((l+" "+p).length>44){ linhas.push(l); l=p; } else l=l?l+" "+p:p; } linhas.push(l); linhas.forEach((t,i)=>ctx.fillText(t,W/2,y+56+i*16)); }
     ctx.globalAlpha=1; } }
 function desenharBarraChefe(){ const ch=J.chefeVivo&&J.chefeVivo.hp>0? J.chefeVivo : J.inimigos.find(e=>e.mini&&e.hp>0); if(!ch){ desenharAnuncio(); return; }
-  const w=Math.min(W*0.84,420), x=(W-w)/2, y=Math.round(H*0.2)+28, frac=Math.max(0,ch.hp/ch.max);
+  const w=Math.min(W*0.84,420), x=(W-w)/2, y=Math.max(Math.round(H*0.2)+28, HUD_BAIXO+70), frac=Math.max(0,ch.hp/ch.max);
   ctx.globalAlpha=0.92; ctx.fillStyle="rgba(18,14,26,.85)"; ctx.fillRect(x-4,y-20,w+8,32); ctx.fillStyle="#3a2a30"; ctx.fillRect(x,y,w,7);
   ctx.fillStyle=ch.imortal? "#c8c8e0" : ch.chefe? "#d6ab4f" : "#e06a5a"; ctx.fillRect(x,y,w*frac,7); if(ch.chefe&&ch.def&&ch.def.fase2){ ctx.fillStyle="#f2e7c9"; ctx.fillRect(x+w*0.5-1,y-2,2,11); }
   ctx.textAlign="left"; ctx.font=`600 13px "Nunito", system-ui, sans-serif`; ctx.fillStyle="#f2e7c9"; ctx.fillText(ch.nome+(ch.imortal?" · Imortal":"")+(ch.bebado>0?" · Bêbado":"")+(fadigaChefe(ch)>1.2?" · Cansado":""),x,y-6);

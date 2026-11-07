@@ -443,7 +443,7 @@ function multDanoLenda(e){ let f=1; if(e.chefe||e.mini) f*=1+passiva("dano_chefe
 // linha 1 parado (4), linha 2 andando (6), linha 3 lançando o poder ou o Dom Divino (6). Sem a folha, uma figura animada por código.
 // a Lenda é o herói do centro: desenhada na posição do jogador, do tamanho de um herói (devolve false sem a arte, e entra o Invocador)
 function desenharLenda(ox,oy){ const l=LENDA(); if(!l||!J) return false; const P=J.jogador, x=Math.round(P.x-ox), y=Math.round(P.y-oy+6), img=folhaArte(l.dom?`arte/panteao/${l.id}.png`:`arte/lendas/${l.id}.png`);
-  const andando=Math.hypot(J.pvx||0,J.pvy||0)>5, pose=J.lendaPose, lancando=!!pose, dom=!!(pose&&pose.dom), esq=(J.pvx||0)<-1;
+  const andando=Math.hypot(J.pvx||0,J.pvy||0)>5, pose=J.lendaPose, lancando=!!pose, esq=(J.pvx||0)<-1;
   if(img&&fatiarFolha(img,6,3).valida){ const f=fatiarFolha(img,6,3); let lin=lancando?2:andando?1:0; if(f.linhas[lin].qs.length<1) lin=0; const n=f.linhas[lin].qs.length;
     const q=lin===2? Math.min(n-1,Math.floor(pose.t/pose.dur*n)) : Math.floor(J.t*(lin===1?10:6))%n, s=quadroAnim(img,lin,q,34);
     if(s){ const resp=lin===0? 1+0.012*Math.sin(J.t*2.4) : 1; lg.save(); lg.translate(x,y+1); lg.rotate(Math.max(-0.08,Math.min(0.08,(J.pvx||0)/400))); lg.scale(esq?-1:1,resp); desenharSprite(s,-s.width/2,-s._pe,s.width,s.height); lg.restore(); return true; } }

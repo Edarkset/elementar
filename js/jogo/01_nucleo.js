@@ -32,17 +32,17 @@ function somNota(f,dur,tipo,vol,atraso,f2){ const c=SOM.ctx, t=c.currentTime+(at
 function somRuido(dur,vol,atraso,corte){ const c=SOM.ctx, t=c.currentTime+(atraso||0), n=Math.ceil(c.sampleRate*dur), buf=c.createBuffer(1,n,c.sampleRate), d=buf.getChannelData(0); for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*(1-i/n);
   const s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain(); f.type="lowpass"; f.frequency.value=corte||2000; g.gain.value=vol; s.buffer=buf; s.connect(f); f.connect(g); g.connect(SOM.mestre); s.start(t); }
 // cada som tem um intervalo mínimo para não virar chiado quando muita coisa acontece junto
-function som(nome,x){ if(!SOM.ctx||SIM.ativo||(META.som&&META.som.mudo)) return; const agora=performance.now(), min={acerto:45,moeda:35,tic:30,gema:40,critico:70}[nome]||0;
+function som(nome,x){ if(!SOM.ctx||SIM.ativo||(META.som&&META.som.mudo)) return; const agora=performance.now(), min={acerto:45,moeda:35,tic:30,gema:28,critico:70}[nome]||0;
   if(agora-(SOM.ult[nome]||0)<min) return; SOM.ult[nome]=agora; const v=(META.som&&META.som.vol!=null? META.som.vol : 1);
   switch(nome){
     case "moeda": somNota(1568,0.07,"square",0.05*v); somNota(2093,0.16,"square",0.05*v,0.06); break;
-    case "gema": somNota(1200+Math.random()*500,0.06,"sine",0.04*v); break;
+    case "gema": { const ESC=[0,2,4,7,9,12,14,16,19,21,24], n=Math.min(ESC.length-1,x||0), f=880*Math.pow(2,ESC[n]/12); somNota(f,0.07,"sine",0.045*v); somNota(f*2,0.05,"triangle",0.015*v,0.01); break; }   // escala pentatônica: a cadeia de coleta sobe nota a nota
     case "tic": somNota(1100,0.025,"square",0.035*v); break;
     case "ding": somNota(1319,0.25,"triangle",0.12*v); somNota(1976,0.3,"sine",0.06*v,0.02); break;
     case "jackpot": [523,659,784,1047,1319,1568].forEach((f,i)=>somNota(f,0.35,"triangle",0.11*v,i*0.07)); somNota(2093,0.8,"sine",0.08*v,0.45); somRuido(0.6,0.05*v,0.42,6000); break;
     case "bau": somNota(110,0.25,"sine",0.25*v,0,70); somRuido(0.18,0.15*v,0,900); somNota(330,0.5,"sawtooth",0.04*v,0.1,1320); break;
     case "abrir": somRuido(0.35,0.18*v,0,4000); [784,988,1175,1568].forEach((f,i)=>somNota(f,0.25,"triangle",0.09*v,0.05+i*0.05)); break;
-    case "nivel": [523,659,784,1047].forEach((f,i)=>somNota(f,0.22,"triangle",0.1*v,i*0.06)); break;
+    case "nivel": [523,659,784,1047,1319].forEach((f,i)=>somNota(f,0.26,"triangle",0.1*v,i*0.055)); somNota(2093,0.6,"sine",0.06*v,0.3); somRuido(0.4,0.03*v,0.25,7000); break;
     case "evolucao": [392,523,659,784,1047].forEach((f,i)=>somNota(f,0.5,"triangle",0.09*v,i*0.09)); somNota(1568,1,"sine",0.06*v,0.5); break;
     case "acerto": somRuido(0.05,0.05*v,0,1600); break;
     case "critico": somNota(880,0.08,"square",0.06*v,0,1760); somRuido(0.06,0.08*v,0,3000); break;

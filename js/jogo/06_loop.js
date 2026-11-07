@@ -149,7 +149,8 @@ function atualizar(dt){
   J.selvagens=J.selvagens.filter(f=>f.vida>0);
   // cristais
   const ima=22*rm.ima*tal.coleta();
-  for(const g of J.gemas){ g.x+=g.vx*dt; g.y+=g.vy*dt; g.vx*=0.9; g.vy*=0.9; const d=Math.sqrt(dist2(g,P)); if(d<ima||J.fim||g.puxar){ g.x+=(P.x-g.x)*Math.min(1,dt*8); g.y+=(P.y-g.y)*Math.min(1,dt*8); } if(d<6){ g.pega=true; som("gema"); ganharXp(g.v*rm.xp*(1+Math.min(D.combo.xp_max,J.combo/10*D.combo.xp_por_10))); } }
+  for(const g of J.gemas){ g.x+=g.vx*dt; g.y+=g.vy*dt; g.vx*=0.9; g.vy*=0.9; const d=Math.sqrt(dist2(g,P)); if(d<ima||J.fim||g.puxar){ g.voa=(g.voa||0)+dt; const ac=Math.min(1,dt*(6+g.voa*30)); g.x+=(P.x-g.x)*ac; g.y+=(P.y-g.y)*ac; }   // puxão que acelera: o cristal voa até você
+    if(d<6){ g.pega=true; J.cadeia=J.t-(J.tCadeia??-9)<0.45? (J.cadeia||0)+1 : 0; J.tCadeia=J.t; som("gema",J.cadeia); J.pulsoXp=1; if(!SIM.ativo&&QUAL>0) particulas(P.x,P.y-4,g.cor,2,35); ganharXp(g.v*rm.xp*(1+Math.min(D.combo.xp_max,J.combo/10*D.combo.xp_por_10))); } }
   J.gemas=J.gemas.filter(g=>!g.pega);
   atualizarMoedasBaus(dt,ima);
   // partículas e textos
@@ -168,11 +169,15 @@ function atualizar(dt){
     else return derrota(); }
   hud();
 }
+// subida de nível: câmera lenta curta, onda dourada, coluna de luz e faíscas; o "NÍVEL X" grande aparece no HUD
+function efeitoNivel(){ if(SIM.ativo||!J) return; const P=J.jogador; J.lento=Math.max(J.lento||0,0.35); luzFlash(P.x,P.y,"#ffe080",110,0.8);
+  anel(P.x,P.y,22,"#ffffff",.35); anel(P.x,P.y,70,"#ffd34a",.7); particulas(P.x,P.y,"#fff3a0",26,140,2);
+  J.colunaNivel={t:0}; const el=$("nivelPop"); if(el){ el.textContent=`Nível ${J.nivel+1}!`; el.classList.remove("vis"); void el.offsetWidth; el.classList.add("vis"); } }
 function ganharXp(v){
   v*=tal.xp()*(1+passiva("xp")); J.xp+=v; for(const ov of R.ninho) ov.prog+=v;
   const prontos=R.ninho.filter(o=>o.prog>=o.alvo); if(prontos.length){ R.ninho=R.ninho.filter(o=>o.prog<o.alvo); prontos.forEach(chocar); }
   desenharNinho();
-  while(J.xp>=J.xpProx){ som("nivel"); J.xp-=J.xpProx; J.nivel++; J.xpProx=xpPara(J.nivel); J.niveisPend++; if(temRel("Tabuletas do Destino")&&Math.random()<0.3){ J.niveisPend++; textoUnico("tabuleta",J.jogador.x,J.jogador.y-22,"Destino: escolha extra!","#ffd34a",14); }
+  while(J.xp>=J.xpProx){ som("nivel"); efeitoNivel(); J.xp-=J.xpProx; J.nivel++; J.xpProx=xpPara(J.nivel); J.niveisPend++; if(temRel("Tabuletas do Destino")&&Math.random()<0.3){ J.niveisPend++; textoUnico("tabuleta",J.jogador.x,J.jogador.y-22,"Destino: escolha extra!","#ffd34a",14); }
     const P=J.jogador; anel(P.x,P.y,50,"#ffd34a",.6); emArea(P.x,P.y,50,e=>{const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy)||1; e.x+=dx/d*22; e.y+=dy/d*22;}); particulas(P.x,P.y,"#ffd34a",16,100); tremor(3); }
   if(J.niveisPend>0&&!pausado&&!J.nivelAgendado){ J.nivelAgendado=true; agendar(0.15,()=>{ J.nivelAgendado=false; if(!pausado&&J.niveisPend>0){ J.niveisPend--; abrirNivel(); } }); }
 }

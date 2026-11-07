@@ -9,6 +9,11 @@ function gerarChao(u){ if(chaoArte(u)) return; const c=document.createElement("c
   for(let i=0;i<260;i++){ g.fillStyle=r()<.5?tom(base,0.33):tom(base,0.2); g.fillRect(Math.floor(r()*64),Math.floor(r()*64),1+Math.floor(r()*2),1); }
   for(let i=0;i<5;i++){ g.fillStyle=tom(base,0.45); const x=Math.floor(r()*60), y=Math.floor(r()*60); g.fillRect(x,y,3,2); g.fillStyle=tom(base,0.15); g.fillRect(x,y+2,3,1); }
   chao={cv:c,u}; }
+const CORES_GEMA=[[0,"#6ab0ff"],[3,"#5fe08a"],[8,"#c07cff"],[20,"#ffd34a"]];
+function corGema(v){ let c=CORES_GEMA[0][1]; for(const [m,k] of CORES_GEMA) if(v>=m) c=k; return c; }
+function desenharColunaNivel(ox,oy){ const c=J.colunaNivel; if(!c) return; c.t+=1/60; if(c.t>0.9){ J.colunaNivel=null; return; } const P=J.jogador, x=P.x-ox, y=P.y-oy, a=Math.sin(c.t/0.9*Math.PI), w=10+c.t*16;
+  lg.globalCompositeOperation="lighter"; const g=lg.createLinearGradient(0,y-160,0,y); g.addColorStop(0,"rgba(255,230,140,0)"); g.addColorStop(1,`rgba(255,230,140,${0.55*a})`); lg.fillStyle=g; lg.fillRect(x-w/2,y-160,w,160);
+  lg.globalAlpha=0.4*a; lg.drawImage(bolhaCor("#ffe080"),x-30,y-30,60,60); lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; }
 function desenhar(dt){
   const P=J.jogador; J.shake*=0.86; const tq=performance.now()/1000, sx=J.shake*(Math.sin(tq*53)*0.35+Math.sin(tq*29+1.3)*0.25), sy=J.shake*(Math.sin(tq*47+0.7)*0.35+Math.sin(tq*23+2.1)*0.25);
   // câmera com precisão menor que 1 pixel do mundo: as posições continuam inteiras (ox, oy), e a sobra desloca a tela inteira.
@@ -51,7 +56,11 @@ function desenhar(dt){
     lg.fillStyle="#fff3c4"; if(Math.floor(J.t*4)%2) lg.fillRect(Math.round(f.x-ox),Math.round(f.y-oy-s.height/2)-4,1,2); }
   desenharMoedasBaus(ox,oy);
   // gemas de XP: cristal pequeno (losango) com face clara e brilho piscando
-  for(const g of J.gemas){ const x=g.x-ox, y=g.y-oy+Math.sin(J.t*4+g.x)*0.4; if(x<-4||y<-4||x>VW+4||y>VH+4) continue; const t=g.v>4?2.1:1.5;
+  // cristais com a cor do valor (azul, verde, roxo, dourado, como em Vampire Survivors) e um brilho aditivo que pulsa
+  lg.globalCompositeOperation="lighter"; for(const g of J.gemas){ const x=g.x-ox, y=g.y-oy; if(x<-6||y<-6||x>VW+6||y>VH+6) continue; const c=corGema(g.v); lg.globalAlpha=0.35+0.15*Math.sin(J.t*6+g.x); lg.drawImage(bolhaCor(c),x-5,y-5,10,10);
+    if(g.voa){ lg.globalAlpha=0.5; lg.strokeStyle=c; lg.lineWidth=1; lg.beginPath(); lg.moveTo(x,y); lg.lineTo(x-(J.jogador.x-g.x)*0.12,y-(J.jogador.y-g.y)*0.12); lg.stroke(); } }   // rastro ao voar
+  lg.globalAlpha=1; lg.globalCompositeOperation="source-over";
+  for(const g of J.gemas){ const x=g.x-ox, y=g.y-oy+Math.sin(J.t*4+g.x)*0.4; if(x<-4||y<-4||x>VW+4||y>VH+4) continue; const t=g.v>10?2.4:g.v>4?2:1.5; g.cor=corGema(g.v);
     lg.fillStyle=tom(g.cor,0.6); lg.beginPath(); lg.moveTo(x,y-t*1.3); lg.lineTo(x+t,y); lg.lineTo(x,y+t*1.3); lg.lineTo(x-t,y); lg.closePath(); lg.fill();
     lg.fillStyle=g.cor; lg.beginPath(); lg.moveTo(x,y-t*1.3); lg.lineTo(x+t*0.75,y-t*0.1); lg.lineTo(x,y+t*0.9); lg.lineTo(x-t*0.75,y-t*0.1); lg.closePath(); lg.fill();
     lg.fillStyle="#ffffff"; lg.globalAlpha=0.85; lg.beginPath(); lg.moveTo(x,y-t*1.2); lg.lineTo(x+t*0.35,y-t*0.35); lg.lineTo(x,y-t*0.1); lg.lineTo(x-t*0.4,y-t*0.4); lg.closePath(); lg.fill(); lg.globalAlpha=1; }
@@ -67,7 +76,7 @@ function desenhar(dt){
   R.selos.forEach(s=>{ if(s.mon) fila.push({y:s.y+ALVO_ARTE[est(s)]/2,f:()=>desenharSelo(s,ox,oy,sombra)}); });
   for(const t of J.totens) fila.push({y:t.y+1,f:()=>desenharTotem(t,ox,oy)});
   fila.sort((a,b)=>a.y-b.y); for(const it of fila){ lg.globalAlpha=1; it.f(); } lg.globalAlpha=1;
-  desenharVfx(ox,oy,"frente"); desenharFauna(ox,oy,"ar"); desenharQuedas(ox,oy); desenharCenaAr(ox,oy); desenharFauna(ox,oy,"ceu"); J._nuvemFeita=false; desenharMapaLuz(ox,oy); desenharNuvens(ox,oy); desenharLuzAmbiente(ox,oy); desenharEscuridao(ox,oy); desenharBrilhoInimigos();
+  desenharVfx(ox,oy,"frente"); desenharColunaNivel(ox,oy); desenharFauna(ox,oy,"ar"); desenharQuedas(ox,oy); desenharCenaAr(ox,oy); desenharFauna(ox,oy,"ceu"); J._nuvemFeita=false; desenharMapaLuz(ox,oy); desenharNuvens(ox,oy); desenharLuzAmbiente(ox,oy); desenharEscuridao(ox,oy); desenharBrilhoInimigos();
   // luzes aditivas
   lg.globalCompositeOperation="lighter";
   for(const p of J.proj) desenharProjetil(p,ox,oy);
@@ -229,7 +238,7 @@ function hud(){
   { const ev=R.essenciaRun+Math.floor(R.abates/15), el=$("essHud"); if(el&&el._v!==ev){ el._v=ev; el.textContent=ev; el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); } }
   const rest=Math.max(0,MAPA_SEG-J.t); $("tempo").textContent=J.chefeFeito?"Chefe!":`${Math.floor(rest/60)}:${String(Math.floor(rest%60)).padStart(2,"0")}`;
   $("barVida").style.width=`${Math.max(0,J.vida/J.vidaMax*100)}%`; $("barEscudo").style.width=`${Math.min(100,J.escudo/J.vidaMax*100)}%`;
-  $("barXp").style.width=`${J.xp/J.xpProx*100}%`; $("ultFill").style.height=`${J.desp>0?J.desp/D.despertar.duracao_seg*100:J.ult}%`; $("btnUlt").classList.toggle("pronto",J.ult>=100&&J.desp<=0); { const b=$("btnBolsa"); if(b){ const u=itemUsavelAgora(); if(b._u!==u){ b._u=u; b.classList.toggle("util",u); } } }
+  $("barXp").style.width=`${J.xp/J.xpProx*100}%`; if(J.pulsoXp>0){ J.pulsoXp-=0.08; $("barXp").parentElement.classList.toggle("pulso",J.pulsoXp>0); } $("ultFill").style.height=`${J.desp>0?J.desp/D.despertar.duracao_seg*100:J.ult}%`; $("btnUlt").classList.toggle("pronto",J.ult>=100&&J.desp<=0); { const b=$("btnBolsa"); if(b){ const u=itemUsavelAgora(); if(b._u!==u){ b._u=u; b.classList.toggle("util",u); } } }
   const cb2=$("btnComb"), tc=tipoCombinado(); $("combNome").textContent=J.comb>0?Math.ceil(J.comb)+" s":tc.nome; cb2.title=tc.nome; cb2.classList.toggle("pronto",J.comb<=0); $("combFill").style.height=`${J.comb>0?(1-J.comb/D.combinado_regras.recarga_seg)*100:100}%`;
   $("esqFill").style.height=`${J.dashCd>0?(1-J.dashCd/D.esquiva.recarga_seg)*100:100}%`;
   const cb=$("combo"); if(J.combo>=5){ cb.classList.add("vis"); if(J.combo!==comboAnt){ cb.innerHTML=`Combo ${J.combo}<small>+${Math.round(Math.min(D.combo.xp_max,J.combo/10*D.combo.xp_por_10)*100)}% XP</small>`;

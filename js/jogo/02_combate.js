@@ -205,6 +205,10 @@ function morrer(e){
   if(e.imortal){ e.hp=1; if(Math.random()<.15) texto(e.x,e.y-20,"Imortal! Quebre o carvalho.","#c8c8e0",13); return; }
   if(e.morto) return; e.morto=true; aoMorrerCriatura(e);
   if(temRel("Hidromel do Salão dos Heróis")){ J.hidro=J.hidro||[]; if(J.hidro.length<30) J.hidro.push(J.t+10); else { J.hidro.shift(); J.hidro.push(J.t+10); } }
+  // abates em sequência: matar muitos em pouco tempo solta um "Massacre" com som subindo e moedas extras
+  if(!SIM.ativo){ J.janelaAbates=(J.janelaAbates||[]).filter(t=>J.t-t<1.4); J.janelaAbates.push(J.t); const n=J.janelaAbates.length;
+    if(n===8||n===15||n===25||n===40){ const nome=n>=40?"Aniquilação":n>=25?"Carnificina":n>=15?"Massacre":"Sequência"; texto(J.jogador.x,J.jogador.y-34,`${nome} x${n}!`,n>=25?"#ff6a8a":n>=15?"#ffb040":"#ffe680",n>=25?20:16);
+      som(n>=25?"jackpot":"combo"); soltarMoedas(e.x,e.y,Math.floor(n/8)); luzFlash(J.jogador.x,J.jogador.y,"#ffd34a",60,0.4); } }
   R.abates++; diaria("abates"); if(R.ancestral&&R.ancestral.estado==="chocando") R.ancestral.prog+=D.ancestral_regras.por_abate_seg; if(R.st.primeiroAbate==null) R.st.primeiroAbate=J.t; J.combo++; J.comboT=D.combo.janela_seg; J.comboMax=Math.max(J.comboMax,J.combo);
   J.ult=Math.min(100,J.ult+(e.chefe?25:e.mini?10:e.elite?2:0.07)*(1+Math.min(1,J.combo/200))*(1+MOD("despertar")));
   const cor=COR[e.el]; particulas(e.x,e.y,cor,e.chefe?60:e.elite?22:9,e.chefe?150:90,e.elite?2:1);

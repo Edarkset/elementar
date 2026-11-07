@@ -388,7 +388,7 @@ function ferir(e,dano,el,o={}){
   const ef=eficacia(el,e.el), crit=o.crit||Math.random()<0.08+tal.critico()+(ativos().some(s=>s.berserk>0)?0.2:0);
   let d=dano*ef*(crit?1.8:1)*(e.vulner>0?1.2:1)*(e.bebado>0?1.5:1)*fadigaChefe(e)*multDanoLenda(e)*relDano(e);
   for(const z of J.zonas) if(z.tipo==="circulo"&&dist2(z,e)<z.r*z.r) d*=z.amp;
-  e.hp-=d; e.flash=0.08; e.golpeT=J.t; R.st.porFonte[FONTE]=(R.st.porFonte[FONTE]||0)+d; R.st.dano+=d; R.st.golpes++; if(ef>1) R.st.superEf++; else if(ef<1) R.st.poucoEf++;
+  e.hp-=d; e.flash=0.08; e.golpeT=J.t; if(J.t-(e.dorT??-9)>0.6) e.dorT=J.t; R.st.porFonte[FONTE]=(R.st.porFonte[FONTE]||0)+d; R.st.dano+=d; R.st.golpes++; if(ef>1) R.st.superEf++; else if(ef<1) R.st.poucoEf++;
   if(crit){ som("critico"); numero(e.x,e.y-6,d,"#ffe066",20,e); parar(0.025); particulas(e.x,e.y,"#fff3a0",5,60); }
   else if(ef>1){ numero(e.x,e.y-6,d,"#ff8a3d",17,e); }
   else if(ef<1){ numero(e.x,e.y-6,d,"#9a98a8",12,e); }
@@ -3499,7 +3499,7 @@ function atualizarCriaturas(dt){
       const a=Math.random()*6.28; e.x=J.jogador.x+Math.cos(a)*90; e.y=J.jogador.y+Math.sin(a)*90; fala(e,"Hihihi!","#ffe9a0"); if(J.cena) J.cena.vort.push({x:e.x,y:e.y,r:6,vmax:90,vida:3,fogo:false,f:0,segue:e}); } }
   if(J.cena) for(const w of J.cena.vort) if(w.segue){ if(w.segue.hp>0){ w.x=w.segue.x; w.y=w.segue.y+2; } else w.vida=Math.min(w.vida,0.3); } }
 // ---------------------------------------------------------------- desenho
-function poseDe(e){ if(e.ia&&e.ia.trocaFase>0) return "fase"; if(e.flash>0||e.caido>0) return "dor"; if(e.atk>0||e.pavio>0||(e.ia&&e.ia.anuncio>0)) return "atk"; if(e.danca>0) return "mania"; if(e.piscaT>0) return "pisca"; return "anda"; }
+function poseDe(e){ if(e.ia&&e.ia.trocaFase>0) return "fase"; if(e.caido>0||(e.flash>0&&J.t-(e.dorT??-9)<0.15)) return "dor"; /* pose de dor no máximo a cada 0,6 s: com golpes seguidos o inimigo ficava sempre agachado */ if(e.atk>0||e.pavio>0||(e.ia&&e.ia.anuncio>0)) return "atk"; if(e.danca>0) return "mania"; if(e.piscaT>0) return "pisca"; return "anda"; }
 function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||x>VW+40||y>VH+40) return;
   const d=e.def; if(!d){ return false; }
   if(e.oculto&&!e.mergulho) { if(e.revoada) return; lg.globalAlpha=0.15; }
@@ -3525,7 +3525,7 @@ function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||
   if(e.congela>0) lg.globalAlpha*=.75;
   const virar=e.x>P.x? true : false, img=e.flash>0? branco(spr) : spr;
   if(z<2&&!e.oculta&&clip>=1) sombraProjetada(spr,x+dx,y+h*0.35+h*(1-(spr.base||1)),w,h,virar,e.chefe||e.mini?1:0.85);
-  lg.save(); lg.translate(x+dx,y-z+h*0.35+h*(1-(spr.base||1))); if(e.caido>0) lg.rotate(virar?-1.4:1.4); if(pose==="mania") lg.scale(Math.floor(J.t*5)%2?-1:1,1);
+  lg.save(); lg.translate(x+dx,y-z+h*0.35+h*(1-(spr.base||1))); if(e.caido>0&&!spr._src) lg.rotate(virar?-1.4:1.4); /* só o desenho por código deita girando; a arte pintada girada virava uma mancha achatada */ if(pose==="mania") lg.scale(Math.floor(J.t*5)%2?-1:1,1);
   lg.scale((virar?-1:1)*sx,sy);
   if(clip<1){ lg.globalAlpha*=clip; lg.translate(0,(1-clip)*3); }
   if(rim&&e.flash<=0){ const a0=lg.globalAlpha; lg.globalAlpha=a0*0.6; lg.drawImage(silhueta(spr,rim),-w/2-1,-h-1,w+2,h+2); lg.globalAlpha=a0; }   // contorno de leitura

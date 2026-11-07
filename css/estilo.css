@@ -264,7 +264,7 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 @media (prefers-reduced-motion: reduce){ .cine-raios{animation:none} }
 
 /* retratos das cartas: pixel nítido, na resolução da arte */
-.carta canvas.retrato-grande{image-rendering:pixelated}
+.carta canvas.retrato-grande{image-rendering:auto}
 .carta canvas.retrato-medio{width:76px; height:76px; border-radius:14px; padding:0; flex:none; image-rendering:pixelated;
   background:radial-gradient(circle at 50% 60%, rgba(255,255,255,.14), rgba(0,0,0,.4) 72%)}
 /* portal: capa com a arte do reino */
@@ -329,3 +329,11 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 @keyframes rachaAparece{to{opacity:1}}
 
 .prog-diaria{height:6px; margin-top:5px; border-radius:3px; background:rgba(0,0,0,.4); overflow:hidden} .prog-diaria b{display:block; height:100%; background:linear-gradient(90deg,#d6ab4f,#ffe296)}
+
+/* retrato do monstro: halo suave atrás e arte já ampliada pixel a pixel (o navegador só ajusta ao tamanho) */
+.carta canvas.retrato-grande, .carta canvas.retrato-medio{image-rendering:auto; background:radial-gradient(circle at 50% 58%, rgba(255,236,190,.16), rgba(255,236,190,0) 55%), radial-gradient(circle at 50% 40%, rgba(255,255,255,.08), rgba(0,0,0,.42) 75%)}
+/* menu no celular: botões mais baixos e juntos, para a cena da capa aparecer */
+@media (max-width:520px) and (orientation:portrait){
+  #telaMenu.com-arte #menuBotoes .botao{padding:7px 12px; font-size:15px; margin-top:6px}
+  #telaMenu.com-arte .meta{margin:6px 0 4px}
+}

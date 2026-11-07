@@ -129,7 +129,7 @@ let W=0,H=0,S=2,VW=0,VH=0,Q=1;
 // Celular/tablet (toque): tela interna bem menor. Cada passada de tela cheia (piso, chão, luz, tom, vinheta...) custa
 // proporcional aos pixels; no iPhone o mundo era desenhado a 860x1867, e o aparelho esquentava. Em tela pequena a diferença quase não aparece.
 const TOQUE=matchMedia("(pointer: coarse)").matches||"ontouchstart" in window;
-const PIXELS_MAX=TOQUE? 7.5e5 : 2.6e6;
+const PIXELS_MAX=TOQUE? 1.8e6 : 3.2e6;
 // a qualidade automática também reduz a resolução: QUAL 1 = 80%, QUAL 0 = 62%
 const ESC_QUAL=[0.62,0.8,1];
 const ZOOM_MUNDO=170;   // pixels de mundo no lado menor da tela (menor = câmera mais perto, arte maior)
@@ -137,7 +137,9 @@ function redimensionar(){ W=cv.clientWidth; H=cv.clientHeight; const dpr=Math.mi
   cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0);
   S=Math.max(2,Math.min(W,H)/ZOOM_MUNDO); VW=Math.ceil(W/S); VH=Math.ceil(H/S);
   // tela interna na resolução real do aparelho (sem reamostrar a cada quadro); limitada a PIXELS_MAX
-  Q=SIM.ativo? 1 : Math.max(1.5,Math.min(S*dpr, Math.sqrt(PIXELS_MAX/Math.max(1,VW*VH)))*(typeof QUAL==='number'?ESC_QUAL[QUAL]:1));
+  // a tela interna é sempre a resolução da tela dividida por um número inteiro (1, 2, 3...): a ampliação final fica exata.
+  // Com um fator quebrado (ex.: 1,46x) cada pixel virava um bloco de tamanho diferente e tudo parecia distorcido.
+  { const cheio=S*dpr, lim=PIXELS_MAX*Math.pow(typeof QUAL==='number'?ESC_QUAL[QUAL]:1,2), k=Math.max(1,Math.ceil(Math.sqrt(VW*VH*cheio*cheio/lim)-1e-9)); Q=SIM.ativo? 1 : Math.max(1,cheio/k); }
   lo.width=Math.round(VW*Q); lo.height=Math.round(VH*Q); lg.setTransform(Q,0,0,Q,0,0); }
 addEventListener("resize",redimensionar);
 let R=null, J=null, rodando=false, pausado=false;
@@ -280,7 +282,7 @@ function iniciarMapa(){
   if(temRel("Taça de Jamshid")&&R.profundidade>0){ J.vida=Math.min(J.vidaMax,J.vida+J.vidaMax*0.25); J.escudo+=J.vidaMax*0.15; }
   ativos().forEach(s=>{ s.cdEsp=10; if(s.esp==null&&s.nivel>=NIV[1]&&!filaEsp.includes(s)) filaEsp.push(s); if(s.mon.ramo==null&&s.nivel>=NIV[2]&&!filaRamo.includes(s)) filaRamo.push(s); if(D.classes[L(s).classe].nome==="Místico"&&s.pod.h2>0) J.renascer=1; });
   gerarChao(u); iniciarCena(u); iniciarAbertura(); J.abates0=R.abates; evento("era:"+u.era); J.escudoGolpes=passiva("escudo_golpes");
-  for(let i=0;i<6;i++) spawnInimigo();
+  for(let i=0;i<(R.profundidade===0?3:6);i++) spawnInimigo(); if(R.profundidade===0) J.invuln=Math.max(J.invuln,2.5);
   $("lugar").textContent=`${u.nome} · ${D.eras[u.era].nome}${R.ciclo?` · ciclo ${R.ciclo+1}`:""} · mapa ${R.profundidade+1}`;
   if(!J.intro){ $("hud").style.display=""; $("hudBase").style.display=""; }
   desenharEquipe(); desenharNinho(); rodando=true; pausado=false;
@@ -311,7 +313,7 @@ function spawnInimigo(kForcado){
   const base=[{hp:.6,v:velRapido(),r:4,n:8},{hp:1,v:24,r:5,n:9},{hp:2.4,v:16,r:6,n:11}][k], elite=Math.random()<0.035;
   const el=Math.random()<0.85?u.elemento:escolha(ELS), hp=DIF.hp*base.hp*dificuldade()*(1+J.t/90)*(elite?7:1);
   const hx=VW/2+10, hy=VH/2+10, px=lado<2? rnd(-hx,hx) : (lado===2?-hx:hx), py=lado<2? (lado===0?-hy:hy) : rnd(-hy,hy);
-  J.inimigos.push({x:J.jogador.x+px, y:J.jogador.y+py, hp, max:hp, v:base.v*(1+R.profundidade*0.02), r:base.r*(elite?1.6:1), esc:elite?1.35:1,
+  J.inimigos.push({x:J.jogador.x+px, y:J.jogador.y+py, hp, max:hp, v:base.v*(1+R.profundidade*0.02), r:base.r*(elite?1.6:1), esc:elite?1.2:1,
     dano:DIF.danoBase*danoDif()*(elite?2:1), tipo:k, el, elite, chefe:false, mini:false,
     spr:gerarSprite(u.id+"i"+k+el, base.n, mistura(COR[el],["#d8473b","#8a4fd0","#e0904a"][k],0.35), {olhos:"#fff2a0"}),
     status:null, lenta:0, congela:0, cego:0, dot:0, dotT:0, reacCd:0, vulner:0, flash:0, marca:0});
@@ -561,12 +563,15 @@ function animarRetratos(){ if(animRet) return; const passo=t=>{ const cs=[...doc
     const f=Math.floor(t/1000*6); for(const c of cs){ const q=c._quadros[f%c._quadros.length], g=c.getContext("2d"); g.clearRect(0,0,c.width,c.height); g.drawImage(q,0,0); }
     animRet=requestAnimationFrame(passo); }; animRet=requestAnimationFrame(passo); }
 // quadros do monstro parado, em alta resolução, para a tela de escolha; sem folha de animação, usa a imagem fixa
-function quadrosForma(id,e,ramo,rar){ const fa=folhaAnimMonstro(id,e,ramo,rar); if(!fa) return null; const f=fatiarFolha(fa.img,6,3); if(!f.valida||!f.linhas[0].qs.length) return null;
-  // escala 1: um pixel da arte = um pixel do quadro; a tela amplia em blocos nítidos (sem borrar)
-  const alvo=Math.round(Math.max(f.corpoW,f.corpoH*correcaoAltura(fa.img)));
-  // recorte justo em volta do corpo (o quadro do jogo tem folga para o efeito do golpe)
-  return f.linhas[0].qs.map((_,i)=>{ const q=quadroAnim(fa.img,0,i,alvo,fa.cor); if(!q) return null; const L=Math.round(alvo*1.12), c=document.createElement("canvas"); c.width=c.height=L;
-    c.getContext("2d").drawImage(q,Math.round((q.width-L)/2),Math.round(q._pe-alvo-(L-alvo)/2),L,L,0,0,L,L); return c; }).filter(Boolean); }
+// retrato animado (linha "parado" da folha): caixa calculada pela união de todos os quadros (nada sai cortado), margem,
+// ampliação inteira pixel a pixel (pixel nítido, sem borrão) e uma sombra macia no chão; os pés ficam na mesma linha em todos os quadros
+function quadrosForma(id,e,ramo,rar){ const fa=folhaAnimMonstro(id,e,ramo,rar); if(!fa) return null; const img=fa.img, fo=fa.cor||img, f=fatiarFolha(img,6,3); if(!f.valida||!f.linhas[0].qs.length) return null;
+  const L=f.linhas[0], ky=correcaoAltura(img); let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+  for(const q of L.qs){ const ax=q.bx-q.ref-L.centro; x0=Math.min(x0,ax); x1=Math.max(x1,ax+q.bw); y0=Math.min(y0,(q.by-L.pe)*ky); y1=Math.max(y1,(q.by+q.bh-L.pe)*ky); }
+  const w=x1-x0, h=y1-y0, lado=Math.max(w,h)*1.22, K=Math.max(2,Math.round(340/lado)), C=Math.round(lado*K), cx=C/2-(x0+w/2)*K, peY=C/2+(h/2)*K-(y1>0?y1*K:0)+C*0.02;
+  return L.qs.map(q=>{ const c=document.createElement("canvas"); c.width=c.height=C; const g=c.getContext("2d");
+    const sg=g.createRadialGradient(C/2,peY,0,C/2,peY,w*K*0.55); sg.addColorStop(0,"rgba(0,0,0,.45)"); sg.addColorStop(1,"rgba(0,0,0,0)"); g.save(); g.translate(0,peY); g.scale(1,0.22); g.translate(0,-peY); g.fillStyle=sg; g.fillRect(0,peY-w*K,C,w*K*2); g.restore();
+    g.imageSmoothingEnabled=false; g.drawImage(fo,q.bx,q.by,q.bw,q.bh,Math.round(cx+(q.bx-q.ref-L.centro)*K),Math.round(peY+(q.by-L.pe)*ky*K),q.bw*K,Math.round(q.bh*ky*K)); return c; }); }
 function quadrosRetrato(id){ return quadrosForma(id,0,null,"comum"); }
 function proximaEscolha(){
   if(filaRamo.length) return escolherRamo(filaRamo.shift());
@@ -1139,7 +1144,7 @@ function texturaBrilho(){ if(TEX_BRILHO) return TEX_BRILHO; const N=TEX_N, c=doc
   TEX_BRILHO=c; return c; }
 // força do terreno natural sobre um piso pintado (o piso já tem a própria textura; areia nele seria só uma mancha cinza)
 const SOLO_NAT_PINTADO={areia:0, grama:0, cinza:0, sombra:0.5, gelo:0.6};
-const ALFA_SOLO={molhado:0.6, queimado:0.42, rachado:0.6, agua:0.8, lama:0.8, fogo:0.95, gelo:0.85, grama:0.72, cinza:0.55, vapor:0.42, sombra:0.72, luz:0.55, eletrico:0.9, vinha:0.88, areia:0.7};
+const ALFA_SOLO={molhado:0.6, queimado:0.42, rachado:0.6, agua:0.8, lama:0.8, fogo:0.95, gelo:0.85, grama:0.72, cinza:0.55, vapor:0.42, sombra:0.32, luz:0.3, eletrico:0.9, vinha:0.88, areia:0.7};
 const cacheSolo=new Map(), SOLO_FOLGA=8;
 // A camada é montada para uma área maior que a tela (folga de 8 células, ancorada numa grade de 8): andar não obriga a refazer.
 // Refaz só quando a âncora muda ou o terreno daquele tipo muda (no máximo ~6 vezes por segundo por tipo).
@@ -1252,7 +1257,7 @@ function artesDoMapa(u){ if(!u) return []; const pre=`arte/reinos/${u.era}/`, or
 // artes em arquivos: arte/manifesto.json lista { "nome usado no código": "caminho do arquivo" }.
 // Na abertura baixa só a interface e as imagens fixas dos monstros (menu e cartas); o resto vem por mapa ou quando for usado.
 if(window.ARTE_MANIFESTO){ const av=document.createElement("div");
-  av.style.cssText="position:fixed;left:50%;bottom:calc(8px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:rgba(18,14,26,.88);color:#f2e7c9;border:1px solid #d6ab4f;padding:5px 12px;font:600 12px Nunito,system-ui,sans-serif;border-radius:4px;pointer-events:none;transition:opacity .4s";
+  av.style.cssText="position:fixed;left:50%;top:calc(8px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:60;background:rgba(18,14,26,.88);color:#f2e7c9;border:1px solid #d6ab4f;padding:5px 12px;font:600 12px Nunito,system-ui,sans-serif;border-radius:4px;pointer-events:none;transition:opacity .4s";
   av.textContent="Carregando artes…"; (document.body||document.documentElement).appendChild(av);
   (async()=>{ try{
       const r=await fetch(window.ARTE_MANIFESTO,{cache:"no-cache"}); MANIFESTO=await r.json();
@@ -2218,7 +2223,8 @@ function versaoHi(c,K){ if(!c||!c._src) return null; K=Math.max(1,Math.min(8,Mat
   g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
   // ampliação "nítida e lisa": primeiro amplia pixel a pixel por um fator inteiro (bordas firmes), depois suaviza até o tamanho final.
   // Só pixel a pixel fica quadriculado; só suave fica borrado.
-  const m=amp>=3? 2 : 1; if(m>=2){ const t=document.createElement("canvas"); t.width=Math.round(s.sw*Math.min(m,4)); t.height=Math.round(s.sh*Math.min(m,4)); const gt=t.getContext("2d"); gt.imageSmoothingEnabled=false;
+  const m=amp>=5? 3 : amp>=1.7? 2 : 1; if(m>=2){   // pixel a pixel primeiro (bordas firmes), depois suave: inimigos ampliados ~2-3x ficavam embaçados
+   const t=document.createElement("canvas"); t.width=Math.round(s.sw*Math.min(m,4)); t.height=Math.round(s.sh*Math.min(m,4)); const gt=t.getContext("2d"); gt.imageSmoothingEnabled=false;
     gt.drawImage(s.img,s.sx,s.sy,s.sw,s.sh,0,0,t.width,t.height); g.drawImage(t,dx,dy,dw,dh); }
   else g.drawImage(s.img,s.sx,s.sy,s.sw,s.sh,dx,dy,dw,dh);
   c.hi=h; c.hiK=K; return h; }
@@ -2571,14 +2577,16 @@ function desenharAbertura(){ const I=J&&J.intro; if(!I) return; const t=I.t, D0=
 // A pressão-alvo cresce dentro de cada mapa e de um mapa para o outro (como no Vampire Survivors).
 function iniciarDiretor(){ J.diretor={mult:1, tick:0, respiro:0, tEvento:rnd(40,55), alvo:20, n:0, vida:1, eventos:0, ameaca:1, tCheia:0}; }
 // ameaça: quem passa muito tempo com a vida cheia apanha mais forte (até +60%); quando a vida cai, volta ao normal
-function ameacaDiretor(){ return J.diretor? J.diretor.ameaca : 1; }
+// primeiro mapa da run: o dano recebido começa em 20% e chega ao normal em 80 s (antes, parado, a equipe caía em ~10 s)
+function inicioSuave(){ return R&&R.profundidade===0&&!R.teste? Math.min(1,0.2+J.t/100) : 1; }
+function ameacaDiretor(){ return (J.diretor? J.diretor.ameaca : 1)*inicioSuave(); }
 // XP: os inimigos extras que o diretor coloca valem proporcionalmente menos, para o ritmo de níveis não disparar
 function fatorXPDiretor(){ const d=J.diretor; return d&&d.mult>1? Math.max(0.55,1/Math.sqrt(d.mult)) : 1; }
 function multDiretor(){ const d=J.diretor; if(!d) return 1; return d.respiro>0? 0.1 : d.mult; }
 function contarTela(){ const P=J.jogador; let n=0, col=0; for(const e of J.inimigos){ if(e.hp<=0) continue; const dx=Math.abs(e.x-P.x), dy=Math.abs(e.y-P.y); if(dx<VW/2&&dy<VH/2){ n++; if(dx<40&&dy<40) col++; } } return [n,col]; }
 function atualizarDiretor(dt){ if(!J.diretor) iniciarDiretor(); const d=J.diretor; d.tick-=dt;
   if(d.tick<=0){ d.tick=0.5; const [n,col]=contarTela(), vida=J.vida/J.vidaMax; d.n=n; d.vida=vida;
-    d.alvo=Math.min(150,24+R.profundidade*16+J.t*0.22);
+    d.alvo=Math.min(150,24+R.profundidade*16+J.t*0.22)*(R.profundidade===0&&!R.teste? Math.min(1,0.4+J.t/60) : 1);   // primeiro mapa: a horda cresce aos poucos
     if(col>22&&vida<0.45&&d.respiro<=0){ d.respiro=3; }                  // afogado: respiro curto
     let m=d.mult; if(n>d.alvo*1.6) m-=0.15; else if(n<d.alvo*0.7&&vida>0.5) m+=0.12; else if(n<d.alvo) m+=0.04; else m-=0.03;
     d.mult=Math.max(0.3,Math.min(2.6,m));
@@ -2607,7 +2615,7 @@ function eventoHorda(){ evento("onda"); const P=J.jogador, prof=R.profundidade, 
     agendar(1.0,()=>{ if(!J||J.fim) return; const P=J.jogador;
       for(let i=0;i<ne+6;i++){ spawnInimigo(i<ne?2:Math.floor(Math.random()*2)); const e=J.inimigos[J.inimigos.length-1], lat=(i-(ne+6)/2)*10;
         e.x=P.x+Math.cos(a)*dist-Math.sin(a)*lat; e.y=P.y+Math.sin(a)*dist+Math.cos(a)*lat; e.surgindo=0;
-        if(i<ne){ e.daOnda=true; if(!e.elite){ e.elite=true; e.max*=6; e.hp=e.max; e.escAlvo=1.35; e.r*=1.3; e.virouElite=0.6; particulas(e.x,e.y,"#ffd34a",8,40); } } } });   /* elites das ondas soltam item com menos frequência */
+        if(i<ne){ e.daOnda=true; if(!e.elite){ e.elite=true; e.max*=6; e.hp=e.max; e.escAlvo=1.2; e.r*=1.3; e.virouElite=0.6; particulas(e.x,e.y,"#ffd34a",8,40); } } } });   /* elites das ondas soltam item com menos frequência */
     return; }
   // emboscada: brotam do chão em volta, cada um anunciado por uma marca
   const n=Math.min(16,Math.round(8*escala)); avisar("Emboscada!","eles brotam do chão em volta de você","#c8b890");
@@ -3343,7 +3351,7 @@ function arteCriatura(e,pose,q){ const u=UNIV[R.universo]; if(!u) return null;
     // recorte inteligente (quadros alinhados pelos pés, sem tremer); o quadro tem o mesmo tamanho de antes (tam)
     const f=fatiarFolha(img,6,rows), L=f.valida&&f.linhas[row]; if(L&&L.qs.length){ const q=quadroAnim(img,row,Math.min(col,L.qs.length-1),tam/1.3,null,rows,1.3); if(q){ q.base=q._pe/q.height; return q; } }
     return celulaArte(img,6,rows,col,row,tam,tam,0.85); }
-  if(e.especial||e.tipo>2||e.clone) return null; const img=folhaU("inimigos"); if(!img) return null; const tam=Math.round(e.tam*1.8), r0=2*e.tipo;
+  if(e.especial||e.tipo>2||e.clone) return null; const img=folhaU("inimigos"); if(!img) return null; const tam=Math.round(e.tam*1.55), r0=2*e.tipo;   // menor que a equipe e menos ampliado (a arte tem 48 px)
   let row=r0, col;
   if(pose==="atk") col=6+(q%2); else if(pose==="anda") col=Math.hypot(e.vx||0,e.vy||0)<3? q%2 : 2+(q%4); else if(pose==="pisca") col=q%2;
   else if(pose==="dor"){ row=r0+1; col=0; } else if(pose==="morte"){ row=r0+1; col=1+Math.min(3,q); } else if(pose==="mania"){ row=r0+1; col=5+(q%3); } else col=q%2;
@@ -3502,7 +3510,7 @@ function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||
   if(z<2&&!e.oculta&&clip>=1) sombraProjetada(spr,x+dx,y+h*0.35+h*(1-(spr.base||1)),w,h,virar,e.chefe||e.mini?1:0.85);
   lg.save(); lg.translate(x+dx,y-z+h*0.35+h*(1-(spr.base||1))); if(e.caido>0) lg.rotate(virar?-1.4:1.4); if(pose==="mania") lg.scale(Math.floor(J.t*5)%2?-1:1,1);
   lg.scale((virar?-1:1)*sx,sy);
-  if(clip<1){ lg.beginPath(); lg.rect(-w/2,-h,w,h*clip); lg.clip(); lg.translate(0,h*(1-clip)); }
+  if(clip<1){ lg.globalAlpha*=clip; lg.translate(0,(1-clip)*3); }
   if(rim&&e.flash<=0){ const a0=lg.globalAlpha; lg.globalAlpha=a0*0.6; lg.drawImage(silhueta(spr,rim),-w/2-1,-h-1,w+2,h+2); lg.globalAlpha=a0; }   // contorno de leitura
   // levou golpe: brilho branco por cima do corpo (mais leve em chefe, que apanha o tempo todo)
   desenharSprite(spr,-w/2,-h,w,h); if(!e.chefe&&!e.mini&&!e.elite&&QUAL>0&&!SIM.ativo){ const a0=lg.globalAlpha; lg.globalAlpha=a0*0.16; lg.drawImage(silhueta(spr,"#140c1c"),-w/2,-h,w,h); lg.globalAlpha=a0; }
@@ -3960,7 +3968,7 @@ function desenhar(dt){
   for(const e of J.inimigos) fila.push({y:e.y+(e.tam||8)*0.63-(e.z||0)*0,f:()=>desenharInimigo(e,ox,oy,P)});
   for(const c of J.crias){ const t=c.gigante?6:3; lg.fillStyle=tom(c.cor,1.2); lg.fillRect(Math.round(c.x-ox)-t/2,Math.round(c.y-oy)-t/2,t,t); lg.fillStyle="#120e1a"; lg.fillRect(Math.round(c.x-ox),Math.round(c.y-oy),1,1); }
   for(const f of J.fantasmas){ lg.globalAlpha=f.vida*3; lg.drawImage(f.spr,Math.round(f.x-ox-f.spr.width/2),Math.round(f.y-oy-f.spr.height/2)); } lg.globalAlpha=1;
-  fila.push({y:P.y+6,f:()=>{ sombra(P.x-ox,P.y-oy+6,13); if(J.invuln>0) lg.globalAlpha=.55; desenharInvocador(P.x-ox,P.y-oy); lg.globalAlpha=1; }});
+  fila.push({y:P.y+6,f:()=>{ sombra(P.x-ox,P.y-oy+6,13); if(J.invuln>0) lg.globalAlpha=Math.floor(J.t*14)%2? .6 : 1; desenharInvocador(P.x-ox,P.y-oy); lg.globalAlpha=1; }});
   R.selos.forEach(s=>{ if(s.mon) fila.push({y:s.y+ALVO_ARTE[est(s)]/2,f:()=>desenharSelo(s,ox,oy,sombra)}); });
   fila.push({y:P.y+3,f:()=>desenharLenda(ox,oy)});
   for(const t of J.totens) fila.push({y:t.y+1,f:()=>desenharTotem(t,ox,oy)});
@@ -4053,59 +4061,84 @@ function desenharTotem(t,ox,oy){ const x=t.x-ox, y=t.y-oy, tm=J.t+(t.x%7), pul=0
   lg.fillStyle="#1a0e08"; lg.fillRect(x-1.4,y-6.2,1,0.8); lg.fillRect(x+0.4,y-6.2,1,0.8); lg.fillRect(x-1,y-4,2,0.6);   // rosto
   lg.strokeStyle="#2a180c"; lg.lineWidth=0.4; lg.beginPath(); lg.moveTo(x-2.2,y-2.5); lg.lineTo(x+2.2,y-2.5); lg.moveTo(x-2.1,y-8.2); lg.lineTo(x+2.1,y-8.2); lg.stroke();
   lg.fillStyle=cor; lg.beginPath(); lg.arc(x,y-13,1.7+0.3*pul,0,Math.PI*2); lg.fill(); lg.fillStyle="#ffffff"; lg.globalAlpha=0.8; lg.beginPath(); lg.arc(x-0.5,y-13.5,0.6,0,Math.PI*2); lg.fill(); lg.globalAlpha=1; lg.lineWidth=1; }
-// Invocador: o herói da capa do jogo (cabelo castanho, armadura de couro, capa clara esvoaçando e espada), desenhado em vetor
-// (nítido em qualquer resolução). A lâmina e a gema do cabo brilham na cor do elemento do primeiro monstro da equipe.
+// Invocador: o herói da tela inicial, visto de costas em 3/4 (como na capa): cabelo castanho arrepiado, cachecol azul-marinho,
+// capa creme com estrela e borda dourada que esvoaça para trás, ombreiras e braçadeiras de bronze, túnica azul-marinho,
+// perneiras e botas de couro e espada longa com guarda dourada (a lâmina brilha na cor do elemento do primeiro monstro).
+// Desenhado em vetor (nítido em qualquer resolução), com passada, respiração, capa ao vento e balanço da espada.
 function desenharInvocador(x,y){
-  const vel=Math.hypot(J.pvx||0,J.pvy||0), anda=Math.min(1,vel/30), t=J.t, fase=t*11;
+  const vel=Math.hypot(J.pvx||0,J.pvy||0), anda=Math.min(1,vel/30), t=J.t, fase=t*10;
   const lado=(J.dir&&J.dir.x<-0.1)? -1 : (J.dir&&J.dir.x>0.1)? 1 : (desenharInvocador.lado||1); desenharInvocador.lado=lado;
   const a0=ativos()[0], el=a0? elementoDe(a0) : (R.pacto&&R.pacto[0]), cor=COR[el]||"#7fe0ff";
-  const pulo=Math.abs(Math.sin(fase))*anda*0.9, resp=Math.sin(t*2.2)*0.22*(1-anda), passo=Math.sin(fase)*anda, vento=Math.sin(t*1.7)*0.6;
-  lg.save(); lg.translate(x,y+6-pulo); lg.scale(lado*1.5,1.5); lg.lineJoin="round"; lg.lineCap="round";
-  const contorno=()=>{ lg.strokeStyle="rgba(20,12,8,.85)"; lg.lineWidth=0.45; lg.stroke(); };
-  const couro="#7a5232", couroEsc="#4e3420", couroCla="#9a6c44", calca="#3a2c26", bota="#2a1c14", pele="#e8c49a", cabelo="#5a3418", cabeloCla="#7a4a24", capa="#efe0bc", capaSom="#a8916a", ouro="#e0b65a";
-  // capa atrás: presa nos ombros, esvoaça para trás (mais ao correr) e ondula com o vento
-  const cx0=-1.6, cy0=-10.4, ab=2.6+anda*3.2+vento*0.6, desce=-0.6+anda*1.6;
-  lg.fillStyle=capaSom; lg.beginPath(); lg.moveTo(cx0+2.6,cy0); lg.quadraticCurveTo(-2.5-ab*0.4,-6,-3.4-ab,desce-0.8); lg.quadraticCurveTo(-1.5-ab*0.55,desce+0.6+Math.sin(t*6)*0.4,0.4-ab*0.15,desce-0.2); lg.quadraticCurveTo(0.6,-5,cx0+2.6,cy0); lg.fill(); contorno();
-  lg.fillStyle=capa; lg.beginPath(); lg.moveTo(cx0+2.2,cy0+0.2); lg.quadraticCurveTo(-2-ab*0.35,-6.4,-3-ab*0.85,desce-1.2); lg.quadraticCurveTo(-1.8-ab*0.45,desce-0.4+Math.sin(t*6+1)*0.3,-0.2-ab*0.1,desce-0.8); lg.quadraticCurveTo(0,-5.5,cx0+2.2,cy0+0.2); lg.fill();
-  // pernas e botas (passada alternada)
-  const pe=(dx,k)=>{ const px=dx+passo*1.4*k, py=-0.2-Math.max(0,-passo*k)*0.8; lg.strokeStyle=calca; lg.lineWidth=1.3; lg.beginPath(); lg.moveTo(dx*0.6,-4.6); lg.lineTo(px,py-1.6); lg.stroke();
-    lg.fillStyle=bota; lg.beginPath(); lg.ellipse(px+0.3,py-0.6,1.1,0.9,0,0,Math.PI*2); lg.fill(); };
-  pe(-0.9,-1); pe(1.1,1);
-  // braço de trás
-  lg.strokeStyle=couroEsc; lg.lineWidth=1.1; lg.beginPath(); lg.moveTo(-1.6,-9.2); lg.lineTo(-2.4-passo*0.8,-5.8); lg.stroke();
-  // tronco: gibão de couro com cinto e fivela
-  const ty=resp; lg.fillStyle=couro; lg.beginPath(); lg.moveTo(-2.3,-10.4+ty); lg.quadraticCurveTo(-2.7,-7,-2.2,-4.2); lg.lineTo(2.2,-4.2); lg.quadraticCurveTo(2.7,-7,2.3,-10.4+ty); lg.closePath(); lg.fill(); contorno();
-  lg.fillStyle=couroCla; lg.beginPath(); lg.moveTo(0.3,-10.2+ty); lg.lineTo(2.1,-10.2+ty); lg.quadraticCurveTo(2.4,-7.4,2,-5); lg.lineTo(0.8,-5); lg.closePath(); lg.fill();
-  lg.fillStyle=couroEsc; lg.fillRect(-2.3,-5.6,4.6,0.9); lg.fillStyle=ouro; lg.fillRect(-0.5,-5.7,1,1.1);
-  lg.strokeStyle=couroEsc; lg.lineWidth=0.35; lg.beginPath(); lg.moveTo(-1,-9.6+ty); lg.lineTo(-1.2,-6); lg.stroke();
-  // fecho da capa no pescoço e a capa caindo do ombro da frente
-  lg.fillStyle=capa; lg.beginPath(); lg.moveTo(-2.4,-10.6+ty); lg.quadraticCurveTo(0,-11.6+ty,2.4,-10.6+ty); lg.quadraticCurveTo(1.2,-9.6+ty,-2.4,-9.8+ty); lg.fill();
-  lg.fillStyle=ouro; lg.beginPath(); lg.arc(1.6,-10.4+ty,0.55,0,Math.PI*2); lg.fill();
-  // cabeça: rosto de perfil, cabelo castanho bagunçado que balança
-  const hy=-12.6+ty; lg.fillStyle=pele; lg.beginPath(); lg.ellipse(0.5,hy,1.75,1.95,0,0,Math.PI*2); lg.fill(); contorno();
-  lg.fillStyle="#2a1810"; lg.beginPath(); lg.ellipse(1.35,hy+0.1,0.28,0.38*((t%3.7)<0.12?0.25:1),0,0,Math.PI*2); lg.fill();
-  const bal=Math.sin(t*3+1)*0.3*(1+anda);
-  lg.fillStyle=cabelo; lg.beginPath(); lg.moveTo(-1.6,hy+0.9); lg.quadraticCurveTo(-2.1,hy-2.2,0.2,hy-2.4); lg.quadraticCurveTo(2.4,hy-2.6,2.3,hy-0.7);
-  lg.lineTo(1.4,hy-1.2); lg.lineTo(0.9,hy-0.4); lg.lineTo(0.2,hy-1.1); lg.lineTo(-0.4,hy+0.2); lg.lineTo(-1.1,hy-0.3); lg.closePath(); lg.fill(); contorno();
-  lg.beginPath(); lg.moveTo(-1.4,hy-1.6); lg.lineTo(-2.9-bal,hy-1.2); lg.lineTo(-1.6,hy-0.6); lg.lineTo(-2.6-bal,hy+0.2); lg.lineTo(-1.3,hy+0.6); lg.fill();
-  lg.fillStyle=cabeloCla; lg.beginPath(); lg.moveTo(-0.6,hy-2.1); lg.quadraticCurveTo(0.8,hy-2.7,1.8,hy-1.6); lg.lineTo(1.1,hy-1.6); lg.closePath(); lg.fill();
-  // espada na mão da frente: para baixo e à frente andando, erguida devagar parado
-  const hx=2.3+passo*0.5, hyM=-6.6+ty, ang=anda>0.2? 0.55 : 0.25+Math.sin(t*1.4)*0.05, L=8.2, ca=Math.cos(ang), sa=Math.sin(ang);
-  lg.strokeStyle=couroEsc; lg.lineWidth=1.1; lg.beginPath(); lg.moveTo(1.7,-9.2+ty); lg.lineTo(hx,hyM); lg.stroke();
+  const passo=Math.sin(fase)*anda, pulo=Math.abs(Math.cos(fase))*anda*0.7, resp=Math.sin(t*2.1)*0.25*(1-anda), vento=Math.sin(t*1.6)+0.5*Math.sin(t*2.9+1);
+  const navy="#232a4e", navyC="#353f6e", creme="#efe2c2", cremeS="#c9b48c", ouro="#e3b65a", ouroE="#8f6a24", bronze="#b07a3a", bronzeE="#6e4a22", couro="#6b4426", couroE="#432a16", cabelo="#5a3418", cabeloC="#8a5428", pele="#e4b98e";
+  lg.save(); lg.translate(x,y+6-pulo); lg.scale(lado*1.18,1.18); lg.lineJoin="round"; lg.lineCap="round";
+  const linha=(w,c)=>{ lg.lineWidth=w; lg.strokeStyle=c; lg.stroke(); }, contorno=()=>linha(0.42,"rgba(18,10,6,.9)");
+  // ---- capa (atrás de tudo): presa nos ombros, cai e esvoaça para trás; mais aberta ao correr
+  const ab=3.4+anda*4.4+vento*0.9, fim=-0.6+anda*1.4, ond=t*(5+anda*5);
+  const capa=(dx,dy)=>{ lg.beginPath(); lg.moveTo(-2.6+dx,-17.6+dy);
+    lg.bezierCurveTo(-4.5-ab*0.3,-13,-5.2-ab*0.75,-7,-5.6-ab+dx,fim+Math.sin(ond)*0.6);
+    lg.lineTo(-4-ab*0.8,fim+0.9+Math.sin(ond+1.2)*0.5); lg.lineTo(-2.6-ab*0.6,fim+0.2+Math.sin(ond+2.2)*0.5); lg.lineTo(-1.2-ab*0.4,fim+1+Math.sin(ond+3)*0.4); lg.lineTo(0.2-ab*0.2,fim+0.3);
+    lg.bezierCurveTo(0.6,-6,1.6,-12,2.4+dx,-17.6+dy); lg.closePath(); };
+  lg.fillStyle=cremeS; capa(-0.3,0.3); lg.fill();
+  const gc=lg.createLinearGradient(-6,0,2,0); gc.addColorStop(0,cremeS); gc.addColorStop(0.55,creme); gc.addColorStop(1,"#fff6dc"); lg.fillStyle=gc; capa(0,0); lg.fill(); contorno();
+  // borda dourada e estrela bordada na capa
+  lg.beginPath(); lg.moveTo(-5.6-ab,fim+Math.sin(ond)*0.6); lg.lineTo(-4-ab*0.8,fim+0.9+Math.sin(ond+1.2)*0.5); lg.lineTo(-2.6-ab*0.6,fim+0.2+Math.sin(ond+2.2)*0.5); lg.lineTo(-1.2-ab*0.4,fim+1+Math.sin(ond+3)*0.4); lg.lineTo(0.2-ab*0.2,fim+0.3); linha(0.7,ouro);
+  lg.save(); lg.translate(-3.4-ab*0.55,-6.2); lg.rotate(-0.2-ab*0.03); lg.fillStyle=ouro; lg.beginPath(); for(let i=0;i<8;i++){ const r=i%2?0.7:1.9, an=i/8*Math.PI*2-Math.PI/2; lg.lineTo(Math.cos(an)*r,Math.sin(an)*r); } lg.closePath(); lg.fill(); lg.restore();
+  // ---- pernas: calça de couro com faixas e botas (passada alternada, joelho dobra)
+  const perna=(px,k)=>{ const sw=passo*k, pe=px+sw*2.2, ly=-Math.max(0,-sw)*1.1, jx=px+sw*1.2;
+    lg.beginPath(); lg.moveTo(px-0.95,-9.6); lg.lineTo(jx-1,-5); lg.lineTo(pe-0.9,ly-2.4); lg.lineTo(pe+0.9,ly-2.4); lg.lineTo(jx+1,-5); lg.lineTo(px+0.95,-9.6); lg.closePath(); lg.fillStyle=k>0?couro:couroE; lg.fill(); contorno();
+    lg.strokeStyle=couroE; lg.lineWidth=0.3; for(const yy of [-8,-6.6,-4]){ lg.beginPath(); lg.moveTo(px-0.9+(yy+9.6)*sw*0.25,yy); lg.lineTo(px+0.9+(yy+9.6)*sw*0.25,yy+0.4); lg.stroke(); }
+    lg.beginPath(); lg.moveTo(pe-1.05,ly-2.8); lg.lineTo(pe+1.05,ly-2.8); lg.lineTo(pe+1.25+0.9,ly-0.2); lg.lineTo(pe-1.05,ly-0.2); lg.closePath(); lg.fillStyle="#3a2414"; lg.fill(); contorno();
+    lg.fillStyle="#8a6a44"; lg.fillRect(pe-1.05,ly-2.9,2.1,0.55); };
+  perna(-1.1,-1); perna(1.1,1);
+  // ---- túnica: saia azul-marinho com painel creme e barra dourada
+  const sk=passo*0.5;
+  lg.beginPath(); lg.moveTo(-2.7,-11.2); lg.lineTo(-3.3+sk,-6.4); lg.lineTo(3.2+sk,-6.4); lg.lineTo(2.7,-11.2); lg.closePath(); lg.fillStyle=navy; lg.fill(); contorno();
+  lg.beginPath(); lg.moveTo(0.2,-10.8); lg.lineTo(0.6+sk,-6.6); lg.lineTo(2.1+sk,-6.6); lg.lineTo(1.6,-10.8); lg.closePath(); lg.fillStyle=creme; lg.fill();
+  lg.beginPath(); lg.moveTo(-3.3+sk,-6.5); lg.lineTo(3.2+sk,-6.5); linha(0.5,ouro);
+  // ---- tronco: gibão azul com cinto de couro e fivela
+  const ty=resp;
+  lg.beginPath(); lg.moveTo(-2.9,-17.4+ty); lg.quadraticCurveTo(-3.2,-14,-2.6,-11); lg.lineTo(2.6,-11); lg.quadraticCurveTo(3.2,-14,2.9,-17.4+ty); lg.closePath();
+  const gt=lg.createLinearGradient(-3,0,3,0); gt.addColorStop(0,navy); gt.addColorStop(0.6,navyC); gt.addColorStop(1,navy); lg.fillStyle=gt; lg.fill(); contorno();
+  lg.fillStyle=couroE; lg.fillRect(-2.8,-11.9,5.6,1); lg.fillStyle=ouro; lg.fillRect(-0.55,-12,1.1,1.2);
+  lg.strokeStyle=bronzeE; lg.lineWidth=0.35; lg.beginPath(); lg.moveTo(-1.6,-16.5+ty); lg.lineTo(-1.9,-12.4); lg.moveTo(1.6,-16.5+ty); lg.lineTo(1.9,-12.4); lg.stroke();
+  // ---- braço de trás (bronze), balança com a passada
+  const bt=-passo*1.6; lg.beginPath(); lg.moveTo(-2.7,-16.6+ty); lg.lineTo(-3.4+bt*0.4,-13.4); lg.lineTo(-3.2+bt,-10.6); linha(1.5,bronzeE); lg.beginPath(); lg.arc(-3.2+bt,-10.4,0.7,0,Math.PI*2); lg.fillStyle=pele; lg.fill();
+  // ---- cachecol azul-marinho caindo nas costas
+  lg.beginPath(); lg.moveTo(-2.4,-18.2+ty); lg.quadraticCurveTo(0,-19.4+ty,2.4,-18.2+ty); lg.quadraticCurveTo(1.4,-16+ty,0,-15.6+ty); lg.quadraticCurveTo(-1.6,-16+ty,-2.4,-18.2+ty); lg.fillStyle=navy; lg.fill(); contorno();
+  lg.beginPath(); lg.moveTo(-0.6,-16+ty); lg.quadraticCurveTo(-1.6-ab*0.25,-14.5,-2.2-ab*0.45,-13.4+Math.sin(ond+0.5)*0.4); linha(0.9,navyC);
+  // ---- cabeça de costas: nuca, orelha e bochecha do lado para onde olha, cabelo arrepiado que balança
+  const hy=-20.6+ty, bal=Math.sin(t*3)*0.25*(1+anda*2);
+  lg.beginPath(); lg.ellipse(0.2,hy,2.1,2.3,0,0,Math.PI*2); lg.fillStyle=pele; lg.fill(); contorno();
+  lg.beginPath(); lg.ellipse(1.9,hy+0.3,0.45,0.7,0.2,0,Math.PI*2); lg.fillStyle="#d4a678"; lg.fill();
+  // cabelo: massa arredondada com mechas desiguais puxadas para trás pelo vento (não uma coroa)
+  lg.beginPath(); lg.moveTo(1.9,hy+0.4); lg.quadraticCurveTo(2.5,hy-1.6,1.6,hy-2.9);
+  lg.quadraticCurveTo(1.1,hy-4.1,0.1,hy-3.7+bal*0.3); lg.quadraticCurveTo(-0.6,hy-4.6,-1.4,hy-3.6);
+  lg.quadraticCurveTo(-2.6-bal,hy-4,-3.1-bal,hy-2.6); lg.quadraticCurveTo(-2.4,hy-2.4,-2.6,hy-1.9);
+  lg.quadraticCurveTo(-3.6-bal,hy-1.4,-3.5-bal*1.2,hy-0.2); lg.quadraticCurveTo(-2.7,hy-0.5,-2.4,hy+0.2);
+  lg.quadraticCurveTo(-2.9-bal,hy+0.8,-2.6-bal,hy+1.6); lg.quadraticCurveTo(-1.4,hy+1.3,-0.4,hy+1.6); lg.quadraticCurveTo(0.8,hy+1.2,1.2,hy+0.4); lg.closePath();
+  const gh=lg.createLinearGradient(0,hy-4,0,hy+1.6); gh.addColorStop(0,cabeloC); gh.addColorStop(1,cabelo); lg.fillStyle=gh; lg.fill(); contorno();
+  lg.beginPath(); lg.moveTo(-0.4,hy-3.2); lg.quadraticCurveTo(-1.4,hy-2.2,-2.4,hy-1.6); lg.moveTo(0.8,hy-2.6); lg.quadraticCurveTo(0,hy-1.2,-1.4,hy-0.4); linha(0.3,"#a8743a");
+  // ---- ombreiras douradas
+  const ombro=(ox,oy,r)=>{ lg.beginPath(); lg.ellipse(ox,oy,r,r*0.75,0,0,Math.PI*2); const go=lg.createRadialGradient(ox-r*0.3,oy-r*0.4,0.1,ox,oy,r); go.addColorStop(0,"#ffe4a0"); go.addColorStop(0.6,ouro); go.addColorStop(1,ouroE); lg.fillStyle=go; lg.fill(); contorno(); };
+  ombro(-2.7,-17.5+ty,1.5); ombro(2.7,-17.4+ty,1.6);
+  // ---- braço da frente (bronze) com a espada longa, ponta para baixo e para a frente; parado, levanta um pouco
+  const hx=3.4+passo*0.6, hyM=-12.2+ty, ang=anda>0.2? 0.95 : 0.7+Math.sin(t*1.3)*0.05, L=12, ca=Math.cos(ang), sa=Math.sin(ang);
+  lg.beginPath(); lg.moveTo(2.8,-16.6+ty); lg.lineTo(3.6,-14.2+ty); lg.lineTo(hx,hyM); linha(1.6,bronze); lg.beginPath(); lg.moveTo(3.3,-14.6+ty); lg.lineTo(hx,hyM); linha(0.5,"#e0a860");
   lg.save(); lg.translate(hx,hyM); lg.rotate(ang);
-  lg.strokeStyle="#3a2618"; lg.lineWidth=0.9; lg.beginPath(); lg.moveTo(-1.6,0); lg.lineTo(0,0); lg.stroke();                 // cabo
-  lg.fillStyle=cor; lg.beginPath(); lg.arc(-1.9,0,0.55,0,Math.PI*2); lg.fill();                                                    // gema no pomo
-  lg.strokeStyle=ouro; lg.lineWidth=0.7; lg.beginPath(); lg.moveTo(0.2,-1.3); lg.lineTo(0.2,1.3); lg.stroke();                     // guarda
-  const lam=lg.createLinearGradient(0,-0.7,0,0.7); lam.addColorStop(0,"#ffffff"); lam.addColorStop(0.5,"#c8d4e0"); lam.addColorStop(1,"#7a8898");
-  lg.fillStyle=lam; lg.beginPath(); lg.moveTo(0.4,-0.6); lg.lineTo(L-1.1,-0.5); lg.lineTo(L,0); lg.lineTo(L-1.1,0.5); lg.lineTo(0.4,0.6); lg.closePath(); lg.fill(); lg.strokeStyle="rgba(20,12,8,.7)"; lg.lineWidth=0.3; lg.stroke();
-  // brilho do elemento correndo pela lâmina
-  const brilho=(t*0.8)%1; lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.35+0.25*Math.sin(t*4); lg.strokeStyle=cor; lg.lineWidth=1.1; lg.beginPath(); lg.moveTo(0.6,0); lg.lineTo(L-0.6,0); lg.stroke();
-  lg.globalAlpha=0.9*Math.sin(brilho*Math.PI); lg.fillStyle="#ffffff"; lg.beginPath(); lg.arc(0.6+(L-1.2)*brilho,-0.15,0.45,0,Math.PI*2); lg.fill();
-  lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; lg.restore();
-  lg.fillStyle=pele; lg.beginPath(); lg.arc(hx,hyM,0.7,0,Math.PI*2); lg.fill();                                                    // mão
+  lg.beginPath(); lg.moveTo(-2.2,0); lg.lineTo(0,0); linha(1,"#3a2414");                                                   // cabo
+  lg.beginPath(); lg.arc(-2.5,0,0.65,0,Math.PI*2); lg.fillStyle=cor; lg.fill(); contorno();                                 // pomo com gema do elemento
+  lg.beginPath(); lg.moveTo(0.3,-1.7); lg.quadraticCurveTo(0.8,0,0.3,1.7); linha(0.9,ouro);                               // guarda
+  const lam=lg.createLinearGradient(0,-0.7,0,0.7); lam.addColorStop(0,"#ffffff"); lam.addColorStop(0.5,"#cdd6e2"); lam.addColorStop(1,"#7a8898");
+  lg.beginPath(); lg.moveTo(0.6,-0.65); lg.lineTo(L-1.4,-0.55); lg.lineTo(L,0); lg.lineTo(L-1.4,0.55); lg.lineTo(0.6,0.65); lg.closePath(); lg.fillStyle=lam; lg.fill(); lg.lineWidth=0.3; lg.strokeStyle="rgba(18,10,6,.8)"; lg.stroke();
+  lg.beginPath(); lg.moveTo(1,0); lg.lineTo(L-1.6,0); linha(0.25,"rgba(80,90,110,.8)");
+  const br=(t*0.7)%1; lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.3+0.2*Math.sin(t*4); lg.beginPath(); lg.moveTo(1,0); lg.lineTo(L-0.8,0); linha(1.2,cor);
+  lg.globalAlpha=0.9*Math.sin(br*Math.PI); lg.fillStyle="#ffffff"; lg.beginPath(); lg.arc(1+(L-2)*br,-0.2,0.5,0,Math.PI*2); lg.fill(); lg.globalAlpha=1; lg.globalCompositeOperation="source-over";
+  lg.restore();
+  lg.beginPath(); lg.arc(hx,hyM,0.85,0,Math.PI*2); lg.fillStyle=bronzeE; lg.fill();                                         // manopla
   // luz do elemento na ponta da espada
-  const px=hx+ca*L, py=hyM+sa*L, pul=0.5+0.5*Math.sin(t*4); lg.globalCompositeOperation="lighter"; const [r1,g1,b1]=hexRgb(cor), gg=lg.createRadialGradient(px,py,0,px,py,4+pul);
-  gg.addColorStop(0,`rgba(${r1},${g1},${b1},${0.45+0.2*pul})`); gg.addColorStop(1,`rgba(${r1},${g1},${b1},0)`); lg.fillStyle=gg; lg.fillRect(px-6,py-6,12,12); lg.globalCompositeOperation="source-over";
+  const px=hx+ca*L, py=hyM+sa*L, pul=0.5+0.5*Math.sin(t*4); lg.globalCompositeOperation="lighter"; const [r1,g1,b1]=hexRgb(cor), gg=lg.createRadialGradient(px,py,0,px,py,3.5+pul);
+  gg.addColorStop(0,`rgba(${r1},${g1},${b1},${0.45+0.2*pul})`); gg.addColorStop(1,`rgba(${r1},${g1},${b1},0)`); lg.fillStyle=gg; lg.fillRect(px-5,py-5,10,10); lg.globalCompositeOperation="source-over";
   lg.restore(); lg.lineWidth=1; lg.lineCap="butt"; lg.lineJoin="miter"; }
 let SOBRE=null;
 function sobreposicao(cor,aLuz,aVin){ const k=cor+"|"+aLuz+"|"+aVin+"|"+W+"x"+H; if(SOBRE&&SOBRE.k===k) return SOBRE.c;

@@ -212,7 +212,7 @@ function morrer(e){
   R.abates++; diaria("abates"); if(R.ancestral&&R.ancestral.estado==="chocando") R.ancestral.prog+=D.ancestral_regras.por_abate_seg; if(R.st.primeiroAbate==null) R.st.primeiroAbate=J.t; J.combo++; J.comboT=D.combo.janela_seg; J.comboMax=Math.max(J.comboMax,J.combo);
   J.ult=Math.min(100,J.ult+(e.chefe?25:e.mini?10:e.elite?2:0.07)*(1+Math.min(1,J.combo/200))*(1+MOD("despertar")));
   const cor=COR[e.el]; particulas(e.x,e.y,cor,e.chefe?60:e.elite?22:9,e.chefe?150:90,e.elite?2:1);
-  if(e.elite){ tremor(e.chefe?10:4); parar(e.chefe?0.2:0.05); }
+  if(e.elite){ tremor(e.chefe?10:4); parar(e.chefe?0.2:0.05); rajada(e.x,e.y,e.chefe?80:35,e.chefe?2:1); }
   const val=(e.chefe?40:e.mini?15:e.elite?8:1.6*(1+(e.tipo===2?1:0)))*(1+0.12*R.profundidade)*(e.xpF||1);   // inimigo comum vale mais: a horda é menor   // xpF: inimigos extras do diretor valem menos
   const nG=Math.min(6,Math.ceil(val/3)); for(let i=0;i<nG;i++){ const a=Math.random()*Math.PI*2; J.gemas.push({x:e.x,y:e.y,vx:Math.cos(a)*rnd(20,50),vy:Math.sin(a)*rnd(20,50),v:val/nG,cor}); }
   if(e.marca>0){ anel(e.x,e.y,24,"#c070ff",.35); emArea(e.x,e.y,24,o=>danoSimples(o,e.marca)); }

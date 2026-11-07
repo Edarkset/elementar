@@ -241,6 +241,13 @@ function tufoInfo(cx,cy){ const C=J.cena, t=soloEm(cx,cy), h=hash2(cx,cy,41), d=
     case "gelo": lim=d*0.7; break; case "fogo": case "cinza": lim=Math.max(d,0.45); break; case "lama": lim=d*0.5; break;
     case "agua": lim=C.veg==="junco"||C.veg==="alga"? Math.max(d,0.3) : d*0.3; break; case "eletrico": lim=d*0.3; break; default: lim=d; }
   if(h>=lim) return null; if(C.u.estrutura&&abismoEm(cx*CEL+4,cy*CEL+4,0)) return null; return t; }
+// onda de choque no ambiente: dobra a grama para fora, empurra objetos soltos e levanta poeira (golpes em área, mortes de elite,
+// chefes e Despertar)
+function rajada(x,y,R,forca){ const C=J&&J.cena; if(!C||SIM.ativo) return; const f=forca||1;
+  for(let cy=Math.floor((y-R)/CEL);cy<=Math.floor((y+R)/CEL);cy++) for(let cx=Math.floor((x-R)/CEL);cx<=Math.floor((x+R)/CEL);cx++){ const bx=cx*CEL+4, by=cy*CEL+4, dx=bx-x, dy=by-y, d=Math.hypot(dx,dy)||1; if(d>R) continue;
+    if(!tufoInfo(cx,cy)) continue; const k=cx+","+cy; let st=C.tufos.get(k); if(!st){ st={bx:0,by:0,vx:0,vy:0}; C.tufos.set(k,st); } const q=(1-d/R)*f*60; st.vx+=dx/d*q; st.vy+=dy/d*q; }
+  for(const p of C.lista){ if(p.morto||p.mat.fixo) continue; const dx=p.x-x, dy=p.y-y, d=Math.hypot(dx,dy)||1; if(d>R) continue; const q=(1-d/R)*f*55/Math.max(1,(p.m||10)/10); /* objeto leve voa longe, pesado mal se mexe */ p.vx=(p.vx||0)+dx/d*q; p.vy=(p.vy||0)+dy/d*q; }
+  if(QUAL>0) for(let i=0;i<Math.round(4*f);i++){ const a=Math.random()*6.28; particulaAr("poeira",x+Math.cos(a)*R*0.6,y+Math.sin(a)*R*0.5,1,Math.cos(a)*20,Math.sin(a)*12); } }
 function tocarTufos(x,y,r,vx,vy,dt,horda){ const C=J.cena, V=VEG[C.veg], R=r+4, sp=Math.hypot(vx,vy);
   const cx0=Math.floor((x-R)/CEL), cx1=Math.floor((x+R)/CEL), cy0=Math.floor((y-R)/CEL), cy1=Math.floor((y+R+3)/CEL);
   for(let cy=cy0;cy<=cy1;cy++) for(let cx=cx0;cx<=cx1;cx++){ const t=tufoInfo(cx,cy); if(!t||t==="cinza") continue;
@@ -265,7 +272,10 @@ function atualizarTufos(dt){ const C=J.cena, V=VEG[C.veg], P=J.jogador; let h=dt
 
 // ---------------------------------------------------------------- pegadas e ondas na água
 function rastroDe(o,x,y,dist,r){ const C=J.cena; o._pd=(o._pd||0)+dist; if(o._pd<5) return; o._pd=0;
-  const t=soloEm(Math.floor(x/CEL),Math.floor(y/CEL));
+  const t=soloEm(Math.floor(x/CEL),Math.floor(y/CEL)), antes=o._soloAnt; o._soloAnt=t;
+  // entrou na água: respingo de gotas; passos no chão seco levantam um pouco de poeira
+  if((t==="agua"||t==="eletrico")&&antes&&antes!=="agua"&&antes!=="eletrico"&&!SIM.ativo){ particulas(x,y,"#cfeaff",6,55); for(let i=0;i<3;i++) C.ondas.push({x:x+rnd(-3,3),y:y+2,r:1+i*2,vida:0.9}); }
+  if((t==="chao"||t==="areia"||t==="rachado"||t==="cinza")&&!SIM.ativo&&QUAL>0&&dist>0.6&&Math.random()<0.5) particulaAr("poeira",x+rnd(-1.5,1.5),y+r*0.5,0.5,rnd(-6,6),rnd(-3,3));
   if(t==="agua"||t==="eletrico"){ if(C.ondas.length<80) C.ondas.push({x,y:y+2,r:1,vida:1}); return; }
   if(t==="molhado"&&C.ondas.length<80&&Math.random()<0.4) C.ondas.push({x,y:y+2,r:0.6,vida:0.6});
   const cor=t==="molhado"?"#16202e": t==="queimado"?"#0e0a08": t==="lama"?"#3a2818": t==="areia"?tom(COR_SOLO.areia[0],.75): t==="cinza"?"#2a2830": (t==="gelo"&&frio())?"#9ab8d0": t==="grama"||t==="vinha"? null : null;

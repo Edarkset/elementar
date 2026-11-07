@@ -128,7 +128,7 @@ function vfxCorte(s,el,r){ const K=VFX_K; const alvo=maisProximo(s,r+20), ang=al
     lg.globalCompositeOperation="source-over"; lg.lineCap="butt"; }});
   for(let i=0;i<Math.round(4*K);i++){ const a=ang+rnd(-1,1); particulasEl(s.x+Math.cos(a)*r*0.8,s.y+Math.sin(a)*r*0.8,el,1,40*K); }
   if(K>1.6) luzFlash(s.x,s.y,v.c2,r*1.2,0.18); }
-function vfxOnda(s,el,r){ const v=vEl(el), x0=s.x, y0=s.y, K=VFX_K;
+function vfxOnda(s,el,r){ const v=vEl(el), x0=s.x, y0=s.y, K=VFX_K; rajada(x0,y0,r*1.2,0.5*K);
   vfx({max:.35,camada:"chao",desenhar(ox,oy,q){ lg.globalAlpha=(1-q)*0.8; lg.strokeStyle=v.c2; lg.lineWidth=2*K; lg.beginPath(); lg.ellipse(x0-ox,y0-oy,r*q,r*q*0.8,0,0,Math.PI*2); lg.stroke();
     if(K>1.5){ lg.globalCompositeOperation="lighter"; lg.globalAlpha=(1-q)*0.25*(K-1); lg.fillStyle=v.c2; lg.beginPath(); lg.ellipse(x0-ox,y0-oy,r*q,r*q*0.8,0,0,Math.PI*2); lg.fill(); lg.globalCompositeOperation="source-over"; }
     lg.globalAlpha=(1-q)*0.4; lg.strokeStyle=v.c1; lg.lineWidth=1; lg.beginPath(); lg.ellipse(x0-ox,y0-oy,r*q*0.7,r*q*0.56,0,0,Math.PI*2); lg.stroke(); }});

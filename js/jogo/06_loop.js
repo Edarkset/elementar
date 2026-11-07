@@ -16,7 +16,7 @@ $("btnUlt").onclick=()=>usarDespertar(); $("btnComb").onclick=()=>usarCombinado(
 $("btnPausa").onclick=()=>{ if(!pausado) pausar(); };
 function esquivar(){ if(!J||pausado||J.dashCd>0) return; J.usouEsquiva=true; J.dashCd=D.esquiva.recarga_seg; J.dashT=0.15; J.invuln=D.esquiva.invulneravel_seg; particulas(J.jogador.x,J.jogador.y,"#9fd6d0",8,50); }
 function usarDespertar(){
-  if(!J||J.ult<100||pausado) return; J.ult=0; J.desp=D.despertar.duracao_seg; R.st.despertares++; ativos().forEach(s=>s.tmpRamo=null);
+  if(!J||J.ult<100||pausado) return; J.ult=0; J.desp=D.despertar.duracao_seg; rajada(J.jogador.x,J.jogador.y,90,2.5); R.st.despertares++; ativos().forEach(s=>s.tmpRamo=null);
   FONTE="despertar"; const els=[...new Set(ativos().map(elementoDe))], dano=ativos().reduce((t,s)=>t+atrib(s).dano,0)*2.5;
   for(const e of J.inimigos){ if(Math.abs(e.x-J.jogador.x)<VW/2+10&&Math.abs(e.y-J.jogador.y)<VH/2+10) els.forEach(el=>ferir(e,dano/els.length,el)); }
   ativos().forEach(s=>efeitoEvolucao(s)); calcularSinergia(); desenharEquipe();

@@ -65,5 +65,11 @@ Hoje o jogo anima essas variações trocando as cores da animação comum. Onde 
 
 ## 3. Artes que o código não usa
 
-Não pesam mais (só são baixadas se forem pedidas), mas podem ser apagadas ou ganhar uso:
-`arte/itens/*` (34), `arte/lendarios/*__eclosao` (8) e 20 da pasta `arte/ui/` (`ui__barra_chefe`, `ui__barras`, `ui__botao_perigo`, `ui__camada_*`, `ui__cartas`, `ui__classes`, `ui__derrota`, `ui__elementos`, `ui__emblema`, `ui__faixa`, `ui__itens`, `ui__linhagens`, `ui__livro`, `ui__paineis`, `ui__portais`, `ui__refugio`, `ui__selos`, `ui__vitoria`).
+Agora em uso: as camadas da capa (`ui__camada_ceu`, `ui__camada_criaturas`, `ui__camada_frente`) viraram o menu em camadas com movimento; `ui__derrota`, `ui__vitoria` e `ui__refugio` são o fundo do fim de run e do Santuário.
+
+Sem uso por defeito da arte:
+- `arte/itens/*` (34): só marcações, sem desenho. Gerar os ícones de relíquia de cada reino (64 x 64, fundo transparente).
+- `arte/lendarios/*__eclosao` (8): achatadas na conversão (1536x1024 virou 384x64). Reconverter; o jogo pode usar na cena do ovo chocando.
+
+Ainda sem uso no código (arte boa, falta tela que use; não pesam, só são baixadas se pedidas):
+`ui__barra_chefe`, `ui__barras`, `ui__botao_perigo`, `ui__cartas`, `ui__classes`, `ui__elementos`, `ui__emblema`, `ui__faixa`, `ui__itens`, `ui__linhagens`, `ui__livro`, `ui__paineis`, `ui__portais`, `ui__selos`. Os ícones pequenos (`classes`, `elementos`, `linhagens`, `itens`) também foram achatados na conversão (64 px de altura para 8 ícones) e precisam ser reconvertidos antes de usar.

@@ -244,7 +244,7 @@ function calcularSinergia(){
 }
 // ajuste fino por classe, a partir de 40 partidas simuladas: assassino, xamã, caçador e invocador chegavam ~2 mapas
 // menos fundo que guerreiro, guardião e místico (ver docs/EQUILIBRIO_SIMULACOES.md)
-const AJUSTE_CLASSE={assassino:1.2, xama:1.12, cacador:1.1, invocador:1.1, mago:1, guerreiro:0.95, guardiao:0.95, mistico:0.96};
+const AJUSTE_CLASSE={assassino:1.3, xama:1.2, cacador:1.12, invocador:1.08, mago:0.98, guerreiro:1.04, guardiao:0.93, mistico:0.96};
 function atrib(s){
   const l=L(s), b=D.classes[l.classe].base, e=est(s), eb=estBase(s);
   const md=MULT[e]*(1+DIF.nivelAtrib*Math.max(0,s.nivel-NIV[eb]));
@@ -607,7 +607,7 @@ function abrirNivel(){
   const ct=cartaTalisma(); if(ct) cartas.push(ct); const cl=cartaLenda(); if(cl) cartas.push(cl);
   if(cartas.some(c=>c.raridade==="lendario")) som("ding");
   // ritmo: em nível ímpar sem carta especial, a melhor carta entra sozinha (metade das interrupções; a força da equipe é a mesma)
-  const RANK={comum:0,incomum:1,raro:2,epico:3,lendario:4}, especial=cartas.some(c=>c.classe==="dourada"||RANK[c.raridade]>=3);
+  const RANK={comum:0,incomum:1,raro:2,epico:3,lendario:4}, especial=cartas.length>sorteadas.length||cartas.some(c=>c.classe==="dourada"||c.raridade==="lendario");
   if(J.nivel%2===1&&!especial&&cartas.length&&!(META.escolhaManual)){ const c=cartas.slice().sort((a,b)=>(RANK[b.raridade]||0)-(RANK[a.raridade]||0))[0];
     if(!SIM.ativo) texto(J.jogador.x,J.jogador.y-30,`Nível ${J.nivel}: ${c.titulo}`,"#ffe6a6",13); c.acao(); return; }
   mostrarCartas(`Nível ${J.nivel}`, "Escolha uma carta.", cartas, {revelar:true});

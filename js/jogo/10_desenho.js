@@ -178,31 +178,22 @@ function desenharTotem(t,ox,oy){ const x=t.x-ox, y=t.y-oy, tm=J.t+(t.x%7), pul=0
 // dourado e espada curta com a gema do elemento. Olha para o lado em que anda (espelhado), anda com as pernas alternando e
 // o corpo balançando, respira parado e pisca de vez em quando. Antes era um desenho vetorial de costas, difícil de ler.
 const HEROI={
-  // contorno marrom-escuro (mais suave que preto), cabelo com 4 tons e reflexo, olhos com íris azul e brilho, cachecol vermelho,
-  // túnica creme com cinto dourado, capa azul por trás dos ombros, calça escura e botas de couro
-  pal:{o:"#2b1a24",H:"#7a4222",h:"#552c16",j:"#a8622c",y:"#dc9a52",S:"#fbd8b6",s:"#e8ad8c",r:"#f2a0a0",E:"#2a1f3a",I:"#4a86e8",w:"#ffffff",
-    N:"#d0463c",n:"#93302a",m:"#f07060",C:"#2f4c8e",c:"#1f3468",k:"#4a70b8",T:"#f1e4c4",t:"#cbb68e",G:"#f4c85c",g:"#b0802e",P:"#3c3256",p:"#2a2240",O:"#86532a",q:"#4e2e16",M:"#f2f7fd",l:"#a8b6c8"},
-  cab:["..........oo..........",".........ojyo.........","......oooojjHoooo.....",".....oHHjjyyjjHHHo....","....oHjjyyjjjjjHHHo...","...oHHjjjHHHHHjjHHHo..",
-    "...oHHHHHHHHHHHHHHHo..","...oHHhSHHHHHSHHhHHo..","...oHhSSSSSSSSSSShHo..","..ohhSwEESSSSSwEESho..","..ohSSEIESSSSSEIESSo..","...oSSEEESSSSSEEESo...",
-    "...oSrrSSSSoSSSrrSo...","....ooSSSSSSSSSSoo....","......ooooooooooo....."],
-  corpo:[".....oNNmmNNNNNNo.....","...ookNNNNNNNNnnCoo...","..okCCoTTTNNTTTTokCo..","..oCCoSoTTNnTTToSoCco.","..oCCoSoTGGGGGToSoCco.",
-    "..okCooTTTTgTTTToocco.","..oCCcotTTTTTTtocCcco.","...oCcootttttttoocco..","....oooooooooooooo...."],
-  pernas:{
-    p:["......oPPo.oPPo.......","......oPpo.oPpo.......",".....oOOOo.oOOOo......",".....oOqqo.oOqqo......",".....ooooo.ooooo......"],
-    a:["......oPPo.oPPo.......",".....oOOOo.oPpo.......",".....oOqqo.oOOOo......",".....ooooo.oOqqo......","...........ooooo......"],
-    b:["......oPPo.oPPo.......","......oPpo.oOOOo......",".....oOOOo.oOqqo......",".....oOqqo.ooooo......",".....ooooo............"]},
-  // espada na mão direita, apontando para baixo; X = gema do elemento no pomo
-  espada:[[19,15,"o"],[18,16,"o"],[19,16,"X"],[20,16,"o"],[19,17,"g"],[17,18,"o"],[18,18,"G"],[19,18,"G"],[20,18,"G"],[21,18,"o"],
-    [18,19,"o"],[19,19,"M"],[20,19,"o"],[18,20,"o"],[19,20,"M"],[20,20,"o"],[18,21,"o"],[19,21,"l"],[20,21,"o"],[18,22,"o"],[19,22,"l"],[20,22,"o"],[19,23,"o"]],
+  // proporção de herói (cabeça ~1/3 da altura; antes era metade, cabeçudo demais): cabelo em tons com reflexo, olhos com brilho,
+  // bochechas, cachecol vermelho, capa azul por trás, túnica creme com cinto dourado, botas de couro e espada com guarda dourada
+  pal:{o:"#2b1a24",H:"#7a4222",h:"#552c16",j:"#a8622c",y:"#dc9a52",S:"#fbd8b6",s:"#e2a684",E:"#2a1f3a",I:"#4a86e8",w:"#ffffff",N:"#c8403a",n:"#8a2a26",C:"#2f4c8e",c:"#1f3468",k:"#4a70b8",T:"#efe2c2",t:"#c4ae86",G:"#f4c85c",g:"#a87a2a",B:"#5a3a22",P:"#3c3256",p:"#2a2240",O:"#86532a",q:"#4e2e16",M:"#f2f7fd",l:"#a8b6c8",r:"#f0a0a0",L:"#7a5236"},
+  cab:["........oooo........","......ooHjjHoo......",".....oHjyyjjHHo.....","....oHjjjHHHHHHo....","....oHHHHHHHhHHo....","....ohHSSSSSShHo....","....ohSwESSwESho....","....ohSSESSSESSo....",".....oSrSssSrSo.....","......oSSsSSSo......",".......oooooo......."],
+  corpo:["......oNNNNNNo......","....ooNNNNNNnNoo....","...okCoTTNNTToCko...","..okCCoTTTNTTToCco..","..oCCoSoTTTTToSoCo..","..oCCoSoTGGGGToSoco.","..okcoSoTTgTTToSocco","..oCcooTTTTTTToocco.","..oCc.otTTTTTto.cco.","...oc.otttttttto.co.","....o.oooooooooo.o.."],
+  pernas:{p:[".......oPPoPPo......",".......oPPoPPo......",".......oPpoPpo......","......oOOOoOOOo.....","......oOqqoOqqo.....","......ooooooooo....."],a:[".......oPPoPPo......","......oPPo.oPpo.....","......oOOo.oPpo.....",".....oOOOo.oOOOo....",".....oOqqo.oOqqo....",".....ooooo.ooooo...."],b:[".......oPPoPPo......",".......oPpo.oPPo....","......oOOOo.oPpo....","......oOqqo.oOOOo...","......ooooo.oOqqo...","............ooooo..."]},
+  espada:[[17,12,"o"],[17,13,"G"],[16,14,"o"],[17,14,"G"],[18,14,"o"],[17,15,"o"],[17,16,"M"],[17,17,"M"],[17,18,"l"],[17,19,"l"],[17,20,"l"],[17,21,"o"]],
   cache:new Map() };
 // quadro do herói: pernas (p parado, a e b passada), corpo e cabeça descidos 'bob' px, olhos fechados se 'pisca'; a gema da espada leva a cor do elemento
 function quadroHeroi(pernas,bob,pisca,corGema){ const k=pernas+bob+(pisca?1:0)+corGema; if(HEROI.cache.has(k)) return HEROI.cache.get(k);
-  const nc=HEROI.cab.length, ncp=HEROI.corpo.length, W=22, H=nc+ncp+4, c=document.createElement("canvas"); c.width=W; c.height=H;
+  const nc=HEROI.cab.length, ncp=HEROI.corpo.length, W=20, H=nc+ncp+HEROI.pernas.p.length+1, c=document.createElement("canvas"); c.width=W; c.height=H;
   const g=c.getContext("2d"), px=(x,y,ch)=>{ const cor=ch==="X"? corGema : HEROI.pal[ch]; if(!cor) return; g.fillStyle=cor; g.fillRect(x,y,1,1); };
-  HEROI.pernas[pernas].forEach((L,y)=>{ for(let x=0;x<W;x++) if(L[x]!==".") px(x,nc+ncp-2+y,L[x]); });
-  HEROI.corpo.forEach((L,y)=>{ for(let x=0;x<W;x++) if(L[x]!==".") px(x,nc+y-1+bob,L[x]); });
-  HEROI.cab.forEach((L,y)=>{ for(let x=0;x<W;x++){ let ch=L[x]; if(ch===".") continue; if(pisca&&(ch==="E"||ch==="w"||ch==="I")) ch= y===11? "E" : "S"; px(x,y+bob,ch); } });
-  for(const [x,y,ch] of HEROI.espada) px(x,y+bob,ch);
+  HEROI.pernas[pernas].forEach((L,y)=>{ for(let x=0;x<W;x++) if(L[x]!==".") px(x,nc+ncp-1+y,L[x]); });
+  HEROI.corpo.forEach((L,y)=>{ for(let x=0;x<W;x++) if(L[x]!==".") px(x,nc-1+y+bob,L[x]); });
+  HEROI.cab.forEach((L,y)=>{ for(let x=0;x<W;x++){ let ch=L[x]; if(ch===".") continue; if(pisca&&(ch==="E"||ch==="w"||ch==="I")) ch= y===7? "E" : "S"; px(x,y+bob,ch); } });
+  for(const [x,y,ch] of HEROI.espada) px(x,y+bob,ch); px(17,13+bob,"X");   // gema do elemento no pomo
   HEROI.cache.set(k,c); return c; }
 function desenharInvocador(x,y){
   const vel=Math.hypot(J.pvx||0,J.pvy||0), anda=vel>6, t=J.t;
@@ -212,9 +203,9 @@ function desenharInvocador(x,y){
   if(anda){ const f=Math.floor(t*9)%4; pernas=["a","p","b","p"][f]; bob=f%2===0? 1 : 0; } else bob=Math.floor(t*1.6)%2;   // passada; parado respira
   const pisca=(t%3.4)<0.12, spr=quadroHeroi(pernas,bob,pisca,cor);
   const suave=lg.imageSmoothingEnabled; lg.imageSmoothingEnabled=false; lg.save(); lg.translate(Math.round(x),Math.round(y)+7); lg.scale(lado,1);
-  lg.drawImage(spr,-11,-spr.height); lg.restore(); lg.imageSmoothingEnabled=suave;
+  lg.drawImage(spr,-10,-spr.height); lg.restore(); lg.imageSmoothingEnabled=suave;
   // brilho do elemento na gema da espada
-  const gx=x+lado*8.5, gy=y+7-28+16.5+bob, pul=0.5+0.5*Math.sin(t*4), [r1,g1,b1]=hexRgb(cor); lg.globalCompositeOperation="lighter";
+  const gx=x+lado*7.5, gy=y+7-spr.height+13.5+bob, pul=0.5+0.5*Math.sin(t*4), [r1,g1,b1]=hexRgb(cor); lg.globalCompositeOperation="lighter";
   const gg=lg.createRadialGradient(gx,gy,0,gx,gy,3+pul); gg.addColorStop(0,`rgba(${r1},${g1},${b1},${0.5+0.2*pul})`); gg.addColorStop(1,`rgba(${r1},${g1},${b1},0)`); lg.fillStyle=gg; lg.fillRect(gx-5,gy-5,10,10);
   lg.globalCompositeOperation="source-over"; }
 let SOBRE=null;

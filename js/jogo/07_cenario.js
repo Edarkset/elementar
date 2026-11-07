@@ -470,7 +470,10 @@ function desenharProps(ox,oy,fila){ const C=J.cena;
 function equipeAtras(xc,yPe,w,h){ const dentro=(x,y)=>y<yPe&&y>yPe-h&&Math.abs(x-xc)<w/2; const P=J.jogador; if(dentro(P.x,P.y+6)) return true;
   for(const s of R.selos) if(s.mon&&s.x!=null&&dentro(s.x,s.y+8)) return true; return false; }
 function desenharFrente(p,ox,oy){ const s=spriteMarco(p); if(!s) return; const atras=equipeAtras(p.x,p.y,s.width,s.height*(s.base||0.85));
-  sombraContato(p.x-ox,p.y-oy+1,s.width*0.7,0.45); p._alfa=(p._alfa??1)+((atras?0.45:1)-(p._alfa??1))*0.2; lg.globalAlpha=p._alfa; lg.drawImage(s,Math.round(p.x-ox-s.width/2),Math.round(p.y-oy-s.height*(s.base||0.85))); lg.globalAlpha=1; }
+  sombraContato(p.x-ox,p.y-oy+1,s.width*0.7,0.45); p._alfa=(p._alfa??1)+((atras?0.45:1)-(p._alfa??1))*0.2; lg.globalAlpha=p._alfa;
+  // planta de primeiro plano balança com o vento (inclinação a partir da base) e treme quando alguém passa por trás
+  const C=J.cena, vento=(C&&C.Wx||0)*0.004, bal=Math.sin(J.t*1.3+p.x*0.05)*0.035+vento+(atras?Math.sin(J.t*9)*0.02:0), bx=Math.round(p.x-ox), by=Math.round(p.y-oy);
+  lg.save(); lg.translate(bx,by); lg.transform(1,0,bal,1,0,0); lg.drawImage(s,-s.width/2,-s.height*(s.base||0.85)); lg.restore(); lg.globalAlpha=1; }
 function desenharUmProp(p,ox,oy){ const spr=p.spriteFixo||spriteProp(p); if(!spr) return; const kq=p.caindo>0? p.caindo/0.7 : 1, w=Math.round(spr.width*p.esc*kq), h=Math.round(spr.height*p.esc*kq); if(kq<1) lg.globalAlpha=kq;
     const bob=p.flut>0? Math.round(Math.sin(J.t*2.5+p.x)*1) : 0, lev=p.levita? Math.round(6+Math.sin(J.t*8+p.x)*1.5) : 0, x=Math.round(p.x-ox-w/2), y=Math.round(p.y-oy-h*(spr.base||1)+p.r*0.6)+bob-lev; if(p.tipo==="frente") return;
     if(x<-20||y<-20||x>VW+20||y>VH+20) return;

@@ -180,7 +180,7 @@ function quadroAnimSelo(s){ if(SIM.ativo||!J||!s.mon) return null; const e=est(s
   const rc=RITMO_CLASSE[L(s).classe]||1, alvoA=ALVO_ARTE[e]*(LINHA[s.mon.id].ancestral?1.15:1);
   let fr, prox=null, mix=0;
   if(row===2){ const dur=n/(FPS_ANIM[2]*rc)*1.25, k=Math.min(1,(J.t-s._t0)/dur); fr=Math.min(n-1,Math.floor(progressoAtaque(k)*n)); }
-  else if(row===1) fr=Math.floor(s._fase)%n;
+  else if(row===1){ fr=Math.floor(s._fase)%n; if(QUAL>0){ prox=quadroAnim(fa.img,row,(fr+1)%n,alvoA,fa.cor); mix=(s._fase%1)*0.7; } }   // andando: também mistura com o próximo passo
   else { // parado: vai e volta pelos quadros (0,1,2,3,2,1...), num ritmo próprio de cada monstro, com mistura suave entre um quadro e o próximo
     const per=Math.max(1,2*n-2), pos=((J.t-s._t0)*FPS_ANIM[0]*rc*(0.9+0.2*((s.mon.id.length*7)%5)/5))%per, a=Math.floor(pos), b=(a+1)%per, ida=i=>i<n? i : per-i;
     fr=ida(a); if(QUAL>0){ prox=quadroAnim(fa.img,row,ida(b),alvoA,fa.cor); mix=pos-a; } }

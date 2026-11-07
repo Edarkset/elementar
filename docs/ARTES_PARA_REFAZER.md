@@ -48,7 +48,7 @@ Como gerar:
 - **Uma linha só**, quadros quadrados do mesmo tamanho, lado a lado, sem espaço entre eles: especial 8 quadros, combinado 10 quadros (ex.: 8 x 256 px = 2048 x 256).
 - O efeito centrado em cada quadro, começando pequeno, crescendo e sumindo.
 
-Depois, em `js/jogo.js`, troque `USAR_FOLHAS_ESPECIAL=false` para `true`.
+Depois, em `js/jogo/08_sistemas.js`, troque `USAR_FOLHAS_ESPECIAL=false` para `true`.
 
 ### Folhas de animação dos monstros (quando forem refeitas)
 Para o jogo ficar mais bonito, a regra de ouro é a **grade exata**:

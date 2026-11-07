@@ -48,6 +48,10 @@ function verificarArquivos() {
   for (const f of lista.match(/"[^"]+"/g) || []) { const n = f.slice(1, -1); if (n !== "./" && !fs.existsSync(path.join(RAIZ, n))) nota("arquivos", "sw.js", `${n} está na lista do service worker e não existe`); }
   const html = fs.readFileSync(path.join(RAIZ, "index.html"), "utf8");
   for (const m of html.matchAll(/(?:src|href)="([^"#:]+)"/g)) if (!fs.existsSync(path.join(RAIZ, m[1]))) nota("arquivos", "index.html", `${m[1]} não existe`);
+  // toda parte da lógica (js/jogo/) precisa estar no index.html, em ordem, e na lista do service worker (senão some offline)
+  const partes = fs.readdirSync(path.join(RAIZ, "js/jogo")).filter(f => f.endsWith(".js")).sort(), naPagina = [...html.matchAll(/src="js\/jogo\/([^"]+)"/g)].map(m => m[1]);
+  for (const f of partes) { if (!naPagina.includes(f)) nota("arquivos", "index.html", `js/jogo/${f} não é carregado`); if (!sw.includes(`js/jogo/${f}`)) nota("arquivos", "sw.js", `js/jogo/${f} fora da lista do service worker`); }
+  if (naPagina.join() !== naPagina.slice().sort().join()) nota("arquivos", "index.html", "as partes de js/jogo/ não estão em ordem");
 }
 
 // ---------------------------------------------------------------- 2. telas: tudo cabe na tela, nada cortado, botões tocáveis

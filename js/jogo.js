@@ -1908,7 +1908,7 @@ function desenharCenaObjetos(ox,oy){ const C=J.cena; if(!C) return; desenharProp
   lg.globalAlpha=1; }
 function desenharCenaAr(ox,oy){ const C=J.cena; if(!C) return;
   for(const p of C.lista){ if(p.tipo!=="frente") continue; const s=spriteMarco(p); if(!s) continue; const P=J.jogador, atras=P.y<p.y&&P.y>p.y-s.height&&Math.abs(P.x-p.x)<s.width/2;
-    lg.globalAlpha=atras?0.45:1; lg.drawImage(s,Math.round(p.x-ox-s.width/2),Math.round(p.y-oy-s.height*0.85)); lg.globalAlpha=1; }
+    lg.globalAlpha=atras?0.45:1; lg.drawImage(s,Math.round(p.x-ox-s.width/2),Math.round(p.y-oy-s.height*(s.base||0.85))); lg.globalAlpha=1; }
   // fumaça
   for(const f of C.fumaca){ const a=Math.min(1,f.vida/f.max*1.4)*0.32; lg.globalAlpha=a; lg.drawImage(bolhaCor(f.cor),f.x-ox-f.r,f.y-f.z-oy-f.r,f.r*2,f.r*2); }
   lg.globalAlpha=1;
@@ -2096,7 +2096,13 @@ function sortearMarcos(cx,cy,r,out){ const img=folhaU("props"); if(!img) return;
   const sorte=r(); if(sorte<0.3) out.push(Object.assign(novoProp("marco",x,y,r),{idx:Math.floor(r()*6)}));
   else if(sorte<0.42) out.push(Object.assign(novoProp("luz",x,y,r),{idx:6}));
   else if(sorte<0.54) out.push(Object.assign(novoProp("frente",x,y,r),{idx:7})); }
-function spriteMarco(p){ const img=folhaU("props"); if(!img) return null; const t=p.idx===7?60:p.idx===6?30:46; return celulaArte(img,4,2,p.idx%4,Math.floor(p.idx/4),t,t,0.85); }
+// marcos: recorta só a parte desenhada da célula (a folha tem muita margem vazia) e dá a altura certa para cada tipo
+// (colunas e estátuas altas, templo e árvore grandes, braseiro baixo); antes a célula inteira virava um quadrado e tudo saía pequeno
+const ALT_MARCO=[56,30,60,56,62,48,32,74];
+function spriteMarco(p){ const img=folhaU("props"); if(!img) return null; if(!img._id) img._id=++ID_IMG; const k="marco|"+img._id+"|"+p.idx; if(cacheCel.has(k)) return cacheCel.get(k);
+  const cw=img.width/4, ch=img.height/2, sx=(p.idx%4)*cw, sy=Math.floor(p.idx/4)*ch, bb=bboxCelula(img,sx,sy,cw,ch), H=ALT_MARCO[p.idx]||46;
+  const e=H/bb.h, w=Math.max(1,Math.round(bb.w*e)), h=Math.max(1,Math.round(bb.h*e)), c=document.createElement("canvas"); c.width=w; c.height=h; const g=c.getContext("2d"); g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
+  g.drawImage(img,bb.x,bb.y,bb.w,bb.h,0,0,w,h); c._src={img,sx:bb.x,sy:bb.y,sw:bb.w,sh:bb.h}; c.base=0.97; cacheCel.set(k,c); return c; }
 
 // ---------------------------------------------------------------- objetos físicos (folha 8xN: intacto, trincado, quebrado, estado especial, 4 cacos)
 const TAM_OBJ={vaso:13,caixote:13,barril:14,polvora:14,feno:14,fruta:9,rocha:17,gelo:15,cristal:17,metal:18,arvore:26,tronco:16,ovo:9,saque:14};
@@ -2269,9 +2275,17 @@ function desenharAbertura(){ const I=J&&J.intro; if(!I) return; const t=I.t, D0=
   // 1) cena: arte com câmera lenta (aproxima e desliza), num canvas à parte para a saída em íris
   if(!CV_INTRO) CV_INTRO=document.createElement("canvas"); if(CV_INTRO.width!==cv.width||CV_INTRO.height!==cv.height){ CV_INTRO.width=cv.width; CV_INTRO.height=cv.height; }
   const g=CV_INTRO.getContext("2d"); g.setTransform(cv.width/W,0,0,cv.height/H,0,0); g.globalCompositeOperation="source-over"; g.globalAlpha=1;
-  const q=suaveIO(t/D0), esc=Math.max(W/img.width,H/img.height)*(1.2-0.12*q+sai*0.18), w=img.width*esc, h=img.height*esc;
-  const x=(W-w)/2+(0.5-q)*W*0.05, y=(H-h)/2+(0.5-q)*H*0.025;
-  g.fillStyle="#07050b"; g.fillRect(0,0,W,H); g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high"; g.drawImage(img,x,y,w,h);
+  const q=suaveIO(t/D0), zoom=1.2-0.12*q+sai*0.18; g.fillStyle="#07050b"; g.fillRect(0,0,W,H); g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
+  // celular em pé: a arte (larga) cortada para cobrir a tela perderia os lados. Fica inteira na largura, sobre um fundo
+  // desfocado dela mesma (reduzida a 48 px e ampliada: borra em qualquer navegador), com as bordas de cima e de baixo se desfazendo
+  if(H>W*1.05){ if(!I.borrada){ const b=document.createElement("canvas"); b.width=48; b.height=Math.max(1,Math.round(48*img.height/img.width)); const gb=b.getContext("2d"); gb.imageSmoothingEnabled=true; gb.drawImage(img,0,0,b.width,b.height); I.borrada=b; }
+    const eb=Math.max(W/img.width,H/img.height)*1.15; g.globalAlpha=0.55; g.drawImage(I.borrada,(W-img.width*eb)/2,(H-img.height*eb)/2,img.width*eb,img.height*eb); g.globalAlpha=1;
+    const w=W*1.06*(zoom/1.2+0.17), h=w*img.height/img.width, x=(W-w)/2+(0.5-q)*W*0.04, y=H*0.38-h/2;
+    if(!I.recorte) I.recorte=document.createElement("canvas"); const rc=I.recorte; if(rc.width!==Math.ceil(W)||rc.height!==Math.ceil(H)){ rc.width=Math.ceil(W); rc.height=Math.ceil(H); }
+    const gr2=rc.getContext("2d"); gr2.setTransform(1,0,0,1,0,0); gr2.globalCompositeOperation="source-over"; gr2.clearRect(0,0,rc.width,rc.height); gr2.imageSmoothingEnabled=true; gr2.imageSmoothingQuality="high"; gr2.drawImage(img,x,y,w,h);
+    const mk=gr2.createLinearGradient(0,y,0,y+h); mk.addColorStop(0,"rgba(0,0,0,0)"); mk.addColorStop(0.1,"rgba(0,0,0,1)"); mk.addColorStop(0.86,"rgba(0,0,0,1)"); mk.addColorStop(1,"rgba(0,0,0,0)");
+    gr2.globalCompositeOperation="destination-in"; gr2.fillStyle=mk; gr2.fillRect(0,0,rc.width,rc.height); g.drawImage(rc,0,0,W,H); }
+  else { const esc=Math.max(W/img.width,H/img.height)*zoom, w=img.width*esc, h=img.height*esc, x=(W-w)/2+(0.5-q)*W*0.05, y=(H-h)/2+(0.5-q)*H*0.025; g.drawImage(img,x,y,w,h); }
   // tom do elemento por cima (bem leve) e vinheta forte nas bordas
   g.globalCompositeOperation="soft-light"; g.fillStyle=`rgba(${cr},${cg},${cb},0.35)`; g.fillRect(0,0,W,H); g.globalCompositeOperation="source-over";
   const vg=g.createRadialGradient(W/2,H*0.45,M*0.25,W/2,H/2,Math.hypot(W,H)*0.6); vg.addColorStop(0,"rgba(7,5,11,0)"); vg.addColorStop(1,"rgba(7,5,11,.78)"); g.fillStyle=vg; g.fillRect(0,0,W,H);
@@ -2285,20 +2299,27 @@ function desenharAbertura(){ const I=J&&J.intro; if(!I) return; const t=I.t, D0=
     const gr=g.createRadialGradient(X,Y,0,X,Y,rr*4); gr.addColorStop(0,`rgba(255,246,220,${al})`); gr.addColorStop(0.3,`rgba(${cr},${cg},${cb},${al*0.6})`); gr.addColorStop(1,`rgba(${cr},${cg},${cb},0)`); g.fillStyle=gr; g.fillRect(X-rr*4,Y-rr*4,rr*8,rr*8); }
   g.globalCompositeOperation="source-over";
   // 2) título: era em letras espaçadas, nome do reino letra a letra subindo com brilho, filete dourado com losango
-  const tt=t-0.55, cy=H*0.76; g.font=`600 100px "Pixelify Sans", monospace`; const fs=Math.round(Math.min(M*0.075,W*0.86*100/Math.max(1,g.measureText(I.u.nome).width))), fe=Math.round(Math.max(11,Math.min(M*0.03,fs*0.42)));
+  const tt=t-0.55, cy=H*(H>W*1.05?0.74:0.76), larguraMax=W*0.86, medir=(txt,f)=>{ g.font=`600 ${f}px "Pixelify Sans", monospace`; return g.measureText(txt).width; };
+  // nome numa linha se couber grande; senão quebra na vírgula ("Santuário dos 12 Signos" / "Grécia") e cada linha cabe na largura
+  let linhas=[I.u.nome], fs=Math.round(Math.min(M*0.075,larguraMax*100/Math.max(1,medir(I.u.nome,100))));
+  if(fs<M*0.06&&I.u.nome.includes(",")){ const [a,...b]=I.u.nome.split(","); linhas=[a.trim(),b.join(",").trim()]; fs=Math.round(Math.min(M*0.08,larguraMax*100/Math.max(1,medir(linhas[0],100)))); }
+  const fs2=Math.round(Math.min(fs*0.62,larguraMax*100/Math.max(1,medir(linhas[1]||"",100)))), fe=Math.round(Math.max(11,Math.min(M*0.03,fs*0.42))), alto=linhas.length>1? fs*0.55+fs2*0.6 : 0;
   if(tt>0){ const fade=1-sai*1.6;
     // faixa escura por trás do título (dá leitura em qualquer arte)
     const fx=g.createLinearGradient(0,cy-fs*2.2,0,H); fx.addColorStop(0,"rgba(7,5,11,0)"); fx.addColorStop(0.45,`rgba(7,5,11,${0.62*Math.min(1,tt/0.5)*Math.max(0,fade)})`); fx.addColorStop(1,`rgba(7,5,11,${0.8*Math.max(0,fade)})`);
     g.fillStyle=fx; g.fillRect(0,cy-fs*2.2,W,H);
-    g.globalAlpha=Math.max(0,Math.min(1,tt/0.6)*fade); g.textAlign="center"; g.textBaseline="middle"; g.font=`600 ${fe}px "Pixelify Sans", monospace`; g.fillStyle="#d6ab4f";
-    const era=D.eras[I.u.era].nome.toUpperCase().split("").join(" "); g.shadowColor="rgba(0,0,0,.9)"; g.shadowBlur=fe*0.6; g.fillStyle="#f0c96a"; g.fillText(era,W/2,cy-fs*0.95); g.shadowBlur=0;
-    const lw=suaveO((tt-0.2)/0.9)*Math.min(W*0.32,fs*5.2); if(lw>1){ const gl=g.createLinearGradient(W/2-lw,0,W/2+lw,0); gl.addColorStop(0,"rgba(214,171,79,0)"); gl.addColorStop(0.5,"rgba(255,226,150,1)"); gl.addColorStop(1,"rgba(214,171,79,0)");
-      g.fillStyle=gl; g.fillRect(W/2-lw,cy+fs*0.72,lw*2,Math.max(1,M*0.003)); g.save(); g.translate(W/2,cy+fs*0.72); g.rotate(Math.PI/4); g.fillStyle="#ffe296"; const d=M*0.008; g.fillRect(-d,-d,d*2,d*2); g.restore(); }
-    g.font=`600 ${fs}px "Pixelify Sans", monospace`; const nome=I.u.nome, larg=g.measureText(nome).width; let xx=W/2-larg/2; g.textAlign="left";
-    for(let i=0;i<nome.length;i++){ const ch=nome[i], cw=g.measureText(ch).width, k=suaveO((tt-0.15-i*0.035)/0.45); if(k<=0){ xx+=cw; continue; }
-      g.globalAlpha=k*Math.max(0,fade); const yy=cy+(1-k)*fs*0.5;
-      g.shadowColor=`rgba(${cr},${cg},${cb},0.9)`; g.shadowBlur=fs*0.45*(1.3-k*0.5); g.fillStyle="#140f1c"; g.fillText(ch,xx+fs*0.05,yy+fs*0.06);
-      g.shadowBlur=fs*0.3; g.fillStyle=k<1? mistura("#ffffff","#f6ead0",k) : "#f6ead0"; g.fillText(ch,xx,yy); g.shadowBlur=0; xx+=cw; }
+    g.globalAlpha=Math.max(0,Math.min(1,tt/0.6)*fade); g.textAlign="center"; g.textBaseline="middle"; g.font=`600 ${fe}px "Pixelify Sans", monospace`;
+    const era=(D.eras[I.u.era].nome+(R.ciclo?` · ciclo ${R.ciclo+1}`:"")+` · mapa ${R.profundidade+1}`).toUpperCase().split("").join(" ");
+    g.shadowColor="rgba(0,0,0,.9)"; g.shadowBlur=fe*0.6; g.fillStyle="#f0c96a"; g.fillText(era,W/2,cy-fs*0.95); g.shadowBlur=0;
+    const yl=cy+fs*0.72+alto*1.2, lw=suaveO((tt-0.2)/0.9)*Math.min(W*0.32,fs*5.2); if(lw>1){ const gl=g.createLinearGradient(W/2-lw,0,W/2+lw,0); gl.addColorStop(0,"rgba(214,171,79,0)"); gl.addColorStop(0.5,"rgba(255,226,150,1)"); gl.addColorStop(1,"rgba(214,171,79,0)");
+      g.fillStyle=gl; g.fillRect(W/2-lw,yl,lw*2,Math.max(1,M*0.003)); g.save(); g.translate(W/2,yl); g.rotate(Math.PI/4); g.fillStyle="#ffe296"; const d=M*0.008; g.fillRect(-d,-d,d*2,d*2); g.restore(); }
+    let atraso=0.15;
+    linhas.forEach((txt,li)=>{ const f=li? fs2 : fs, yb=li? cy+fs*0.55+fs2*0.55 : cy; g.font=`600 ${f}px "Pixelify Sans", monospace`; const larg=g.measureText(txt).width; let xx=W/2-larg/2; g.textAlign="left";
+      for(let i=0;i<txt.length;i++){ const ch=txt[i], cw=g.measureText(ch).width, k=suaveO((tt-atraso-i*0.035)/0.45); if(k<=0){ xx+=cw; continue; }
+        g.globalAlpha=k*Math.max(0,fade); const yy=yb+(1-k)*f*0.5;
+        g.shadowColor=`rgba(${cr},${cg},${cb},0.9)`; g.shadowBlur=f*0.45*(1.3-k*0.5); g.fillStyle="#140f1c"; g.fillText(ch,xx+f*0.05,yy+f*0.06);
+        g.shadowBlur=f*0.3; g.fillStyle=k<1? mistura("#ffffff",li?"#ffe6a6":"#f6ead0",k) : (li?"#ffe6a6":"#f6ead0"); g.fillText(ch,xx,yy); g.shadowBlur=0; xx+=cw; }
+      atraso+=txt.length*0.035; });
     g.globalAlpha=1; g.textBaseline="alphabetic"; }
   // 3) faixas de cinema: entram no começo e saem junto com a íris
   const fb=H*0.11*suaveO(t/0.7)*(1-suaveIO(sai*1.3)); g.fillStyle="#000"; g.fillRect(0,0,W,fb); g.fillRect(0,H-fb,W,fb);

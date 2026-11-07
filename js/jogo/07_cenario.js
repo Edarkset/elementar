@@ -655,14 +655,35 @@ function folhaU(sufixo){ const u=UNIV[R.universo]; if(!u) return null; const img
 function folhaArte(caminho){ const img=ARTE_IMG[caminho]; return img&&img.pronta? img : null; }
 // recorta a célula (col,row) de uma folha cols x rows e escala para w x h; base = altura relativa da linha de apoio (85% nas folhas)
 let ID_IMG=0;   // ler img.src de uma imagem embutida copia um texto enorme; cada imagem ganha um número fixo
+// faixas de desenho de uma folha: algumas folhas foram exportadas com as linhas deslocadas da grade (uma faixa vazia em cima,
+// poses mais baixas), e o corte pela grade pegava pedaço da pose vizinha. Se a folha tem exatamente 'rows' faixas separadas
+// por linhas vazias, cada linha usa a sua faixa; senão, a grade comum
+function faixasFolha(img,rows){ const k="_faixas"+rows; if(img[k]!==undefined) return img[k]; img[k]=null;
+  try{ const c=document.createElement("canvas"); c.width=img.width; c.height=img.height; const g=c.getContext("2d"); g.drawImage(img,0,0); const d=g.getImageData(0,0,c.width,c.height).data, W=c.width, H=c.height;
+    const bandas=[]; let on=false, y0=0; for(let y=0;y<H;y++){ let n=0; for(let x=0;x<W;x+=2) if(d[(y*W+x)*4+3]>40) n++; if(n>1&&!on){ on=true; y0=y; } else if(n<=1&&on){ on=false; if(y-y0>=6) bandas.push([y0,y]); } }
+    if(on&&H-y0>=6) bandas.push([y0,H]);
+    const ch=H/rows, fora=bandas.filter((b,i)=>Math.abs(b[1]-(i+1)*ch)>ch*0.12).length;
+    if(bandas.length===rows&&fora>0) img[k]=bandas; }catch(e){}
+  return img[k]; }
+// pedaço da pose de cima invadindo o topo da célula: se no terço de cima existe uma linha vazia com desenho acima dela,
+// o que está acima é de outra pose e sai
+function limparTopoSolto(c){ try{ const g=c.getContext("2d"), W=c.width, H=c.height, d=g.getImageData(0,0,W,H).data, cheia=y=>{ for(let x=0;x<W;x++) if(d[(y*W+x)*4+3]>30) return true; return false; };
+    let viu=false; for(let y=0;y<Math.floor(H*0.35);y++){ const t=cheia(y); if(t) viu=true; else if(viu){ let corpo=false; for(let y2=y+1;y2<H;y2++) if(cheia(y2)){ corpo=true; break; } if(corpo) g.clearRect(0,0,W,y); break; } }
+    // o mesmo na base: pedaço da pose de baixo abaixo de uma linha vazia, no terço de baixo
+    viu=false; for(let y=H-1;y>Math.floor(H*0.65);y--){ const t=cheia(y); if(t) viu=true; else if(viu){ let corpo=false; for(let y2=y-1;y2>=0;y2--) if(cheia(y2)){ corpo=true; break; } if(corpo) g.clearRect(0,y,W,H-y); break; } }
+    // laterais: fiapo da coluna vizinha separado do corpo por uma coluna vazia, nos 15% de cada lado
+    const col=x=>{ for(let y=0;y<H;y++) if(d[(y*W+x)*4+3]>30) return true; return false; }, L=Math.floor(W*0.15);
+    for(const [ini,passo] of [[0,1],[W-1,-1]]){ let v=false; for(let i=0;i<L;i++){ const x=ini+i*passo, t=col(x); if(t) v=true; else if(v){ if(passo>0) g.clearRect(0,0,x,H); else g.clearRect(x+1,0,W-x-1,H); break; } } } }catch(e){} }
 function celulaArte(img,cols,rows,col,row,w,h,base){ if(!img) return null; if(!img._id) img._id=++ID_IMG; const k=img._id+"|"+cols+"|"+rows+"|"+col+"|"+row+"|"+w+"|"+h;
   if(cacheCel.has(k)) return cacheCel.get(k); if(cacheCel.size>3000) cacheCel.clear();
   const cw=img.width/cols, ch=img.height/rows, c=document.createElement("canvas"); c.width=w; c.height=h; const g=c.getContext("2d"); g.imageSmoothingEnabled=false;
   // a célula entra inteira mantendo a proporção (folhas exportadas com outra proporção não ficam esticadas); a linha de apoio
   // (base) continua no mesmo ponto do quadro, então os pés não mudam de lugar
   const ky=correcaoAltura(img), b=base??1, e=Math.min(w/cw,h/(ch*ky)), dw=cw*e, dh=ch*e*ky, dx=(w-dw)/2, dy=b*(h-dh);   // ky: folha achatada na conversão
-  g.drawImage(img,Math.round(col*cw),Math.round(row*ch),Math.round(cw),Math.round(ch),dx,dy,dw,dh); c.base=b;
-  c._src={img,sx:Math.round(col*cw),sy:Math.round(row*ch),sw:Math.round(cw),sh:Math.round(ch),dest:[dx/w,dy/h,dw/w,dh/h]}; cacheCel.set(k,c); return c; }
+  const fx=faixasFolha(img,rows), syR= fx? Math.max(0,Math.min(img.height-ch,fx[row][1]+Math.round(ch*0.04)-ch)) : row*ch;   // linha deslocada: alinha pelo pé da faixa
+  g.drawImage(img,Math.round(col*cw),Math.round(syR),Math.round(cw),Math.round(ch),dx,dy,dw,dh); c.base=b;
+  limparTopoSolto(c);
+  c._src={img,sx:Math.round(col*cw),sy:Math.round(syR),sw:Math.round(cw),sh:Math.round(ch),dest:[dx/w,dy/h,dw/w,dh/h]}; cacheCel.set(k,c); return c; }
 // ---------------------------------------------------------------- camada de arte em alta resolução
 // O mundo é desenhado em baixa resolução (estilo pixel art) e ampliado para a tela. Arte pintada (monstros, inimigos, chefes,
 // Lendas) reduzida a 20-40 px vira borrão; por isso ela é desenhada por cima, na resolução real da tela, a partir do original.

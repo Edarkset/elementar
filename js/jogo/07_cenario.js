@@ -660,7 +660,7 @@ function celulaArte(img,cols,rows,col,row,w,h,base){ if(!img) return null; if(!i
   const cw=img.width/cols, ch=img.height/rows, c=document.createElement("canvas"); c.width=w; c.height=h; const g=c.getContext("2d"); g.imageSmoothingEnabled=false;
   // a célula entra inteira mantendo a proporção (folhas exportadas com outra proporção não ficam esticadas); a linha de apoio
   // (base) continua no mesmo ponto do quadro, então os pés não mudam de lugar
-  const b=base??1, e=Math.min(w/cw,h/ch), dw=cw*e, dh=ch*e, dx=(w-dw)/2, dy=b*(h-dh);
+  const ky=correcaoAltura(img), b=base??1, e=Math.min(w/cw,h/(ch*ky)), dw=cw*e, dh=ch*e*ky, dx=(w-dw)/2, dy=b*(h-dh);   // ky: folha achatada na conversão
   g.drawImage(img,Math.round(col*cw),Math.round(row*ch),Math.round(cw),Math.round(ch),dx,dy,dw,dh); c.base=b;
   c._src={img,sx:Math.round(col*cw),sy:Math.round(row*ch),sw:Math.round(cw),sh:Math.round(ch),dest:[dx/w,dy/h,dw/w,dh/h]}; cacheCel.set(k,c); return c; }
 // ---------------------------------------------------------------- camada de arte em alta resolução
@@ -702,7 +702,7 @@ function bboxCelula(img,sx,sy,sw,sh){ if(!img._id) img._id=++ID_IMG; const k=img
     for(let y=0;y<c.height;y++) for(let x=0;x<c.width;x++) if(d[(y*c.width+x)*4+3]>24){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } }catch(err){}
   const bb= x1<0? {x:sx,y:sy,w:sw,h:sh} : {x:sx+x0*sw/c.width, y:sy+y0*sh/c.height, w:(x1-x0+1)*sw/c.width, h:(y1-y0+1)*sh/c.height}; cacheBB.set(k,bb); return bb; }
 const ALVO_ARTE=[18,21,24,28];   // altura do monstro com arte, por estágio (pixels de mundo). Antes 24 a 44: os evoluídos ficavam maiores que o herói e cobriam tudo
-function encaixarArte(img,sx,sy,sw,sh,alvo){ const bb=bboxCelula(img,sx,sy,sw,sh), k=Math.min(alvo/bb.w,alvo/bb.h), w=Math.max(1,Math.round(bb.w*k)), h=Math.max(1,Math.round(bb.h*k));
+function encaixarArte(img,sx,sy,sw,sh,alvo){ const bb=bboxCelula(img,sx,sy,sw,sh), ky=correcaoAltura(img), k=Math.min(alvo/bb.w,alvo/(bb.h*ky)), w=Math.max(1,Math.round(bb.w*k)), h=Math.max(1,Math.round(bb.h*ky*k));
   const c=document.createElement("canvas"); c.width=c.height=alvo; const g=c.getContext("2d"); g.imageSmoothingEnabled=true; const ox=Math.round((alvo-w)/2), oy=alvo-h;
   g.drawImage(img,bb.x,bb.y,bb.w,bb.h,ox,oy,w,h); c._src={img,sx:bb.x,sy:bb.y,sw:bb.w,sh:bb.h,dest:[ox/alvo,oy/alvo,w/alvo,h/alvo]}; return c; }
 // Com a tela interna em alta resolução (Q>1) a arte vai direto para o mundo: fica na ordem certa com

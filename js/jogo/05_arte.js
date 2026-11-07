@@ -130,7 +130,17 @@ function folhaRecolorida(anim,base,alvo,celula){ const k=(anim._id||(anim._id=++
   cacheRecor.set(k,out); return out; }
 // As folhas dos dragões ancestrais vieram de originais 3:2 (1536x1024) reduzidos para 2:1 (384x192): o desenho ficou 25% mais baixo.
 // Enquanto não forem convertidas de novo (ferramentas/converter_artes mantém a proporção), a altura é corrigida aqui.
-function correcaoAltura(img){ if(img._ky!=null) return img._ky; let k=1; for(const [n,i] of Object.entries(ARTE_IMG)) if(i===img){ if(n.startsWith("arte/lendarios/")&&Math.abs(img.width/img.height-2)<0.01) k=4/3; break; } return img._ky=k; }
+// folhas que a conversão antiga achatou: originais em 3:2 (1536x1024) foram forçados ao tamanho antigo, e o desenho ficou
+// 25% mais baixo (ou 33% mais largo). Reconhecidas pelo caminho E pelo tamanho exato da conversão antiga: uma arte
+// reconvertida com a proporção certa tem outro tamanho e não é esticada. Medido comparando escudos redondos e corpos.
+const ARTE_ACHATADA=[
+  [/^arte\/monstros\/.*__anim_\d+\.png$/,384,192], [/^arte\/monstros\/.*__(base|epico|lendario)\.png$/,256,128],
+  [/^arte\/lendarios\/.*__anim_\d+\.png$/,384,192], [/^arte\/(lendas|panteao)\/[a-z0-9_]+\.png$/,384,192],
+  [/^arte\/reinos\/.*__inimigos\.png$/,384,288], [/^arte\/reinos\/.*__mini\.png$/,384,320], [/^arte\/reinos\/.*__chefe\.png$/,576,576],
+  [/^arte\/reinos\/.*guardiao_[a-z_]+__anim\.png$/,576,576]];
+function correcaoAltura(img){ if(!img) return 1; if(img._ky!=null) return img._ky; let k=1;
+  for(const [n,i] of Object.entries(ARTE_IMG)) if(i===img){ if(!/__retrato\.png$/.test(n)&&ARTE_ACHATADA.some(([re,w,h])=>re.test(n)&&img.width===w&&img.height===h)) k=4/3; break; }
+  return img._ky=k; }
 // quadro (linha, índice do quadro) da folha, num canvas quadrado com folga: corpo na escala "alvo", pés na mesma linha em todos
 const FOLGA_ANIM=1.6;
 function quadroAnim(img,row,i,alvo,cor,rows,folga){ rows=rows||3; folga=folga||FOLGA_ANIM; const fo=cor||img, k=(fo._id||(fo._id=++ID_IMG))+"|q"+row+"|"+i+"|"+alvo+"|"+rows+"|"+folga; if(cacheArte.has(k)) return cacheArte.get(k);

@@ -389,16 +389,27 @@ function muralSprite(uid,n){ const l=D.lendas.find(x=>x.universo===uid), c=docum
 const LENDA=()=>R&&R.lenda? (D.lendas.find(l=>l.id===R.lenda)||D.panteao.find(p=>p.id===R.lenda)) : null;
 function passiva(ef){ const l=LENDA(); return l&&l.passiva.efeito===ef? l.passiva.valor : 0; }
 function custo(ef){ const l=LENDA(); return l&&l.passiva.custo&&l.passiva.custo[ef]||0; }
-function telaInvocador(pacto,id){ metaConq(); const livres=[...D.panteao.filter(g=>(META.deuses||[]).includes(g.id)), ...D.lendas.filter(l=>META.lendas.includes(l.universo))];
+// escolha do herói da run: o Invocador básico ou uma Lenda/deus já liberado. Cada carta mostra a arte, o poder e a
+// afinidade com o Pacto (quantos elementos em comum), para a escolha ter peso; as bloqueadas dizem como liberar
+function arteHeroiLenda(l){ const img=folhaArte(l.dom?`arte/panteao/${l.id}.png`:`arte/lendas/${l.id}.png`); if(!img||!fatiarFolha(img,6,3).valida) return null; return quadroAnim(img,0,0,64); }
+function telaInvocador(pacto,id,esperou){ metaConq(); const livres=[...D.panteao.filter(g=>(META.deuses||[]).includes(g.id)), ...D.lendas.filter(l=>META.lendas.includes(l.universo))];
   if(!livres.length){ novaRun(pacto,id); salvarRun(); iniciarMapa(); return; }
+  const nomes=livres.map(l=>l.dom?`arte/panteao/${l.id}.png`:`arte/lendas/${l.id}.png`);
+  if(!esperou&&nomes.some(n=>{ const im=ARTE_IMG[n]; return im&&!im.pronta&&!im.falhou; })){ Promise.race([preCarregar(nomes),new Promise(ok=>setTimeout(ok,2500))]).then(()=>telaInvocador(pacto,id,true)); return; }
   const ir=lid=>{ novaRun(pacto,id); R.lenda=lid; R.lendaNv=lid?1:0; salvarRun(); iniciarMapa(); };
-  mostrarCartas("Quem comanda a equipe?","As Lendas trazem um poder próprio e uma passiva.",[{titulo:"Invocador", texto:"O Invocador de sempre.", acao:()=>ir(null)},
-    ...livres.map(l=>({titulo:l.nome, raridade:"lendario", texto:`${NOME_EL(l.elementos[0])} e ${NOME_EL(l.elementos[1])} · ${l.poder.nome} · ${l.dom?`Dom: ${l.dom.nome} · Fardo: ${l.fardo}`:l.passiva.nome}`, acao:()=>ir(l.id)}))]); }
+  const total=D.lendas.length+D.panteao.length, estrelas=l=>pacto.filter(el=>l.elementos.includes(el)).length;
+  const cartas=livres.map(l=>{ const n=estrelas(l), arte=arteHeroiLenda(l);
+    return {titulo:l.nome, raridade:l.dom?"lendario":"epico", sprite:arte||undefined, suave:true, classe:arte?"grande":null,
+      texto:`<span style="color:${COR[l.elementos[0]]}">${NOME_EL(l.elementos[0])}</span> e <span style="color:${COR[l.elementos[1]]}">${NOME_EL(l.elementos[1])}</span> · ${l.poder.nome} · ${l.dom?`Dom: ${l.dom.nome} · Fardo: ${l.fardo}`:l.passiva.nome}<br>`+
+        (n? `<span class='bom'>Combina com o seu Pacto</span>: cada monstro de ${l.elementos.map(NOME_EL).join(" ou ")} na equipe dá ★ (mais dano e poder).` : `Sem elemento em comum com o Pacto: pouca afinidade.`)+(l.universo?` Terra Natal: ${UNIV[l.universo]?UNIV[l.universo].nome:""}.`:""),
+      acao:()=>ir(l.id), _n:n}; }).sort((a,b)=>b._n-a._n);
+  mostrarCartas("Quem comanda a equipe?",`Lendas e deuses liberados: ${livres.length}/${total}. Complete os murais dos reinos para liberar mais.`,
+    [{titulo:"Invocador", texto:"O herói básico, sem poder próprio.", sprite:quadroHeroi("p",0,false,COR[pacto[0]]), classe:"grande", acao:()=>ir(null)}, ...cartas],{grade:cartas.length>3}); }
 function cartaLenda(){ const l=LENDA(); if(!l||(R.lendaNv||1)>=5||Math.random()>0.3) return null;
   return {titulo:`${l.poder.nome} ${R.lendaNv} → ${R.lendaNv+1}`, raridade:"lendario", texto:`Poder da Lenda (${TIPOS_LENDA_TXT[l.poder.tipo]||""}): +25% de dano e −5% de recarga.`, acao:()=>{ R.lendaNv++; proximaEscolha(); }}; }
 const TIPOS_LENDA_TXT={orbita:"gira em volta",projetil:"arremesso",onda:"onda de choque",invocar:"aliados",raio:"raio em cadeia",barril:"explosivo",investida:"avanço",area:"zona no chão",drenar:"rouba vida",dardos:"disparos rápidos"};
 function atualizarLenda(dt){ const l=LENDA(); if(!l||!J||J.fim) return; if(J.lendaPose){ J.lendaPose.t+=dt; if(J.lendaPose.t>=J.lendaPose.dur) J.lendaPose=null; } atualizarDom(dt); const p=l.poder, nv=R.lendaNv||1, P=J.jogador, el=l.elementos[0], el2=l.elementos[1], cor=COR[el];
-  const base=(ativos().reduce((t,s)=>t+atrib(s).dano,0)/Math.max(1,ativos().length))*p.dano*(1+0.25*(nv-1))*(1+custo("dano_dia")*(UNIV[R.universo].luz&&!UNIV[R.universo].luz.noite?1:0));
+  const base=(ativos().reduce((t,s)=>t+atrib(s).dano,0)/Math.max(1,ativos().length))*p.dano*(1+0.25*(nv-1))*(1+custo("dano_dia")*(UNIV[R.universo].luz&&!UNIV[R.universo].luz.noite?1:0))*(SIN.lendaPoder||1);   // afinidade e Terra Natal
   if(p.tipo==="orbita"){ J.lendaAng=(J.lendaAng||0)+dt*3.2; J.lendaHit=(J.lendaHit||0)-dt; if(J.lendaHit<=0){ J.lendaHit=p.cd; FONTE="lenda"; J.lendaGiros=(J.lendaGiros||0)+1; if(J.lendaGiros%8===1&&!J.lendaPose) J.lendaPose={t:0,dur:0.5};
       for(let i=0;i<p.n;i++){ const a=J.lendaAng+i/p.n*Math.PI*2, x=P.x+Math.cos(a)*p.r, y=P.y+Math.sin(a)*p.r*0.8; emArea(x,y,12,e=>ferir(e,base,i%2?el2:el)); } }
     if(!J.lendaVfx){ J.lendaVfx=vfx({max:1e9,desenhar(ox,oy){ const v=VFX_EL[el]||VFX_EL.luz; for(let i=0;i<p.n;i++){ const a=J.lendaAng+i/p.n*Math.PI*2, x=P.x+Math.cos(a)*p.r-ox, y=P.y+Math.sin(a)*p.r*0.8-oy;
@@ -425,20 +436,14 @@ function multDanoLenda(e){ let f=1; if(e.chefe||e.mini) f*=1+passiva("dano_chefe
   if(passiva("dano_serpentes")&&e.def&&(e.def.corpo==="serpente"||e.def.corpo==="bipede")) f*=1+passiva("dano_serpentes"); return f; }
 // a Lenda (ou o deus) anda junto com a equipe, na posição do jogador. Folha 6x3 (arte/lendas/<id>.png ou arte/panteao/<id>.png):
 // linha 1 parado (4), linha 2 andando (6), linha 3 lançando o poder ou o Dom Divino (6). Sem a folha, uma figura animada por código.
-function desenharLenda(ox,oy){ const l=LENDA(); if(!l||!J) return; const P=J.jogador, x=Math.round(P.x-ox-10), y=Math.round(P.y-oy+2), img=folhaArte(l.dom?`arte/panteao/${l.id}.png`:`arte/lendas/${l.id}.png`);
+// a Lenda é o herói do centro: desenhada na posição do jogador, do tamanho de um herói (devolve false sem a arte, e entra o Invocador)
+function desenharLenda(ox,oy){ const l=LENDA(); if(!l||!J) return false; const P=J.jogador, x=Math.round(P.x-ox), y=Math.round(P.y-oy+6), img=folhaArte(l.dom?`arte/panteao/${l.id}.png`:`arte/lendas/${l.id}.png`);
   const andando=Math.hypot(J.pvx||0,J.pvy||0)>5, pose=J.lendaPose, lancando=!!pose, dom=!!(pose&&pose.dom), esq=(J.pvx||0)<-1;
-  lg.fillStyle="rgba(0,0,0,.3)"; lg.beginPath(); lg.ellipse(x,y+1,6,2,0,0,Math.PI*2); lg.fill();
   if(img&&fatiarFolha(img,6,3).valida){ const f=fatiarFolha(img,6,3); let lin=lancando?2:andando?1:0; if(f.linhas[lin].qs.length<1) lin=0; const n=f.linhas[lin].qs.length;
-    const q=lin===2? Math.min(n-1,Math.floor(pose.t/pose.dur*n)) : Math.floor(J.t*(lin===1?10:6))%n, s=quadroAnim(img,lin,q,30);
-    if(s){ const resp=lin===0? 1+0.012*Math.sin(J.t*2.4) : 1; lg.save(); lg.translate(x,y+1); lg.rotate(Math.max(-0.08,Math.min(0.08,(J.pvx||0)/400))); lg.scale(esq?-1:1,resp); desenharSprite(s,-s.width/2,-s._pe,s.width,s.height); lg.restore(); return; } }
-  // figura por código: respiração, passos, capa balançando e braço erguido ao lançar
-  const c1=COR[l.elementos[0]], c2=COR[l.elementos[1]], t=J.t, passo=andando?Math.sin(t*14):0, resp=andando?0:Math.round(Math.sin(t*3)*0.6), lev=(lancando||dom)?1:0, s=esq?-1:1, X=v=>x+v*s;
-  lg.fillStyle=tom(c2,0.55); const capa=Math.round(Math.sin(t*(andando?10:3))*1.5); lg.fillRect(Math.min(X(-3),X(-3-capa)),y-10+resp,3,9);
-  lg.fillStyle="#2a2433"; lg.fillRect(X(-2)-(s<0?1:0),y-3,2,3+Math.round(passo)); lg.fillRect(X(1)-(s<0?1:0),y-3,2,3-Math.round(passo));
-  lg.fillStyle=c1; lg.fillRect(x-3,y-10+resp,6,7); lg.fillStyle=tom(c1,1.3); lg.fillRect(x-3,y-10+resp,6,1);
-  lg.fillStyle="#f0d8b8"; lg.fillRect(x-2,y-14+resp,4,4); lg.fillStyle=c2; lg.fillRect(x-2,y-15+resp,4,1); if(l.dom){ lg.fillStyle="#ffd34a"; lg.fillRect(x-2,y-16+resp,1,1); lg.fillRect(x,y-17+resp,1,2); lg.fillRect(x+1,y-16+resp,1,1); }
-  lg.fillStyle="#f0d8b8"; if(lev){ lg.fillRect(X(3),y-15,1,5); lg.globalAlpha=0.5+0.5*Math.sin(t*20); lg.fillStyle=c2; lg.fillRect(X(3)-1,y-18,3,3); lg.globalAlpha=1; } else lg.fillRect(X(3),y-9+resp+Math.round(passo*0.5),1,4); }
-
+    const q=lin===2? Math.min(n-1,Math.floor(pose.t/pose.dur*n)) : Math.floor(J.t*(lin===1?10:6))%n, s=quadroAnim(img,lin,q,34);
+    if(s){ const resp=lin===0? 1+0.012*Math.sin(J.t*2.4) : 1; lg.save(); lg.translate(x,y+1); lg.rotate(Math.max(-0.08,Math.min(0.08,(J.pvx||0)/400))); lg.scale(esq?-1:1,resp); desenharSprite(s,-s.width/2,-s._pe,s.width,s.height); lg.restore(); return true; } }
+  return false;   // sem a arte da Lenda: o Invocador entra no lugar
+}
 // ================================================================ Panteão: deuses jogáveis (Dom Divino, Fardo e Provação)
 const DEUS=()=>R&&R.lenda? D.panteao.find(p=>p.id===R.lenda) : null;
 function metaDeuses(){ metaConq(); META.deuses=META.deuses||[]; return META.deuses; }

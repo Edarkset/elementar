@@ -236,6 +236,15 @@ function atualizarReliquias(dt){ if(!R.reliquias.length||J.fim) return; const P=
       if(alvo){ const f=FONTE; FONTE="reliquia"; ferir(alvo,danoMedioEquipe()*6,"raio"); FONTE=f; J.efeitos.push({x:alvo.x+rnd(-8,8),y:alvo.y-90,x2:alvo.x,y2:alvo.y,linha:true,cor:"#fff6b0",vida:.25,max:.25}); anel(alvo.x,alvo.y,14,"#fff6b0",.6); tremor(2); } } }
   if(temRel("Espelho Mágico")){ J.tEsp=(J.tEsp||0)-dt; const dr=J.danoRec||0; if(J.tEsp<=0&&dr>(J._drEsp||0)+0.5){ J.tEsp=1; J._drEsp=dr; const f=FONTE; FONTE="reliquia"; const dm=danoMedioEquipe()*3;
       emArea(P.x,P.y,32,e=>ferir(e,dm,"luz")); FONTE=f; anel(P.x,P.y,32,"#e8f4ff",.6); } else if(J.tEsp<=0) J._drEsp=dr; } }
+// Afinidade da Lenda: cada monstro da equipe com um dos 2 elementos da Lenda reforça a equipe, com retorno decrescente
+// (+6%, +11%, +15% de dano; com os 3, +8% de vida), e o poder da Lenda cresce junto (+10% por monstro afim).
+// No reino de origem da Lenda (Terra Natal), o poder dela ganha +25%. Valores pequenos de propósito: somam com as
+// sinergias de classe, linhagem e elemento sem desequilibrar (conferido com o robô em testes/rodar_bot.js).
+const AFIN_LENDA={dano:[1,1.06,1.11,1.15], vida:[1,1,1,1.08], poderPorAfim:0.1, terraNatal:0.25};
+function afinidadeLenda(eq){ const l=typeof LENDA==="function"&&LENDA(); if(!l) return {dano:1,vida:1,poder:1,n:0,chip:null};
+  const n=Math.min(3,eq.filter(s=>l.elementos.includes(elementoDe(s))).length), natal=!!(l.universo&&R.universo===l.universo);
+  const poder=(1+n*AFIN_LENDA.poderPorAfim)*(natal?1+AFIN_LENDA.terraNatal:1);
+  return {dano:AFIN_LENDA.dano[n], vida:AFIN_LENDA.vida[n], poder, n, natal, chip: n||natal? `${l.nome.split(",")[0].split(" ")[0]} ${"★".repeat(n)}${natal?" · Terra Natal":""}` : null}; }
 function calcularSinergia(){
   const rg=D.regras, eq=ativos(), chips=[]; let dano=1,vida=1,reac=1; { const pr=R.pressagio&&PRESSAGIOS.find(p=>p.id===R.pressagio); if(pr) chips.push("✦ "+pr.nome); if(R.maldicoes&&R.maldicoes.length) chips.push("☠ "+R.maldicoes.length); } const cc={},lc={},ec={};
   eq.forEach(s=>{ const cl=L(s).classe; cc[cl]=(cc[cl]||0)+1; const ex=classeExtraDe(s); if(ex) cc[ex]=(cc[ex]||0)+1;
@@ -250,7 +259,8 @@ function calcularSinergia(){
   if(pap.has("frente")&&pap.has("suporte")&&(pap.has("dano_fisico")||pap.has("dano_magico"))){ dano*=rg.trindade.dps; vida*=rg.trindade.ehp; chips.push("Trindade"); }
   const pb=D.pacto.bonus[R.pacto.length]; if(pb&&pb.dano>1){ dano*=pb.dano; chips.push("Pacto Duplo"); }
   R.elos.forEach(e=>chips.push(e));
-  SIN={dano:dano*rm.dano, vida:vida*rm.vida, cad:rm.cad, reac, chips, rm, cacadores:cc.cacador||0, invocadores:cc.invocador||0};
+  const af=afinidadeLenda(eq); dano*=af.dano; vida*=af.vida; if(af.chip) chips.push(af.chip);
+  SIN={dano:dano*rm.dano, vida:vida*rm.vida, cad:rm.cad, reac, chips, rm, cacadores:cc.cacador||0, invocadores:cc.invocador||0, lendaPoder:af.poder};
   if(J){ const antes=J.vidaMax, nova=eq.reduce((t,s)=>t+atrib(s).vida,0)*SIN.vida*(1+passiva("vida")+custo("vida"))*(1+MOD("vida")); J.vidaMax=Math.max(1,nova); if(antes>1) J.vida=Math.min(J.vidaMax, J.vida*J.vidaMax/antes); }
   $("chips").innerHTML=R.pacto.map(el=>`<span class="chip el" style="color:${COR[el]}">${NOME_EL(el)}</span>`).join("")+chips.map(c=>`<span class="chip">${c}</span>`).join("");
 }

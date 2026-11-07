@@ -62,9 +62,9 @@ function desenhar(dt){
   for(const e of J.inimigos) fila.push({y:e.y+(e.tam||8)*0.63-(e.z||0)*0,f:()=>desenharInimigo(e,ox,oy,P)});
   for(const c of J.crias){ const t=c.gigante?6:3; lg.fillStyle=tom(c.cor,1.2); lg.fillRect(Math.round(c.x-ox)-t/2,Math.round(c.y-oy)-t/2,t,t); lg.fillStyle="#120e1a"; lg.fillRect(Math.round(c.x-ox),Math.round(c.y-oy),1,1); }
   for(const f of J.fantasmas){ lg.globalAlpha=f.vida*3; lg.drawImage(f.spr,Math.round(f.x-ox-f.spr.width/2),Math.round(f.y-oy-f.spr.height/2)); } lg.globalAlpha=1;
-  fila.push({y:P.y+6,f:()=>{ sombra(P.x-ox,P.y-oy+6,13); if(J.invuln>0) lg.globalAlpha=Math.floor(J.t*14)%2? .6 : 1; desenharInvocador(P.x-ox,P.y-oy); lg.globalAlpha=1; }});
+  // o herói do centro é a Lenda (ou o deus) escolhida no começo da run; sem Lenda, o Invocador básico
+  fila.push({y:P.y+6,f:()=>{ sombra(P.x-ox,P.y-oy+6,13); if(J.invuln>0) lg.globalAlpha=Math.floor(J.t*14)%2? .6 : 1; if(!(LENDA()&&desenharLenda(ox,oy))) desenharInvocador(P.x-ox,P.y-oy); lg.globalAlpha=1; }});
   R.selos.forEach(s=>{ if(s.mon) fila.push({y:s.y+ALVO_ARTE[est(s)]/2,f:()=>desenharSelo(s,ox,oy,sombra)}); });
-  fila.push({y:P.y+3,f:()=>desenharLenda(ox,oy)});
   for(const t of J.totens) fila.push({y:t.y+1,f:()=>desenharTotem(t,ox,oy)});
   fila.sort((a,b)=>a.y-b.y); for(const it of fila){ lg.globalAlpha=1; it.f(); } lg.globalAlpha=1;
   desenharVfx(ox,oy,"frente"); desenharFauna(ox,oy,"ar"); desenharQuedas(ox,oy); desenharCenaAr(ox,oy); desenharFauna(ox,oy,"ceu"); J._nuvemFeita=false; desenharMapaLuz(ox,oy); desenharNuvens(ox,oy); desenharLuzAmbiente(ox,oy); desenharEscuridao(ox,oy); desenharBrilhoInimigos();

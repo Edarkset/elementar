@@ -878,6 +878,10 @@ function faixaPonte(pec){ if(pec._ponte!==undefined) return pec._ponte; pec._pon
   const t=document.createElement("canvas"); t.width=Math.max(1,Math.round(bb.w)); t.height=Math.max(1,Math.round(bb.h)); const g=t.getContext("2d"); g.drawImage(pec,bb.x,bb.y,bb.w,bb.h,0,0,t.width,t.height);
   let shDeck=bb.h; try{ const d=g.getImageData(0,0,t.width,t.height).data; let ult=-1; for(let y=0;y<t.height;y++){ let n=0; for(let x=0;x<t.width;x++) if(d[(y*t.width+x)*4+3]>40) n++; if(n>=t.width*0.88) ult=y; } if(ult>t.height*0.3) shDeck=(ult+1)*bb.h/t.height; }catch(e){}
   pec._ponte={sx:bb.x, sy:bb.y, sw:bb.w, sh:bb.h, shDeck}; return pec._ponte; }
+// névoa do abismo: degradê vertical (transparente -> cor média do fundo) usado para dissolver a base do paredão
+function nevoaAbismo(fundo){ if(fundo._nev) return fundo._nev; let r=200,g=210,b=225; try{ const c=document.createElement("canvas"); c.width=c.height=8; const gc=c.getContext("2d"); gc.drawImage(fundo,0,0,8,8); const d=gc.getImageData(0,0,8,8).data; r=g=b=0; for(let i=0;i<d.length;i+=4){ r+=d[i]; g+=d[i+1]; b+=d[i+2]; } r/=64; g/=64; b/=64; }catch(e){}
+  const n=document.createElement("canvas"); n.width=1; n.height=64; const gn=n.getContext("2d"), gr=gn.createLinearGradient(0,0,0,64); gr.addColorStop(0,`rgba(${r|0},${g|0},${b|0},0)`); gr.addColorStop(0.55,`rgba(${r|0},${g|0},${b|0},.75)`); gr.addColorStop(1,`rgba(${r|0},${g|0},${b|0},1)`); gn.fillStyle=gr; gn.fillRect(0,0,1,64);
+  fundo._nev=n; return n; }
 function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) return; const pec=folhaU("pecas"), feats=pecasPerto(ox+VW/2,oy+VH/2);
   // praças e lagos (planos, por baixo de tudo)
   for(const f of feats){ if(f.tipo==="praca"){ if(pec){ const w=f.rx*2.6; lg.drawImage(celulaArte(pec,2,2,0,0,Math.round(w),Math.round(w)),Math.round(f.x-ox-w/2),Math.round(f.y-oy-w/2)); }
@@ -899,7 +903,7 @@ function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) re
     lg.fillStyle=gp; lg.fillRect(ex-R2,ey-R2,R2*2,R2*2);
     lg.globalCompositeOperation="lighter"; for(let i=0;i<5;i++){ const q=((C.t*0.03+i/5)%1), mx=ex+Math.sin(i*2.3+C.t*0.2)*f.rx*0.5, my=ey+f.ry*0.6-q*f.ry*1.2; lg.globalAlpha=0.07*Math.sin(q*Math.PI); lg.drawImage(bolhaCor("#c8d4f0"),mx-f.rx*0.45,my-f.ry*0.22,f.rx*0.9,f.ry*0.44); } lg.globalCompositeOperation="source-over"; lg.globalAlpha=1;
     // paredão: acompanha a curva da borda de cima, em fatias finas; um trecho por buraco vira cachoeira
-    const fx=faixaParedao(folhaU("paredao")), PH=34, passo=1, hf=hash2(Math.round(f.x),Math.round(f.y),61), var0=Math.floor(hf*4);
+    const fx=faixaParedao(folhaU("paredao")), PH=40, passo=1, nev=nevoaAbismo(fundo), hf=hash2(Math.round(f.x),Math.round(f.y),61), var0=Math.floor(hf*4);
     const cach0=hf<0.55? (hash2(Math.round(f.x),3,7)-0.5)*f.rx*1.2 : null;
     const xMin=Math.min(...f.pts.map(p=>p[0])), xMax=Math.max(...f.pts.map(p=>p[0]));
     for(let wx=xMin;wx<xMax;wx+=passo){ const tp=topo(wx+passo/2); if(tp==null) continue; const yt=ey+tp, x=ex+wx;
@@ -910,15 +914,20 @@ function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) re
         if(agua){ const q=fx.quedas[Math.floor(J.t*8)%fx.quedas.length], u=(wx-cach0+12)/24; lg.drawImage(fx.c,q.x+u*q.w,fx.h,Math.max(1,q.w*passo/24),fx.h,x,yt-1,passo+0.6,PH); }
         else { const SW=fx.w*k, u=((((wx+f.x+var0*37)%SW)+SW)%SW)/k; lg.drawImage(fx.c,u,0,Math.min(passo/k,fx.w-u),fx.h,x,yt-1,passo+0.6,PH); } }
       else { const g=lg.createLinearGradient(0,yt,0,yt+26); g.addColorStop(0,"#7a7680"); g.addColorStop(1,"rgba(40,38,46,0)"); lg.fillStyle=g; lg.fillRect(x,yt,passo+0.6,26); if(agua){ lg.fillStyle="rgba(220,240,255,.7)"; lg.fillRect(x,yt,passo+0.6,26+Math.sin(J.t*9+wx)*2); } }
+      // a parede se dissolve na névoa da cor do fundo (antes terminava num corte reto no meio do buraco)
+      const a0=lg.globalAlpha; lg.globalAlpha=a0; lg.drawImage(nev,0,0,1,64,x,yt+PH*0.35,passo+0.6,PH*0.75);
       lg.globalAlpha=1;
       if(agua&&Math.random()<.012&&C.ar.length<400){ const p=particulaAr("bolhas",x+ox,yt+oy+30,0); p.cor="#ffffff"; p.vz=6; } }
     // sombra interna na beira (o chão de cima projeta sombra no fundo)
-    lg.strokeStyle="rgba(8,6,14,.6)"; lg.lineWidth=6; buraco(); lg.stroke(); lg.strokeStyle="rgba(8,6,14,.35)"; lg.lineWidth=12; buraco(); lg.stroke();
+    // sombra interna suave na beira e luz que desce do alto (raios) por cima da névoa
+    lg.strokeStyle="rgba(8,6,14,.22)"; lg.lineWidth=5; buraco(); lg.stroke();
+    lg.globalCompositeOperation="lighter"; for(let i=0;i<3;i++){ const rx=ex+(i-1)*f.rx*0.55+Math.sin(C.t*0.3+i)*4, gr=lg.createLinearGradient(0,ey-f.ry,0,ey+f.ry); gr.addColorStop(0,"rgba(255,245,220,.12)"); gr.addColorStop(1,"rgba(255,245,220,0)"); lg.fillStyle=gr; lg.beginPath(); lg.moveTo(rx-4,ey-f.ry); lg.lineTo(rx+4,ey-f.ry); lg.lineTo(rx+16,ey+f.ry); lg.lineTo(rx-8,ey+f.ry); lg.fill(); }
+    lg.globalCompositeOperation="source-over";
     lg.imageSmoothingEnabled=suave; lg.restore();
     // beirada: contorno escuro e uma luz fina na borda de baixo
     // beirada de pedra: lábio grosso escuro, luz fina na borda de baixo (a que está de frente) e cascalho ao longo da beira
-    lg.lineJoin="round"; lg.strokeStyle="rgba(40,30,22,.55)"; lg.lineWidth=1.6; buraco(); lg.stroke(); lg.strokeStyle="rgba(20,15,28,.5)"; lg.lineWidth=0.7; buraco(); lg.stroke();   /* beirada mais fina: o contorno preto grosso parecia recortado */
-    lg.strokeStyle="rgba(255,240,210,.32)"; lg.lineWidth=0.8; lg.beginPath(); let ini=true; for(let i=0;i<NP;i++){ const [px,py]=f.pts[i]; if(py<f.ry*0.25){ ini=true; continue; } lg[ini?"moveTo":"lineTo"](ex+px,ey+py+1.2); ini=false; } lg.stroke();
+    lg.lineJoin="round"; lg.strokeStyle="rgba(30,22,16,.35)"; lg.lineWidth=2.4; buraco(); lg.stroke(); lg.strokeStyle="rgba(255,236,200,.18)"; lg.lineWidth=0.6; buraco(); lg.stroke();   /* beirada mais fina: o contorno preto grosso parecia recortado */
+    lg.strokeStyle="rgba(255,240,210,.5)"; lg.lineWidth=1; lg.beginPath(); let ini=true; for(let i=0;i<NP;i++){ const [px,py]=f.pts[i]; if(py<f.ry*0.25){ ini=true; continue; } lg[ini?"moveTo":"lineTo"](ex+px,ey+py+1.2); ini=false; } lg.stroke();
     for(let i=0;i<NP;i+=2){ const h=hash2(Math.round(f.x)+i,Math.round(f.y),71); if(h>0.55) continue; const [px,py]=f.pts[i], k=1.12+h*0.25, sx=ex+px*k, sy=ey+py*k, rr=0.8+h*2.2;
       lg.fillStyle="rgba(20,14,10,.55)"; lg.beginPath(); lg.ellipse(sx+0.4,sy+0.6,rr,rr*0.6,0,0,Math.PI*2); lg.fill(); lg.fillStyle="#6a6058"; lg.beginPath(); lg.ellipse(sx,sy,rr,rr*0.62,h*3,0,Math.PI*2); lg.fill();
       lg.fillStyle="rgba(255,240,220,.25)"; lg.beginPath(); lg.ellipse(sx-rr*0.25,sy-rr*0.2,rr*0.45,rr*0.25,0,0,Math.PI*2); lg.fill(); }

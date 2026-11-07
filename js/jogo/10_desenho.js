@@ -135,7 +135,10 @@ function desenharSelo(s,ox,oy,sombra){ movSelo(s);
   rot=Math.max(-0.12,Math.min(0.12,(s._vx||0)/260));                                                    // inclina para onde anda
   if(!anim){ if(anda>0.1){ const f=Math.abs(Math.sin(t*12+s.x*0.01)); hop=f*1.8*anda; sy*=1-0.07*(1-f)*anda; sx*=1+0.05*(1-f)*anda; }
     else { const b=Math.sin(t*2.6+s.x*0.1); sy*=1+0.03*b; sx*=1-0.018*b; } }
-  else if(anda<0.1){ const b=Math.sin(t*2.2+s.x*0.1); sy*=1+0.012*b; }
+  else if(anda<0.1){ const b=Math.sin(t*2.2+s.x*0.1); sy*=1+0.02*b; sx*=1-0.01*b;   // respira
+    // de vez em quando um gesto: pulinho de alegria ou uma olhada para o outro lado
+    const ciclo=(t+(s.x%13))%7; if(ciclo<0.35){ const k=ciclo/0.35; hop+=Math.sin(k*Math.PI)*2.2; sy*=1+0.08*Math.sin(k*Math.PI); sx*=1-0.05*Math.sin(k*Math.PI); } }
+  else { const pa=Math.abs(Math.sin(t*9+s.x*0.01)); hop+=pa*0.9*anda; sy*=1-0.035*(1-pa)*anda; }   // andando: sobe e desce no ritmo dos passos
   if(s._vira>0){ const v=Math.sin(s._vira*Math.PI); sy*=1-0.1*v; sx*=1+0.07*v; hop+=v*1.2; }   // virou de lado: agacha e dá um pulinho
   const pk=1-s._pop, esc=s._pop>0? 1+0.32*Math.sin(pk*Math.PI*3)*(1-pk) : 1, fx=fxAlvo;
   sombra(x+lunge*fxAlvo*0.6,pe-1,alvo*0.75*(1-hop*0.06)*Math.min(1.2,esc)); sombraProjetada(spr,x,pe,spr.width,spr.height,s._fx<0,1);
@@ -152,6 +155,7 @@ function desenharSelo(s,ox,oy,sombra){ movSelo(s);
   if(!SIM.ativo&&QUAL>0){ const sil=silhueta(spr,COR[elementoDe(s)]), d=0.9, a0=0.38+0.12*Math.sin(t*3+s.x*0.1);
     lg.globalAlpha=a0; for(const [ddx,ddy] of [[-d,0],[d,0],[0,-d],[0,d]]) lg.drawImage(sil,-w/2+ddx,-peS+ddy,w,h); lg.globalAlpha=1; }
   desenharSprite(spr,-w/2,-peS,w,h);
+  if(anim&&s._prox&&s._mix>0.05){ const a0=lg.globalAlpha; lg.globalAlpha=a0*s._mix; desenharSprite(s._prox,-w/2,-peS,w,h); lg.globalAlpha=a0; }   // quadro intermediário: mistura com o próximo
   if(s._pop>0){ lg.globalCompositeOperation="lighter"; lg.globalAlpha=Math.min(1,s._pop*1.2)*0.85; lg.drawImage(branco(spr),-w/2,-peS,w,h); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1; }
   lg.restore();
   if(s.furia>0){ lg.fillStyle="#ff5a4a"; lg.fillRect(Math.round(x)-1,Math.round(pe-alvo)-3,2,1); } }

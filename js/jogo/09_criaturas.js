@@ -329,6 +329,8 @@ function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||
   if(d.andar==="corre"&&pose==="anda"){ sx=1.06; sy=0.95; }
   if(d.andar==="rasteja"){ sx=1+Math.sin(e.fase)*0.07; sy=1-Math.sin(e.fase)*0.06; }
   if(d.andar==="cambaleia") dx=Math.round(Math.sin(e.fase*0.4)*1);
+  if((d.andar==="caminha"||d.andar==="marcha")&&pose==="anda"){ const pa=Math.abs(Math.sin((e.fase||0)*1.2)); z+=pa*0.8; sy*=1-0.04*(1-pa); sx*=1+0.03*(1-pa); }   // passada: sobe e desce no ritmo dos pés
+  if(pose==="pisca"||(pose==="anda"&&Math.hypot(e.vx||0,e.vy||0)<3)){ const b=Math.sin(J.t*2.4+(e.fase||0)); sy*=1+0.025*b; }   // parado: respira
   if(pose==="atk"&&!e.chefe) dx+=Math.sin(J.t*30+e.fase)*0.5;   // tremor leve e contínuo (antes sorteava a cada quadro e o bicho 'pulava')
   if(e.chefe||e.mini) z+=Math.sin(J.t*2.2)*1.2;
   if(e.giro>0) sx=Math.cos(J.t*18);

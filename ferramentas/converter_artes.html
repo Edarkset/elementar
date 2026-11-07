@@ -37,10 +37,30 @@ function montarTira(bmp, t, g) {
     g.drawImage(bmp, c * cw, f.y, cw, f.h, c * S + (lado - cw) / 2 * k, (lado - f.h) / 2 * k, cw * k, f.h * k);
 }
 
+// ambiente: as peças ficam no meio de uma imagem grande com margem. Acha as 2 faixas (linhas) e as 8 peças pela transparência,
+// recorta cada peça quadrada um pouco para dentro (a borda do original é irregular) e deixa as peças de textura opacas
+function faixas(cheio, n, minimo) { const r = []; let s = -1; for (let i = 0; i <= n; i++) { const v = i < n && cheio(i); if (v && s < 0) s = i; if (!v && s >= 0) { if (i - s >= minimo) r.push([s, i]); s = -1; } } return r; }
+function montarGrade(bmp, t, g) {
+  const [nc, nl] = t.grade.split("x").map(Number), W = bmp.width, H = bmp.height, c = new OffscreenCanvas(W, H), gc = c.getContext("2d"); gc.drawImage(bmp, 0, 0);
+  const d = gc.getImageData(0, 0, W, H).data, a = (x, y) => d[(y * W + x) * 4 + 3] > 20;
+  const lin = faixas(y => { let n = 0; for (let x = 0; x < W; x += 2) if (a(x, y)) n++; return n > W * 0.01; }, H, H / 20);
+  if (lin.length !== nl) throw new Error(`achei ${lin.length} linhas de peças, esperava ${nl}`);
+  const [y0, y1] = lin[nl - 1]; let col = faixas(x => { for (let y = y0; y < y1; y += 2) if (a(x, y)) return true; return false; }, W, W / 40);
+  while (col.length < nc) { let i = 0; col.forEach((k, j) => { if (k[1] - k[0] > col[i][1] - col[i][0]) i = j; }); const [x0, x1] = col[i], m = (x0 + x1) >> 1; col.splice(i, 1, [x0, m - 2], [m + 2, x1]); }
+  if (col.length !== nc) throw new Error(`achei ${col.length} colunas de peças, esperava ${nc}`);
+  const T = t.w / nc; g.imageSmoothingQuality = "high";
+  lin.forEach(([ya, yb], r) => col.forEach(([xa, xb], k) => { const lado = yb - ya, bx = Math.round((xa + xb) / 2 - lado / 2), ins = Math.max(2, Math.round(lado * 0.045));
+    g.drawImage(bmp, bx + ins, ya + ins, lado - 2 * ins, lado - 2 * ins, k * T, r * T, T, T); }));
+  // peças de textura (todas menos os enfeites soltos da 1ª linha, colunas 5 a 8) ficam opacas
+  const im = g.getImageData(0, 0, t.w, t.h), e = im.data;
+  for (let y = 0; y < t.h; y++) for (let x = 0; x < t.w; x++) { if (y < T && x >= T * 4) continue; e[(y * t.w + x) * 4 + 3] = 255; }
+  g.putImageData(im, 0, 0);
+}
 async function converter(t) {
   const png = await (await fetch(`/origem/${t.i}`)).blob();
   const tela = new OffscreenCanvas(t.w, t.h), g = tela.getContext("2d");
-  if (t.cols) { const bmp = await createImageBitmap(png, { premultiplyAlpha: "none" }); montarTira(bmp, t, g); bmp.close(); }
+  if (t.grade) { const bmp = await createImageBitmap(png, { premultiplyAlpha: "none" }); montarGrade(bmp, t, g); bmp.close(); }
+  else if (t.cols) { const bmp = await createImageBitmap(png, { premultiplyAlpha: "none" }); montarTira(bmp, t, g); bmp.close(); }
   else { const bmp = await createImageBitmap(png, { resizeWidth: t.w, resizeHeight: t.h, resizeQuality: "high", premultiplyAlpha: "none" }); g.drawImage(bmp, 0, 0); bmp.close(); }
   const webp = await tela.convertToBlob({ type: "image/webp", quality: t.q });
   if (webp.type !== "image/webp") throw new Error("este navegador não gera WebP");

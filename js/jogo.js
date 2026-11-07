@@ -297,9 +297,9 @@ function iniciarMapa(){
 }
 function dicaVantagem(el){ const forte=ELS.find(k=>D.vantagem[k]===el); return `${NOME_EL(forte)} é super efetivo aqui.`; }
 // Curva de dificuldade (calibrada com o bot: testes/bot.js + testes/rodar_bot.js; ver docs/ANALISE_EQUILIBRIO.md)
-const DIF={vida:1.33, dano:1.42, danoBase:7, hp:30, spawn:0.15, base:3, cresc:0.08, onda:22, ondaN:20, max:280,
+const DIF={vida:1.33, dano:1.48, danoBase:9, hp:30, spawn:0.18, base:4, cresc:0.08, onda:22, ondaN:20, max:280,
   rapido:42, rapidoCresc:5, rapidoMax:70, frente:0.2, frenteCresc:0.07, tiroElite:2.8, nivelAtrib:0.03, xpA:10, xpB:4, xpC:0.35,
-  mini:80, chefe:560, guardiao:760, chefe1:0.5, chefeQueda:0.12, rampa:1.6, rampaK:2.2};   // vida de mini-chefe, chefe e Guardião da Era (em inimigos comuns); o 1º chefe leva chefe1 disso
+  mini:80, chefe:560, guardiao:760, chefe1:0.5, chefeQueda:0.12, rampa:2.0, rampaK:2.2};   /* mais difícil (o jogo estava fácil): mais dano, mais inimigos desde o começo e rampa inicial mais forte */   // vida de mini-chefe, chefe e Guardião da Era (em inimigos comuns); o 1º chefe leva chefe1 disso
 // ameaças que crescem com a profundidade: começo suave, fim duro
 const velRapido=()=>Math.min(DIF.rapidoMax, DIF.rapido+DIF.rapidoCresc*R.profundidade);
 const chanceFrente=()=>Math.min(0.65, DIF.frente+DIF.frenteCresc*R.profundidade);
@@ -2314,7 +2314,7 @@ function arteCarregou(ns){ if(!J||!R||typeof chao==="undefined"||!chao||!chao.u)
 
 // ---------------------------------------------------------------- chão: 8 peças sorteadas lado a lado (16 px no mundo cada)
 // piso jogável grande (1024 px da folha = 512 px no mundo); emendas pequenas são escondidas misturando uma cópia deslocada perto das bordas
-const TAM_PISO=300;   // o piso de 512 px cobre 300 px de mundo: mais nítido de perto
+const TAM_PISO=220;   // o piso de 512 px cobre 220 px de mundo (antes 300: as peças do piso ficavam enormes perto dos personagens)
 // realce leve de nitidez (máscara de desfoque), feito uma vez quando o piso carrega; a borda dá a volta para continuar emendando
 function nitidez(c,k){ if(SIM.ativo) return c; try{ const g=c.getContext("2d"), w=c.width, h=c.height, im=g.getImageData(0,0,w,h), d=im.data, o=new Uint8ClampedArray(d);
     for(let y=0;y<h;y++){ const ym=((y-1+h)%h)*w, yp=((y+1)%h)*w, y0=y*w; for(let x=0;x<w;x++){ const xm=(x-1+w)%w, xp=(x+1)%w, i=(y0+x)*4;
@@ -2334,12 +2334,18 @@ function tornarContinuo(img,T){ const c=document.createElement("canvas"); c.widt
     let ix=0, ex=0, ey=0, n=0; for(let k=0;k<T;k+=2){ ix+=dif(px(T>>1,k),px((T>>1)+1,k))+dif(px(k,T>>1),px(k,(T>>1)+1)); ex+=dif(px(0,k),px(T-1,k)); ey+=dif(px(k,0),px(k,T-1)); n++; }
     ix/=2*n; mx=ex/n>ix*1.3+4; my=ey/n>ix*1.3+4; }catch(e){}
   if(!mx&&!my) return c;
+  // piso que não emenda nas bordas (padrões geométricos como o da Pérsia): misturar as bordas criava uma faixa borrada que
+  // parecia outro piso encaixado. Espelhar as cópias vizinhas emenda sem costura nenhuma; cada cópia cobre o mesmo tamanho de mundo
+  { const T2=Math.min(2048,T*2), h2=T2/2, e=document.createElement("canvas"); e.width=e.height=T2; const ge=e.getContext("2d"); ge.imageSmoothingEnabled=true; ge.imageSmoothingQuality="high";
+    for(const [sx,sy] of [[1,1],[-1,1],[1,-1],[-1,-1]]){ ge.save(); ge.translate(sx<0?T2:0,sy<0?T2:0); ge.scale(sx,sy); ge.drawImage(img,0,0,h2,h2); ge.restore(); }
+    // as quatro cópias: normal (cima-esq), espelhada na horizontal (cima-dir), na vertical (baixo-esq) e nas duas (baixo-dir)
+    e._espelho=true; return e; }
   const m=document.createElement("canvas"); m.width=m.height=T; const gm=m.getContext("2d"), F=Math.round(T*0.07);
   const borda=(x0,y0,x1,y1,rx,ry,rw,rh)=>{ const gr=gm.createLinearGradient(x0,y0,x1,y1); gr.addColorStop(0,"rgba(255,255,255,1)"); gr.addColorStop(0.5,"rgba(255,255,255,.45)"); gr.addColorStop(1,"rgba(255,255,255,0)"); gm.fillStyle=gr; gm.fillRect(rx,ry,rw,rh); };
   if(mx){ borda(0,0,F,0,0,0,F,T); borda(T,0,T-F,0,T-F,0,F,T); } if(my){ borda(0,0,0,F,0,0,T,F); borda(0,T,0,T-F,0,T-F,T,F); }
   go.globalCompositeOperation="destination-in"; go.drawImage(m,0,0); g.drawImage(o,0,0); return c; }
 // o piso é guardado na resolução do arquivo (até 2048 px) e desenhado com 512 px de mundo
-function chaoArte(u){ const piso=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__piso.png`]; if(piso&&piso.pronta){ const T=SIM.ativo?512:Math.max(512,Math.min(2048,piso.width)); chao={cv:acalmarPiso(nitidez(tornarContinuo(piso,T),0.2)),u,tam:TAM_PISO,suave:true}; return true; }
+function chaoArte(u){ const piso=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__piso.png`]; if(piso&&piso.pronta){ const T=SIM.ativo?512:Math.max(512,Math.min(2048,piso.width)); const cv=acalmarPiso(nitidez(tornarContinuo(piso,T),0.2)); chao={cv,u,tam:TAM_PISO*(cv._espelho?2:1),suave:true}; return true; }
   const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__tiles.png`]; if(!img||!img.pronta) return false;
   const c=document.createElement("canvas"); c.width=c.height=128; const g=c.getContext("2d"), r=semente(u.id+"chao"); g.imageSmoothingEnabled=false;
   for(let y=0;y<8;y++) for(let x=0;x<8;x++){ const v=Math.floor(r()*8); g.drawImage(celulaArte(img,8,3,v,0,16,16),x*16,y*16); }
@@ -2370,7 +2376,7 @@ function sortearMarcos(cx,cy,r,out){ const img=folhaU("props"); if(!img) return;
   else if(sorte<0.54) out.push(Object.assign(novoProp("frente",x,y,r),{idx:7})); }
 // marcos: recorta só a parte desenhada da célula (a folha tem muita margem vazia) e dá a altura certa para cada tipo
 // (colunas e estátuas altas, templo e árvore grandes, braseiro baixo); antes a célula inteira virava um quadrado e tudo saía pequeno
-const ALT_MARCO=[56,30,60,56,62,48,32,74];
+const ALT_MARCO=[56,30,60,56,62,48,44,74];   // 6 = luz (lampião, braseiro): era 32 e ficava baixinho perto das construções
 function spriteMarco(p){ const img=folhaU("props"); if(!img) return null; if(!img._id) img._id=++ID_IMG; const k="marco|"+img._id+"|"+p.idx; if(cacheCel.has(k)) return cacheCel.get(k);
   const cw=img.width/4, ch=img.height/2, sx=(p.idx%4)*cw, sy=Math.floor(p.idx/4)*ch, bb=bboxCelula(img,sx,sy,cw,ch), H=ALT_MARCO[p.idx]||46;
   const e=H/bb.h, w=Math.max(1,Math.round(bb.w*e)), h=Math.max(1,Math.round(bb.h*e)), c=document.createElement("canvas"); c.width=w; c.height=h; const g=c.getContext("2d"); g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
@@ -2384,7 +2390,7 @@ function spriteObjetoArte(p){ const img=folhaU("objetos"); if(!img) return null;
   if(t==="metal") col=p.solo==="eletrico"?1:p.congela>0?3:0;
   else if(t==="arvore") col=p.carvao>0.5?3:p.queima>0?2:q<0.6?1:0;
   else if(p.carvao>0.5||(p.congela>0&&["rocha","gelo","cristal","vaso","ovo"].includes(t))) col=3;
-  const tam=Math.round((TAM_OBJ[t]||14)*1.35*(p.carvalho?1.4:1)); return celulaArte(img,8,rows,col,lin,tam,tam,0.85); }
+  const tam=Math.round((TAM_OBJ[t]||14)*1.8*(p.carvalho?1.4:1));   /* antes 1,35: vaso e caixote saíam menores que a cabeça do herói */ return celulaArte(img,8,rows,col,lin,tam,tam,0.85); }
 function cacoArte(p){ const img=folhaU("objetos"); if(!img) return null; const lin=linhaObjeto(p); if(lin<0) return null; const u=UNIV[R.universo];
   return celulaArte(img,8,u.objetos.length,4+Math.floor(Math.random()*4),lin,6,6,1); }
 
@@ -2470,6 +2476,12 @@ function faixaParedao(img){ if(!img) return null; if(img._faixa) return img._fai
   let x=0; for(const b of rochas){ g.drawImage(img,b.sx,b.sy,b.sw,H,x,0,b.sw,H); x+=b.sw; }
   const qs=[]; x=0; for(const b of quedas){ g.drawImage(img,b.sx,b.sy,b.sw,H,x,H,b.sw,H); qs.push({x,w:b.sw}); x+=b.sw; }
   img._faixa={c, w:W, h:H, quedas:qs.length?qs:[{x:0,w:W}]}; return img._faixa; }
+// ponte: recorta a ponte pelo desenho (a célula tem muita margem). De frente (atravessando na horizontal) usa tudo, com os arcos;
+// na vertical usa só o tabuleiro e os parapeitos (as linhas que cobrem a largura toda), girado: antes os arcos ficavam de lado
+function faixaPonte(pec){ if(pec._ponte!==undefined) return pec._ponte; pec._ponte=null; const cw=pec.width/2, ch=pec.height/2, bb=bboxCelula(pec,cw,ch,cw,ch);
+  const t=document.createElement("canvas"); t.width=Math.max(1,Math.round(bb.w)); t.height=Math.max(1,Math.round(bb.h)); const g=t.getContext("2d"); g.drawImage(pec,bb.x,bb.y,bb.w,bb.h,0,0,t.width,t.height);
+  let shDeck=bb.h; try{ const d=g.getImageData(0,0,t.width,t.height).data; let ult=-1; for(let y=0;y<t.height;y++){ let n=0; for(let x=0;x<t.width;x++) if(d[(y*t.width+x)*4+3]>40) n++; if(n>=t.width*0.88) ult=y; } if(ult>t.height*0.3) shDeck=(ult+1)*bb.h/t.height; }catch(e){}
+  pec._ponte={sx:bb.x, sy:bb.y, sw:bb.w, sh:bb.h, shDeck}; return pec._ponte; }
 function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) return; const pec=folhaU("pecas"), feats=pecasPerto(ox+VW/2,oy+VH/2);
   // praças e lagos (planos, por baixo de tudo)
   for(const f of feats){ if(f.tipo==="praca"){ if(pec){ const w=f.rx*2.6; lg.drawImage(celulaArte(pec,2,2,0,0,Math.round(w),Math.round(w)),Math.round(f.x-ox-w/2),Math.round(f.y-oy-w/2)); }
@@ -2491,7 +2503,7 @@ function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) re
     lg.fillStyle=gp; lg.fillRect(ex-R2,ey-R2,R2*2,R2*2);
     lg.globalCompositeOperation="lighter"; for(let i=0;i<5;i++){ const q=((C.t*0.03+i/5)%1), mx=ex+Math.sin(i*2.3+C.t*0.2)*f.rx*0.5, my=ey+f.ry*0.6-q*f.ry*1.2; lg.globalAlpha=0.07*Math.sin(q*Math.PI); lg.drawImage(bolhaCor("#c8d4f0"),mx-f.rx*0.45,my-f.ry*0.22,f.rx*0.9,f.ry*0.44); } lg.globalCompositeOperation="source-over"; lg.globalAlpha=1;
     // paredão: acompanha a curva da borda de cima, em fatias finas; um trecho por buraco vira cachoeira
-    const fx=faixaParedao(folhaU("paredao")), PH=34, passo=2, hf=hash2(Math.round(f.x),Math.round(f.y),61), var0=Math.floor(hf*4);
+    const fx=faixaParedao(folhaU("paredao")), PH=34, passo=1, hf=hash2(Math.round(f.x),Math.round(f.y),61), var0=Math.floor(hf*4);
     const cach0=hf<0.55? (hash2(Math.round(f.x),3,7)-0.5)*f.rx*1.2 : null;
     const xMin=Math.min(...f.pts.map(p=>p[0])), xMax=Math.max(...f.pts.map(p=>p[0]));
     for(let wx=xMin;wx<xMax;wx+=passo){ const tp=topo(wx+passo/2); if(tp==null) continue; const yt=ey+tp, x=ex+wx;
@@ -2503,7 +2515,7 @@ function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) re
         else { const SW=fx.w*k, u=((((wx+f.x+var0*37)%SW)+SW)%SW)/k; lg.drawImage(fx.c,u,0,Math.min(passo/k,fx.w-u),fx.h,x,yt-1,passo+0.6,PH); } }
       else { const g=lg.createLinearGradient(0,yt,0,yt+26); g.addColorStop(0,"#7a7680"); g.addColorStop(1,"rgba(40,38,46,0)"); lg.fillStyle=g; lg.fillRect(x,yt,passo+0.6,26); if(agua){ lg.fillStyle="rgba(220,240,255,.7)"; lg.fillRect(x,yt,passo+0.6,26+Math.sin(J.t*9+wx)*2); } }
       lg.globalAlpha=1;
-      if(agua&&Math.random()<.04&&C.ar.length<400){ const p=particulaAr("bolhas",x+ox,yt+oy+30,0); p.cor="#ffffff"; p.vz=6; } }
+      if(agua&&Math.random()<.012&&C.ar.length<400){ const p=particulaAr("bolhas",x+ox,yt+oy+30,0); p.cor="#ffffff"; p.vz=6; } }
     // sombra interna na beira (o chão de cima projeta sombra no fundo)
     lg.strokeStyle="rgba(8,6,14,.6)"; lg.lineWidth=6; buraco(); lg.stroke(); lg.strokeStyle="rgba(8,6,14,.35)"; lg.lineWidth=12; buraco(); lg.stroke();
     lg.imageSmoothingEnabled=suave; lg.restore();
@@ -2517,7 +2529,11 @@ function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) re
     lg.lineWidth=1; lg.lineJoin="miter";
     // ponte
     if(f.ponte){ const hz=f.ponte==="h", L=(hz?f.rx:f.ry)*2+14;
-      if(pec){ const alt=18, esc=alt/50, cel=Math.round(256*esc), s=celulaArte(pec,2,2,1,1,cel,cel); lg.save(); lg.translate(f.x-ox,f.y-oy); if(!hz) lg.rotate(Math.PI/2); lg.beginPath(); lg.rect(-L/2,-cel/2,L,cel); lg.clip(); for(let x=-L/2;x<L/2;x+=cel) lg.drawImage(s,Math.round(x),-cel/2); lg.restore(); }
+      const fp=pec&&faixaPonte(pec);
+      if(fp){ const sh=hz? fp.sh : fp.shDeck, H=hz? 40 : 34, k=H/sh, PL=fp.sw*k; lg.save(); lg.translate(f.x-ox,f.y-oy); if(!hz) lg.rotate(Math.PI/2);
+        const y0=hz? -H*0.42 : -H/2;   /* de frente, o tabuleiro fica no terço de cima do desenho: alinha com a faixa onde se anda */
+        lg.beginPath(); lg.rect(-L/2,y0,L,H); lg.clip(); const suave=lg.imageSmoothingEnabled; lg.imageSmoothingEnabled=true;
+        for(let x=-L/2-(PL-(L%PL))/2;x<L/2;x+=PL) lg.drawImage(pec,fp.sx,fp.sy,fp.sw,sh,x,y0,PL+0.5,H); lg.imageSmoothingEnabled=suave; lg.restore(); }
       else { lg.save(); lg.translate(f.x-ox,f.y-oy); if(!hz) lg.rotate(Math.PI/2); for(let x=-L/2;x<L/2;x+=3){ lg.fillStyle=(x/3|0)%2?"#8a5a30":"#a0703c"; lg.fillRect(Math.round(x),-7,2,14); } lg.fillStyle="#c8302a"; lg.fillRect(-L/2,-8,L,1); lg.fillRect(-L/2,7,L,1); lg.restore(); } } } }
 function desenharQuedasAbismo(ox,oy){ if(!J.quedas) return; for(const q of J.quedas) q.t+=1/60; J.quedas=J.quedas.filter(q=>q.t<0.7);
   for(const q of J.quedas){ const k=1-q.t/0.7, w=q.spr.width*q.esc*k, h=q.spr.height*q.esc*k; lg.globalAlpha=k; lg.drawImage(silhueta(q.spr,"#2a3040"),Math.round(q.x-ox-w/2),Math.round(q.y-oy-h/2+q.t*14),w,h); } lg.globalAlpha=1; }

@@ -28,6 +28,7 @@ O que mais ganha com a reconversão:
 | `reinos/*/*__tiles` (34) | A 1ª linha (peças de chão) ficou numa faixa fina no topo de cada célula. Só aparece em mapa sem piso. |
 | `reinos/*/*__fauna` (34) | Linhas fora da grade (desenho ocupa 40% da célula). |
 | `monstros/*/*__anim_*` (408) e `__base/__epico/__lendario` (153) | Linhas fora da grade de 64 px; o jogo já recorta pelo desenho, mas em 2x (128 px por quadro) fica bem mais nítido. |
+| `reinos/*/*__inimigos` com poses invadindo a célula vizinha (o bicho parece mudar de tamanho entre poses) | china, egito, grecia, persia, reino_luz, laboratorio, amazonia, polinesia, xibalba, atlantida, centro_terra, shangrila, eslavo. Reconverter; se continuar, gerar de novo com espaço vazio entre as linhas. |
 | `reinos/*/*__chefe`, `__mini`, `__inimigos` | Grade boa. Reconverter em 2x melhora muito a nitidez (hoje 64-96 px por quadro, desenhado 5 a 7 vezes maior). |
 
 `arte/ambiente/*` já foi refeito agora (os originais estavam no git): eram os retângulos cinza que cobriam a tela.

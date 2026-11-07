@@ -61,6 +61,7 @@ let RUN_SALVA=salvo.run||null;
 
 // ================================================================ sprites procedurais (placeholders da arte final)
 const cacheSpr=new Map();
+if(document.fonts&&document.fonts.load){ for(const f of ['800 20px "Cinzel"','900 20px "Nunito"','600 14px "Nunito"']) document.fonts.load(f).catch(()=>{}); }
 function semente(s){let h=2166136261; for(const c of s){h^=c.charCodeAt(0); h=Math.imul(h,16777619);} return ()=>{h+=0x6D2B79F5; let t=h; t=Math.imul(t^t>>>15,t|1); t^=t+Math.imul(t^t>>>7,t|61); return ((t^t>>>14)>>>0)/4294967296;};}
 function gerarSprite(seed,n,base,op={}){
   const k=seed+"|"+n+"|"+base+"|"+(op.olhos||"")+"|"+(op.rar||"");
@@ -84,13 +85,36 @@ const cacheBranco=new WeakMap();
 function baseHi(spr){ return (spr&&spr._src&&typeof Q!=="undefined"&&Q>1&&typeof versaoHi==="function"&&versaoHi(spr,Q*1.25))||spr; }
 function branco(spr){ if(cacheBranco.has(spr)) return cacheBranco.get(spr); const b=baseHi(spr), c=document.createElement("canvas"); c.width=b.width; c.height=b.height; const g=c.getContext("2d");
   g.drawImage(b,0,0); g.globalCompositeOperation="source-in"; g.fillStyle="#ffffff"; g.fillRect(0,0,c.width,c.height); if(b!==spr) c._suave=true; cacheBranco.set(spr,c); return c; }
+// ovo em vetor, desenhado em alta resolução (6x) e usado com 10x12 de mundo: casca com volume (degradê e brilho),
+// desenho do elemento na casca e acabamento pela raridade (comum: casca creme; raro: prata com faixa; lendário: ouro com runas que brilham)
+const OVO_K=6;
 function spriteOvo(el,rar){ const k="ovo|"+el+"|"+rar; if(cacheSpr.has(k)) return cacheSpr.get(k);
-  const c=document.createElement("canvas"); c.width=10; c.height=12; const g=c.getContext("2d"); const casca=rar==="lendario"?"#f0d27a":rar==="raro"?"#dfe6ee":"#efe6d2";
-  const linhas=[[3,6],[2,7],[1,8],[1,8],[0,9],[0,9],[0,9],[0,9],[1,8],[1,8],[2,7],[3,6]];
-  linhas.forEach(([a,b],y)=>{ g.fillStyle="#120e1a"; g.fillRect(a,y,b-a+1,1); if(b-a>1){ g.fillStyle=casca; g.fillRect(a+1,y,b-a-1,1);} });
-  g.fillStyle=COR[el]; [[3,4],[6,5],[4,7],[2,8],[7,8],[5,9]].forEach(([x,y])=>g.fillRect(x,y,1+(y%2),1));
-  if(rar!=="comum"){ g.fillStyle="#ffffff"; g.fillRect(3,2,1,1); }
-  cacheSpr.set(k,c); return c; }
+  const K=OVO_K, W=10*K, H=12*K, c=document.createElement("canvas"); c.width=W; c.height=H; const g=c.getContext("2d"), cor=COR[el]||"#ffd34a", corC=tom(cor,1.45), corE=tom(cor,0.6);
+  const casca=rar==="lendario"?["#fff4c4","#f0c860","#a8741c"]:rar==="raro"?["#ffffff","#d4dce6","#8a96a8"]:["#fffaf0","#ece2cc","#b8a888"];
+  const forma=()=>{ g.beginPath(); g.moveTo(W/2,H*0.04); g.bezierCurveTo(W*0.92,H*0.06,W*0.98,H*0.6,W*0.86,H*0.8); g.bezierCurveTo(W*0.74,H*0.98,W*0.26,H*0.98,W*0.14,H*0.8); g.bezierCurveTo(W*0.02,H*0.6,W*0.08,H*0.06,W/2,H*0.04); g.closePath(); };
+  const gr=g.createRadialGradient(W*0.36,H*0.3,W*0.05,W*0.5,H*0.55,W*0.62); gr.addColorStop(0,casca[0]); gr.addColorStop(0.55,casca[1]); gr.addColorStop(1,casca[2]);
+  forma(); g.fillStyle=gr; g.fill();
+  g.save(); forma(); g.clip(); const corP=rar==="lendario"&&(el==="raio"||el==="luz"||el==="fogo")? tom(cor,0.55) : cor; g.fillStyle=corP; g.strokeStyle=corP; g.lineCap="round"; g.lineJoin="round";
+  const r=semente("ovo"+el); g.globalAlpha=0.9;
+  switch(el){
+    case "fogo": for(let i=0;i<3;i++){ const x=W*(0.25+i*0.25), y=H*0.62; g.beginPath(); g.moveTo(x,y+H*0.12); g.quadraticCurveTo(x-W*0.12,y,x,y-H*0.18); g.quadraticCurveTo(x+W*0.12,y,x,y+H*0.12); g.fill(); } break;
+    case "agua": g.lineWidth=K*0.9; for(let i=0;i<2;i++){ const y=H*(0.5+i*0.17); g.beginPath(); g.moveTo(0,y); for(let x=0;x<=W;x+=W/8) g.quadraticCurveTo(x+W/16,y-K*1.2*(((x/(W/8))%2)?-1:1),x+W/8,y); g.stroke(); } break;
+    case "terra": for(let i=0;i<5;i++){ const x=W*(0.2+r()*0.6), y=H*(0.35+r()*0.5), s2=K*(0.9+r()*0.8); g.beginPath(); g.moveTo(x,y-s2); g.lineTo(x+s2,y); g.lineTo(x,y+s2*0.8); g.lineTo(x-s2,y); g.closePath(); g.fill(); } break;
+    case "ar": g.lineWidth=K*0.7; for(let i=0;i<3;i++){ const y=H*(0.4+i*0.15); g.beginPath(); g.moveTo(W*0.15,y); g.bezierCurveTo(W*0.4,y-K*2,W*0.6,y+K*2,W*0.85,y-K*0.6); g.stroke(); } break;
+    case "raio": g.beginPath(); g.moveTo(W*0.58,H*0.22); g.lineTo(W*0.36,H*0.56); g.lineTo(W*0.52,H*0.56); g.lineTo(W*0.4,H*0.86); g.lineTo(W*0.68,H*0.46); g.lineTo(W*0.52,H*0.46); g.closePath(); g.fill(); break;
+    case "natureza": for(let i=0;i<4;i++){ const x=W*(0.25+r()*0.5), y=H*(0.35+r()*0.5), a=r()*6.28; g.save(); g.translate(x,y); g.rotate(a); g.beginPath(); g.ellipse(0,0,K*1.6,K*0.7,0,0,Math.PI*2); g.fill(); g.restore(); } break;
+    case "luz": g.lineWidth=K*0.6; g.beginPath(); g.arc(W/2,H*0.55,K*1.6,0,Math.PI*2); g.fill(); for(let i=0;i<8;i++){ const a=i/8*6.28; g.beginPath(); g.moveTo(W/2+Math.cos(a)*K*2.4,H*0.55+Math.sin(a)*K*2.4); g.lineTo(W/2+Math.cos(a)*K*3.6,H*0.55+Math.sin(a)*K*3.6); g.stroke(); } break;
+    case "sombra": g.beginPath(); g.arc(W/2,H*0.56,K*2.4,0,Math.PI*2); g.fill(); g.globalCompositeOperation="destination-out"; g.beginPath(); g.arc(W/2+K*1.2,H*0.5,K*2,0,Math.PI*2); g.fill(); g.globalCompositeOperation="source-over"; break;
+    default: for(let i=0;i<6;i++){ g.beginPath(); g.arc(W*(0.2+r()*0.6),H*(0.3+r()*0.55),K*(0.5+r()*0.6),0,Math.PI*2); g.fill(); } }
+  g.globalAlpha=1;
+  if(rar==="raro"){ g.fillStyle=corE; g.fillRect(0,H*0.42,W,K*0.9); g.fillStyle="#ffffff"; g.globalAlpha=0.6; g.fillRect(0,H*0.42,W,K*0.3); g.globalAlpha=1; }
+  if(rar==="lendario"){ g.strokeStyle="#fff8d8"; g.lineWidth=K*0.45; g.shadowColor=corC; g.shadowBlur=K*2; for(let i=0;i<3;i++){ const x=W*(0.3+i*0.2), y=H*0.36; g.beginPath(); g.moveTo(x,y-K); g.lineTo(x,y+K); g.moveTo(x-K*0.7,y); g.lineTo(x+K*0.7,y); g.stroke(); } g.shadowBlur=0; }
+  // sombra própria embaixo e brilho em cima (volume)
+  const sb=g.createLinearGradient(0,H*0.5,0,H); sb.addColorStop(0,"rgba(0,0,0,0)"); sb.addColorStop(1,"rgba(20,10,20,.38)"); g.fillStyle=sb; g.fillRect(0,0,W,H);
+  g.restore();
+  g.save(); g.globalAlpha=0.85; g.fillStyle="#ffffff"; g.beginPath(); g.ellipse(W*0.34,H*0.26,W*0.09,H*0.1,-0.5,0,Math.PI*2); g.fill(); g.globalAlpha=0.5; g.beginPath(); g.arc(W*0.42,H*0.16,K*0.5,0,Math.PI*2); g.fill(); g.restore();
+  forma(); g.lineWidth=K*0.55; g.strokeStyle=rar==="lendario"?"#5a3a0a":"#2a1c28"; g.stroke();
+  c._suave=true; c.mundoW=10; c.mundoH=12; cacheSpr.set(k,c); return c; }
 
 // ================================================================ estado
 const cv=$("tela"), ctx=cv.getContext("2d"), lo=document.createElement("canvas"), lg=lo.getContext("2d");
@@ -99,13 +123,18 @@ let W=0,H=0,S=2,VW=0,VH=0,Q=1;
 // o mundo é desenhado na resolução do aparelho (as coordenadas continuam as mesmas), então a arte
 // importada sai nítida e o desenho por código continua com cara de pixel art (cada pixel vira um bloco).
 // O limite de pixels protege a performance em telas 4K.
-const PIXELS_MAX=4.2e6;
+// Celular/tablet (toque): tela interna bem menor. Cada passada de tela cheia (piso, chão, luz, tom, vinheta...) custa
+// proporcional aos pixels; no iPhone o mundo era desenhado a 860x1867, e o aparelho esquentava. Em tela pequena a diferença quase não aparece.
+const TOQUE=matchMedia("(pointer: coarse)").matches||"ontouchstart" in window;
+const PIXELS_MAX=TOQUE? 7.5e5 : 2.6e6;
+// a qualidade automática também reduz a resolução: QUAL 1 = 80%, QUAL 0 = 62%
+const ESC_QUAL=[0.62,0.8,1];
 const ZOOM_MUNDO=170;   // pixels de mundo no lado menor da tela (menor = câmera mais perto, arte maior)
 function redimensionar(){ W=cv.clientWidth; H=cv.clientHeight; const dpr=Math.min(2,window.devicePixelRatio||1);
   cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0);
   S=Math.max(2,Math.min(W,H)/ZOOM_MUNDO); VW=Math.ceil(W/S); VH=Math.ceil(H/S);
   // tela interna na resolução real do aparelho (sem reamostrar a cada quadro); limitada a PIXELS_MAX
-  Q=SIM.ativo? 1 : Math.max(1,Math.min(S*dpr, Math.sqrt(PIXELS_MAX/Math.max(1,VW*VH))));
+  Q=SIM.ativo? 1 : Math.max(1.5,Math.min(S*dpr, Math.sqrt(PIXELS_MAX/Math.max(1,VW*VH)))*(typeof QUAL==='number'?ESC_QUAL[QUAL]:1));
   lo.width=Math.round(VW*Q); lo.height=Math.round(VH*Q); lg.setTransform(Q,0,0,Q,0,0); }
 addEventListener("resize",redimensionar);
 let R=null, J=null, rodando=false, pausado=false;
@@ -274,7 +303,7 @@ function spawnInimigo(kForcado){
   const base=[{hp:.6,v:velRapido(),r:4,n:8},{hp:1,v:24,r:5,n:9},{hp:2.4,v:16,r:6,n:11}][k], elite=Math.random()<0.035;
   const el=Math.random()<0.85?u.elemento:escolha(ELS), hp=DIF.hp*base.hp*dificuldade()*(1+J.t/90)*(elite?7:1);
   const hx=VW/2+10, hy=VH/2+10, px=lado<2? rnd(-hx,hx) : (lado===2?-hx:hx), py=lado<2? (lado===0?-hy:hy) : rnd(-hy,hy);
-  J.inimigos.push({x:J.jogador.x+px, y:J.jogador.y+py, hp, max:hp, v:base.v*(1+R.profundidade*0.02), r:base.r*(elite?1.6:1), esc:elite?1.5:1,
+  J.inimigos.push({x:J.jogador.x+px, y:J.jogador.y+py, hp, max:hp, v:base.v*(1+R.profundidade*0.02), r:base.r*(elite?1.6:1), esc:elite?1.35:1,
     dano:DIF.danoBase*danoDif()*(elite?2:1), tipo:k, el, elite, chefe:false, mini:false,
     spr:gerarSprite(u.id+"i"+k+el, base.n, mistura(COR[el],["#d8473b","#8a4fd0","#e0904a"][k],0.35), {olhos:"#fff2a0"}),
     status:null, lenta:0, congela:0, cego:0, dot:0, dotT:0, reacCd:0, vulner:0, flash:0, marca:0});
@@ -1127,7 +1156,7 @@ function artesDoMapa(u){ if(!u) return []; const pre=`arte/reinos/${u.era}/`, or
 // artes em arquivos: arte/manifesto.json lista { "nome usado no código": "caminho do arquivo" }.
 // Na abertura baixa só a interface e as imagens fixas dos monstros (menu e cartas); o resto vem por mapa ou quando for usado.
 if(window.ARTE_MANIFESTO){ const av=document.createElement("div");
-  av.style.cssText="position:fixed;left:50%;bottom:calc(8px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:rgba(18,14,26,.88);color:#f2e7c9;border:1px solid #d6ab4f;padding:5px 12px;font:12px monospace;border-radius:4px;pointer-events:none;transition:opacity .4s";
+  av.style.cssText="position:fixed;left:50%;bottom:calc(8px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:rgba(18,14,26,.88);color:#f2e7c9;border:1px solid #d6ab4f;padding:5px 12px;font:600 12px Nunito,system-ui,sans-serif;border-radius:4px;pointer-events:none;transition:opacity .4s";
   av.textContent="Carregando artes…"; (document.body||document.documentElement).appendChild(av);
   (async()=>{ try{
       const r=await fetch(window.ARTE_MANIFESTO,{cache:"no-cache"}); MANIFESTO=await r.json();
@@ -1160,21 +1189,22 @@ const FPS_ANIM=[6,11,15], cacheFatia=new Map();
 const alfaDe=img=>{ const c=document.createElement("canvas"); c.width=img.width; c.height=img.height; const g=c.getContext("2d"); g.drawImage(img,0,0); return g.getImageData(0,0,c.width,c.height).data; };
 // melhor corte perto de "nom" (entre lo e hi): linha sem desenho vale muito mais do que ficar perto da grade
 function melhorCorte(cont,nom,lo,hi){ let best=nom, bc=1e18; for(let b=Math.max(1,Math.round(lo));b<=Math.min(cont.length-1,Math.round(hi));b++){ const c=(cont[b]>0?1e6+cont[b]*100:0)+Math.abs(b-nom); if(c<bc){ bc=c; best=b; } } return best; }
-function fatiarFolha(img,cols,rows){ if(!img._id) img._id=++ID_IMG; const k=img._id+"|"+cols+"x"+rows; if(cacheFatia.has(k)) return cacheFatia.get(k);
+function fatiarFolha(img,cols,rows,rigido){ if(!img._id) img._id=++ID_IMG; const k=img._id+"|"+cols+"x"+rows+(rigido?"r":""); if(cacheFatia.has(k)) return cacheFatia.get(k);
+  // rigido: colunas na grade; o corte entre linhas só sai da grade para uma linha vazia a até 1/4 de célula
   const W=img.width, H=img.height, cw=W/cols, ch=H/rows; let d=null; try{ d=alfaDe(img); }catch(e){}
   const cheio=(x,y)=>d[(y*W+x)*4+3]>24;
   // cortes das linhas
   const lin=new Int32Array(H); if(d) for(let y=0;y<H;y++){ let n=0; for(let x=0;x<W;x++) if(cheio(x,y)) n++; lin[y]=n; }
-  let cy=[0]; for(let r=1;r<rows;r++) cy.push(d? melhorCorte(lin,r*ch,Math.max(cy[r-1]+ch*0.4,r*ch-ch*0.5),r*ch+ch*0.5) : Math.round(r*ch)); cy.push(H);
+  let cy=[0]; for(let r=1;r<rows;r++){ if(rigido){ const b=d? melhorCorte(lin,r*ch,r*ch-ch*0.25,r*ch+ch*0.25) : r*ch; cy.push(d&&lin[b]===0? b : Math.round(r*ch)); } else cy.push(d? melhorCorte(lin,r*ch,Math.max(cy[r-1]+ch*0.4,r*ch-ch*0.5),r*ch+ch*0.5) : Math.round(r*ch)); } cy.push(H);
   // se alguma linha ficou sem desenho (folha com tudo deslocado), procura os dois cortes juntos exigindo desenho em cada faixa
-  if(d&&rows===3){ const acum=new Float64Array(H+1); for(let y=0;y<H;y++) acum[y+1]=acum[y]+lin[y]; const tem=(a,b)=>acum[b]-acum[a]>0, custo=(b,nom)=>(lin[b]>0?1e6+lin[b]*100:0)+Math.abs(b-nom);
+  if(d&&rows===3&&!rigido){ const acum=new Float64Array(H+1); for(let y=0;y<H;y++) acum[y+1]=acum[y]+lin[y]; const tem=(a,b)=>acum[b]-acum[a]>0, custo=(b,nom)=>(lin[b]>0?1e6+lin[b]*100:0)+Math.abs(b-nom);
     if(!tem(cy[0],cy[1])||!tem(cy[1],cy[2])||!tem(cy[2],cy[3])){ let bc=1e18, b1=cy[1], b2=cy[2];
       for(let a=Math.round(ch*0.3);a<=Math.round(ch*1.7);a++){ if(!tem(0,a)) continue; for(let b=a+Math.round(ch*0.3);b<=Math.min(H-2,Math.round(ch*2.7));b++){ if(!tem(a,b)||!tem(b,H)) continue; const c=custo(a,ch)+custo(b,2*ch); if(c<bc){ bc=c; b1=a; b2=b; } } }
       cy=[0,b1,b2,H]; } }
   const linhas=[];
   for(let r=0;r<rows;r++){ const y0=cy[r], y1=cy[r+1];
     const col=new Int32Array(W); if(d) for(let x=0;x<W;x++){ let n=0; for(let y=y0;y<y1;y++) if(cheio(x,y)) n++; col[x]=n; }
-    const cx=[0]; for(let c=1;c<cols;c++) cx.push(d? melhorCorte(col,c*cw,Math.max(cx[c-1]+cw*0.4,c*cw-cw*0.35),c*cw+cw*0.35) : Math.round(c*cw)); cx.push(W);
+    const cx=[0]; for(let c=1;c<cols;c++) cx.push(d&&!rigido? melhorCorte(col,c*cw,Math.max(cx[c-1]+cw*0.4,c*cw-cw*0.35),c*cw+cw*0.35) : Math.round(c*cw)); cx.push(W);
     const qs=[]; for(let c=0;c<cols;c++){ const x0=cx[c], x1=cx[c+1]; let bx0=x1, by0=y1, bx1=-1, by1=-1, n=0;
       if(d) for(let y=y0;y<y1;y++) for(let x=x0;x<x1;x++) if(cheio(x,y)){ n++; if(x<bx0)bx0=x; if(x>bx1)bx1=x; if(y<by0)by0=y; if(y>by1)by1=y; }
       if(!d){ bx0=x0; by0=y0; bx1=x1-1; by1=y1-1; n=1; }
@@ -1195,6 +1225,8 @@ function folhaRecolorida(anim,base,alvo,celula){ const k=(anim._id||(anim._id=++
   let out=null; try{
     const cel=im=>{ const cw=im.width/4, ch=im.height/2, c=document.createElement("canvas"); c.width=64; c.height=64; const g=c.getContext("2d"); g.imageSmoothingEnabled=false; g.drawImage(im,(celula%4)*cw,Math.floor(celula/4)*ch,cw,ch,0,0,64,64); return g.getImageData(0,0,64,64).data; };
     const b=cel(base), e=cel(alvo), N=16, N3=N*N*N, chave=(d,i)=>((d[i]>>4)*N+(d[i+1]>>4))*N+(d[i+2]>>4);
+    // desenho da raridade muito diferente do comum (formas que se sobrepõem pouco): a troca de cores sairia borrada; usa a imagem fixa
+    let uni=0, inter=0; for(let i=3;i<b.length;i+=4){ const x=b[i]>40, y=e[i]>40; if(x||y) uni++; if(x&&y) inter++; } if(!uni||inter/uni<0.72) throw 0;
     let n=new Float32Array(N3), s=new Float32Array(N3*3), m=new Float32Array(N3*3);
     for(let i=0;i<b.length;i+=4){ if(b[i+3]<160||e[i+3]<160) continue; const q=chave(b,i); n[q]++; for(let c=0;c<3;c++){ s[q*3+c]+=e[i+c]; m[q*3+c]+=b[i+c]; } }
     // caixa 3D separável (borda repetida), para espalhar as cores conhecidas para as vizinhas
@@ -1272,12 +1304,21 @@ function usarDespertar(){
 // ================================================================ loop
 let ultimoT=0;
 // qualidade automática: mede o tempo de cada quadro e, se o aparelho não der conta, reduz primeiro o que menos se nota
-let QUAL=2, MSQ=8, tQual=0;
-function passo(t){ requestAnimationFrame(passo); let dt=Math.min(0.05,(t-ultimoT)/1000||0); ultimoT=t;
-  if(!rodando||!J) return; const t0=performance.now();
+let QUAL=2, MSQ=16.7, tQual=0, ultimoQuadro=0, desenhouPausado=false;
+// - limite de 60 quadros por segundo (telas de 120 Hz desenhavam o dobro sem ganho);
+// - pausado (cartas, baú, cenas) ou em segundo plano: desenha um quadro e para, em vez de redesenhar a mesma imagem 60 vezes por segundo;
+// - qualidade pelo tempo real entre quadros (inclui o trabalho da placa de vídeo, que é onde o celular esquenta)
+document.addEventListener("visibilitychange",()=>{ ultimoT=performance.now(); desenhouPausado=false; });
+function mudarQual(q){ if(q===QUAL) return; QUAL=q; tQual=performance.now()/1000; redimensionar(); if(typeof chao!=="undefined"&&chao&&chao.pat) chao.pat=null; }
+function passo(t){ requestAnimationFrame(passo); if(document.hidden) return;
+  if(t-ultimoQuadro<15.5) return; const intervalo=t-ultimoQuadro; ultimoQuadro=t;
+  let dt=Math.min(0.05,(t-ultimoT)/1000||0); ultimoT=t;
+  if(!rodando||!J) return; const parado=pausado||CINE.ativa;
+  if(parado&&desenhouPausado&&!J.intro) return;
   if(!pausado&&!CINE.ativa) tick(dt);
-  if(J){ desenhar(dt); const ms=performance.now()-t0; MSQ=MSQ*0.95+ms*0.05; const agora=t/1000;
-    if(MSQ>18&&QUAL>0&&agora-tQual>2){ QUAL--; tQual=agora; } else if(MSQ<9&&QUAL<2&&agora-tQual>6){ QUAL++; tQual=agora; } } }
+  if(J){ desenhar(dt); desenhouPausado=parado;
+    if(!parado&&intervalo<200){ MSQ=MSQ*0.95+intervalo*0.05; const agora=t/1000;
+      if(MSQ>21&&QUAL>0&&agora-tQual>2.5){ mudarQual(QUAL-1); MSQ=16.7; } else if(MSQ<17.6&&QUAL<2&&agora-tQual>10){ mudarQual(QUAL+1); } } } }
 function tick(dt){ if(J.hitstop>0){ J.hitstop-=dt; return; } if(J.lento>0){ J.lento-=dt; dt*=0.3; } atualizar(dt); }
 function atualizar(dt){
   if(J.intro&&passoAbertura(dt)) return;
@@ -1312,6 +1353,7 @@ function atualizar(dt){
   } else if(J.portalEm!=null){ J.portalEm-=dt/(J.lento>0?0.3:1); if(J.portalEm<=0){ J.portalEm=null; mostrarPortais(); } }
   // inimigos
   for(const e of J.inimigos){
+    if(e.escAlvo&&e.esc!==e.escAlvo){ e.esc=Math.min(e.escAlvo,(e.esc||1)+dt*0.7); if(e.esc>=e.escAlvo) e.escAlvo=null; } if(e.virouElite>0) e.virouElite-=dt;
     if(e.flash>0) e.flash-=dt; if(e.reacCd>0) e.reacCd-=dt; if(e.vulner>0) e.vulner-=dt; if(e.cego>0) e.cego-=dt;
     if(e.dotT>0){ e.dotT-=dt; danoSimples(e,e.dot*dt); }
     if(e.congela>0){ e.congela-=dt; continue; }
@@ -2039,11 +2081,16 @@ function desenharCenaBrilho(ox,oy){ const C=J.cena; if(!C) return; ctx.globalCom
   ctx.globalCompositeOperation="source-over"; }
 // sombras de nuvens passando devagar pelo chão (só nos mapas a céu aberto e de dia)
 const SEM_CEU=new Set(["centro_terra","mar_profundo","atlantida","laboratorio","xibalba"]); let NUVENS=null;
-function desenharNuvens(ox,oy){ const u=UNIV[R.universo]; if(QUAL<2||SIM.ativo||!u||SEM_CEU.has(u.id)||(u.luz&&u.luz.noite)) return; const A=0.13*(1-crepusculo()*0.6); if(A<0.03) return;
+// desenha as sombras de nuvem num contexto qualquer (k = pixels por pixel de mundo); usado dentro da camada de luz (sem passada extra)
+function nuvensEm(g,ox,oy,k){ const u=UNIV[R.universo]; if(QUAL<1||SIM.ativo||!u||SEM_CEU.has(u.id)||(u.luz&&u.luz.noite)) return; const A=0.13*(1-crepusculo()*0.6); if(A<0.03) return;
+  if(!NUVENS) desenharNuvens(null,null,true); const esc=4.4, T=128*esc, px=(((ox+J.t*7)%T)+T)%T, py=(((oy+J.t*3)%T)+T)%T;
+  if(!NUVENS.patL||NUVENS.patCtx!==g){ NUVENS.patL=g.createPattern(NUVENS.c,"repeat"); NUVENS.patCtx=g; }
+  g.save(); g.imageSmoothingEnabled=true; g.globalAlpha=A; g.scale(k,k); g.translate(-px,-py); g.scale(esc,esc); g.fillStyle=NUVENS.patL; g.fillRect(0,0,(g.canvas.width/k+T)/esc,(g.canvas.height/k+T)/esc); g.restore(); }
+function desenharNuvens(ox,oy,soCriar){ const u=UNIV[R.universo]; if(!soCriar&&J._nuvemFeita) return; if(!soCriar&&(QUAL<2||SIM.ativo||!u||SEM_CEU.has(u.id)||(u.luz&&u.luz.noite))) return; const A=0.13*(1-crepusculo()*0.6); if(!soCriar&&A<0.03) return;
   if(!NUVENS){ const T=128, c=document.createElement("canvas"); c.width=c.height=T; const g=c.getContext("2d"), r=semente("nuvens");
     // manchas macias espalhadas, repetidas nas bordas para emendar
     for(let i=0;i<22;i++){ const x=r()*T, y=r()*T, rr=10+r()*26, a=0.25+r()*0.35; for(const dx of [-T,0,T]) for(const dy of [-T,0,T]){ const gr=g.createRadialGradient(x+dx,y+dy,0,x+dx,y+dy,rr); gr.addColorStop(0,`rgba(0,0,0,${a})`); gr.addColorStop(1,"rgba(0,0,0,0)"); g.fillStyle=gr; g.fillRect(x+dx-rr,y+dy-rr,rr*2,rr*2); } }
-    NUVENS={c,pat:null}; }
+    NUVENS={c,pat:null}; } if(soCriar) return;
   const esc=4.4, T=128*esc, px=(((ox+J.t*7)%T)+T)%T, py=(((oy+J.t*3)%T)+T)%T;   // vento leve para a direita
   if(!NUVENS.pat) NUVENS.pat=lg.createPattern(NUVENS.c,"repeat");
   const suave=lg.imageSmoothingEnabled; lg.imageSmoothingEnabled=true; lg.save(); lg.globalAlpha=A; lg.translate(-px,-py); lg.scale(esc,esc); lg.fillStyle=NUVENS.pat; lg.fillRect(0,0,(VW+T)/esc,(VH+T)/esc); lg.restore(); lg.imageSmoothingEnabled=suave; }
@@ -2100,7 +2147,7 @@ function bboxCelula(img,sx,sy,sw,sh){ if(!img._id) img._id=++ID_IMG; const k=img
   let x0=c.width, y0=c.height, x1=-1, y1=-1; try{ const d=g.getImageData(0,0,c.width,c.height).data;
     for(let y=0;y<c.height;y++) for(let x=0;x<c.width;x++) if(d[(y*c.width+x)*4+3]>24){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } }catch(err){}
   const bb= x1<0? {x:sx,y:sy,w:sw,h:sh} : {x:sx+x0*sw/c.width, y:sy+y0*sh/c.height, w:(x1-x0+1)*sw/c.width, h:(y1-y0+1)*sh/c.height}; cacheBB.set(k,bb); return bb; }
-const ALVO_ARTE=[20,25,30,37];   // altura do monstro com arte, por estágio (pixels de mundo)
+const ALVO_ARTE=[24,30,36,44];   // altura do monstro com arte, por estágio (pixels de mundo); a equipe é maior que a horda para se destacar
 function encaixarArte(img,sx,sy,sw,sh,alvo){ const bb=bboxCelula(img,sx,sy,sw,sh), k=Math.min(alvo/bb.w,alvo/bb.h), w=Math.max(1,Math.round(bb.w*k)), h=Math.max(1,Math.round(bb.h*k));
   const c=document.createElement("canvas"); c.width=c.height=alvo; const g=c.getContext("2d"); g.imageSmoothingEnabled=true; const ox=Math.round((alvo-w)/2), oy=alvo-h;
   g.drawImage(img,bb.x,bb.y,bb.w,bb.h,ox,oy,w,h); c._src={img,sx:bb.x,sy:bb.y,sw:bb.w,sh:bb.h,dest:[ox/alvo,oy/alvo,w/alvo,h/alvo]}; return c; }
@@ -2373,7 +2420,7 @@ function desenharAbertura(){ const I=J&&J.intro; if(!I) return; const t=I.t, D0=
     const gr=g.createRadialGradient(X,Y,0,X,Y,rr*4); gr.addColorStop(0,`rgba(255,246,220,${al})`); gr.addColorStop(0.3,`rgba(${cr},${cg},${cb},${al*0.6})`); gr.addColorStop(1,`rgba(${cr},${cg},${cb},0)`); g.fillStyle=gr; g.fillRect(X-rr*4,Y-rr*4,rr*8,rr*8); }
   g.globalCompositeOperation="source-over";
   // 2) título: era em letras espaçadas, nome do reino letra a letra subindo com brilho, filete dourado com losango
-  const tt=t-0.55, cy=H*(H>W*1.05?0.74:0.76), larguraMax=W*0.86, medir=(txt,f)=>{ g.font=`600 ${f}px "Pixelify Sans", monospace`; return g.measureText(txt).width; };
+  const tt=t-0.55, cy=H*(H>W*1.05?0.74:0.76), larguraMax=W*0.86, medir=(txt,f)=>{ g.font=`800 ${f}px "Cinzel", Georgia, serif`; return g.measureText(txt).width; };
   // nome numa linha se couber grande; senão quebra na vírgula ("Santuário dos 12 Signos" / "Grécia") e cada linha cabe na largura
   let linhas=[I.u.nome], fs=Math.round(Math.min(M*0.075,larguraMax*100/Math.max(1,medir(I.u.nome,100))));
   if(fs<M*0.06&&I.u.nome.includes(",")){ const [a,...b]=I.u.nome.split(","); linhas=[a.trim(),b.join(",").trim()]; fs=Math.round(Math.min(M*0.08,larguraMax*100/Math.max(1,medir(linhas[0],100)))); }
@@ -2382,13 +2429,13 @@ function desenharAbertura(){ const I=J&&J.intro; if(!I) return; const t=I.t, D0=
     // faixa escura por trás do título (dá leitura em qualquer arte)
     const fx=g.createLinearGradient(0,cy-fs*2.2,0,H); fx.addColorStop(0,"rgba(7,5,11,0)"); fx.addColorStop(0.45,`rgba(7,5,11,${0.62*Math.min(1,tt/0.5)*Math.max(0,fade)})`); fx.addColorStop(1,`rgba(7,5,11,${0.8*Math.max(0,fade)})`);
     g.fillStyle=fx; g.fillRect(0,cy-fs*2.2,W,H);
-    g.globalAlpha=Math.max(0,Math.min(1,tt/0.6)*fade); g.textAlign="center"; g.textBaseline="middle"; g.font=`600 ${fe}px "Pixelify Sans", monospace`;
+    g.globalAlpha=Math.max(0,Math.min(1,tt/0.6)*fade); g.textAlign="center"; g.textBaseline="middle"; g.font=`600 ${fe}px "Nunito", system-ui, sans-serif`;
     const era=(D.eras[I.u.era].nome+(R.ciclo?` · ciclo ${R.ciclo+1}`:"")+` · mapa ${R.profundidade+1}`).toUpperCase().split("").join(" ");
     g.shadowColor="rgba(0,0,0,.9)"; g.shadowBlur=fe*0.6; g.fillStyle="#f0c96a"; g.fillText(era,W/2,cy-fs*0.95); g.shadowBlur=0;
     const yl=cy+fs*0.72+alto*1.2, lw=suaveO((tt-0.2)/0.9)*Math.min(W*0.32,fs*5.2); if(lw>1){ const gl=g.createLinearGradient(W/2-lw,0,W/2+lw,0); gl.addColorStop(0,"rgba(214,171,79,0)"); gl.addColorStop(0.5,"rgba(255,226,150,1)"); gl.addColorStop(1,"rgba(214,171,79,0)");
       g.fillStyle=gl; g.fillRect(W/2-lw,yl,lw*2,Math.max(1,M*0.003)); g.save(); g.translate(W/2,yl); g.rotate(Math.PI/4); g.fillStyle="#ffe296"; const d=M*0.008; g.fillRect(-d,-d,d*2,d*2); g.restore(); }
     let atraso=0.15;
-    linhas.forEach((txt,li)=>{ const f=li? fs2 : fs, yb=li? cy+fs*0.55+fs2*0.55 : cy; g.font=`600 ${f}px "Pixelify Sans", monospace`; const larg=g.measureText(txt).width; let xx=W/2-larg/2; g.textAlign="left";
+    linhas.forEach((txt,li)=>{ const f=li? fs2 : fs, yb=li? cy+fs*0.55+fs2*0.55 : cy; g.font=`800 ${f}px "Cinzel", Georgia, serif`; const larg=g.measureText(txt).width; let xx=W/2-larg/2; g.textAlign="left";
       for(let i=0;i<txt.length;i++){ const ch=txt[i], cw=g.measureText(ch).width, k=suaveO((tt-atraso-i*0.035)/0.45); if(k<=0){ xx+=cw; continue; }
         g.globalAlpha=k*Math.max(0,fade); const yy=yb+(1-k)*f*0.5;
         g.shadowColor=`rgba(${cr},${cg},${cb},0.9)`; g.shadowBlur=f*0.45*(1.3-k*0.5); g.fillStyle="#140f1c"; g.fillText(ch,xx+f*0.05,yy+f*0.06);
@@ -2446,7 +2493,7 @@ function eventoHorda(){ evento("onda"); const P=J.jogador, prof=R.profundidade, 
     agendar(1.0,()=>{ if(!J||J.fim) return; const P=J.jogador;
       for(let i=0;i<ne+6;i++){ spawnInimigo(i<ne?2:Math.floor(Math.random()*2)); const e=J.inimigos[J.inimigos.length-1], lat=(i-(ne+6)/2)*10;
         e.x=P.x+Math.cos(a)*dist-Math.sin(a)*lat; e.y=P.y+Math.sin(a)*dist+Math.cos(a)*lat; e.surgindo=0;
-        if(i<ne){ e.daOnda=true; if(!e.elite){ e.elite=true; e.max*=6; e.hp=e.max; e.esc=1.5; e.r*=1.3; } } } });   /* elites das ondas soltam item com menos frequência */
+        if(i<ne){ e.daOnda=true; if(!e.elite){ e.elite=true; e.max*=6; e.hp=e.max; e.escAlvo=1.35; e.r*=1.3; e.virouElite=0.6; particulas(e.x,e.y,"#ffd34a",8,40); } } } });   /* elites das ondas soltam item com menos frequência */
     return; }
   // emboscada: brotam do chão em volta, cada um anunciado por uma marca
   const n=Math.min(16,Math.round(8*escala)); avisar("Emboscada!","eles brotam do chão em volta de você","#c8b890");
@@ -2454,8 +2501,8 @@ function eventoHorda(){ evento("onda"); const P=J.jogador, prof=R.profundidade, 
     perigo({tipo:"circ",x,y,r:6,t:0.9,cor:"#c8b890",fim:()=>{ if(!J||J.fim||J.inimigos.length>=DIF.max) return; spawnInimigo(); const e=J.inimigos[J.inimigos.length-1]; e.x=x; e.y=y; e.surgindo=0.45; }}); } }
 function atualizarAvisos(dt){ if(J.aviso){ J.aviso.vida-=dt; if(J.aviso.vida<=0) J.aviso=null; } if(J.setas){ for(const s of J.setas) s.vida-=dt; J.setas=J.setas.filter(s=>s.vida>0); } }
 function desenharAvisos(){ if(J.aviso&&!(J.chefeVivo&&J.chefeVivo.hp>0)){ const a=J.aviso, y=Math.round(H*0.2)+46+(J.conqAtual?60:0); ctx.globalAlpha=Math.min(1,a.vida*1.5); ctx.textAlign="center";
-    ctx.font=`600 20px "Pixelify Sans", monospace`; ctx.fillStyle="#120e1a"; ctx.fillText(a.txt,W/2+2,y+2); ctx.fillStyle=a.cor; ctx.fillText(a.txt,W/2,y);
-    if(a.sub){ ctx.font=`13px "Pixelify Sans", monospace`; ctx.fillStyle="#f2e7c9"; ctx.fillText(a.sub,W/2,y+18); } ctx.globalAlpha=1; }
+    ctx.font=`800 20px "Cinzel", Georgia, serif`; ctx.fillStyle="#120e1a"; ctx.fillText(a.txt,W/2+2,y+2); ctx.fillStyle=a.cor; ctx.fillText(a.txt,W/2,y);
+    if(a.sub){ ctx.font=`13px "Nunito", system-ui, sans-serif`; ctx.fillStyle="#f2e7c9"; ctx.fillText(a.sub,W/2,y+18); } ctx.globalAlpha=1; }
   if(J.setas) for(const s of J.setas){ const r=Math.min(W,H)*0.44, x=W/2+Math.cos(s.ang)*r, y=H/2+Math.sin(s.ang)*r*1.4, p=0.6+0.4*Math.sin(J.t*14);
     ctx.globalAlpha=Math.min(1,s.vida*2)*p; ctx.fillStyle="#ff8a6a"; ctx.beginPath(); ctx.moveTo(x-Math.cos(s.ang)*16,y-Math.sin(s.ang)*16); ctx.lineTo(x+Math.cos(s.ang+2.4)*12,y+Math.sin(s.ang+2.4)*12); ctx.lineTo(x+Math.cos(s.ang-2.4)*12,y+Math.sin(s.ang-2.4)*12); ctx.fill(); ctx.globalAlpha=1; } }
 
@@ -2730,7 +2777,7 @@ function avisoConquista(txt,sub){ J&&(J.conqFila=J.conqFila||[]).push({txt,sub})
 function atualizarConquistas(dt){ if(!J) return; if(J.conqAtual){ J.conqAtual.vida-=dt; if(J.conqAtual.vida<=0) J.conqAtual=null; } else if(J.conqFila&&J.conqFila.length){ J.conqAtual=Object.assign(J.conqFila.shift(),{vida:3}); } }
 function desenharConquista(){ const c=J&&J.conqAtual; if(!c) return; const a=Math.min(1,c.vida*2, (3-c.vida)*3), w=Math.min(W*0.9,460), x=(W-w)/2, y=Math.round(H*0.2);
   ctx.globalAlpha=a; ctx.fillStyle="rgba(18,14,26,.92)"; ctx.fillRect(x,y,w,52); ctx.strokeStyle="#d6ab4f"; ctx.lineWidth=2; ctx.strokeRect(x+1,y+1,w-2,50); ctx.lineWidth=1;
-  ctx.textAlign="center"; ctx.font=`600 15px "Pixelify Sans", monospace`; ctx.fillStyle="#ffd34a"; ctx.fillText(c.txt,W/2,y+21); ctx.font=`12px "Pixelify Sans", monospace`; ctx.fillStyle="#f2e7c9"; ctx.fillText(c.sub,W/2,y+40); ctx.globalAlpha=1; }
+  ctx.textAlign="center"; ctx.font=`600 15px "Nunito", system-ui, sans-serif`; ctx.fillStyle="#ffd34a"; ctx.fillText(c.txt,W/2,y+21); ctx.font=`12px "Nunito", system-ui, sans-serif`; ctx.fillStyle="#f2e7c9"; ctx.fillText(c.sub,W/2,y+40); ctx.globalAlpha=1; }
 // eventos que dependem do fim da luta
 function eventosVitoria(e){ conferirProvacoes(e); evento("chefe"); if(!J.atingidoNoChefe) evento("chefe_intocado");
   const u=UNIV[R.universo]; if(ativos().filter(s=>elementoDe(s)===u.elemento).length>=2) evento("chefe_mesmo_el"); if(e.eraChefe) evento("guardiao"); }
@@ -2873,6 +2920,7 @@ function desenharMapaLuz(ox,oy){ if(QUAL===0||SIM.ativo||J.escuro>0.05) return; 
   if(LMAP.width!==w||LMAP.height!==h){ LMAP.width=w; LMAP.height=h; }
   const g=LMAP.getContext("2d"), L=(UNIV[R.universo]||{}).luz||{}, c=crepusculo();
   g.globalCompositeOperation="source-over"; g.globalAlpha=1; g.clearRect(0,0,w,h); g.fillStyle=L.noite? "rgba(8,6,22,"+A+")" : c>0.3? "rgba(30,14,26,"+A+")" : "rgba(16,12,28,"+A+")"; g.fillRect(0,0,w,h);
+  nuvensEm(g,ox-1,oy-1,k); J._nuvemFeita=true;
   g.globalCompositeOperation="destination-out";
   const furo=(x,y,r,a)=>{ const X=(x-ox+1)*k, Y=(y-oy+1)*k, R2=r*k; if(X<-R2||Y<-R2||X>w+R2||Y>h+R2) return; g.globalAlpha=Math.min(1,a); g.drawImage(FURO,X-R2,Y-R2,R2*2,R2*2); };
   const P=J.jogador; furo(P.x,P.y,78,1); furo(P.x,P.y,40,0.6);
@@ -3126,6 +3174,16 @@ function quadroFolha(caminho,cols,rows,col,row,lado){ const img=ARTE_IMG[caminho
   if(cacheFolha.has(k)) return cacheFolha.get(k); const cw=img.width/cols, ch=img.height/rows, c=document.createElement("canvas"); c.width=c.height=lado; const g=c.getContext("2d"); g.imageSmoothingEnabled=false;
   const e=Math.min(lado/cw,lado/ch), dw=cw*e, dh=ch*e, dx=(lado-dw)/2, dy=lado-dh;
   g.drawImage(img,col*cw,row*ch,cw,ch,dx,dy,dw,dh); c._src={img,sx:col*cw,sy:row*ch,sw:cw,sh:ch,dest:[dx/lado,dy/lado,dw/lado,dh/lado]}; cacheFolha.set(k,c); return c; }
+// célula (col,row) de uma folha em grade, mas com o recorte inteligente: o corte entre linhas/colunas vai para o espaço vazio
+// mais próximo (o desenho de uma pose invadia a célula vizinha: pedaço da pose de cima aparecendo, pés cortados e o bicho
+// "mudando de tamanho"). Escala e posição são as mesmas da grade, então todas as poses do mesmo bicho ficam do mesmo tamanho.
+function quadroGrade(img,cols,rows,col,row,tam,base){ if(!img._id) img._id=++ID_IMG; const k=img._id+"|g"+cols+"x"+rows+"|"+col+"|"+row+"|"+tam; if(cacheCel.has(k)) return cacheCel.get(k);
+  const f=fatiarFolha(img,cols,rows,true), L=f.valida&&f.linhas[row]; let q=L&&L.qs.find(x=>x.c===col);
+  if(!q) return celulaArte(img,cols,rows,col,row,tam,tam,base);
+  const cw=img.width/cols, ch=img.height/rows, e=Math.min(tam/cw,tam/ch), dx0=(tam-cw*e)/2, dy0=base*(tam-ch*e);
+  const sw=q.x1-q.x0, sh=q.y1-q.y0, dx=dx0+(q.x0-col*cw)*e, dy=dy0+(q.y0-row*ch)*e, dw=sw*e, dh=sh*e;
+  const c=document.createElement("canvas"); c.width=c.height=tam; const g=c.getContext("2d"); g.imageSmoothingEnabled=false; g.drawImage(img,q.x0,q.y0,sw,sh,dx,dy,dw,dh);
+  c.base=base; c._src={img,sx:q.x0,sy:q.y0,sw,sh,dest:[dx/tam,dy/tam,dw/tam,dh/tam]}; cacheCel.set(k,c); return c; }
 function arteCriatura(e,pose,q){ const u=UNIV[R.universo]; if(!u) return null;
   if(e.chefe||e.mini){ const tam=Math.round(e.tam*1.8), caminho=e.eraChefe? `arte/reinos/${u.era}/guardiao_${u.era}__anim.png` : `arte/reinos/${u.era}/${u.id}__${e.mini?"mini":"chefe"}.png`;
     const img=folhaArte(caminho); if(!img) return null; const rows=e.mini?5:6; let row=0, col=q%4;
@@ -3138,7 +3196,7 @@ function arteCriatura(e,pose,q){ const u=UNIV[R.universo]; if(!u) return null;
   let row=r0, col;
   if(pose==="atk") col=6+(q%2); else if(pose==="anda") col=Math.hypot(e.vx||0,e.vy||0)<3? q%2 : 2+(q%4); else if(pose==="pisca") col=q%2;
   else if(pose==="dor"){ row=r0+1; col=0; } else if(pose==="morte"){ row=r0+1; col=1+Math.min(3,q); } else if(pose==="mania"){ row=r0+1; col=5+(q%3); } else col=q%2;
-  return celulaArte(img,8,6,col,row,tam,tam,0.85); }
+  return celulaArte(img,8,6,col,row,tam,tam,0.85); }   // grade simples: o recorte inteligente trazia pedaços de outras poses nestas folhas (ver docs/ARTES_PARA_REFAZER.md)
 // ---------------------------------------------------------------- nascimento, passo e animação
 function defInimigo(k){ const u=UNIV[R.universo]; return (u.combate&&u.combate.inimigos[k])||{nome:"inimigo"+k,corpo:"humanoide",andar:"caminha",golpe:"contato",morte:"puff",mania:"",detalhes:[]}; }
 function prepararCriatura(e,def,tam){ e.def=def; e.tam=tam; e.passo=Math.random()*4; e.fase=Math.random()*6.28; e.cdG=rnd(1,3); e.surgindo=e.chefe||e.mini?0:0.45; e.tMania=rnd(4,12); e.semente=Math.floor(Math.random()*3)+1;
@@ -3279,10 +3337,9 @@ function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||
   if(d.andar==="corre"&&pose==="anda"){ sx=1.06; sy=0.95; }
   if(d.andar==="rasteja"){ sx=1+Math.sin(e.fase)*0.07; sy=1-Math.sin(e.fase)*0.06; }
   if(d.andar==="cambaleia") dx=Math.round(Math.sin(e.fase*0.4)*1);
-  if(pose==="atk"&&!e.chefe) dx+=Math.round((Math.random()-.5)*1.5);
+  if(pose==="atk"&&!e.chefe) dx+=Math.sin(J.t*30+e.fase)*0.5;   // tremor leve e contínuo (antes sorteava a cada quadro e o bicho 'pulava')
   if(e.chefe||e.mini) z+=Math.sin(J.t*2.2)*1.2;
   if(e.giro>0) sx=Math.cos(J.t*18);
-  { const tg=J.t-(e.golpeT??-9); if(tg<0.14&&!e.chefe){ const k=1-tg/0.14; sx*=1+0.14*k; sy*=1-0.12*k; } else if(tg<0.14){ const k=1-tg/0.14; sx*=1+0.05*k; sy*=1-0.04*k; } }
   const sombraW=Math.max(4,w*0.55*(voa?0.7:1)), rim=contornoLeitura(spr);
   sombraContato(x,y+h*0.32,sombraW*1.1,rim?0.55:0.45);
   // nascendo: sobe do chão (ou desce do céu, se voa)
@@ -3297,7 +3354,9 @@ function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||
   if(clip<1){ lg.beginPath(); lg.rect(-w/2,-h,w,h*clip); lg.clip(); lg.translate(0,h*(1-clip)); }
   if(rim&&e.flash<=0){ const a0=lg.globalAlpha; lg.globalAlpha=a0*0.6; lg.drawImage(silhueta(spr,rim),-w/2-1,-h-1,w+2,h+2); lg.globalAlpha=a0; }   // contorno de leitura
   // levou golpe: brilho branco por cima do corpo (mais leve em chefe, que apanha o tempo todo)
-  desenharSprite(spr,-w/2,-h,w,h); if(img!==spr){ const a0=lg.globalAlpha; lg.globalCompositeOperation="lighter"; lg.globalAlpha=a0*(e.chefe||e.mini?0.4:0.75)*Math.min(1,e.flash/0.05); lg.drawImage(img,-w/2,-h,w,h); lg.globalAlpha=a0; lg.globalCompositeOperation="source-over"; }
+  desenharSprite(spr,-w/2,-h,w,h); if(!e.chefe&&!e.mini&&!e.elite&&QUAL>0&&!SIM.ativo){ const a0=lg.globalAlpha; lg.globalAlpha=a0*0.16; lg.drawImage(silhueta(spr,"#140c1c"),-w/2,-h,w,h); lg.globalAlpha=a0; }
+  if(img!==spr){ const a0=lg.globalAlpha; lg.globalCompositeOperation="lighter"; lg.globalAlpha=a0*(e.chefe||e.mini?0.4:0.75)*Math.min(1,e.flash/0.05); lg.drawImage(img,-w/2,-h,w,h); lg.globalAlpha=a0; lg.globalCompositeOperation="source-over"; }
+  if(e.virouElite>0){ lg.globalAlpha=Math.min(1,e.virouElite*2)*0.7; lg.globalCompositeOperation="lighter"; lg.drawImage(silhueta(spr,"#ffd34a"),-w/2,-h,w,h); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1; }
   if(e.chefe&&e.ia&&e.ia.fase===2){ lg.globalAlpha=0.18+0.12*Math.sin(J.t*6); lg.globalCompositeOperation="lighter"; lg.drawImage(silhueta(spr,COR[e.el]||"#ff5a4a"),-w/2,-h,w,h); lg.globalCompositeOperation="source-over"; }
   lg.restore(); lg.globalAlpha=1;
   if(e.bebado>0&&Math.floor(J.t*4)%2){ lg.fillStyle="#ffb0c0"; lg.fillRect(Math.round(x)-2,Math.round(y-z-h*0.7),1,1); lg.fillRect(Math.round(x)+2,Math.round(y-z-h*0.75),1,1); }
@@ -3319,7 +3378,7 @@ function desenharCadaveres(ox,oy){ if(!J.cadaveres) return;
     lg.drawImage(c.estilo==="chama"? silhueta(c.spr,"#ff8a3d") : c.estilo==="evapora"? silhueta(c.spr,"#e8e0ff") : c.spr,-w/2*sx,-h*sy,w*sx,h*sy); lg.restore(); }
   lg.globalAlpha=1;
   if(J.sapos) for(const s of J.sapos){ const h=Math.max(0,Math.sin(s.f*6))*3; lg.fillStyle="#4f9a3c"; lg.fillRect(Math.round(s.x-ox)-1,Math.round(s.y-oy-h)-1,3,2); lg.fillStyle="#1a1418"; lg.fillRect(Math.round(s.x-ox),Math.round(s.y-oy-h)-2,1,1); } }
-function desenharFalas(ox,oy){ if(!J.falas) return; ctx.textAlign="center"; ctx.font=`600 13px "Pixelify Sans", monospace`;
+function desenharFalas(ox,oy){ if(!J.falas) return; ctx.textAlign="center"; ctx.font=`600 13px "Nunito", system-ui, sans-serif`;
   for(const f of J.falas){ const e=f.e, x=(e.x-ox)*S, y=(e.y-oy-(e.tam||10)*1.1-(1.6-f.vida)*6)*S, w=ctx.measureText(f.txt).width+10; ctx.globalAlpha=Math.min(1,f.vida*2);
     ctx.fillStyle="rgba(18,14,26,.82)"; ctx.fillRect(x-w/2,y-13,w,17); ctx.beginPath(); ctx.moveTo(x-3,y+4); ctx.lineTo(x+3,y+4); ctx.lineTo(x,y+8); ctx.fill(); ctx.fillStyle=f.cor; ctx.fillText(f.txt,x,y); }
   ctx.globalAlpha=1; }
@@ -3681,10 +3740,10 @@ function desenharBarraChefe(){ const ch=J.chefeVivo&&J.chefeVivo.hp>0? J.chefeVi
   const w=Math.min(W*0.84,420), x=(W-w)/2, y=Math.round(H*0.2)+28, frac=Math.max(0,ch.hp/ch.max);
   ctx.globalAlpha=0.92; ctx.fillStyle="rgba(18,14,26,.85)"; ctx.fillRect(x-4,y-20,w+8,32); ctx.fillStyle="#3a2a30"; ctx.fillRect(x,y,w,7);
   ctx.fillStyle=ch.imortal? "#c8c8e0" : ch.chefe? "#d6ab4f" : "#e06a5a"; ctx.fillRect(x,y,w*frac,7); if(ch.chefe&&ch.def&&ch.def.fase2){ ctx.fillStyle="#f2e7c9"; ctx.fillRect(x+w*0.5-1,y-2,2,11); }
-  ctx.textAlign="left"; ctx.font=`600 13px "Pixelify Sans", monospace`; ctx.fillStyle="#f2e7c9"; ctx.fillText(ch.nome+(ch.imortal?" · Imortal":"")+(ch.bebado>0?" · Bêbado":"")+(fadigaChefe(ch)>1.2?" · Cansado":""),x,y-6);
+  ctx.textAlign="left"; ctx.font=`600 13px "Nunito", system-ui, sans-serif`; ctx.fillStyle="#f2e7c9"; ctx.fillText(ch.nome+(ch.imortal?" · Imortal":"")+(ch.bebado>0?" · Bêbado":"")+(fadigaChefe(ch)>1.2?" · Cansado":""),x,y-6);
   ctx.globalAlpha=1;
-  if(J.anuncio){ const a=J.anuncio; ctx.globalAlpha=Math.min(1,a.vida*1.5); ctx.textAlign="center"; ctx.font=`600 20px "Pixelify Sans", monospace`; ctx.fillStyle="#120e1a"; ctx.fillText(a.txt,W/2+2,y+36+2); ctx.fillStyle=a.cor; ctx.fillText(a.txt,W/2,y+36);
-    if(a.sub){ ctx.font=`13px "Pixelify Sans", monospace`; ctx.fillStyle="#f2e7c9"; const pal=a.sub.split(" "), linhas=[]; let l=""; for(const p of pal){ if((l+" "+p).length>44){ linhas.push(l); l=p; } else l=l?l+" "+p:p; } linhas.push(l); linhas.forEach((t,i)=>ctx.fillText(t,W/2,y+56+i*16)); }
+  if(J.anuncio){ const a=J.anuncio; ctx.globalAlpha=Math.min(1,a.vida*1.5); ctx.textAlign="center"; ctx.font=`800 20px "Cinzel", Georgia, serif`; ctx.fillStyle="#120e1a"; ctx.fillText(a.txt,W/2+2,y+36+2); ctx.fillStyle=a.cor; ctx.fillText(a.txt,W/2,y+36);
+    if(a.sub){ ctx.font=`13px "Nunito", system-ui, sans-serif`; ctx.fillStyle="#f2e7c9"; const pal=a.sub.split(" "), linhas=[]; let l=""; for(const p of pal){ if((l+" "+p).length>44){ linhas.push(l); l=p; } else l=l?l+" "+p:p; } linhas.push(l); linhas.forEach((t,i)=>ctx.fillText(t,W/2,y+56+i*16)); }
     ctx.globalAlpha=1; }
   // seta para o carvalho do Koschei quando ele está fora da tela
   const c=ch.carvalho; if(c&&!c.morto){ const P=J.jogador, dx=c.x-P.x, dy=c.y-P.y; if(Math.abs(dx)>VW/2-8||Math.abs(dy)>VH/2-8){ const ang=Math.atan2(dy,dx), cx=W/2+Math.cos(ang)*Math.min(W,H)*0.4, cy=H/2+Math.sin(ang)*Math.min(W,H)*0.4;
@@ -3724,11 +3783,11 @@ function desenhar(dt){
   // ovos e filhotes
   for(const o of J.ovosMapa){ const s=spriteOvo(LINHA[o.id].elemento,o.rar), b=Math.round(Math.sin(J.t*5+o.x)*1.5); sombra(o.x-ox,o.y-oy+6,8);
     if(o.rar!=="comum"){ lg.globalCompositeOperation="lighter"; lg.globalAlpha=.25+.15*Math.sin(J.t*6); lg.fillStyle=o.rar==="lendario"?"#ffd34a":"#c4ccd8"; lg.beginPath(); lg.arc(o.x-ox,o.y-oy,9,0,Math.PI*2); lg.fill(); lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; }
-    lg.drawImage(s,Math.round(o.x-ox-5),Math.round(o.y-oy-6)+b); }
+    lg.drawImage(s,o.x-ox-5,o.y-oy-6+b,10,12); }
   if(J.ovoAnc){ const o=J.ovoAnc, x=o.x-ox, y=o.y-oy, sp=spriteOvo(o.el,"lendario"), pul=0.5+0.5*Math.sin(J.t*4);
     lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.2+0.2*pul; lg.fillStyle=COR[o.el]; lg.fillRect(Math.round(x-3),Math.round(y-70),6,70);
     lg.beginPath(); lg.arc(x,y,14+3*pul,0,Math.PI*2); lg.fill(); lg.globalAlpha=1; lg.globalCompositeOperation="source-over";
-    sombra(x,y+9,11); lg.drawImage(sp,Math.round(x-sp.width),Math.round(y-sp.height*2+6),sp.width*2,sp.height*2);
+    sombra(x,y+9,11); lg.drawImage(sp,x-10,y-18,20,24);
     if(x<6||y<6||x>VW-6||y>VH-6){ const cx=VW/2, cy=VH/2, ang=Math.atan2(y-cy,x-cx), m=Math.min((VW/2-10)/Math.abs(Math.cos(ang)||1e-6),(VH/2-10)/Math.abs(Math.sin(ang)||1e-6));
       const ax=cx+Math.cos(ang)*m, ay=cy+Math.sin(ang)*m; lg.fillStyle=COR[o.el]; lg.beginPath(); lg.moveTo(ax+Math.cos(ang)*6,ay+Math.sin(ang)*6);
       lg.lineTo(ax+Math.cos(ang+2.5)*5,ay+Math.sin(ang+2.5)*5); lg.lineTo(ax+Math.cos(ang-2.5)*5,ay+Math.sin(ang-2.5)*5); lg.fill(); } }
@@ -3746,12 +3805,12 @@ function desenhar(dt){
   for(const e of J.inimigos) fila.push({y:e.y+(e.tam||8)*0.63-(e.z||0)*0,f:()=>desenharInimigo(e,ox,oy,P)});
   for(const c of J.crias){ const t=c.gigante?6:3; lg.fillStyle=tom(c.cor,1.2); lg.fillRect(Math.round(c.x-ox)-t/2,Math.round(c.y-oy)-t/2,t,t); lg.fillStyle="#120e1a"; lg.fillRect(Math.round(c.x-ox),Math.round(c.y-oy),1,1); }
   for(const f of J.fantasmas){ lg.globalAlpha=f.vida*3; lg.drawImage(f.spr,Math.round(f.x-ox-f.spr.width/2),Math.round(f.y-oy-f.spr.height/2)); } lg.globalAlpha=1;
-  fila.push({y:P.y+6,f:()=>{ sombra(P.x-ox,P.y-oy+6,9); if(J.invuln>0) lg.globalAlpha=.55; desenharInvocador(P.x-ox,P.y-oy); lg.globalAlpha=1; }});
+  fila.push({y:P.y+6,f:()=>{ sombra(P.x-ox,P.y-oy+6,13); if(J.invuln>0) lg.globalAlpha=.55; desenharInvocador(P.x-ox,P.y-oy); lg.globalAlpha=1; }});
   R.selos.forEach(s=>{ if(s.mon) fila.push({y:s.y+ALVO_ARTE[est(s)]/2,f:()=>desenharSelo(s,ox,oy,sombra)}); });
   fila.push({y:P.y+3,f:()=>desenharLenda(ox,oy)});
   for(const t of J.totens) fila.push({y:t.y+1,f:()=>desenharTotem(t,ox,oy)});
   fila.sort((a,b)=>a.y-b.y); for(const it of fila){ lg.globalAlpha=1; it.f(); } lg.globalAlpha=1;
-  desenharVfx(ox,oy,"frente"); desenharFauna(ox,oy,"ar"); desenharQuedas(ox,oy); desenharCenaAr(ox,oy); desenharFauna(ox,oy,"ceu"); desenharNuvens(ox,oy); desenharMapaLuz(ox,oy); desenharLuzAmbiente(ox,oy); desenharEscuridao(ox,oy);
+  desenharVfx(ox,oy,"frente"); desenharFauna(ox,oy,"ar"); desenharQuedas(ox,oy); desenharCenaAr(ox,oy); desenharFauna(ox,oy,"ceu"); J._nuvemFeita=false; desenharMapaLuz(ox,oy); desenharNuvens(ox,oy); desenharLuzAmbiente(ox,oy); desenharEscuridao(ox,oy);
   // luzes aditivas
   lg.globalCompositeOperation="lighter";
   for(const p of J.proj) desenharProjetil(p,ox,oy);
@@ -3770,12 +3829,9 @@ function desenhar(dt){
   lg.globalAlpha=1; lg.globalCompositeOperation="source-over";
   // tela
   ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,W,H); ctx.drawImage(lo,0,0,VW*S,VH*S); desenharCamadaArte();
-  const lx=(P.x-ox)*S, ly=(P.y-oy)*S, lr=Math.min(W,H)*0.45, luz=ctx.createRadialGradient(lx,ly,0,lx,ly,lr);
-  const corLuz=J.desp>0?hexRgb(COR[elementoDe(ativos()[0])]):[255,214,140]; luz.addColorStop(0,`rgba(${corLuz[0]},${corLuz[1]},${corLuz[2]},${J.desp>0?.24:.16})`); luz.addColorStop(1,"rgba(0,0,0,0)");
-  ctx.globalCompositeOperation="lighter"; ctx.fillStyle=luz; ctx.fillRect(0,0,W,H); ctx.globalCompositeOperation="source-over";
   desenharCenaBrilho(ox,oy); aplicarBloom();
-  const vg=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.3,W/2,H/2,Math.max(W,H)*0.75); vg.addColorStop(0,"rgba(10,8,20,0)"); vg.addColorStop(1,`rgba(10,8,20,${J.vida/J.vidaMax<0.3?.8:.62})`);
-  ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+  // luz quente em volta do jogador + vinheta das bordas: uma imagem pequena pronta, desenhada esticada (uma passada em vez de duas)
+  ctx.imageSmoothingEnabled=true; ctx.drawImage(sobreposicao(J.desp>0?COR[elementoDe(ativos()[0])]:"#ffd68c",J.desp>0?.24:.16,J.vida/J.vidaMax<0.3?.8:.62),(P.x-ox-VW/2)*S-10,(P.y-oy-VH/2)*S-10,W+20,H+20); ctx.imageSmoothingEnabled=false;
   if(J.vida/J.vidaMax<0.3){ ctx.globalAlpha=0.12+0.08*Math.sin(J.t*8); ctx.fillStyle="#c8473b"; ctx.fillRect(0,0,W,H); ctx.globalAlpha=1; }
   if(J.flash){ J.flash.vida-=dt||1/60; ctx.globalAlpha=Math.max(0,J.flash.vida); ctx.fillStyle=J.flash.cor; ctx.fillRect(0,0,W,H); ctx.globalAlpha=1; if(J.flash.vida<=0) J.flash=null; }
   ctx.textAlign="center";
@@ -3786,13 +3842,13 @@ function desenhar(dt){
   for(const n of J.nums){ if(cheio&&n.tam<=13) continue; const idade=(n.max||0.8)-n.vida, v=n.v>=1000? (n.v/1000).toFixed(n.v>=10000?0:1).replace(".",",")+"k" : n.v;
     const pulo=idade<0.18? 1+Math.sin(idade/0.18*Math.PI)*0.55*(1-idade/0.18)+0.25*(1-idade/0.18) : 1, some=n.vida<0.22? 0.6+n.vida/0.22*0.4 : 1, esc=pulo*some*(1+(n.pop||0)*0.3);
     const crit=n.tam>=20, X=(n.x-ox)*S, Y=(n.y-oy)*S, fs=Math.round(n.tam*esc*(crit?1.1:1));
-    ctx.globalAlpha=Math.min(1,n.vida*3); ctx.font=`600 ${fs}px "Pixelify Sans", monospace`;
+    ctx.globalAlpha=Math.min(1,n.vida*3); ctx.font=`900 ${fs}px "Nunito", system-ui, sans-serif`;
     ctx.lineWidth=Math.max(2.5,fs*0.2); ctx.strokeStyle="rgba(18,14,26,.92)"; ctx.strokeText(v,X,Y);
     if(crit){ const gr=ctx.createLinearGradient(0,Y-fs/2,0,Y+fs/2); gr.addColorStop(0,"#fffbe0"); gr.addColorStop(0.5,"#ffe066"); gr.addColorStop(1,"#ff9a3d"); ctx.fillStyle=gr; ctx.shadowColor="rgba(255,190,60,.85)"; ctx.shadowBlur=fs*0.5; }
     else ctx.fillStyle=n.cor;
     ctx.fillText(v,X,Y); ctx.shadowBlur=0; }
   ctx.textBaseline="alphabetic";
-  for(const t of J.textos){ ctx.globalAlpha=Math.min(1,t.vida*2); const k=t.vida>0.95? 1+(t.vida-0.95)*4 : 1; ctx.font=`600 ${Math.round(t.tam*k)}px "Pixelify Sans", monospace`; ctx.lineWidth=Math.max(2.5,t.tam*0.2); ctx.strokeStyle="rgba(18,14,26,.92)"; ctx.strokeText(t.t,(t.x-ox)*S,(t.y-oy)*S); ctx.fillStyle=t.cor; ctx.fillText(t.t,(t.x-ox)*S,(t.y-oy)*S); }
+  for(const t of J.textos){ ctx.globalAlpha=Math.min(1,t.vida*2); const k=t.vida>0.95? 1+(t.vida-0.95)*4 : 1; ctx.font=`600 ${Math.round(t.tam*k)}px "Nunito", system-ui, sans-serif`; ctx.lineWidth=Math.max(2.5,t.tam*0.2); ctx.strokeStyle="rgba(18,14,26,.92)"; ctx.strokeText(t.t,(t.x-ox)*S,(t.y-oy)*S); ctx.fillStyle=t.cor; ctx.fillText(t.t,(t.x-ox)*S,(t.y-oy)*S); }
   ctx.globalAlpha=1; desenharFalas(ox,oy); desenharBarraChefe(); desenharAvisos(); desenharConquista(); desenharAbertura();
   if(toque){ ctx.strokeStyle="rgba(242,231,201,.35)"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(toque.ox,toque.oy,40,0,Math.PI*2); ctx.stroke(); ctx.fillStyle="rgba(242,231,201,.35)";
     const dx=toque.x-toque.ox, dy=toque.y-toque.oy, d=Math.min(40,Math.hypot(dx,dy)), a=Math.atan2(dy,dx); ctx.beginPath(); ctx.arc(toque.ox+Math.cos(a)*d,toque.oy+Math.sin(a)*d,14,0,Math.PI*2); ctx.fill(); }
@@ -3818,7 +3874,11 @@ function desenharSelo(s,ox,oy,sombra){ movSelo(s);
   sombra(x+lunge*fxAlvo*0.6,pe-1,alvo*0.75*(1-hop*0.06)*Math.min(1.2,esc)); sombraProjetada(spr,x,pe,spr.width,spr.height,s._fx<0,1);
   // luz do elemento: brilho no chão em volta dos pés (respira devagar; mais forte no Despertar e à noite)
   if(!SIM.ativo&&QUAL>0){ const cor=COR[elementoDe(s)], r=alvo*(J.desp>0?1.25:0.95), pul=0.5+0.5*Math.sin(t*2.4+s.x*0.05), a=(0.16+0.1*nivelEscuro()+0.06*pul)*(J.desp>0?2:1);
-    lg.globalCompositeOperation="lighter"; lg.globalAlpha=Math.min(0.6,a); lg.drawImage(bolhaCor(cor),x-r,pe-r*0.42,r*2,r*0.84); lg.globalAlpha=Math.min(0.35,a*0.55); lg.drawImage(bolhaCor(cor),x-r*0.7,pe-alvo*0.55-r*0.5,r*1.4,r); lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; }
+    lg.globalCompositeOperation="lighter"; lg.globalAlpha=Math.min(0.6,a); lg.drawImage(bolhaCor(cor),x-r,pe-r*0.42,r*2,r*0.84); lg.globalAlpha=Math.min(0.35,a*0.55); lg.drawImage(bolhaCor(cor),x-r*0.7,pe-alvo*0.55-r*0.5,r*1.4,r); lg.globalAlpha=1;
+    // anel de equipe: elipse fina na cor do elemento com três marcas girando devagar (como a marcação de time dos jogos de ação)
+    const ra=alvo*0.48, rb=ra*0.36, gi=t*0.9+s.x*0.01; lg.strokeStyle=cor; lg.lineWidth=0.8; lg.globalAlpha=0.55; lg.beginPath(); lg.ellipse(x,pe-0.5,ra,rb,0,0,Math.PI*2); lg.stroke();
+    lg.lineWidth=1.4; lg.globalAlpha=0.9; for(let i=0;i<3;i++){ const a0=gi+i*Math.PI*2/3; lg.beginPath(); lg.ellipse(x,pe-0.5,ra,rb,0,a0,a0+0.6); lg.stroke(); }
+    lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; lg.lineWidth=1; }
   const w=spr.width, h=spr.height, peS=spr._pe||h;
   lg.save(); lg.translate(x+lunge*fxAlvo,pe-hop); lg.rotate(rot); lg.scale(fx*sx*esc,sy*esc);
   // contorno de luz na cor do elemento, por trás do corpo (lê em chão claro e brilha à noite)
@@ -3838,54 +3898,70 @@ function desenharTotem(t,ox,oy){ const x=t.x-ox, y=t.y-oy, tm=J.t+(t.x%7), pul=0
   lg.fillStyle="#1a0e08"; lg.fillRect(x-1.4,y-6.2,1,0.8); lg.fillRect(x+0.4,y-6.2,1,0.8); lg.fillRect(x-1,y-4,2,0.6);   // rosto
   lg.strokeStyle="#2a180c"; lg.lineWidth=0.4; lg.beginPath(); lg.moveTo(x-2.2,y-2.5); lg.lineTo(x+2.2,y-2.5); lg.moveTo(x-2.1,y-8.2); lg.lineTo(x+2.1,y-8.2); lg.stroke();
   lg.fillStyle=cor; lg.beginPath(); lg.arc(x,y-13,1.7+0.3*pul,0,Math.PI*2); lg.fill(); lg.fillStyle="#ffffff"; lg.globalAlpha=0.8; lg.beginPath(); lg.arc(x-0.5,y-13.5,0.6,0,Math.PI*2); lg.fill(); lg.globalAlpha=1; lg.lineWidth=1; }
-// Invocador: mago encapuzado com cajado, desenhado em vetor (fica nítido em qualquer resolução).
-// O orbe do cajado e a gema do peito tomam a cor do elemento do primeiro monstro da equipe.
+// Invocador: o herói da capa do jogo (cabelo castanho, armadura de couro, capa clara esvoaçando e espada), desenhado em vetor
+// (nítido em qualquer resolução). A lâmina e a gema do cabo brilham na cor do elemento do primeiro monstro da equipe.
 function desenharInvocador(x,y){
   const vel=Math.hypot(J.pvx||0,J.pvy||0), anda=Math.min(1,vel/30), t=J.t, fase=t*11;
   const lado=(J.dir&&J.dir.x<-0.1)? -1 : (J.dir&&J.dir.x>0.1)? 1 : (desenharInvocador.lado||1); desenharInvocador.lado=lado;
-  const a0=ativos()[0], el=a0? elementoDe(a0) : (R.pacto&&R.pacto[0]), cor=COR[el]||"#7fe0ff", corC=tom(cor,1.45);
-  const pulo=Math.abs(Math.sin(fase))*anda*1.1, resp=Math.sin(t*2.2)*0.25*(1-anda), balanco=Math.sin(fase)*anda;
-  lg.save(); lg.translate(x,y+6-pulo); lg.scale(lado,1);
-  const capaEsc="#2a2350", capa="#3f3478", capaClara="#5a4c9e", ouro="#e0b65a", ouroEsc="#9a7430";
-  lg.lineJoin="round"; lg.lineCap="round";
-  // pés
-  lg.fillStyle="#1c1630"; lg.beginPath(); lg.ellipse(-1.6+balanco*1.2,-0.4,1.3,0.8,0,0,Math.PI*2); lg.ellipse(1.6-balanco*1.2,-0.4,1.3,0.8,0,0,Math.PI*2); lg.fill();
-  // cajado (atrás do corpo, na mão da frente)
-  const cx0=3.6, cy0=-1, cx1=4.6+balanco*0.4, cy1=-16.5+resp;
-  lg.strokeStyle="#5a3a20"; lg.lineWidth=1.1; lg.beginPath(); lg.moveTo(cx0,cy0); lg.lineTo(cx1,cy1); lg.stroke();
-  lg.strokeStyle="#8a5a30"; lg.lineWidth=0.5; lg.beginPath(); lg.moveTo(cx0-0.2,cy0-0.5); lg.lineTo(cx1-0.2,cy1+0.5); lg.stroke();
-  lg.strokeStyle=ouro; lg.lineWidth=0.7; lg.beginPath(); lg.arc(cx1,cy1-1.4,1.9,Math.PI*0.15,Math.PI*0.85,true); lg.stroke();
-  // capa: sino que balança com o passo
-  const sw=balanco*0.8, bw=5.2+anda*0.4;
-  lg.fillStyle=capaEsc; lg.beginPath(); lg.moveTo(-2.4,-10.5); lg.quadraticCurveTo(-4.6,-5,-bw+sw,-0.6); lg.quadraticCurveTo(0,0.8,bw+sw,-0.6); lg.quadraticCurveTo(4.6,-5,2.4,-10.5); lg.closePath(); lg.fill();
-  lg.fillStyle=capa; lg.beginPath(); lg.moveTo(-1.8,-10.5); lg.quadraticCurveTo(-3.6,-5,-bw+1+sw,-0.9); lg.quadraticCurveTo(0,0.2,bw-0.6+sw,-0.9); lg.quadraticCurveTo(3.8,-5,2.2,-10.5); lg.closePath(); lg.fill();
-  lg.strokeStyle=ouro; lg.lineWidth=0.55; lg.beginPath(); lg.moveTo(-bw+1+sw,-0.9); lg.quadraticCurveTo(0,0.2,bw-0.6+sw,-0.9); lg.stroke();   // barra dourada
-  lg.strokeStyle=ouroEsc; lg.lineWidth=0.5; lg.beginPath(); lg.moveTo(0.3,-9.5); lg.lineTo(0.6+sw*0.5,-0.4); lg.stroke();                       // abertura da capa
-  // braço e mão segurando o cajado
-  lg.strokeStyle=capaClara; lg.lineWidth=1.6; lg.beginPath(); lg.moveTo(1.6,-8.6); lg.quadraticCurveTo(3.4,-7.2,cx0+0.2,-6.2); lg.stroke();
-  lg.fillStyle="#e8c49a"; lg.beginPath(); lg.arc(cx0+0.4+(cx1-cx0)*0.32,-6.1,0.8,0,Math.PI*2); lg.fill();
-  // gema do peito
-  lg.fillStyle=ouro; lg.beginPath(); lg.arc(0,-8.7,1.05,0,Math.PI*2); lg.fill(); lg.fillStyle=corC; lg.beginPath(); lg.arc(0,-8.7,0.6,0,Math.PI*2); lg.fill();
-  // capuz
-  const hy=-12.3+resp;
-  lg.fillStyle=capaEsc; lg.beginPath(); lg.moveTo(-3.3,hy+2.6); lg.quadraticCurveTo(-3.6,hy-2.8,-0.4,hy-3.6); lg.quadraticCurveTo(2.2,hy-4.6,1.6,hy-6.2); lg.quadraticCurveTo(4.4,hy-3,3.3,hy+2.6); lg.closePath(); lg.fill();
-  lg.fillStyle=capa; lg.beginPath(); lg.moveTo(-2.8,hy+2.2); lg.quadraticCurveTo(-3,hy-2.4,-0.2,hy-3.1); lg.quadraticCurveTo(1.6,hy-3.8,1.4,hy-5.2); lg.quadraticCurveTo(3.6,hy-2.6,2.9,hy+2.2); lg.closePath(); lg.fill();
-  lg.strokeStyle=ouro; lg.lineWidth=0.45; lg.beginPath(); lg.moveTo(-2.4,hy+2.3); lg.quadraticCurveTo(0.2,hy+3.1,2.6,hy+2.3); lg.stroke();
-  // rosto na sombra do capuz e olhos brilhando
-  lg.fillStyle="#0f0b1a"; lg.beginPath(); lg.ellipse(0.5,hy+0.2,2.1,1.9,0,0,Math.PI*2); lg.fill();
-  const pisc=(t%3.7)<0.12? 0.25 : 1;
-  lg.fillStyle="#bff4ff"; lg.beginPath(); lg.ellipse(-0.3,hy+0.1,0.42,0.42*pisc,0,0,Math.PI*2); lg.ellipse(1.5,hy+0.1,0.42,0.42*pisc,0,0,Math.PI*2); lg.fill();
-  // orbe do cajado com brilho
-  const pul=0.5+0.5*Math.sin(t*4), ox=cx1, oy=cy1-1.4;
-  lg.globalCompositeOperation="lighter"; const g=lg.createRadialGradient(ox,oy,0,ox,oy,5+pul*1.5), [r1,g1,b1]=hexRgb(cor);
-  g.addColorStop(0,`rgba(${r1},${g1},${b1},${0.55+0.2*pul})`); g.addColorStop(1,`rgba(${r1},${g1},${b1},0)`); lg.fillStyle=g; lg.fillRect(ox-7,oy-7,14,14);
-  lg.globalCompositeOperation="source-over";
-  lg.fillStyle=cor; lg.beginPath(); lg.arc(ox,oy,1.3,0,Math.PI*2); lg.fill(); lg.fillStyle="#ffffff"; lg.beginPath(); lg.arc(ox-0.4,oy-0.4,0.5,0,Math.PI*2); lg.fill();
+  const a0=ativos()[0], el=a0? elementoDe(a0) : (R.pacto&&R.pacto[0]), cor=COR[el]||"#7fe0ff";
+  const pulo=Math.abs(Math.sin(fase))*anda*0.9, resp=Math.sin(t*2.2)*0.22*(1-anda), passo=Math.sin(fase)*anda, vento=Math.sin(t*1.7)*0.6;
+  lg.save(); lg.translate(x,y+6-pulo); lg.scale(lado*1.5,1.5); lg.lineJoin="round"; lg.lineCap="round";
+  const contorno=()=>{ lg.strokeStyle="rgba(20,12,8,.85)"; lg.lineWidth=0.45; lg.stroke(); };
+  const couro="#7a5232", couroEsc="#4e3420", couroCla="#9a6c44", calca="#3a2c26", bota="#2a1c14", pele="#e8c49a", cabelo="#5a3418", cabeloCla="#7a4a24", capa="#efe0bc", capaSom="#a8916a", ouro="#e0b65a";
+  // capa atrás: presa nos ombros, esvoaça para trás (mais ao correr) e ondula com o vento
+  const cx0=-1.6, cy0=-10.4, ab=2.6+anda*3.2+vento*0.6, desce=-0.6+anda*1.6;
+  lg.fillStyle=capaSom; lg.beginPath(); lg.moveTo(cx0+2.6,cy0); lg.quadraticCurveTo(-2.5-ab*0.4,-6,-3.4-ab,desce-0.8); lg.quadraticCurveTo(-1.5-ab*0.55,desce+0.6+Math.sin(t*6)*0.4,0.4-ab*0.15,desce-0.2); lg.quadraticCurveTo(0.6,-5,cx0+2.6,cy0); lg.fill(); contorno();
+  lg.fillStyle=capa; lg.beginPath(); lg.moveTo(cx0+2.2,cy0+0.2); lg.quadraticCurveTo(-2-ab*0.35,-6.4,-3-ab*0.85,desce-1.2); lg.quadraticCurveTo(-1.8-ab*0.45,desce-0.4+Math.sin(t*6+1)*0.3,-0.2-ab*0.1,desce-0.8); lg.quadraticCurveTo(0,-5.5,cx0+2.2,cy0+0.2); lg.fill();
+  // pernas e botas (passada alternada)
+  const pe=(dx,k)=>{ const px=dx+passo*1.4*k, py=-0.2-Math.max(0,-passo*k)*0.8; lg.strokeStyle=calca; lg.lineWidth=1.3; lg.beginPath(); lg.moveTo(dx*0.6,-4.6); lg.lineTo(px,py-1.6); lg.stroke();
+    lg.fillStyle=bota; lg.beginPath(); lg.ellipse(px+0.3,py-0.6,1.1,0.9,0,0,Math.PI*2); lg.fill(); };
+  pe(-0.9,-1); pe(1.1,1);
+  // braço de trás
+  lg.strokeStyle=couroEsc; lg.lineWidth=1.1; lg.beginPath(); lg.moveTo(-1.6,-9.2); lg.lineTo(-2.4-passo*0.8,-5.8); lg.stroke();
+  // tronco: gibão de couro com cinto e fivela
+  const ty=resp; lg.fillStyle=couro; lg.beginPath(); lg.moveTo(-2.3,-10.4+ty); lg.quadraticCurveTo(-2.7,-7,-2.2,-4.2); lg.lineTo(2.2,-4.2); lg.quadraticCurveTo(2.7,-7,2.3,-10.4+ty); lg.closePath(); lg.fill(); contorno();
+  lg.fillStyle=couroCla; lg.beginPath(); lg.moveTo(0.3,-10.2+ty); lg.lineTo(2.1,-10.2+ty); lg.quadraticCurveTo(2.4,-7.4,2,-5); lg.lineTo(0.8,-5); lg.closePath(); lg.fill();
+  lg.fillStyle=couroEsc; lg.fillRect(-2.3,-5.6,4.6,0.9); lg.fillStyle=ouro; lg.fillRect(-0.5,-5.7,1,1.1);
+  lg.strokeStyle=couroEsc; lg.lineWidth=0.35; lg.beginPath(); lg.moveTo(-1,-9.6+ty); lg.lineTo(-1.2,-6); lg.stroke();
+  // fecho da capa no pescoço e a capa caindo do ombro da frente
+  lg.fillStyle=capa; lg.beginPath(); lg.moveTo(-2.4,-10.6+ty); lg.quadraticCurveTo(0,-11.6+ty,2.4,-10.6+ty); lg.quadraticCurveTo(1.2,-9.6+ty,-2.4,-9.8+ty); lg.fill();
+  lg.fillStyle=ouro; lg.beginPath(); lg.arc(1.6,-10.4+ty,0.55,0,Math.PI*2); lg.fill();
+  // cabeça: rosto de perfil, cabelo castanho bagunçado que balança
+  const hy=-12.6+ty; lg.fillStyle=pele; lg.beginPath(); lg.ellipse(0.5,hy,1.75,1.95,0,0,Math.PI*2); lg.fill(); contorno();
+  lg.fillStyle="#2a1810"; lg.beginPath(); lg.ellipse(1.35,hy+0.1,0.28,0.38*((t%3.7)<0.12?0.25:1),0,0,Math.PI*2); lg.fill();
+  const bal=Math.sin(t*3+1)*0.3*(1+anda);
+  lg.fillStyle=cabelo; lg.beginPath(); lg.moveTo(-1.6,hy+0.9); lg.quadraticCurveTo(-2.1,hy-2.2,0.2,hy-2.4); lg.quadraticCurveTo(2.4,hy-2.6,2.3,hy-0.7);
+  lg.lineTo(1.4,hy-1.2); lg.lineTo(0.9,hy-0.4); lg.lineTo(0.2,hy-1.1); lg.lineTo(-0.4,hy+0.2); lg.lineTo(-1.1,hy-0.3); lg.closePath(); lg.fill(); contorno();
+  lg.beginPath(); lg.moveTo(-1.4,hy-1.6); lg.lineTo(-2.9-bal,hy-1.2); lg.lineTo(-1.6,hy-0.6); lg.lineTo(-2.6-bal,hy+0.2); lg.lineTo(-1.3,hy+0.6); lg.fill();
+  lg.fillStyle=cabeloCla; lg.beginPath(); lg.moveTo(-0.6,hy-2.1); lg.quadraticCurveTo(0.8,hy-2.7,1.8,hy-1.6); lg.lineTo(1.1,hy-1.6); lg.closePath(); lg.fill();
+  // espada na mão da frente: para baixo e à frente andando, erguida devagar parado
+  const hx=2.3+passo*0.5, hyM=-6.6+ty, ang=anda>0.2? 0.55 : 0.25+Math.sin(t*1.4)*0.05, L=8.2, ca=Math.cos(ang), sa=Math.sin(ang);
+  lg.strokeStyle=couroEsc; lg.lineWidth=1.1; lg.beginPath(); lg.moveTo(1.7,-9.2+ty); lg.lineTo(hx,hyM); lg.stroke();
+  lg.save(); lg.translate(hx,hyM); lg.rotate(ang);
+  lg.strokeStyle="#3a2618"; lg.lineWidth=0.9; lg.beginPath(); lg.moveTo(-1.6,0); lg.lineTo(0,0); lg.stroke();                 // cabo
+  lg.fillStyle=cor; lg.beginPath(); lg.arc(-1.9,0,0.55,0,Math.PI*2); lg.fill();                                                    // gema no pomo
+  lg.strokeStyle=ouro; lg.lineWidth=0.7; lg.beginPath(); lg.moveTo(0.2,-1.3); lg.lineTo(0.2,1.3); lg.stroke();                     // guarda
+  const lam=lg.createLinearGradient(0,-0.7,0,0.7); lam.addColorStop(0,"#ffffff"); lam.addColorStop(0.5,"#c8d4e0"); lam.addColorStop(1,"#7a8898");
+  lg.fillStyle=lam; lg.beginPath(); lg.moveTo(0.4,-0.6); lg.lineTo(L-1.1,-0.5); lg.lineTo(L,0); lg.lineTo(L-1.1,0.5); lg.lineTo(0.4,0.6); lg.closePath(); lg.fill(); lg.strokeStyle="rgba(20,12,8,.7)"; lg.lineWidth=0.3; lg.stroke();
+  // brilho do elemento correndo pela lâmina
+  const brilho=(t*0.8)%1; lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.35+0.25*Math.sin(t*4); lg.strokeStyle=cor; lg.lineWidth=1.1; lg.beginPath(); lg.moveTo(0.6,0); lg.lineTo(L-0.6,0); lg.stroke();
+  lg.globalAlpha=0.9*Math.sin(brilho*Math.PI); lg.fillStyle="#ffffff"; lg.beginPath(); lg.arc(0.6+(L-1.2)*brilho,-0.15,0.45,0,Math.PI*2); lg.fill();
+  lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; lg.restore();
+  lg.fillStyle=pele; lg.beginPath(); lg.arc(hx,hyM,0.7,0,Math.PI*2); lg.fill();                                                    // mão
+  // luz do elemento na ponta da espada
+  const px=hx+ca*L, py=hyM+sa*L, pul=0.5+0.5*Math.sin(t*4); lg.globalCompositeOperation="lighter"; const [r1,g1,b1]=hexRgb(cor), gg=lg.createRadialGradient(px,py,0,px,py,4+pul);
+  gg.addColorStop(0,`rgba(${r1},${g1},${b1},${0.45+0.2*pul})`); gg.addColorStop(1,`rgba(${r1},${g1},${b1},0)`); lg.fillStyle=gg; lg.fillRect(px-6,py-6,12,12); lg.globalCompositeOperation="source-over";
   lg.restore(); lg.lineWidth=1; lg.lineCap="butt"; lg.lineJoin="miter"; }
+let SOBRE=null;
+function sobreposicao(cor,aLuz,aVin){ const k=cor+"|"+aLuz+"|"+aVin+"|"+W+"x"+H; if(SOBRE&&SOBRE.k===k) return SOBRE.c;
+  const w=Math.max(16,Math.round(W/4)), h=Math.max(16,Math.round(H/4)), c=(SOBRE&&SOBRE.c)||document.createElement("canvas"); c.width=w; c.height=h; const g=c.getContext("2d"), m=Math.min(w,h), [r,gg,b]=hexRgb(cor);
+  const vg=g.createRadialGradient(w/2,h/2,m*0.3,w/2,h/2,Math.max(w,h)*0.75); vg.addColorStop(0,"rgba(10,8,20,0)"); vg.addColorStop(1,`rgba(10,8,20,${aVin})`); g.fillStyle=vg; g.fillRect(0,0,w,h);
+  g.globalCompositeOperation="lighter"; const lz=g.createRadialGradient(w/2,h/2,0,w/2,h/2,m*0.45); lz.addColorStop(0,`rgba(${r},${gg},${b},${aLuz})`); lz.addColorStop(1,"rgba(0,0,0,0)"); g.fillStyle=lz; g.fillRect(0,0,w,h);
+  c._suave=true; SOBRE={k,c}; return c; }
 // brilho (bloom): reduz a tela, guarda só o que é claro (multiplicar a imagem por ela mesma) e soma de volta, borrado.
 // Custa pouco (imagens pequenas) e some sozinho quando o aparelho está lento (QUAL<2).
 let BL1=null, BL2=null;
-function aplicarBloom(){ if(QUAL<2||SIM.ativo) return;
+function aplicarBloom(){ if(QUAL<2||SIM.ativo||TOQUE) return;
   const w1=Math.max(8,Math.round(W/4)), h1=Math.max(8,Math.round(H/4)), w2=Math.max(4,w1>>1), h2=Math.max(4,h1>>1);
   if(!BL1){ BL1=document.createElement("canvas"); BL2=document.createElement("canvas"); }
   if(BL1.width!==w1||BL1.height!==h1){ BL1.width=w1; BL1.height=h1; BL2.width=w2; BL2.height=h2; }

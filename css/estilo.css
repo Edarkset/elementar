@@ -8,7 +8,7 @@
 :root[data-theme="dark"]{ --bg:#0f1224; --surface:#1a1f3a; --text:#f2e7c9; --muted:#a8a2b8; --line:#3a4170; color-scheme:dark; }
 html{height:100%; scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
-body{margin:0; height:100%; background:var(--tinta); color:var(--text); font-family:"Pixelify Sans","Courier New",monospace; overflow:hidden; -webkit-user-select:none; user-select:none; touch-action:none}
+body{margin:0; height:100%; background:var(--tinta); color:var(--text); font-family:"Nunito","Segoe UI",system-ui,sans-serif; font-weight:600; overflow:hidden; -webkit-user-select:none; user-select:none; touch-action:none}
 #jogo{position:relative; width:100%; height:100%; overflow:hidden; background:var(--tinta)}
 #tela{position:absolute; inset:0; width:100%; height:100%; image-rendering:pixelated; display:block}
 canvas.mini{image-rendering:pixelated}
@@ -277,3 +277,11 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 .bau-tela.aberto .bau-arca .tampa{transform:rotate(-20deg) translate(-2px,-4px)}
 .bau-titulo{margin-bottom:10px}
 .bau-arca .brilho-interno{opacity:0; transition:opacity .3s .1s} .bau-tela.aberto .bau-arca .brilho-interno{opacity:1}
+
+/* fonte: Cinzel (letras de pedra gravada, combina com o tema mitológico) nos títulos; Nunito (arredondada, legível em tela pequena) no resto */
+.painel h1,.painel h2,.bau-titulo,.cine-texto b,.intro-texto b,.carta b{font-family:"Cinzel",Georgia,serif; font-weight:800; letter-spacing:.3px}
+.carta b{font-weight:600}
+.botao,.btn-hud,.circ{font-family:"Nunito",system-ui,sans-serif; font-weight:800}
+
+/* ovos do ninho: arte em alta resolução, proporção do ovo */
+.ovo canvas{width:20px; height:24px; image-rendering:auto} .ovo.anc canvas{width:25px; height:30px; image-rendering:auto}

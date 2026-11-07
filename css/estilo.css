@@ -285,3 +285,30 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 
 /* ovos do ninho: arte em alta resolução, proporção do ovo */
 .ovo canvas{width:20px; height:24px; image-rendering:auto} .ovo.anc canvas{width:25px; height:30px; image-rendering:auto}
+
+/* menu em camadas */
+#telaMenu{overflow:hidden}
+.paralaxe{position:absolute; inset:0; z-index:0; pointer-events:none; --px:0; --py:0}
+#telaMenu .painel{position:relative; z-index:1}
+.paralaxe .cam{position:absolute; inset:-6%; background:center bottom/cover no-repeat; will-change:transform}
+.paralaxe .ceu{transform:translate(calc(var(--px)*-8px),calc(var(--py)*-6px)) scale(1.04); animation:ceuDeriva 60s ease-in-out infinite alternate}
+.paralaxe .cri{transform:translate(calc(var(--px)*-18px),calc(var(--py)*-12px)); animation:criFlutua 7s ease-in-out infinite alternate}
+.paralaxe .fr{inset:-3%; transform:translate(calc(var(--px)*-30px),calc(var(--py)*-14px))}
+.paralaxe .brilho{background:radial-gradient(ellipse at 50% 38%, rgba(255,226,160,.28), transparent 45%); mix-blend-mode:screen; animation:brilhoPulsa 5s ease-in-out infinite alternate}
+.paralaxe .cri, .paralaxe .ceu, .paralaxe .fr{transition:transform .25s ease-out}
+@keyframes ceuDeriva{from{background-position:48% bottom} to{background-position:52% bottom}}
+@keyframes criFlutua{from{margin-top:0} to{margin-top:-10px}}
+@keyframes brilhoPulsa{from{opacity:.55} to{opacity:1}}
+@media (prefers-reduced-motion: reduce){ .paralaxe .cam{animation:none!important} }
+/* telas com fundo pintado (Santuário, fim de run) */
+#telaCartas.com-fundo{background-size:cover; background-position:center}
+/* celular em pé: painel do menu mais baixo e compacto, para a cena em camadas aparecer */
+@media (max-width:520px) and (orientation:portrait){
+  #telaMenu.com-arte .painel{padding:12px 14px; margin-bottom:1.5vh}
+  #telaMenu.com-arte .painel > p:first-of-type{display:none}
+  #telaMenu.com-arte h1 img{width:min(78%,300px)!important}
+  #telaMenu.com-arte .painel > p:last-of-type{font-size:12px; margin-top:8px!important; opacity:.85}
+}
+
+/* Bolsa brilha quando há um item que serve agora */
+.btn-hud.util{border-color:#ffd34a; color:#fff3c4; box-shadow:0 0 0 1px rgba(255,211,74,.5), 0 0 12px rgba(255,211,74,.55); animation:pulsaArte .9s infinite alternate}

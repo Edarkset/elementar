@@ -391,3 +391,23 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 /* baú com 5 prêmios em tela pequena: cartas mais estreitas (3 por linha) e a tela rola se ainda faltar espaço */
 .bau-tela{overflow-y:auto}
 @media (max-width:520px) and (orientation:portrait){ .casa{width:min(30vw,112px); min-height:100px; padding:6px 4px} .casa img{width:48px; height:48px} .bau-arca{width:min(40vw,160px)} }
+
+/* descoberta de monstro novo: silhueta escura que acende num clarão */
+.cine-descoberta{position:relative; width:min(52vw,210px); aspect-ratio:1}
+.cine-descoberta img{position:absolute; inset:0; width:100%; height:100%; object-fit:contain; image-rendering:pixelated;
+  filter:brightness(0) drop-shadow(0 0 10px var(--cor)); animation:descobreSil 1.1s ease-out both, descobreAcende .45s 1.25s ease-out forwards}
+@keyframes descobreSil{from{opacity:0; transform:scale(.6)} to{opacity:1; transform:scale(1)}}
+@keyframes descobreAcende{from{filter:brightness(0) drop-shadow(0 0 10px var(--cor))} 40%{filter:brightness(3) drop-shadow(0 0 30px #fff)} to{filter:brightness(1) drop-shadow(0 0 16px var(--cor))}}
+.cine-clarao.descoberta{animation-delay:1.2s}
+.cine.descoberta .cine-texto{animation-delay:1.5s}
+.cine-texto em{font-style:normal; font-size:12.5px; color:#b8f0d8; max-width:340px}
+/* Presságio: cartas com borda e brilho na cor do astro */
+.carta.pressagio{border-width:2px; background:linear-gradient(180deg,rgba(40,30,70,.97),rgba(18,14,36,.97)); box-shadow:0 0 16px var(--rar), inset 0 0 22px rgba(0,0,0,.45)}
+.carta.pressagio b{color:var(--rar); font-size:17px}
+/* Carta Proibida: vermelho-sangue, pulsando */
+.carta.maldita{--rar:#e0304a; border-width:2px; background:linear-gradient(180deg,rgba(70,14,26,.97),rgba(28,6,14,.97)); animation:cartaEntra .32s ease-out both, maldita 1.6s ease-in-out infinite alternate}
+.carta.maldita b{color:#ff8a9a} .carta.maldita small{color:#ffb0b8} .carta.maldita i{color:#ff9a8a; font-style:normal}
+@keyframes maldita{from{box-shadow:0 0 8px #e0304a, inset 0 0 14px rgba(0,0,0,.5)} to{box-shadow:0 0 22px #ff4a6a, inset 0 0 14px rgba(0,0,0,.5)}}
+@media (prefers-reduced-motion: reduce){ .carta.maldita{animation:none} .cine-descoberta img{animation:none; filter:none} }
+.carta small .bom{color:#9ff0b8; font-weight:800} .carta small .custo{color:#ff9a8a; font-weight:800}
+.cine-descoberta img{image-rendering:auto}

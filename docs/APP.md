@@ -41,7 +41,7 @@ e abra http://localhost:8000. Não precisa de Python nem Node.
 - Aparece o botão **Modo moderador** no menu: liberar todos os monstros, Lendas, Panteão, Talismãs, +10.000 de Essência, ou tudo de uma vez.
 - O save de antes da primeira mudança fica guardado: **Restaurar save de antes** volta ao progresso normal.
 - Um save que passou pelo modo moderador não envia conquistas para a Steam.
-- **Antes de lançar na Steam:** em `js/jogo.js`, troque `MODERADOR_DISPONIVEL=true` para `false`.
+- **Antes de lançar na Steam:** em `js/jogo/11_menu.js`, troque `MODERADOR_DISPONIVEL=true` para `false`.
 
 ## 3. Versão de computador e Steam (`desktop/`)
 1. Instale o Node.js LTS (nodejs.org).

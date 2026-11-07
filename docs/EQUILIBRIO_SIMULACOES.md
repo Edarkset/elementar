@@ -28,7 +28,7 @@ python3 testes/resumo.py testes/res.json
 
 ## O que foi mudado
 
-- **Força por classe** (`AJUSTE_CLASSE` em `js/jogo.js`): multiplicador de dano por classe para aproximar assassino, xamã, caçador e invocador das classes de frente.
+- **Força por classe** (`AJUSTE_CLASSE` em `js/jogo/01_nucleo.js`): multiplicador de dano por classe para aproximar assassino, xamã, caçador e invocador das classes de frente.
 - **Itens na hora certa:** cada item tem peso pelo quanto serve no momento (Pedra Ancestral perto de virar Adulto, Mel Ancestral perto de evoluir, Incenso com Selo vazio, Pena de Troca com reserva e troca em recarga). Item inútil quase não cai. O botão Bolsa brilha quando há item que vale usar agora.
 - **Troca de monstros:** quem entra chega com um golpe em área do seu elemento ("Entrou em cena!"). No começo do mapa, o jogo avisa se há na reserva um monstro com vantagem de elemento ali (a troca é grátis nesse momento).
 - **Menos interrupções:** eram ~12 telas de escolha por mapa (uma a cada ~12 s). Agora a tela de nível só abre em nível par; no ímpar a melhor carta (dourada primeiro) entra sozinha com um aviso na tela. Elo, Talismã e carta da Lenda não se perdem: voltam no nível par seguinte. Opção no menu de pausa para escolher sempre.

@@ -288,12 +288,17 @@ const HAB={
   xama:{ h1:{cd:8, f(s,a,el,cor,lv,mod){ J.canto=5; if(mod===0) J.fervor=5; anel(J.jogador.x,J.jogador.y,40,cor,.6); if(mod===1) emArea(J.jogador.x,J.jogador.y,45,e=>{const dx=e.x-J.jogador.x,dy=e.y-J.jogador.y,d=Math.hypot(dx,dy)||1; e.x+=dx/d*25; e.y+=dy/d*25;}); }},
          h2:{cd:10,f(s,a,el,cor,lv,mod){ J.zonas.push({fonte:FONTE,tipo:"espirito",x:J.jogador.x,y:J.jogador.y,r:4,ang:0,cor,el,el2:mod===0?escolha(ELS.filter(x=>x!==el)):null,cadeia:mod===1,dano:a.dano*1.2*fNivel(lv),vida:6,cd:0}); }} },
 };
+// força visual de um monstro: cresce com o estágio (filhote -> supremo), o nível do poder e a raridade.
+// Os efeitos (corte, onda, raio, selo) usam isso para ficar maiores, mais grossos e com mais partículas: um Supremo
+// lendário com poder 5 parece outra criatura perto de um filhote comum
+let VFX_K=1;
+function forcaVisual(s,k){ const rar={comum:0,incomum:0.05,raro:0.12,epico:0.2,lendario:0.32}[s.mon.rar]||0; return 1+est(s)*0.28+((s.pod[k]||1)-1)*0.09+rar; }
 function agirSelo(s,dt){
   const a=atrib(s), el=elementoDe(s), cor=COR[el], cls=L(s).classe;
   if(s.esp!=null&&!SIM.semEspeciais){ s.cdEsp=(s.cdEsp??10)-dt; if(s.cdEsp<=0){ FONTE="especial"; dispararEspecial(s,a,el,cor); s.cdEsp=recargaEspecial(s); } }
   if(s.furia>0){ s.furia-=dt; if(s.furiaMod===0) curar(J.vidaMax*0.02*dt); if(s.furiaMod===1) J.imparavel=0.2; }
-  s.cd-=dt*a.cad*(J.cantoGuerra>0?1.2:1); if(s.cd<=0){ FONTE="basico"; s.cd=ataqueBasico(s,atribPoder(a,s,"b"),el,cor)*tal.recarga(); aoDisparar(s,"b",a,el,cor); if(J.t-(s.atkT??-9)>0.5) s.atkT=J.t; }
+  s.cd-=dt*a.cad*(J.cantoGuerra>0?1.2:1); if(s.cd<=0){ FONTE="basico"; VFX_K=forcaVisual(s,"b"); s.cd=ataqueBasico(s,atribPoder(a,s,"b"),el,cor)*tal.recarga(); VFX_K=1; aoDisparar(s,"b",a,el,cor); if(J.t-(s.atkT??-9)>0.5) s.atkT=J.t; }
   for(const k of ["h1","h2"]){ const lv=s.pod[k]; if(!lv) continue; if(k==="h2"&&est(s)<1) continue;
     const def=HAB[cls][k]; const key=k==="h1"?"cd1":"cd2"; s[key]-=dt*(J.desp>0?1.4:1);
-    if(s[key]<=0){ FONTE="habilidade"; const r=def.f(s,atribPoder(a,s,k),el,cor,lv,s.mod[k]); s[key]= r===false? 0.6 : def.cd*fRecarga(lv)*tal.recarga()*((SIN.rm&&SIN.rm.recarga)||1); if(r!==false) aoDisparar(s,k,a,el,cor); } }
+    if(s[key]<=0){ FONTE="habilidade"; VFX_K=forcaVisual(s,k)*1.1; const r=def.f(s,atribPoder(a,s,k),el,cor,lv,s.mod[k]); VFX_K=1; s[key]= r===false? 0.6 : def.cd*fRecarga(lv)*tal.recarga()*((SIN.rm&&SIN.rm.recarga)||1); if(r!==false) aoDisparar(s,k,a,el,cor); } }
 }

@@ -364,3 +364,6 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
   #menuBotoes{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:8px}
   #menuBotoes .botao{margin-top:6px; padding:6px 10px; font-size:14px}
 }
+
+/* retrato animado desenhado nos pixels reais da tela: o navegador não amplia de novo (era o que borrava) */
+.carta canvas.anim-retrato.nitido{image-rendering:pixelated}

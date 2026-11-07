@@ -987,7 +987,7 @@ const D = {
   "texto": "Liberado quando o monstro vira Jovem: escolha 1 de 2 especiais. Ele dispara sozinho a cada ~34 s (-1% por nível do Selo, mínimo 20 s). No Supremo, ganha o nome da forma e +50% de força."
  },
  "combinado_regras": {
-  "recarga_seg": 75,
+  "recarga_seg": 55,
   "carga_inicial_seg": 35,
   "manual": true,
   "prioridade": [

@@ -10,7 +10,8 @@ const REAC={}; D.reacoes.forEach(r=>{REAC[[r.a,r.b].sort().join("|")]=r;});
 const ELS=Object.keys(D.elementos), COR=Object.fromEntries(ELS.map(k=>[k,D.elementos[k].cor])), NOME_EL=k=>D.elementos[k].nome;
 const NIV=[1,4,9,15];  // protótipo (jogo final: 1, 5, 12, 20)
 const MULT=D.estagios.map(e=>e.mult), TAM=[9,11,13,17];
-const MAPA_SEG=150, MINI_SEG=75, MAPAS_POR_ERA=3;
+// duração do mapa: os 3 primeiros (que quase ninguém perde) são mais curtos, para chegar logo na parte interessante
+let MAPA_SEG=150, MINI_SEG=75; const MAPAS_POR_ERA=3;
 const RAR_BONUS={comum:1,incomum:1.04,raro:1.08,epico:1.14,lendario:1.22}, RAR_NOME={comum:"Comum",incomum:"Incomum",raro:"Raro",epico:"Épico",lendario:"Lendário"};
 const eficacia=(atk,def)=> D.vantagem[atk]===def ? D.mult_vantagem.super_efetivo : D.vantagem[def]===atk ? D.mult_vantagem.pouco_efetivo : 1;
 function hexRgb(h){h=h.replace("#",""); return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16));}
@@ -259,6 +260,7 @@ const fNivel=lv=>1+0.25*Math.max(0,lv-1), fRecarga=lv=>1-0.06*Math.max(0,lv-1);
 
 // ================================================================ mapa
 function iniciarMapa(){
+  MAPA_SEG=R.profundidade<3? 110 : 150; MINI_SEG=Math.round(MAPA_SEG/2);
   const u=UNIV[R.universo]; if(!SIM.ativo) preCarregar(artesDoMapa(u));
   J={t:0, inimigos:[], proj:[], balas:[], crias:[], totens:[], gemas:[], nums:[], textos:[], efeitos:[], parts:[], ovosMapa:[], selvagens:[], armadilhas:[], zonas:[], fantasmas:[],
      jogador:{x:0,y:0}, dir:{x:1,y:0}, vida:1, vidaMax:1, escudo:0, xp:R.xp||0, nivel:R.nivel||1, xpProx:xpPara(R.nivel||1), ult:0, spawn:0, niveisPend:0,
@@ -395,6 +397,7 @@ function reagir(e,a,b,dano){
   const fonteAnt=FONTE; FONTE="reacao"; reagirEfeito(e,a,b,dano,r); FONTE=fonteAnt;
 }
 function reagirEfeito(e,a,b,dano,r){ evento("reacao");
+  if(!SIM.ativo&&!META.dicaReacao){ META.dicaReacao=true; gravar(); toast(`<b>Reação elemental!</b><br><small>${NOME_EL(a)} + ${NOME_EL(b)} no mesmo inimigo. Misturar elementos na equipe é a maior fonte de dano do jogo.</small>`); }
   const p=Math.max(dano,6)*2.2*SIN.reac, cor=mistura(COR[a],COR[b],.5);
   R.st.reacoes[r.nome]=(R.st.reacoes[r.nome]||0)+1; textoUnico("r:"+r.nome,e.x,e.y-10,r.nome,cor,19); tremor(2.5); vfxReacao(e,a,b);
   switch(r.tipo){
@@ -416,6 +419,7 @@ function reagirEfeito(e,a,b,dano,r){ evento("reacao");
   }
 }
 function morrer(e){
+  if(e.fugitivo&&!e._pagou){ e._pagou=true; soltarBau(e.x,e.y,"ouro"); anunciar({el:"luz"},"Fugitivo derrotado!","Ele deixou um baú dourado."); }
   // todo chefe mostra a segunda fase: um golpe que pularia a metade da vida para na fase 2
   if(e.chefe&&e.def&&e.def.fase2&&e.ia&&e.ia.fase===1&&!e.morto){ e.hp=e.max*0.45; e.ia.fase=2; faseDois(e,e.def.fase2); e.ia.ocupado=1.4; e.parado=true; return; }
   if(e.imortal){ e.hp=1; if(Math.random()<.15) texto(e.x,e.y-20,"Imortal! Quebre o carvalho.","#c8c8e0",13); return; }
@@ -607,8 +611,8 @@ function abrirNivel(){
   const ct=cartaTalisma(); if(ct) cartas.push(ct); const cl=cartaLenda(); if(cl) cartas.push(cl);
   if(cartas.some(c=>c.raridade==="lendario")) som("ding");
   // ritmo: em nível ímpar sem carta especial, a melhor carta entra sozinha (metade das interrupções; a força da equipe é a mesma)
-  const RANK={comum:0,incomum:1,raro:2,epico:3,lendario:4}, especial=cartas.length>sorteadas.length||cartas.some(c=>c.classe==="dourada"||c.raridade==="lendario");
-  if(J.nivel%2===1&&!especial&&cartas.length&&!(META.escolhaManual)){ const c=cartas.slice().sort((a,b)=>(RANK[b.raridade]||0)-(RANK[a.raridade]||0))[0];
+  const RANK={comum:0,incomum:1,raro:2,epico:3,lendario:4}, especial=false;
+  if(J.nivel%2===1&&!especial&&sorteadas.length&&!(META.escolhaManual)){ const c=cartas.slice(0,sorteadas.length).sort((a,b)=>(b.classe==="dourada")-(a.classe==="dourada")||(RANK[b.raridade]||0)-(RANK[a.raridade]||0))[0];
     if(!SIM.ativo) texto(J.jogador.x,J.jogador.y-30,`Nível ${J.nivel}: ${c.titulo}`,"#ffe6a6",13); c.acao(); return; }
   mostrarCartas(`Nível ${J.nivel}`, "Escolha uma carta.", cartas, {revelar:true});
   if(R.rerolagens>0){ const b=document.createElement("button"); b.className="botao sec"; b.textContent=`Sortear de novo (${R.rerolagens})`; b.onclick=()=>{ R.rerolagens--; som("tic"); abrirNivel(); }; $("cartasRodape").appendChild(b); }
@@ -1370,7 +1374,7 @@ function atualizar(dt){
   // spawns: inimigos, ovos e filhotes
   if(!J.fim){
     if(J.t<MAPA_SEG){ J.spawn+=dt*(DIF.base+J.t*DIF.cresc)*(1+R.profundidade*DIF.spawn)*multDiretor(); while(J.spawn>1&&J.inimigos.length<DIF.max){ J.spawn--; spawnInimigo(); }
-      atualizarDiretor(dt); }   // o diretor de horda decide densidade e ondas especiais (diretor.js)
+      atualizarDiretor(dt); atualizarEventos(dt); }   // o diretor de horda decide densidade e ondas especiais (diretor.js)
     if(!J.miniFeito&&J.t>=MINI_SEG){ J.miniFeito=true; spawnChefe(true); }
     if(!J.chefeFeito&&J.t>=MAPA_SEG){ J.chefeFeito=true; spawnChefe(false); }
     J.tOvo-=dt; if(J.tOvo<=0){ J.tOvo=D.ovos.intervalo_ovo_seg*rnd(.8,1.2); spawnOvo(); }
@@ -2714,6 +2718,33 @@ function vfxCombinado(c,P){ const chave=c.chave||c.a||"luz"; luzFlash(P.x,P.y,"#
   // combinado: círculo grande girando, pilar de luz no centro, onda e uma chuva das cores da equipe
   efCirculo(P.x,P.y+6,70,el,1.4,true); efCirculo(P.x,P.y+6,46,elementoDe(ativos()[ativos().length-1])||el,1.2); efPilar(P.x,P.y+6,el,1.0,16); vfxOnda({x:P.x,y:P.y},el,110); efEspiral(P.x,P.y,60,el,1.2); }
 
+// ---------------------------------------------------------------- eventos no meio do mapa: a cada ~40 s algo diferente acontece
+// chuva de meteoros (círculos anunciados: ferem inimigos e o Invocador), fugitivo dourado (foge; derrotado, deixa baú dourado),
+// altar do elemento (ficar em cima carrega o Despertar) e chuva de cristais de experiência
+const EVENTOS=["meteoros","fugitivo","altar","cristais"];
+function atualizarEventos(dt){ if(J.fim||J.chefeVivo||J.t>MAPA_SEG-12||J.t<18) return;
+  if(J.altar){ const a=J.altar, P=J.jogador; a.t-=dt; const dentro=Math.hypot(P.x-a.x,P.y-a.y)<a.r; if(dentro&&J.desp<=0){ J.ult=Math.min(100,J.ult+dt*28); if(Math.random()<.3) particulasEl(P.x,P.y,a.el,1,40); }
+    if(a.t<=0||J.ult>=100&&dentro){ if(J.ult>=100&&dentro) texto(a.x,a.y-16,"Despertar pronto!","#ffd34a",14); J.altar=null; } }
+  J.tEvento=(J.tEvento??rnd(26,34))-dt; if(J.tEvento>0) return; J.tEvento=rnd(36,46);
+  const k=escolha(EVENTOS.filter(x=>x!==J.ultEvento)); J.ultEvento=k; const P=J.jogador, el=UNIV[R.universo].elemento;
+  if(k==="meteoros"){ if(!SIM.ativo) anunciar({el:"fogo"},"Chuva de meteoros!","Saia dos círculos: as pedras ferem todos que estiverem dentro.");
+    for(let i=0;i<10;i++) agendar(0.6+i*0.35,()=>{ if(!J||J.fim) return; const x=P.x+rnd(-VW*0.45,VW*0.45), y=P.y+rnd(-VH*0.4,VH*0.4), r=16;
+      perigo({tipo:"circ",x,y,r,t:1.1,cor:"#ff8a3d",fim:()=>{ if(!J) return; FONTE="ambiente"; emArea(x,y,r+4,e=>{ if(!e.ehProp) ferir(e,DIF.hp*dificuldade()*0.9,"fogo"); }); FONTE="basico";
+        if(Math.hypot(J.jogador.x-x,J.jogador.y-y)<r) feriJogador(J.vidaMax*0.08,"fogo"); vfxOnda({x,y},"fogo",r+6); particulasEl(x,y,"fogo",12,90); luzFlash(x,y,"#ffb060",50,0.35); tremor(3); mudarSolo(x,y,"queimado",8); }}); }); }
+  else if(k==="fugitivo"){ spawnInimigo(0); const e=J.inimigos[J.inimigos.length-1]; const a=Math.random()*6.28; e.x=P.x+Math.cos(a)*VW*0.35; e.y=P.y+Math.sin(a)*VH*0.3;
+    Object.assign(e,{fugitivo:true,elite:true,hp:e.max*8,max:e.max*8,esc:1,escAlvo:1.25,virouElite:1.2,v:e.v*1.25,dano:e.dano*0.3});
+    if(!SIM.ativo) anunciar({el:"luz"},"Um fugitivo dourado!","Pegue-o antes que escape: ele carrega um baú dourado.");
+    agendar(18,()=>{ if(J&&e.hp>0&&!e._pagou){ e.hp=0; e.semCadaver=true; particulas(e.x,e.y,"#ffd34a",16,80); J.inimigos=J.inimigos.filter(x=>x!==e); if(!SIM.ativo) texto(e.x,e.y-12,"Escapou!","#ffd34a",13); } }); }
+  else if(k==="altar"){ const a=Math.random()*6.28, d=Math.min(VW,VH)*0.3; J.altar={x:P.x+Math.cos(a)*d,y:P.y+Math.sin(a)*d,r:16,t:14,el:ativos()[0]?elementoDe(ativos()[0]):el};
+    if(!SIM.ativo) anunciar({el:J.altar.el},"Altar elemental!","Fique sobre ele para carregar o Despertar."); }
+  else if(k==="cristais"){ if(!SIM.ativo) anunciar({el:"luz"},"Chuva de cristais!","Corra para pegar a experiência.");
+    for(let i=0;i<24;i++){ const x=P.x+rnd(-VW*0.45,VW*0.45), y=P.y+rnd(-VH*0.4,VH*0.4); J.gemas.push({x,y,vx:0,vy:0,v:3+R.profundidade*0.6,cor:"#9fe0ff"}); } } }
+function desenharAltar(ox,oy){ const a=J.altar; if(!a) return; const x=a.x-ox, y=a.y-oy, cor=COR[a.el]||"#ffd34a", pul=0.5+0.5*Math.sin(J.t*4);
+  lg.save(); lg.translate(x,y); lg.scale(1,0.55); lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.25+0.15*pul; lg.drawImage(bolhaCor(cor),-a.r*1.3,-a.r*1.3,a.r*2.6,a.r*2.6);
+  lg.globalAlpha=0.9; lg.strokeStyle=cor; lg.lineWidth=1.4; lg.beginPath(); lg.arc(0,0,a.r,0,Math.PI*2); lg.stroke(); lg.rotate(J.t*0.8); lg.lineWidth=0.8;
+  for(let i=0;i<6;i++){ const b=i/6*Math.PI*2; lg.beginPath(); lg.moveTo(Math.cos(b)*a.r*0.6,Math.sin(b)*a.r*0.6); lg.lineTo(Math.cos(b+2.1)*a.r*0.6,Math.sin(b+2.1)*a.r*0.6); lg.stroke(); }
+  lg.restore(); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1;
+  lg.fillStyle="#3a3040"; lg.fillRect(x-3,y-9,6,9); lg.fillStyle="#5a5060"; lg.fillRect(x-3,y-9,6,2); lg.fillStyle=cor; lg.beginPath(); lg.arc(x,y-12-pul,2.2,0,Math.PI*2); lg.fill(); lg.lineWidth=1; }
 // ---------------------------------------------------------------- textos: o nome de uma reação só aparece grande na primeira vez da partida
 function textoUnico(chave,x,y,t,cor,tam){ R.vistos=R.vistos||{}; if(R.vistos[chave]) return false; R.vistos[chave]=1; texto(x,y,t,cor,tam); return true; }
 
@@ -3787,15 +3818,18 @@ function desenharEscuridao(ox,oy){ if(!(J.escuro>0.02)||passiva("imune_escuro"))
   if(J.cena){ for(const p of J.cena.lista){ if(p.queima>0) furo(p.x,p.y,30); if(p.tipo==="luz") furo(p.x,p.y-10,38); } let n=0; for(const [k,m] of J.solo){ if(m.t!=="fogo"&&m.t!=="luz"||m.ate<J.t) continue; const [a,b]=k.split(",").map(Number); if(++n>60) break; furo(a*CEL+4,b*CEL+4,14); } }
   lg.drawImage(ESCURO,-1,-1,VW+2,VH+2); }
 // barra do chefe e anúncio do golpe
-function desenharBarraChefe(){ const ch=J.chefeVivo&&J.chefeVivo.hp>0? J.chefeVivo : J.inimigos.find(e=>e.mini&&e.hp>0); if(!ch) return;
+// aviso grande no alto da tela (chefe, eventos do mapa); sem chefe, fica um pouco abaixo do HUD
+function desenharAnuncio(y){ if(!J.anuncio) return; if(y==null) y=Math.round(H*0.2)+28;
+  if(J.anuncio){ const a=J.anuncio; ctx.globalAlpha=Math.min(1,a.vida*1.5); ctx.textAlign="center"; ctx.font=`800 20px "Cinzel", Georgia, serif`; ctx.lineWidth=4; ctx.lineJoin="round"; ctx.strokeStyle="rgba(18,14,26,.9)"; ctx.strokeText(a.txt,W/2,y+36); ctx.fillStyle=a.cor; ctx.fillText(a.txt,W/2,y+36);
+    if(a.sub){ ctx.font=`13px "Nunito", system-ui, sans-serif`; ctx.fillStyle="#f2e7c9"; const pal=a.sub.split(" "), linhas=[]; let l=""; for(const p of pal){ if((l+" "+p).length>44){ linhas.push(l); l=p; } else l=l?l+" "+p:p; } linhas.push(l); linhas.forEach((t,i)=>ctx.fillText(t,W/2,y+56+i*16)); }
+    ctx.globalAlpha=1; } }
+function desenharBarraChefe(){ const ch=J.chefeVivo&&J.chefeVivo.hp>0? J.chefeVivo : J.inimigos.find(e=>e.mini&&e.hp>0); if(!ch){ desenharAnuncio(); return; }
   const w=Math.min(W*0.84,420), x=(W-w)/2, y=Math.round(H*0.2)+28, frac=Math.max(0,ch.hp/ch.max);
   ctx.globalAlpha=0.92; ctx.fillStyle="rgba(18,14,26,.85)"; ctx.fillRect(x-4,y-20,w+8,32); ctx.fillStyle="#3a2a30"; ctx.fillRect(x,y,w,7);
   ctx.fillStyle=ch.imortal? "#c8c8e0" : ch.chefe? "#d6ab4f" : "#e06a5a"; ctx.fillRect(x,y,w*frac,7); if(ch.chefe&&ch.def&&ch.def.fase2){ ctx.fillStyle="#f2e7c9"; ctx.fillRect(x+w*0.5-1,y-2,2,11); }
   ctx.textAlign="left"; ctx.font=`600 13px "Nunito", system-ui, sans-serif`; ctx.fillStyle="#f2e7c9"; ctx.fillText(ch.nome+(ch.imortal?" · Imortal":"")+(ch.bebado>0?" · Bêbado":"")+(fadigaChefe(ch)>1.2?" · Cansado":""),x,y-6);
   ctx.globalAlpha=1;
-  if(J.anuncio){ const a=J.anuncio; ctx.globalAlpha=Math.min(1,a.vida*1.5); ctx.textAlign="center"; ctx.font=`800 20px "Cinzel", Georgia, serif`; ctx.fillStyle="#120e1a"; ctx.fillText(a.txt,W/2+2,y+36+2); ctx.fillStyle=a.cor; ctx.fillText(a.txt,W/2,y+36);
-    if(a.sub){ ctx.font=`13px "Nunito", system-ui, sans-serif`; ctx.fillStyle="#f2e7c9"; const pal=a.sub.split(" "), linhas=[]; let l=""; for(const p of pal){ if((l+" "+p).length>44){ linhas.push(l); l=p; } else l=l?l+" "+p:p; } linhas.push(l); linhas.forEach((t,i)=>ctx.fillText(t,W/2,y+56+i*16)); }
-    ctx.globalAlpha=1; }
+  desenharAnuncio(y);
   // seta para o carvalho do Koschei quando ele está fora da tela
   const c=ch.carvalho; if(c&&!c.morto){ const P=J.jogador, dx=c.x-P.x, dy=c.y-P.y; if(Math.abs(dx)>VW/2-8||Math.abs(dy)>VH/2-8){ const ang=Math.atan2(dy,dx), cx=W/2+Math.cos(ang)*Math.min(W,H)*0.4, cy=H/2+Math.sin(ang)*Math.min(W,H)*0.4;
       ctx.fillStyle="#7fe0a0"; ctx.beginPath(); ctx.moveTo(cx+Math.cos(ang)*12,cy+Math.sin(ang)*12); ctx.lineTo(cx+Math.cos(ang+2.5)*9,cy+Math.sin(ang+2.5)*9); ctx.lineTo(cx+Math.cos(ang-2.5)*9,cy+Math.sin(ang-2.5)*9); ctx.fill(); } } }
@@ -3852,6 +3886,7 @@ function desenhar(dt){
     lg.fillStyle="#ffffff"; lg.globalAlpha=0.85; lg.beginPath(); lg.moveTo(x,y-t*1.2); lg.lineTo(x+t*0.35,y-t*0.35); lg.lineTo(x,y-t*0.1); lg.lineTo(x-t*0.4,y-t*0.4); lg.closePath(); lg.fill(); lg.globalAlpha=1; }
   // totens entram na fila de profundidade junto com o resto (abaixo)
   // profundidade (2,5D): marcos, objetos, inimigos, equipe, Invocador e Lenda desenhados do fundo para a frente pelo pé
+  desenharAltar(ox,oy);
   const fila=[]; desenharCenaObjetos(ox,oy,fila);
   for(const e of J.inimigos) fila.push({y:e.y+(e.tam||8)*0.63-(e.z||0)*0,f:()=>desenharInimigo(e,ox,oy,P)});
   for(const c of J.crias){ const t=c.gigante?6:3; lg.fillStyle=tom(c.cor,1.2); lg.fillRect(Math.round(c.x-ox)-t/2,Math.round(c.y-oy)-t/2,t,t); lg.fillStyle="#120e1a"; lg.fillRect(Math.round(c.x-ox),Math.round(c.y-oy),1,1); }

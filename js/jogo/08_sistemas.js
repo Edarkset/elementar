@@ -267,6 +267,7 @@ const tal={ dano:()=>(1+valTal("dano"))*(1+MOD("dano")), defesa:()=>Math.max(0.5
   coleta:()=>1+valTal("coleta"), regen:()=>valTal("regen"), duracao:()=>1+valTal("duracao")+passiva("duracao"), projeteis:()=>{ const lv=nivTal("espelho"); return (lv>=2?1:0)+(lv>=5?1:0); },
   velocidade:()=>(1+valTal("velocidade"))*(1+MOD("velocidade")), critico:()=>valTal("critico")+MOD("critico"), xp:()=>(1+valTal("xp")+valTal("risco")*1.25)*(1+MOD("xp")), riscoVida:()=>1+valTal("risco"), riscoVel:()=>1+valTal("risco")*0.5 };
 function talismasLiberados(){ const T=PD().talismas; return Object.keys(T).filter(id=>T[id].inicial||(META.talismas||[]).includes(id)||SIM.tudoLiberado); }
+function efeitoTalismaTxt(t,lv){ const v=t.valor*lv*100, sinal=t.efeito==="defesa"||t.efeito==="recarga"? "−" : "+"; return lv? `${sinal}${Math.round(v)}%` : "0%"; }
 function cartaTalisma(){ if(SIM.semTalismas||Math.random()>=PD().chance_carta+passiva("carta_extra")*0.35+((SIN.rm&&SIN.rm.talisma)||0)) return null; const tem=Object.keys(R.talismas||{}), cheio=tem.length>=PD().encaixes;
   const ops=talismasLiberados().filter(id=> cheio? (tem.includes(id)&&nivTal(id)<5) : nivTal(id)<5); if(!ops.length) return null;
   const util=ops.filter(id=>PD().despertos.some(d=>d.talisma===id&&ativos().some(s=>L(s).classe===d.classe)));   // prefere os que abrem Desperto da equipe
@@ -274,7 +275,7 @@ function cartaTalisma(){ if(SIM.semTalismas||Math.random()>=PD().chance_carta+pa
   const par=paresPendentes(), falta=ops.filter(id=>par.some(p=>p.talisma===id));
   const id=falta.length&&Math.random()<0.6? escolha(falta) : escolha(util.length&&Math.random()<0.7?util:ops), t=PD().talismas[id], lv=nivTal(id), abre=PD().despertos.filter(d=>d.talisma===id).map(d=>d.nome).join(" e ");
   const uniao=paresPendentes().find(p=>p.talisma===id);
-  return {titulo:`Talismã: ${t.nome} ${lv?`${lv} → ${lv+1}`:"(novo)"}`, raridade:"epico", sprite:iconeTalisma(id), suave:true, texto:`${t.texto} por nível. Abre os Despertos ${abre}.${uniao?` Completa o caminho da União ${uniao.uniao}.`:""} Encaixes: ${tem.length+(lv?0:1)}/${PD().encaixes}.`,
+  return {titulo:`Talismã: ${t.nome} ${lv?`${lv} → ${lv+1}`:"(novo)"}`, raridade:"epico", sprite:iconeTalisma(id), suave:true, texto:`${t.texto} por nível <span class='bom'>(total ${efeitoTalismaTxt(t,lv)} → ${efeitoTalismaTxt(t,lv+1)})</span>. Abre os Despertos ${abre}.${uniao?` Completa o caminho da União ${uniao.uniao}.`:""} Encaixes: ${tem.length+(lv?0:1)}/${PD().encaixes}.`,
     acao:()=>{ R.talismas=R.talismas||{}; R.talismas[id]=lv+1; R.st.talismas=(R.st.talismas||0)+1; if(J) texto(J.jogador.x,J.jogador.y-20,t.nome,"#e0b0ff",14); proximaEscolha(); } }; }
 function despertoDe(s,k){ return PD().despertos.find(d=>d.classe===L(s).classe&&d.poder===k); }
 function podeDespertar(s,k){ const d=despertoDe(s,k); return !!d&&!(s.desp&&s.desp[k])&&s.pod[k]>=5&&nivTal(d.talisma)>0&&estBase(s)>=2; }

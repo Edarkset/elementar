@@ -424,3 +424,14 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 @keyframes brilhoXp{from{background-position:-40% 0} to{background-position:140% 0}}
 .barra.xp.pulso{box-shadow:0 0 10px rgba(127,232,192,.9)}
 @media (prefers-reduced-motion: reduce){ .nivel-pop.vis{animation-duration:.01s} .barra.xp > i::after{animation:none} }
+
+/* bolinhas do nível do poder nas cartas: cheias (já tem), brilhando (o que a carta dá) e vazias */
+.pips{display:flex; gap:3px; margin:2px 0 4px} .cartas.grade .pips{justify-content:center}
+.pips i{width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.12); box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.pips i.tem{background:#ffd34a; box-shadow:0 0 4px rgba(255,211,74,.7)}
+.pips i.novo{background:#9ff0b8; box-shadow:0 0 8px #7fe8c0; animation:pipNovo .8s ease-in-out infinite alternate}
+@keyframes pipNovo{from{transform:scale(.85)} to{transform:scale(1.2)}}
+/* carta escolhida: cresce e brilha antes de a tela fechar */
+.carta.escolhida{animation:cartaEscolhida .28s ease-out forwards!important; z-index:2}
+@keyframes cartaEscolhida{to{transform:scale(1.06); filter:brightness(1.35); box-shadow:0 0 26px var(--rar,#ffd34a)}}
+@media (prefers-reduced-motion: reduce){ .pips i.novo{animation:none} }

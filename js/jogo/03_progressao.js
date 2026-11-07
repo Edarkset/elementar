@@ -37,7 +37,10 @@ function mostrarCartas(titulo,sub,cartas,op={}){
     if(c.quadros&&c.quadros.length){ const q0=c.quadros[0], cc=document.createElement("canvas"); cc.width=q0.width; cc.height=q0.height; cc.className=(c.classe==="medio"?"retrato-medio":"retrato-grande")+" anim-retrato"; cc.getContext("2d").drawImage(q0,0,0); cc._quadros=c.quadros; if(c.quadros.geo){ cc._geo=c.quadros.geo; cc.classList.add("nitido"); } b.appendChild(cc); animarRetratos(); }
     else if(c.sprite){ const sp=spriteUI(c.sprite), cc=document.createElement("canvas"); cc.width=sp.width; cc.height=sp.height; cc.getContext("2d").drawImage(sp,0,0); if(c.suave||sp!==c.sprite) cc.style.imageRendering="auto"; if(c.classe==="grande") cc.className="retrato-grande"; b.appendChild(cc); }
     const t=document.createElement("div"); t.innerHTML=`<b>${c.titulo}</b>${c.texto?`<small>${c.texto}</small>`:""}`; b.appendChild(t);
-    b.onclick=()=>{ if(c.desab) return; if(!c.manter) $("telaCartas").classList.remove("ativa"); c.acao(b); }; box.appendChild(b); });
+    b.onclick=()=>{ if(c.desab||box._escolhendo) return;
+      if(SIM.ativo||c.manter){ if(!c.manter) $("telaCartas").classList.remove("ativa"); c.acao(b); return; }
+      box._escolhendo=true; b.classList.add("escolhida"); som("tic");   // a carta escolhida cresce e brilha por um instante
+      setTimeout(()=>{ box._escolhendo=false; $("telaCartas").classList.remove("ativa"); c.acao(b); },200); }; box.appendChild(b); });
   box.classList.toggle("revelar",!!op.revelar);
   $("telaCartas").classList.add("ativa"); box.querySelector("button:not([disabled])")?.focus();
 }
@@ -88,18 +91,26 @@ function escolherRamo(s){
 function resumoPoderes(s){ const c=D.classes[L(s).classe]; return `Básico ${s.pod.b} · ${c.h1.nome} ${s.pod.h1} · ${c.h2.nome} ${s.pod.h2}`; }
 // level up no estilo survivor: 3 cartas sorteadas entre os poderes da equipe (com raridade), mais Elo, Talismã e Lenda quando houver.
 // Às vezes vem uma carta dourada (+2 níveis). Dá para sortear de novo algumas vezes por run.
+// a carta mostra o que muda de verdade: dano por golpe antes -> depois e a recarga, e bolinhas do nível do poder
+function pipsPoder(lv,prox){ let h="<span class='pips'>"; for(let i=1;i<=5;i++) h+=`<i class='${i<=lv?"tem":i<=prox?"novo":""}'></i>`; return h+"</span>"; }
+function numerosPoder(s,k,lv,prox){ try{ const base=atrib(s).dano*tal.dano();
+    if(k==="b"){ const f0=1+0.2*(Math.max(1,lv)-1), f1=1+0.2*(prox-1); return ` <span class='bom'>Dano ${Math.round(base)} → ${Math.round(base*f1/f0)}</span>`; }
+    const d0=lv? Math.round(base*fNivel(lv)) : 0, d1=Math.round(base*fNivel(prox)), cd=HAB[L(s).classe][k].cd*fRecarga(prox);
+    return ` <span class='bom'>Força ${d0||"—"} → ${d1}</span> · recarga ${cd.toFixed(1).replace(".",",")} s`; }catch(e){ return ""; } }
 function cartasNivel(){ const eq=ativos(), maxN=Math.max(...eq.map(s=>s.nivel)), cand=[];
   for(const s of eq){ const c=D.classes[L(s).classe], lib=[["b","Ataque básico",`${c.basico} +20% de dano e +5% de cadência.`],["h1",c.h1.nome,c.h1.desc],...((est(s)>=1||estBase(s)>=1)?[["h2",c.h2.nome,c.h2.desc]]:[])];
     const peso=1+(maxN-s.nivel)*0.35; let algum=false;
     for(const [k,nome,desc] of lib){ const lv=s.pod[k]; if(lv>=5) continue; algum=true; const prox=lv+1;
       cand.push({peso, s, k, raridade: prox===5?"lendario": prox===3&&k!=="b"?"epico": prox>=2?"raro":"incomum",
-        titulo:`${nome} ${lv?`${lv} → ${prox}`:"(novo)"}`, texto:`<b style="color:${COR[elementoDe(s)]}">${nomeForma(s)}</b> · nível ${s.nivel}. ${desc}${k!=="b"&&prox===3?" Libera um modificador.":""}${prox===5?" Nível máximo!":""}`}); }
+        titulo:`${nome} ${lv?`${lv} → ${prox}`:"(novo)"}`, texto:`${pipsPoder(lv,prox)}<b style="color:${COR[elementoDe(s)]}">${nomeForma(s)}</b> · nível ${s.nivel}. ${desc}${numerosPoder(s,k,lv,prox)}${k!=="b"&&prox===3?" Libera um modificador.":""}${prox===5?" Nível máximo!":""}`}); }
     if(!algum) cand.push({peso:0.8, s, asc:true, raridade:"lendario", titulo:`Ascensão de ${nomeForma(s)}`, texto:"Todos os poderes no máximo: +1 nível (+6% em todos os atributos)."}); }
   const sorteio=[], pool=cand.slice();
   while(sorteio.length<3&&pool.length){ const tot=pool.reduce((t,c)=>t+c.peso,0); let x=Math.random()*tot; const i=pool.findIndex(c=>(x-=c.peso)<=0); const c=pool.splice(i<0?0:i,1)[0]; sorteio.push(c); }
-  if(sorteio.length&&Math.random()<0.07+((SIN.rm&&SIN.rm.talisma)||0)*0.1){ const c=escolha(sorteio.filter(c=>!c.asc&&c.s.pod[c.k]<=3)); if(c){ c.dourada=true; c.raridade="lendario"; c.titulo="✦ "+c.titulo.replace(/(\d) → (\d)/,(m,a)=>`${a} → ${Math.min(5,+a+2)}`); c.texto+=" <b>Carta dourada: +2 níveis!</b>"; } }
+  if(sorteio.length&&Math.random()<0.07+((SIN.rm&&SIN.rm.talisma)||0)*0.1){ const c=escolha(sorteio.filter(c=>!c.asc&&c.s.pod[c.k]<=3)); if(c){ c.dourada=true; c.raridade="lendario"; c.titulo="✦ "+c.titulo.replace(/(\d) → (\d)/,(m,a)=>`${a} → ${Math.min(5,+a+2)}`); { const lv=c.s.pod[c.k], p2=Math.min(5,lv+2); c.texto=c.texto.replace(pipsPoder(lv,lv+1),pipsPoder(lv,p2)).replace(numerosPoder(c.s,c.k,lv,lv+1),numerosPoder(c.s,c.k,lv,p2)); } c.texto+=" <b>Carta dourada: +2 níveis!</b>"; } }
   return sorteio; }
 function aplicarCartaNivel(c){ const s=c.s;
+  // escolha com efeito visível na hora: o monstro brilha, solta uma onda da cor do elemento e mostra o ganho
+  if(J&&!SIM.ativo&&s.x!=null){ s._pop=1; const cor=COR[elementoDe(s)]; anel(s.x,s.y,30,cor,.5); particulas(s.x,s.y,cor,18,90,2); luzFlash(s.x,s.y,cor,60,0.4); texto(s.x,s.y-20,c.asc?"Ascensão!":"Mais forte!",cor,14); }
   if(c.asc){ aplicarNivel(s,1); return proximaEscolha(); }
   const vezes=c.dourada? Math.min(2,5-s.pod[c.k]) : 1; let mod=false;
   for(let i=0;i<vezes;i++){ s.pod[c.k]++; aplicarNivel(s,1); if(c.k!=="b"&&s.pod[c.k]===3&&s.mod[c.k]==null) mod=true; }

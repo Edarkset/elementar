@@ -11,7 +11,10 @@
 
   if("serviceWorker" in navigator && servido && P.nome === "web"){
     addEventListener("load", () => {
-      navigator.serviceWorker.register("sw.js").catch(e => console.warn("service worker", e));
+      navigator.serviceWorker.register("sw.js").then(r => r.update()).catch(e => console.warn("service worker", e));
+      // versão nova publicada: o service worker novo assume e a página recarrega uma vez sozinha (senão o jogo antigo continuava aberto)
+      const tinha = !!navigator.serviceWorker.controller; let recarregou = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => { if (tinha && !recarregou) { recarregou = true; location.reload(); } });
     });
   }
 

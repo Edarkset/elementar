@@ -255,7 +255,7 @@ function telaBestiario(){ $("telaMenu").classList.remove("ativa"); const dex=MET
     let melhor=0; if(d) for(let c=7;c>=0;c--) if(d.f&(1<<c)){ melhor=c; break; }
     const e=melhor<=1?melhor:melhor<5?2:3, ramo=melhor>=5?melhor-5:melhor>=2?melhor-2:null, spr=conhecido? (arteMonstro(l.id,e,ramo,"comum")||spriteLinha(l.id,"comum")) : null;
     return { titulo: conhecido? nomeFormaCel(l,melhor) : "???", raridade: n>=8?"lendario":n>=5?"epico":n>=2?"raro":"comum", sprite: spr? (conhecido&&n? spr : silhueta(spr,"#1a1426")) : gerarSprite("dex?",12,"#2a2238"),
-      texto: conhecido? `<span style="color:${COR[l.elemento]}">${NOME_EL(l.elemento)}</span> · formas ${n}/8${d&&d.r.length>1?` · ${d.r.length} raridades`:""}` : "Ainda não encontrado", manter:true, acao:()=>telaDexLinha(l) }; });
+      texto: conhecido? `<span style="color:${COR[l.elemento]}">${NOME_EL(l.elemento)}</span> · formas ${n}/8${d&&d.r.length>1?` · ${d.r.length} raridades`:""}<span class="prog-dex"><b style="width:${n/8*100}%;background:${COR[l.elemento]}"></b></span>` : "Ainda não encontrado", manter:true, classe:conhecido?(n>=8?"completo":null):"oculto", acao:()=>telaDexLinha(l) }; });
   mostrarCartas("Bestiário", `Formas descobertas: <b>${tot}</b> de ${FORMAS_TOTAL()} · próxima recompensa em ${prox} (+50 de Essência). Evolua, capture e choque ovos para completar.`,
     [...cartas,{titulo:"Voltar",texto:"",acao:()=>menu()}],{grade:true,fundo:"ui__livro"}); }
 function telaDexLinha(l){ const d=(META.dex||{})[l.id]||{f:0,r:[]};

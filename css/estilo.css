@@ -435,3 +435,18 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 .carta.escolhida{animation:cartaEscolhida .28s ease-out forwards!important; z-index:2}
 @keyframes cartaEscolhida{to{transform:scale(1.06); filter:brightness(1.35); box-shadow:0 0 26px var(--rar,#ffd34a)}}
 @media (prefers-reduced-motion: reduce){ .pips i.novo{animation:none} }
+
+/* ---------------------------------------------------------------- acabamento de menus */
+/* botões do menu com ícone à esquerda (pelo texto do botão) */
+#menuBotoes .botao{position:relative; padding-left:38px}
+#menuBotoes .botao::before{position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:16px; color:#ffe6a6; text-shadow:0 0 8px rgba(255,211,74,.7); content:attr(data-icone)}
+/* Santuário: melhorias que dá para comprar pulsam */
+.carta.pode{animation:cartaEntra .32s ease-out both, podeComprar 1.6s ease-in-out .4s infinite alternate}
+@keyframes podeComprar{from{box-shadow:0 0 6px var(--rar)} to{box-shadow:0 0 18px var(--rar), inset 0 0 12px rgba(106,168,240,.15)}}
+/* Bestiário: barra de formas por monstro, os ainda não vistos apagados, os completos dourados */
+.prog-dex{display:block; height:5px; margin:5px auto 0; width:80%; border-radius:3px; background:rgba(0,0,0,.45); overflow:hidden} .prog-dex b{display:block; height:100%; box-shadow:0 0 6px currentColor}
+.carta.oculto{filter:grayscale(.6) brightness(.7)} .carta.oculto b{color:#8a84a0}
+.carta.completo{box-shadow:0 0 14px #ffcc4a, inset 0 0 0 1px #fff3c4}
+/* painéis: brilho suave no título */
+.painel h2{background:linear-gradient(180deg,#fff6d8,#ffd370 70%,#d89a3a); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:none; filter:drop-shadow(0 2px 0 #0b0916) drop-shadow(0 0 10px rgba(255,200,90,.35))}
+@media (prefers-reduced-motion: reduce){ .carta.pode{animation:none} }

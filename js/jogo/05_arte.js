@@ -51,7 +51,7 @@ if(window.ARTE_MANIFESTO){ const av=document.createElement("div");
       let feitos=0; const total=base.length;
       // em blocos de 24 para não sufocar a rede do celular
       for(let i=0;i<total;i+=24){ await preCarregar(base.slice(i,i+24)); feitos=Math.min(total,i+24); av.textContent=`Carregando artes ${feitos}/${total}…`; }
-      av.textContent="Artes carregadas";
+      av.textContent="Artes carregadas"; setTimeout(()=>{ av.style.transition="opacity .6s"; av.style.opacity="0"; setTimeout(()=>av.remove(),700); },1200);   // some sozinho (ficava em cima do logo)
       if(J&&R) preCarregar(artesDoMapa(UNIV[R.universo]));
     }catch(e){ console.warn("manifesto de artes",e); av.textContent="Sem artes: usando o desenho por código"; }
     setTimeout(()=>{ av.style.opacity="0"; setTimeout(()=>av.remove(),450); },1800); })(); }

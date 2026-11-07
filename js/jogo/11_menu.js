@@ -24,6 +24,7 @@ function menu(){
   { const bd=document.createElement("button"); bd.className="botao sec"; bd.textContent=`Bestiário (${formasVistas()}/${FORMAS_TOTAL()} formas)`; bd.onclick=telaBestiario; box.appendChild(bd); }
   const cq=document.createElement("button"); cq.className="botao sec"; cq.textContent=`Conquistas e Lendas (${Object.keys(META.conq).length}/${D.conquistas.length})`; cq.onclick=telaConquistas; box.appendChild(cq);
   if(MODERADOR_DISPONIVEL&&META.moderador){ const md=document.createElement("button"); md.className="botao sec"; md.textContent="Modo moderador"; md.onclick=telaModerador; box.appendChild(md); }
+  { const IC=[["Continuar","▶"],["Nova run","⚔"],["Santuário","⛩"],["Missões","☀"],["Bestiário","❖"],["Conquistas","♛"],["Modo moderador","⚙"]]; for(const b of box.children){ const ic=IC.find(([t])=>b.textContent.startsWith(t)); b.dataset.icone=ic?ic[1]:"✦"; } }   // ícone de cada botão
   gravar();
 }
 // ================================================================ modo moderador (testes)

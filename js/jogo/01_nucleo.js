@@ -199,12 +199,13 @@ const nivelLoja=id=>(META.loja&&META.loja[id])||0;
 function bonusLoja(id){ const it=LOJA.find(x=>x.id===id); return 1+(it? it.val*nivelLoja(id) : 0); }
 const precoLoja=it=>Math.round(it.base*Math.pow(1.85,nivelLoja(it.id)));
 function lojaAcessivel(){ return LOJA.filter(it=>nivelLoja(it.id)<it.max&&precoLoja(it)<=META.essencia); }
+function pipsLoja(n,max,pode){ let h="<span class='pips'>"; for(let i=1;i<=max;i++) h+=`<i class='${i<=n?"tem":i===n+1&&pode?"novo":""}'></i>`; return h+"</span>"; }
 function telaSantuario(){
   $("telaMenu").classList.remove("ativa"); META.loja=META.loja||{};
   mostrarCartas("Santuário", `Essência: <b>${META.essencia}</b>. Melhorias permanentes: valem para todas as próximas runs.`,
     LOJA.map(it=>{ const n=nivelLoja(it.id), cheio=n>=it.max, p=precoLoja(it), pode=!cheio&&p<=META.essencia;
-      return { titulo:`${it.nome} ${n}/${it.max}`, raridade: cheio?"lendario": pode?"raro":"comum", desab:!pode, manter:true,
-        texto:`${it.txt}${it.max>1?" por nível":""}.<br>${cheio?"Completo.":`Custa ${p} de Essência${pode?"":` (faltam ${p-META.essencia})`}.`}`,
+      return { titulo:it.nome, raridade: cheio?"lendario": pode?"raro":"comum", desab:!pode, manter:true, classe:pode?"pode":null,
+        texto:`${pipsLoja(n,it.max,pode)}${it.txt}${it.max>1?" por nível":""}.<br>${cheio?"Completo.":`Custa ${p} de Essência${pode?"":` (faltam ${p-META.essencia})`}.`}`,
         acao:()=>{ if(!pode) return; META.essencia-=p; META.loja[it.id]=n+1; gravar(); toast(`${it.nome} ${n+1}/${it.max}`); telaSantuario(); } }; }),{fundo:"ui__refugio"});
   const v=document.createElement("button"); v.className="botao sec"; v.textContent="Voltar"; v.onclick=()=>menu(); $("cartasRodape").appendChild(v);
 }

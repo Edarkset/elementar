@@ -33,7 +33,7 @@ function vigiar(p, onde) {
   p.on("response", r => { if (r.status() >= 400 && !/fonts\.g/.test(r.url())) nota("rede", onde, r.status() + " " + r.url().replace(/^https?:\/\/[^/]+/, "")); });
 }
 async function abrir(b, base, cfg, onde) {
-  const ctx = await b.newContext(cfg); const p = await ctx.newPage(); vigiar(p, onde);
+  const ctx = await b.newContext({ ...cfg, bypassCSP: true }); const p = await ctx.newPage(); vigiar(p, onde);   // o teste injeta código na página
   await p.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());   // sem internet nos testes: as fontes caem no padrão
   await p.goto(base + "?moderador"); await p.waitForFunction(() => typeof novaRun === "function" && typeof MANIFESTO !== "undefined" && MANIFESTO);
   await p.evaluate(() => { try { localStorage.clear(); } catch (e) {} window.confirm = () => true; });
@@ -181,9 +181,91 @@ async function verificarImagem(b, base) {
   await ctx.close();
 }
 
+// ---------------------------------------------------------------- 5. mecânicas: cada Lenda, deus, dragão, forma de monstro, chefe, item e o save
+// roda o jogo em modo simulado por 'seg' segundos conferindo as mesmas regras da parte 3; devolve a lista de problemas
+const RODAR = `window.__rodar=function(seg){ const out=[], num=v=>typeof v==="number"&&isFinite(v); let ult="";
+  SIM.ativo=true; SIM.aoDerrota=()=>{}; rodando=false; if(J){ J.deus=true; J.intro=null; }
+  SIM.entrada=()=>({x:Math.cos(J.t*0.5),y:Math.sin(J.t*0.7),esquivar:false,despertar:J.ult>=100,combinado:J.comb<=0});
+  for(let i=0;i<seg*30;i++){ const tc=document.getElementById("telaCartas"); if(tc.classList.contains("ativa")){ const b=document.querySelector("#cartas button.carta:not([disabled])"); if(b) b.click(); else { const rb=document.querySelector("#cartasRodape button:not([disabled])"); if(rb) rb.click(); else fechar(); } }
+    pausado=false; if(typeof CINE!=="undefined"&&CINE.ativa) CINE.ativa=false; if(!J) { out.push("estado do jogo sumiu"); break; }
+    try{ tick(1/30); }catch(e){ const m=(e.stack||e.message).split("\\n").slice(0,3).join(" | "); if(m!==ult) out.push("erro: "+m); ult=m; if(out.length>4) break; }
+    if(!J) break; const P=J.jogador; if(!num(P.x)||!num(P.y)||!num(J.vida)){ out.push("herói com valor inválido em "+J.t.toFixed(1)+" s"); break; }
+    for(const e of J.inimigos) if(!num(e.x)||!num(e.y)){ out.push("inimigo com posição inválida ("+(e.def&&e.def.nome)+")"); e.hp=0; } }
+  SIM.entrada=null; return out; };`;
+async function verificarMecanicas(b, base) {
+  const { p, ctx } = await abrir(b, base, { viewport: { width: 900, height: 600 } }, "mecanicas");
+  await p.addScriptTag({ content: RODAR });
+  const roda = async (onde, prep, seg) => { const r = await p.evaluate(([prep, seg]) => { try { (0, eval)(prep); } catch (e) { return ["não começou: " + (e.stack || e.message).split("\n").slice(0, 2).join(" | ")]; } return __rodar(seg); }, [prep, seg]).catch(e => ["a página caiu: " + e.message.split("\n")[0]]);
+    for (const m of r) nota("mecânica", onde, m); };
+  // todas as formas de todos os monstros (4 estágios x 3 ramos x 3 raridades) têm desenho e nome
+  const formas = await p.evaluate(() => { const out = []; novaRun(["fogo", "agua"], D.linhas[0].id); R.chefesVencidos = 1;
+    for (const l of D.linhas) for (let e = 0; e < 4; e++) for (const ramo of e >= 2 ? [0, 1, 2] : [null]) for (const rar of ["comum", "epico", "lendario"]) {
+      const sl = { nivel: NIV[e], pod: { b: 1, h1: 0, h2: 0 }, mod: {}, mon: { id: l.id, rar, ramo } };
+      try { const sp = spriteSelo(sl); if (!sp || !sp.width || !sp.height) out.push(`${l.id} estágio ${e} ramo ${ramo} ${rar}: sem desenho`); const n = nomeForma(sl); if (!n || /undefined|null/.test(n)) out.push(`${l.id} estágio ${e} ramo ${ramo}: nome inválido "${n}"`); }
+      catch (err) { out.push(`${l.id} estágio ${e} ramo ${ramo} ${rar}: ${err.message}`); } }
+    return out; });
+  for (const m of formas.slice(0, 40)) nota("mecânica", "formas dos monstros", m);
+  // cada Lenda e cada deus do Panteão como Invocador, com equipe de nível 12
+  const lendas = await p.evaluate(() => [...D.lendas, ...D.panteao].map(l => [l.id, l.nome]));
+  for (const [id, nome] of lendas) await roda("lenda " + nome, `{ const l=[...D.lendas,...D.panteao].find(x=>x.id===${JSON.stringify(id)}); comecarTeste(l.elementos.slice(0,2),equipeTeste(l.elementos,12),l.id); }`, 15);
+  // cada Dragão Ancestral em cada forma
+  const anc = await p.evaluate(() => (D.ancestrais || []).map(a => a.id));
+  for (const id of anc) for (const [f, nv] of [["filhote", 1], ["adulto", 9], ["supremo", 15]])
+    await roda(`dragão ${id} (${f})`, `{ const l=LINHA[${JSON.stringify(id)}], o=ELS.find(e=>e!==l.elemento); comecarTeste([l.elemento,o],[{id:l.id,nivel:${nv},rar:"lendario",ramo:${nv >= 9 ? 0 : null},supremo:${nv >= 15}}],null); }`, 10);
+  // chefe de cada reino: aparece, apanha até cair e o jogo segue para os portais
+  const unis = await p.evaluate(() => D.universos.map(u => u.id)); let chefesOk = 0;
+  for (const u of unis) {
+    await roda("chefe de " + u, `{ fechar(); novaRun(["fogo","agua","terra"],D.linhas.find(l=>l.elemento==="fogo").id); R.universo=${JSON.stringify(u)}; iniciarMapa(); J.intro=null; J.t=MAPA_SEG-1; }`, 6);
+    const r = await p.evaluate(() => { const ch = J && (J.chefeVivo || J.inimigos.find(e => e.chefe)); if (!ch) return "o chefe não apareceu no fim do mapa";
+      let n = 0; const t0 = J.t; while (J && J.chefeVivo && J.chefeVivo.hp > 0 && n++ < 600) { const c = J.chefeVivo; c.imortal = false; if (J.t - t0 > 1) { FONTE = "basico"; ferir(c, c.max * 0.08, "fogo"); } try { tick(1 / 30); } catch (e) { return "erro na luta: " + e.message; } }
+      if (J && J.chefeVivo && J.chefeVivo.hp > 0) return "o chefe não caiu mesmo apanhando (imortal ou travado?)";
+      for (let i = 0; i < 120; i++) { try { tick(1 / 30); } catch (e) { return "erro depois do chefe: " + e.message; } }
+      const tc = document.getElementById("telaCartas"), tit = document.getElementById("cartasTitulo").textContent;
+      return tc.classList.contains("ativa") || /portal/i.test(tit) || document.querySelector(".bau-tela.vis") ? null : "depois do chefe não abriu baú nem portais"; }).catch(e => "a página caiu: " + e.message.split("\n")[0]);
+    if (r) nota("mecânica", "chefe de " + u, r); else chefesOk++;
+    await p.evaluate(() => { fechar(); const bt = document.getElementById("bau"); if (bt) bt.classList.remove("vis"); pausado = false; });
+  }
+  // itens: cada um usado com a equipe cheia
+  const itens = await p.evaluate(() => { const out = []; fechar(); novaRun(["fogo", "agua"], D.linhas.find(l => l.elemento === "fogo").id); iniciarMapa(); J.intro = null;
+    for (const k of Object.keys(D.itens)) { try { R.itens[k] = 1; usarItem(k); fechar(); pausado = false; tick(1 / 30); } catch (e) { out.push(`${k}: ${e.message}`); } } return out; });
+  for (const m of itens) nota("mecânica", "itens", m);
+  // save: salva no meio do mapa, carrega e continua jogando
+  INFO.push(`mecânicas: ${await p.evaluate(() => D.linhas.length * 4 * 3)} formas de monstro, ${lendas.length} Lendas e deuses, ${anc.length * 3} formas de dragão, ${chefesOk}/${unis.length} chefes vencidos, ${await p.evaluate(() => Object.keys(D.itens).length)} itens`);
+  await roda("salvar e continuar", `{ fechar(); novaRun(["fogo","agua"],D.linhas.find(l=>l.elemento==="fogo").id); iniciarMapa(); J.intro=null; for(let i=0;i<300;i++) tick(1/30); R.profundidade=2; salvarRun(); const s=JSON.parse(JSON.stringify(RUN_SALVA)); carregarRun(s); iniciarMapa(); if(R.profundidade!==2) throw new Error("profundidade não voltou do save"); }`, 10);
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- 6. jogo desenhado: joga em tempo real em cada reino (com chefe, Despertar,
+// combinado e baú), para pegar erros no código de desenho, que o modo simulado não executa
+async function verificarVisual(b, base) {
+  const { p, ctx } = await abrir(b, base, { ...devices["iPhone 13"], deviceScaleFactor: 2 }, "visual");
+  const unis = await p.evaluate(() => D.universos.map(u => u.id)); const lentos = [];
+  for (const u of unis) {
+    try {
+      await p.evaluate(u => { fechar(); $("telaMenu").classList.remove("ativa"); const els = ["fogo", "agua", "terra"], ids = D.linhas.filter(l => els.includes(l.elemento)).map(l => l.id);
+        comecarTeste(els, [{ id: ids[0], nivel: 16, ramo: 0 }, { id: ids[4], nivel: 9, ramo: 1 }, { id: ids[8], nivel: 5 }], null); R.universo = u; iniciarMapa();
+        window.__fecha && clearInterval(window.__fecha);
+        window.__fecha = setInterval(() => { if (!J) return; J.deus = true; if ($("telaCartas").classList.contains("ativa")) { const bt = document.querySelector("#cartas button.carta:not([disabled])"); if (bt) bt.click(); else fechar(); }
+          const bau = document.querySelector(".bau-tela.vis.pronto .bau-coletar"); if (bau) bau.click(); }, 200);
+        SIM.entrada = () => ({ x: Math.cos(J.t * 0.6), y: Math.sin(J.t * 0.8), esquivar: Math.random() < 0.01, despertar: J.ult >= 100, combinado: J.comb <= 0 }); }, u);
+      await p.waitForTimeout(6000);
+      await p.evaluate(() => { J.intro = null; J.ult = 100; J.comb = 0; soltarBau(J.jogador.x + 20, J.jogador.y, "comum"); });
+      await p.waitForTimeout(4000);
+      await p.evaluate(() => { J.t = Math.max(J.t, MAPA_SEG - 1); });
+      await p.waitForTimeout(5000);
+      await p.evaluate(() => { const c = J && J.chefeVivo; if (c) { c.imortal = false; FONTE = "basico"; ferir(c, c.hp + 1, "fogo"); } });
+      await p.waitForTimeout(3000);
+      const ms = await p.evaluate(() => MSQ); if (ms > 30) lentos.push(`${u} ${ms.toFixed(0)} ms`);
+    } catch (e) { nota("erro", "visual/" + u, e.message.split("\n")[0]); }
+  }
+  if (lentos.length) INFO.push("quadros lentos no navegador de teste (sem placa de vídeo, só referência): " + lentos.join(", "));
+  await p.evaluate(() => { clearInterval(window.__fecha); SIM.entrada = null; });
+  await ctx.close();
+}
+
 (async () => {
   const s = await servidor(), base = `http://localhost:${s.address().port}/`, b = await chromium.launch(), t0 = Date.now();
-  const partes = { carga: verificarArquivos, telas: () => verificarTelas(b, base), jogo: () => verificarJogo(b, base), tela: () => verificarImagem(b, base) };
+  const partes = { carga: verificarArquivos, telas: () => verificarTelas(b, base), jogo: () => verificarJogo(b, base), tela: () => verificarImagem(b, base), mecanicas: () => verificarMecanicas(b, base), visual: () => verificarVisual(b, base) };
   for (const [n, f] of Object.entries(partes)) { if (SO && SO !== n) continue; const t = Date.now(); process.stdout.write(`${n}... `); await f(); console.log(`${((Date.now() - t) / 1000).toFixed(0)} s`); }
   await b.close(); s.close();
   const porParte = {}; for (const p of problemas) (porParte[p.parte] = porParte[p.parte] || []).push(p);

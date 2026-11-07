@@ -4,8 +4,9 @@
 // - Artes, ícones e fontes: usa a cópia guardada e atualiza em segundo plano;
 //   uma arte trocada aparece na próxima vez que o jogo abrir.
 // - arte/manifesto.json: sempre rede primeiro (é ele que diz quais artes existem).
-// Suba VERSAO só se quiser apagar tudo o que está guardado nos aparelhos.
-const VERSAO = "v1";
+// Suba VERSAO sempre que trocar artes: as artes ficam guardadas no aparelho e só a versão nova do cache as apaga.
+// v2: artes refeitas (ambiente, Fênix, enfeites de chão, dragão Árvore).
+const VERSAO = "v2";
 const CODIGO = `elementar-codigo-${VERSAO}`;
 const ARTES = `elementar-artes-${VERSAO}`;
 const BASICO = ["./", "index.html", "css/estilo.css", "js/dados.js", "js/jogo.js", "js/plataforma.js", "js/app.js",

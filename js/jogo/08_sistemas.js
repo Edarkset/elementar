@@ -93,6 +93,26 @@ function desenharParticula(p,ox,oy){ const x=p.x-ox, y=p.y-oy; if(x<-4||y<-4||x>
     default: { const r=Math.max(0.5,p.tam*0.6); if(r>0.9){ lg.globalAlpha=a*0.35; lg.beginPath(); lg.arc(x,y,r*2,0,Math.PI*2); lg.fill(); lg.globalAlpha=a; } lg.beginPath(); lg.arc(x,y,r,0,Math.PI*2); lg.fill(); } }
   lg.lineCap="butt"; }
 // efeitos curtos com desenho próprio (cortes, ondas, feixes, selos)
+// ---------------------------------------------------------------- círculo de invocação no chão
+// Desenho do círculo (anel duplo, runas, estrela de 6 pontas e marcas) feito uma vez por elemento num canvas; no jogo ele
+// é achatado em perspectiva, gira, cresce ao abrir e some com brilho. Usado ao invocar um monstro e ao lançar habilidades
+const cacheCirculo=new Map();
+function artCirculo(el){ if(cacheCirculo.has(el)) return cacheCirculo.get(el); const N=160, c=document.createElement("canvas"); c.width=c.height=N; const g=c.getContext("2d"), cor=COR[el]||"#ffd34a", R=N/2-4;
+  g.translate(N/2,N/2); g.lineCap="round"; g.shadowColor=cor; g.shadowBlur=8; g.strokeStyle=mistura(cor,"#ffffff",0.45);
+  g.lineWidth=3; g.beginPath(); g.arc(0,0,R,0,Math.PI*2); g.stroke(); g.lineWidth=1.5; g.beginPath(); g.arc(0,0,R-9,0,Math.PI*2); g.stroke();
+  for(let i=0;i<24;i++){ const a=i/24*Math.PI*2, l=i%3===0?7:3.5; g.beginPath(); g.moveTo(Math.cos(a)*(R-1),Math.sin(a)*(R-1)); g.lineTo(Math.cos(a)*(R-1-l),Math.sin(a)*(R-1-l)); g.stroke(); }   // marcas entre os anéis
+  g.lineWidth=2; for(const d of [0,Math.PI]){ g.beginPath(); for(let i=0;i<=3;i++){ const a=d+i/3*Math.PI*2-Math.PI/2; const x=Math.cos(a)*(R-12), y=Math.sin(a)*(R-12); i?g.lineTo(x,y):g.moveTo(x,y); } g.stroke(); }   // estrela de 6 pontas
+  g.lineWidth=1.5; g.beginPath(); g.arc(0,0,R*0.42,0,Math.PI*2); g.stroke();
+  for(let i=0;i<6;i++){ const a=i/6*Math.PI*2+Math.PI/6; g.beginPath(); g.arc(Math.cos(a)*R*0.62,Math.sin(a)*R*0.62,4,0,Math.PI*2); g.stroke(); }   // runas nas pontas
+  g.fillStyle=cor; g.globalAlpha=0.18; g.beginPath(); g.arc(0,0,R,0,Math.PI*2); g.fill();
+  cacheCirculo.set(el,c); return c; }
+function circuloInvocacao(x,y,el,r,dur,forte){ if(SIM.ativo||!J) return; const art=artCirculo(el), cor=COR[el]||"#ffd34a";
+  vfx({max:dur||0.9,camada:"chao",desenhar(ox,oy,q){ const abre=Math.min(1,q/0.18), some=q>0.7?(1-q)/0.3:1, esc=r*(0.55+0.45*(1-Math.pow(1-abre,3))), a=J.t*(forte?1.6:1.1);
+    lg.save(); lg.translate(x-ox,y-oy); lg.scale(1,0.5); lg.globalCompositeOperation="lighter";
+    lg.globalAlpha=0.9*some; lg.rotate(a); lg.drawImage(art,-esc,-esc,esc*2,esc*2);
+    lg.rotate(-a*2.2); lg.globalAlpha=0.45*some; lg.drawImage(art,-esc*0.6,-esc*0.6,esc*1.2,esc*1.2);   // círculo interno girando ao contrário
+    lg.restore(); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1;
+    if(forte&&q<0.6){ lg.globalCompositeOperation="lighter"; const g=lg.createLinearGradient(0,y-oy-70,0,y-oy); g.addColorStop(0,"rgba(255,255,255,0)"); g.addColorStop(1,cor); lg.globalAlpha=0.4*(1-q/0.6); lg.fillStyle=g; lg.fillRect(x-ox-esc*0.35,y-oy-70,esc*0.7,70); lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; } }}); }
 function vfx(o){ J.vfx=J.vfx||[]; if(J.vfx.length>80) J.vfx.shift(); o.t=0; J.vfx.push(o); return o; }
 function atualizarVfx(dt){ if(!J.vfx) return; for(const v of J.vfx) v.t+=dt; J.vfx=J.vfx.filter(v=>v.t<v.max); }
 function desenharVfx(ox,oy,camada){ if(!J.vfx) return; for(const v of J.vfx) if((v.camada||"luz")===camada) v.desenhar(ox,oy,v.t/v.max); lg.globalAlpha=1; lg.lineWidth=1; }
@@ -327,7 +347,8 @@ const COMPORTAMENTO={
   xama:{ b(s){ const t=J.totens.filter(x=>x.dono===s).pop(); if(t) puxar(t.x,t.y,50,4); },
          h1(){ J.cantoGuerra=4; },
          h2(s,a,el){ const P=J.jogador; for(const g of J.gemas) if(dist2(g,P)<110*110){ g.vx+=(P.x-g.x)*0.8; g.vy+=(P.y-g.y)*0.8; } const p=pontoDenso(s,120); if(p) for(let i=0;i<4;i++) aplicarElementoNoSolo(p.x+rnd(-10,10),p.y+rnd(-10,10),el); } } };
-function aoDisparar(s,k,a,el,cor){ if(!(s.desp&&s.desp[k])) return; const f=(COMPORTAMENTO[L(s).classe]||{})[k]; if(f) try{ f(s,atribPoder(a,s,k),el,cor); }catch(err){} }
+function aoDisparar(s,k,a,el,cor){ if(k!=="b"&&!SIM.ativo) circuloInvocacao(s.x,s.y+3,el,10+est(s)*2.5,0.6,false);   // habilidade: círculo pequeno sob o monstro
+ if(!(s.desp&&s.desp[k])) return; const f=(COMPORTAMENTO[L(s).classe]||{})[k]; if(f) try{ f(s,atribPoder(a,s,k),el,cor); }catch(err){} }
 // efeitos contínuos: Fênix, Fúria Berserker, Canto de Guerra e as Uniões
 function atualizarArvore(dt){ if(!J) return; J.danoRec=Math.max(0,(J.danoRec||0)-(J.danoRec||0)*dt/3); if(J.cantoGuerra>0) J.cantoGuerra-=dt;
   for(const s of ativos()){ if(s.berserk>0) s.berserk-=dt;

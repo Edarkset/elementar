@@ -151,7 +151,7 @@ function receberMonstro(mon,origem){
   calcularSinergia(); desenharEquipe();
   if(filaRamo.length&&!pausado) proximaEscolha();
 }
-function efeitoInvocacao(s){ if(!J) return; const cor=COR[elementoDe(s)]; anel(s.x,s.y,10,"#ffffff",.4); anel(s.x,s.y,36,cor,.7); particulas(s.x,s.y,cor,26,110,2); tremor(3); }
+function efeitoInvocacao(s){ if(!J) return; const cor=COR[elementoDe(s)]; circuloInvocacao(s.x,s.y+3,elementoDe(s),26,1.3,true); anel(s.x,s.y,10,"#ffffff",.4); anel(s.x,s.y,36,cor,.7); particulas(s.x,s.y,cor,26,110,2); tremor(3); }
 // seta na borda da tela apontando para algo valioso fora da vista
 function setaFora(x,y,cor){ if(x>=6&&y>=6&&x<=VW-6&&y<=VH-6) return; const cx=VW/2, cy=VH/2, ang=Math.atan2(y-cy,x-cx), m=Math.min((VW/2-10)/Math.abs(Math.cos(ang)||1e-6),(VH/2-10)/Math.abs(Math.sin(ang)||1e-6));
   const ax=cx+Math.cos(ang)*m, ay=cy+Math.sin(ang)*m, p=1+0.15*Math.sin(J.t*8); lg.fillStyle=cor; lg.beginPath(); lg.moveTo(ax+Math.cos(ang)*7*p,ay+Math.sin(ang)*7*p);

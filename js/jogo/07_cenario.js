@@ -932,6 +932,16 @@ function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) re
     // recorte liso em elipse (antes era uma escada de quadrados de 8 px)
     lg.save(); buraco(); lg.clip(); const suave=lg.imageSmoothingEnabled; lg.imageSmoothingEnabled=true;
     const sx=((dx0%TF)+TF)%TF-TF, sy=((dy0%TF)+TF)%TF-TF; for(let y=sy;y<VH+TF;y+=TF) for(let x=sx;x<VW+TF;x+=TF) lg.drawImage(fundo,x,y,TF,TF);
+    // profundidade em camadas: uma segunda cópia do fundo, maior e mais escura, anda mais rápido (mais perto); ilhas de rocha
+    // flutuam devagar no meio do caminho; partículas de luz sobem do fundo
+    { const T2=TF*1.6, p2=0.7, ax=-(ox*p2+C.t*C.Wx*0.3), ay=-(oy*p2); const x2=((ax%T2)+T2)%T2-T2, y2=((ay%T2)+T2)%T2-T2;
+      lg.globalAlpha=0.35; for(let y=y2;y<VH+T2;y+=T2) for(let x=x2;x<VW+T2;x+=T2) lg.drawImage(fundo,x,y,T2,T2); lg.globalAlpha=1;
+      if(QUAL>0) for(let i=0;i<3;i++){ const h=hash2(Math.round(f.x)+i*31,Math.round(f.y),83), px=ex+(h-0.5)*f.rx*1.4+Math.sin(C.t*0.15+i*2)*6-(ox*0.15%40), py=ey+(hash2(i,Math.round(f.y),87)-0.2)*f.ry*0.9+Math.sin(C.t*0.4+i)*2.5, w=8+h*10;
+        lg.fillStyle="rgba(10,10,22,.35)"; lg.beginPath(); lg.ellipse(px,py+w*0.9,w*0.7,w*0.18,0,0,Math.PI*2); lg.fill();   // sombra lá embaixo
+        lg.fillStyle="#4a4450"; lg.beginPath(); lg.moveTo(px-w,py); lg.lineTo(px+w,py); lg.lineTo(px+w*0.4,py+w*0.7); lg.lineTo(px,py+w*1.1); lg.lineTo(px-w*0.5,py+w*0.6); lg.closePath(); lg.fill();   // rocha
+        lg.fillStyle="#6a8a4a"; lg.fillRect(px-w,py-1.5,w*2,2); lg.fillStyle="rgba(255,255,255,.18)"; lg.fillRect(px-w,py,w*2,1); }   // grama em cima e luz na beirada
+      lg.globalCompositeOperation="lighter"; for(let i=0;i<8;i++){ const q=((C.t*0.08+i/8)%1), mx=ex+Math.sin(i*7.1)*f.rx*0.8+Math.sin(C.t+i)*2, my=ey+f.ry*0.9-q*f.ry*1.8; lg.globalAlpha=0.6*Math.sin(q*Math.PI); lg.fillStyle="#fff6d0"; lg.fillRect(Math.round(mx),Math.round(my),1,1); }
+      lg.globalCompositeOperation="source-over"; lg.globalAlpha=1; }
     // profundidade: mais escuro junto ao paredão (fundo do precipício) e névoa subindo
     const R2=Math.max(f.rx,f.ry)*1.25, gp=lg.createLinearGradient(0,ey-R2,0,ey+R2); gp.addColorStop(0,"rgba(4,4,12,.5)"); gp.addColorStop(0.4,"rgba(8,10,22,.2)"); gp.addColorStop(1,"rgba(10,14,30,.05)");   /* mais claro: o mar de nuvens do fundo virava uma mancha cinza */
     lg.fillStyle=gp; lg.fillRect(ex-R2,ey-R2,R2*2,R2*2);
@@ -953,6 +963,9 @@ function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) re
       lg.globalAlpha=1;
       if(agua&&Math.random()<.012&&C.ar.length<400){ const p=particulaAr("bolhas",x+ox,yt+oy+30,0); p.cor="#ffffff"; p.vz=6; } }
     // sombra interna na beira (o chão de cima projeta sombra no fundo)
+    // raízes e vinhas penduradas na borda de cima, balançando com o vento
+    if(QUAL>0) for(let wx=xMin+4;wx<xMax-4;wx+=5){ const h=hash2(Math.round(f.x+wx),Math.round(f.y),91); if(h>0.45) continue; const tp=topo(wx); if(tp==null) continue; const yt=ey+tp, x=ex+wx, L=4+h*16, bal=Math.sin(C.t*1.5+wx*0.3)*1.5;
+      lg.strokeStyle=h<0.2?"#3e5a2a":"#4a3422"; lg.lineWidth=0.8; lg.beginPath(); lg.moveTo(x,yt); lg.quadraticCurveTo(x+bal*0.5,yt+L*0.5,x+bal,yt+L); lg.stroke(); if(h<0.12){ lg.fillStyle="#6a9a4a"; lg.fillRect(Math.round(x+bal)-1,Math.round(yt+L)-1,2,2); } }
     // sombra interna suave na beira e luz que desce do alto (raios) por cima da névoa
     lg.strokeStyle="rgba(8,6,14,.22)"; lg.lineWidth=5; buraco(); lg.stroke();
     lg.globalCompositeOperation="lighter"; for(let i=0;i<3;i++){ const rx=ex+(i-1)*f.rx*0.55+Math.sin(C.t*0.3+i)*4, gr=lg.createLinearGradient(0,ey-f.ry,0,ey+f.ry); gr.addColorStop(0,"rgba(255,245,220,.12)"); gr.addColorStop(1,"rgba(255,245,220,0)"); lg.fillStyle=gr; lg.beginPath(); lg.moveTo(rx-4,ey-f.ry); lg.lineTo(rx+4,ey-f.ry); lg.lineTo(rx+16,ey+f.ry); lg.lineTo(rx-8,ey+f.ry); lg.fill(); }

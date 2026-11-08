@@ -773,7 +773,7 @@ function nitidez(c,k){ if(SIM.ativo) return c; try{ const g=c.getContext("2d"), 
 // piso pintado mais calmo: a arte do chão tem muito contraste e detalhe (flores, trepadeiras, ladrilhos) e competia com
 // monstros e inimigos; tira 20% do contraste, 25% da saturação e escurece um pouco, uma vez só quando o mapa começa
 function acalmarPiso(c){ if(SIM.ativo) return c; try{ const g=c.getContext("2d"), im=g.getImageData(0,0,c.width,c.height), d=im.data;
-    let soma=0, n=0; for(let i=0;i<d.length;i+=4*97){ soma+=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114; n++; } const media=soma/n, luz=media<25? 1.45 : media<45? 1.25 : 0.97;   /* piso muito escuro clareia */
+    let soma=0, n=0; for(let i=0;i<d.length;i+=4*97){ soma+=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114; n++; } const media=soma/n, luz=media<25? 1.45 : media<45? 1.25 : media>150? 0.86 : media>125? 0.92 : 0.97;   /* pisos muito claros (Luz, Ar, Grécia, Shangri-lá) escurecem um pouco: efeitos brancos sumiam */   /* piso muito escuro clareia */
     for(let i=0;i<d.length;i+=4){ const r=d[i], gg=d[i+1], b=d[i+2], L=r*0.299+gg*0.587+b*0.114;
       for(let ch=0;ch<3;ch++){ const v=d[i+ch], s=L+(v-L)*0.75; d[i+ch]=(118+(s-118)*0.8)*luz; } }
     g.putImageData(im,0,0); }catch(e){} return c; }

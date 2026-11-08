@@ -498,7 +498,7 @@ function desenharUmProp(p,ox,oy){ const spr=p.spriteFixo||spriteProp(p); if(!spr
     if(p.ouro&&Math.sin(J.t*3+p.x*0.3)>0.9){ lg.fillStyle="#fff8d0"; lg.fillRect(x+Math.floor(w*0.3),y+Math.floor(h*0.3),1,1); }
     if(p.carvao>0){ lg.globalAlpha=p.carvao*0.75; lg.drawImage(silhueta(spr,"#1a1214"),x,y,w,h); lg.globalAlpha=1; }
     if(p.molhado>0&&!p.mat.fixo){ lg.globalAlpha=.25; lg.drawImage(silhueta(spr,"#1a3050"),x,y,w,h); lg.globalAlpha=1; }
-    if(p.congela>0){ lg.globalAlpha=.55; lg.drawImage(silhueta(spr,"#dff4ff"),x,y,w,h); lg.globalAlpha=1; }
+    if(p.congela>0){ lg.globalAlpha=p.mat.fixo||h>30? .2 : .4; lg.drawImage(silhueta(spr,"#dff4ff"),x,y,w,h); lg.globalAlpha=1; }   /* gelo leve: em estátuas e marcos grandes o branco a 55% virava uma figura chapada */
     if(p.mat.condutor&&p.solo==="eletrico"&&Math.random()<.3){ lg.fillStyle="#fff3a0"; lg.fillRect(x+Math.floor(Math.random()*w),y+Math.floor(Math.random()*h),1,1); } }
 const cacheSil=new WeakMap(), cacheSilM=new WeakMap();
 // silhueta com o tamanho do sprite (para virar o próprio sprite: estátua, ouro...). A silhueta comum é feita em alta resolução

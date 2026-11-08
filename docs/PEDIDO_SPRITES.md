@@ -1,5 +1,7 @@
 # Elementar · pedido de folhas de sprites novas
 
+> Versão completa com auditoria e prompts prontos: [PACOTE_PROMPTS.md](PACOTE_PROMPTS.md) (+ dados em [PACOTE_PROMPTS_DADOS.md](PACOTE_PROMPTS_DADOS.md)).
+
 Documento para outra conversa do Claude transformar em um **pacote de prompts de geração de imagem**, como foi feito com as artes atuais. Ele descreve o que o jogo já tem, o que está com defeito e o que falta gerar, com o formato exato que o código lê. Cada item tem prioridade (P1 = mais urgente).
 
 ---

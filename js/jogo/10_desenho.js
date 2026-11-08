@@ -202,8 +202,8 @@ function desenharInvocador(x,y){
   let pernas="p", bob=0;
   if(anda){ const f=Math.floor(t*9)%4; pernas=["a","p","b","p"][f]; bob=f%2===0? 1 : 0; } else bob=Math.floor(t*1.6)%2;   // passada; parado respira
   const pisca=(t%3.4)<0.12, spr=quadroHeroi(pernas,bob,pisca,cor);
-  const suave=lg.imageSmoothingEnabled; lg.imageSmoothingEnabled=false; lg.save(); lg.translate(Math.round(x),Math.round(y)+7); lg.scale(lado,1);
-  lg.drawImage(spr,-10,-spr.height); lg.restore(); lg.imageSmoothingEnabled=suave;
+  const suave=lg.imageSmoothingEnabled; lg.imageSmoothingEnabled=false; luzPesHeroi(Math.round(x),Math.round(y)+8,cor); lg.save(); lg.translate(Math.round(x),Math.round(y)+7); lg.scale(lado,1);
+  contornoHeroi(spr,-10,-spr.height,spr.width,spr.height,cor); lg.drawImage(spr,-10,-spr.height); lg.restore(); lg.imageSmoothingEnabled=suave;
   // brilho do elemento na gema da espada
   const gx=x+lado*7.5, gy=y+7-spr.height+13.5+bob, pul=0.5+0.5*Math.sin(t*4), [r1,g1,b1]=hexRgb(cor); lg.globalCompositeOperation="lighter";
   const gg=lg.createRadialGradient(gx,gy,0,gx,gy,3+pul); gg.addColorStop(0,`rgba(${r1},${g1},${b1},${0.5+0.2*pul})`); gg.addColorStop(1,`rgba(${r1},${g1},${b1},0)`); lg.fillStyle=gg; lg.fillRect(gx-5,gy-5,10,10);

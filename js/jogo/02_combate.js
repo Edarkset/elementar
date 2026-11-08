@@ -5,7 +5,7 @@
 // ================================================================ mapa
 function iniciarMapa(){
   MAPA_SEG=R.profundidade<3? 110 : 150; MINI_SEG=Math.round(MAPA_SEG/2);
-  const u=UNIV[R.universo]; if(!SIM.ativo) preCarregar(artesDoMapa(u));
+  const u=UNIV[R.universo]; if(!SIM.ativo){ liberarMemoria(u); preCarregar(artesDoMapa(u)); }
   J={t:0, inimigos:[], proj:[], balas:[], crias:[], totens:[], gemas:[], nums:[], textos:[], efeitos:[], parts:[], ovosMapa:[], selvagens:[], armadilhas:[], zonas:[], fantasmas:[],
      jogador:{x:0,y:0}, dir:{x:1,y:0}, vida:1, vidaMax:1, escudo:0, xp:R.xp||0, nivel:R.nivel||1, xpProx:xpPara(R.nivel||1), ult:0, spawn:0, niveisPend:0,
      miniFeito:false, chefeFeito:false, chefeVivo:null, fim:false, eraChefe:R.mapaNaEra===MAPAS_POR_ERA-1,

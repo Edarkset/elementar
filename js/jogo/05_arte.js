@@ -33,6 +33,13 @@ function novaArte(nome){ artesNovas.push(nome); if(tArtes) return; tArtes=setTim
 function preCarregar(nomes){ return Promise.all(nomes.filter(n=>MANIFESTO&&MANIFESTO[n]).map(n=>new Promise(ok=>{ const img=ARTE_IMG[n]; if(!img||img.pronta||img.falhou||img.complete) return ok();
   img.addEventListener("load",ok,{once:true}); img.addEventListener("error",ok,{once:true}); }))); }
 const artesQue=f=>MANIFESTO? Object.keys(MANIFESTO).filter(f) : [];
+// memória: cada mapa carrega dezenas de folhas grandes e recortes. O Safari do iPhone tem um teto de memória para imagens e,
+// quando ele estoura, descarta as telas (o jogo fica preto). Ao trocar de mapa, solta as artes de outros reinos e os recortes
+// guardados (eles são refeitos sob demanda, a partir do cache do aparelho, sem baixar de novo)
+function liberarMemoria(u){ if(SIM.ativo) return; const manter=new Set(artesDoMapa(u)), eraAtual=`arte/reinos/${u.era}/`;
+  for(const k of Object.keys(MANIFESTO||{})){ if(!k.startsWith("arte/reinos/")||manter.has(k)) continue; if(k.startsWith(eraAtual)&&k.includes("guardiao_")) continue; if(!(k in ARTE_IMG)) continue; const im=ARTE_IMG[k]; if(im.pronta||im.falhou) delete ARTE_IMG[k]; }   /* "in" não dispara o carregamento */
+  for(const c of [cacheCel,cacheBB,cacheCri,cacheRecor,cacheArte]) c.clear();
+  if(typeof HEROI!=="undefined") HEROI.cache.clear(); if(typeof cacheSolo!=="undefined") cacheSolo.clear(); }
 // artes de um mapa: o reino (arte da abertura primeiro), o Guardião da era, a equipe, a Lenda/deus, chão dos elementos e efeitos
 function artesDoMapa(u){ if(!u) return []; const pre=`arte/reinos/${u.era}/`, ord=["keyart","piso","tiles","props","inimigos","pecas","paredao","objetos","fauna","fundo","mini","chefe","efeitos","anim"];
   const reino=artesQue(n=>n.startsWith(pre+u.id+"__")||n.startsWith(pre+"guardiao_"+u.era+"__")).sort((a,b)=>{ const i=n=>{ const k=ord.findIndex(o=>n.includes("__"+o)); return k<0?99:k; }; return i(a)-i(b); });

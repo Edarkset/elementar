@@ -504,8 +504,12 @@ const cacheSil=new WeakMap(), cacheSilM=new WeakMap();
 // silhueta com o tamanho do sprite (para virar o próprio sprite: estátua, ouro...). A silhueta comum é feita em alta resolução
 // e por isso é bem maior: usada no lugar do sprite, o inimigo aparecia como um borrão cinza gigante cobrindo a tela.
 function silhuetaMundo(spr,cor){ let m=cacheSilM.get(spr); if(!m){ m={}; cacheSilM.set(spr,m); } if(m[cor]) return m[cor];
-  const c=document.createElement("canvas"); c.width=spr.width; c.height=spr.height; const g=c.getContext("2d"); g.drawImage(spr,0,0); g.globalCompositeOperation="source-in"; g.fillStyle=cor; g.fillRect(0,0,c.width,c.height);
-  const hi=silhueta(spr,cor); if(hi.width!==c.width) c._hi=hi; c.base=spr.base; c._pe=spr._pe; c._alvo=spr._alvo; m[cor]=c; return c; }
+  // estátua, ouro, carvão: material com o desenho por baixo (antes era uma silhueta chapada, uma mancha sem detalhe).
+  // Tira a cor do desenho (luminância), multiplica pela cor do material e devolve o recorte do personagem
+  const pedra=b=>{ const c=document.createElement("canvas"); c.width=b.width; c.height=b.height; const g=c.getContext("2d"); g.drawImage(b,0,0);
+    try{ const im=g.getImageData(0,0,c.width,c.height), d=im.data, [r,gg,bb]=hexRgb(cor); for(let i=0;i<d.length;i+=4){ if(!d[i+3]) continue; const L=(d[i]*0.3+d[i+1]*0.59+d[i+2]*0.11)/255, k=0.45+L*0.95; d[i]=Math.min(255,r*k); d[i+1]=Math.min(255,gg*k); d[i+2]=Math.min(255,bb*k); } g.putImageData(im,0,0); }
+    catch(e){ g.globalCompositeOperation="source-in"; g.fillStyle=cor; g.fillRect(0,0,c.width,c.height); } return c; };
+  const c=pedra(spr), hi=spr._src? pedra(baseHi(spr)) : null; if(hi&&hi.width!==c.width){ hi._suave=true; c._hi=hi; } c.base=spr.base; c._pe=spr._pe; c._alvo=spr._alvo; m[cor]=c; return c; }
 function silhueta(spr,cor){ const k=cor; let m=cacheSil.get(spr); if(!m){ m={}; cacheSil.set(spr,m); } if(m[k]) return m[k];
   const b=baseHi(spr), c=document.createElement("canvas"); c.width=b.width; c.height=b.height; const g=c.getContext("2d"); g.drawImage(b,0,0); g.globalCompositeOperation="source-in"; g.fillStyle=cor; g.fillRect(0,0,c.width,c.height); if(b!==spr) c._suave=true; m[k]=c; return c; }
 // detalhes do chão desenhados uma vez por pedaço (pedrinhas, rachaduras, flores, lajotas...)
@@ -695,7 +699,7 @@ function celulaArte(img,cols,rows,col,row,w,h,base){ if(!img) return null; if(!i
   const ky=correcaoAltura(img), b=base??1, e=Math.min(w/cw,h/(ch*ky)), dw=cw*e, dh=ch*e*ky, dx=(w-dw)/2, dy=b*(h-dh);   // ky: folha achatada na conversão
   const fx=faixasFolha(img,rows), syR= fx? Math.max(0,Math.min(img.height-ch,fx[row][1]+Math.round(ch*0.04)-ch)) : row*ch;   // linha deslocada: alinha pelo pé da faixa
   g.drawImage(img,Math.round(col*cw),Math.round(syR),Math.round(cw),Math.round(ch),dx,dy,dw,dh); c.base=b;
-  limparTopoSolto(c);
+  limparTopoSolto(c); c._limpar=true;
   c._src={img,sx:Math.round(col*cw),sy:Math.round(syR),sw:Math.round(cw),sh:Math.round(ch),dest:[dx/w,dy/h,dw/w,dh/h]}; cacheCel.set(k,c); return c; }
 // ---------------------------------------------------------------- camada de arte em alta resolução
 // O mundo é desenhado em baixa resolução (estilo pixel art) e ampliado para a tela. Arte pintada (monstros, inimigos, chefes,
@@ -712,6 +716,7 @@ function versaoHi(c,K){ if(!c||!c._src) return null; K=Math.max(1,Math.min(8,Mat
    const t=document.createElement("canvas"); t.width=Math.round(s.sw*Math.min(m,4)); t.height=Math.round(s.sh*Math.min(m,4)); const gt=t.getContext("2d"); gt.imageSmoothingEnabled=false;
     gt.drawImage(s.img,s.sx,s.sy,s.sw,s.sh,0,0,t.width,t.height); g.drawImage(t,dx,dy,dw,dh); }
   else g.drawImage(s.img,s.sx,s.sy,s.sw,s.sh,dx,dy,dw,dh);
+  if(c._limpar) limparTopoSolto(h);   // a versão grande também sem pedaços da pose vizinha
   c.hi=h; c.hiK=K; return h; }
 // Toda célula de arte importada (tem _src) desenhada no mundo usa a versão em alta resolução no lugar
 // da miniatura. Funciona para qualquer chamada lg.drawImage, então nenhum desenho precisa mudar.

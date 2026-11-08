@@ -462,12 +462,17 @@ function multDanoLenda(e){ let f=1; if(e.chefe||e.mini) f*=1+passiva("dano_chefe
   if(passiva("dano_serpentes")&&e.def&&(e.def.corpo==="serpente"||e.def.corpo==="bipede")) f*=1+passiva("dano_serpentes"); return f; }
 // a Lenda (ou o deus) anda junto com a equipe, na posição do jogador. Folha 6x3 (arte/lendas/<id>.png ou arte/panteao/<id>.png):
 // linha 1 parado (4), linha 2 andando (6), linha 3 lançando o poder ou o Dom Divino (6). Sem a folha, uma figura animada por código.
+// herói (Lenda ou Invocador) sempre legível: brilho no chão e contorno de luz em volta do corpo, como os monstros da equipe;
+// sem isso, Lendas de roupa escura (Drácula, Barba Negra, Nemo...) sumiam em chão escuro
+function luzPesHeroi(x,y,cor){ if(SIM.ativo||QUAL===0) return; const a0=lg.globalAlpha; lg.globalCompositeOperation="lighter"; lg.globalAlpha=a0*(0.18+0.5*nivelEscuro()); lg.drawImage(bolhaCor(cor),x-18,y-7,36,14); lg.globalAlpha=a0; lg.globalCompositeOperation="source-over"; }
+function contornoHeroi(spr,x,y,w,h,cor){ if(SIM.ativo||QUAL===0) return; const sil=silhueta(spr,mistura(cor,"#ffffff",0.55)), a0=lg.globalAlpha, d=0.8; lg.globalAlpha=a0*Math.min(0.95,0.55+0.9*nivelEscuro());
+  for(const [dx,dy] of [[-d,0],[d,0],[0,-d],[0,d]]) lg.drawImage(sil,x+dx,y+dy,w,h); lg.globalAlpha=a0; }
 // a Lenda é o herói do centro: desenhada na posição do jogador, do tamanho de um herói (devolve false sem a arte, e entra o Invocador)
-function desenharLenda(ox,oy){ const l=LENDA(); if(!l||!J) return false; const P=J.jogador, x=Math.round(P.x-ox), y=Math.round(P.y-oy+6), img=folhaArte(l.dom?`arte/panteao/${l.id}.png`:`arte/lendas/${l.id}.png`);
+function desenharLenda(ox,oy){ const l=LENDA(); if(!l||!J) return false; const P=J.jogador, x=Math.round(P.x-ox), y=Math.round(P.y-oy+6); luzPesHeroi(x,y+1,COR[l.elementos[0]]); const img=folhaArte(l.dom?`arte/panteao/${l.id}.png`:`arte/lendas/${l.id}.png`);
   const andando=Math.hypot(J.pvx||0,J.pvy||0)>5, pose=J.lendaPose, lancando=!!pose, esq=(J.pvx||0)<-1;
   if(img&&fatiarFolha(img,6,3).valida){ const f=fatiarFolha(img,6,3); let lin=lancando?2:andando?1:0; if(f.linhas[lin].qs.length<1) lin=0; const n=f.linhas[lin].qs.length;
-    const q=lin===2? Math.min(n-1,Math.floor(pose.t/pose.dur*n)) : Math.floor(J.t*(lin===1?10:6))%n, s=quadroAnim(img,lin,q,34);
-    if(s){ const resp=lin===0? 1+0.012*Math.sin(J.t*2.4) : 1; lg.save(); lg.translate(x,y+1); lg.rotate(Math.max(-0.08,Math.min(0.08,(J.pvx||0)/400))); lg.scale(esq?-1:1,resp); desenharSprite(s,-s.width/2,-s._pe,s.width,s.height); lg.restore(); return true; } }
+    const q=lin===2? Math.min(n-1,Math.floor(pose.t/pose.dur*n)) : Math.floor(J.t*(lin===1?10:6))%n, s=quadroAnim(img,lin,q,38);
+    if(s){ const resp=lin===0? 1+0.012*Math.sin(J.t*2.4) : 1; lg.save(); lg.translate(x,y+1); lg.rotate(Math.max(-0.08,Math.min(0.08,(J.pvx||0)/400))); lg.scale(esq?-1:1,resp); contornoHeroi(s,-s.width/2,-s._pe,s.width,s.height,COR[l.elementos[0]]); desenharSprite(s,-s.width/2,-s._pe,s.width,s.height); lg.restore(); return true; } }
   return false;   // sem a arte da Lenda: o Invocador entra no lugar
 }
 // ================================================================ Panteão: deuses jogáveis (Dom Divino, Fardo e Provação)

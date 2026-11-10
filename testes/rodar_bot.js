@@ -14,7 +14,8 @@ const N=+arg('n',12), PAR=+arg('paralelo',4), MAPAS=+arg('mapas',12), SAIDA=arg(
       await p.reload(); await p.waitForFunction(()=>typeof novaRun==='function'); await p.addScriptTag({url:'testes/bot.js'});
       const t0=Date.now();
       const r=await p.evaluate(([sem,m,dif,loja])=>{ if(loja==='max'){ META.loja={}; LOJA.forEach(it=>META.loja[it.id]=it.max); } return ElementarBot.rodar({semente:sem,maxMapas:m,dif:dif?JSON.parse(dif):null}); },[sem,MAPAS,DIF,LOJA]);
-      res.push(r); console.log(`#${sem} prof ${r.profundidade}${r.morreu?' (morreu no mapa '+r.mapaMorte+' aos '+r.tNoMapaMorte+'s)':''} ttk ${r.mapas.map(m=>m.ttkChefe).join(',')} vmin ${r.vidaMin.join(',')} niv ${r.nivel} [${((Date.now()-t0)/1000).toFixed(0)}s]`);
+      res.push(r); require('fs').writeFileSync(SAIDA,JSON.stringify(res,null,1));   // grava a cada partida: uma bateria interrompida não se perde
+      console.log(`#${sem} prof ${r.profundidade}${r.morreu?' (morreu no mapa '+r.mapaMorte+' aos '+r.tNoMapaMorte+'s)':''} ttk ${r.mapas.map(m=>m.ttkChefe).join(',')} vmin ${r.vidaMin.join(',')} niv ${r.nivel} [${((Date.now()-t0)/1000).toFixed(0)}s]`);
     }
     await ctx.close();
   }

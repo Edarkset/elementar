@@ -35,22 +35,29 @@
     const pool=META.liberados.filter(id=>pac.includes(LINHA[id].elemento)); const ini=cfg.inicial||pool[Math.floor(r()*pool.length)];
     novaRun(pac,ini); iniciarMapa(); rodando=false;   // o laço de desenho fica parado; o bot avança o tempo
     let tSim=0; const vidaMin=[]; let vm=1, profAnt=0;
+    // medidas da horda por mapa: inimigos na tela (média e pico), abates, tempo com a vida baixa e tempo com a tela quase vazia
+    const horda=[]; let am=null, cont=0; const novaAm=()=>({mapa:R.profundidade+1, n:0, somaTela:0, picoTela:0, picoTotal:0, baixa:0, vazia:0, abates0:R.abates, nivel0:J?J.nivel:1, rec0:R.st.recContato+R.st.recBala});
+    const fechaAm=()=>{ if(!am||!am.n) return; horda.push({mapa:am.mapa, tela:+(am.somaTela/am.n).toFixed(1), picoTela:am.picoTela, picoTotal:am.picoTotal, abates:R.abates-am.abates0, niveis:(J?J.nivel:am.nivel0)-am.nivel0,
+      vidaBaixa:+(am.baixa/am.n).toFixed(3), telaVazia:+(am.vazia/am.n).toFixed(3), seg:Math.round(am.n*0.5)}); };
+    am=novaAm();
     while(!morreu && R.profundidade<cfg.maxMapas && tSim<cfg.maxSeg){
       for(let k=0;k<300;k++){
         if(cartaVisivel()){ escolherCarta(r,log); continue; }
         if(pausado){ pausado=false; }
         if(!J) break;
-        tick(cfg.passo); tSim+=cfg.passo; if(J&&J.vidaMax>0) vm=Math.min(vm,J.vida/J.vidaMax); if(R.profundidade!==profAnt){ vidaMin.push(+vm.toFixed(2)); vm=1; profAnt=R.profundidade; }
+        tick(cfg.passo); tSim+=cfg.passo; if(J&&J.vidaMax>0) vm=Math.min(vm,J.vida/J.vidaMax); if(R.profundidade!==profAnt){ vidaMin.push(+vm.toFixed(2)); vm=1; profAnt=R.profundidade; fechaAm(); am=novaAm(); }
+        if(J&&++cont%15===0&&!J.fim&&!J.intro){ const P=J.jogador; let n=0; for(const e of J.inimigos){ if(e.hp>0&&Math.abs(e.x-P.x)<VW/2&&Math.abs(e.y-P.y)<VH/2) n++; }
+          am.n++; am.somaTela+=n; am.picoTela=Math.max(am.picoTela,n); am.picoTotal=Math.max(am.picoTotal,J.inimigos.length); if(J.vida/J.vidaMax<0.35) am.baixa++; if(n<6&&!J.chefeVivo) am.vazia++; }
         if(J.vida<=0&&!morreu){ /* derrota() chama SIM.aoDerrota */ }
         if(morreu||R.profundidade>=cfg.maxMapas) break;
       }
       await new Promise(ok=>setTimeout(ok,0));
     }
     Math.random=rOrig; SIM.ativo=false; SIM.entrada=null; SIM.aoDerrota=null;
-    const st=R.st;
+    fechaAm(); const st=R.st;
     return { semente:cfg.semente, pacto:pac, inicial:ini, profundidade:R.profundidade, morreu, tempo:Math.round(tSim), nivel:J?J.nivel:0,
       mapas:st.mapas, vidaMin, porFonte:st.porFonte||null, reliquias:R.reliquias.slice(), equipe:ativos().map(s=>({id:s.mon.id, classe:L(s).classe, el:elementoDe(s), est:estBase(s), nivel:s.nivel, ramo:s.mon.ramo, rar:s.mon.rar})),
-      escolhas:log.slice(-400), vidaFinal:J?+(J.vida/J.vidaMax).toFixed(2):0, mapaMorte:morreu?R.profundidade+1:null, tNoMapaMorte:morreu&&J?Math.round(J.t):null };
+      horda, abates:R.abates, recContato:Math.round(st.recContato), recBala:Math.round(st.recBala), reacoes:st.reacoes, escolhas:log.slice(-400), vidaFinal:J?+(J.vida/J.vidaMax).toFixed(2):0, mapaMorte:morreu?R.profundidade+1:null, tNoMapaMorte:morreu&&J?Math.round(J.t):null };
   }
   window.ElementarBot={rodar};
 })();

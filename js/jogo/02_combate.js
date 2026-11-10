@@ -67,7 +67,10 @@ function dicaVantagem(el){ const forte=ELS.find(k=>D.vantagem[k]===el); return `
 // Curva de dificuldade (calibrada com o bot: testes/bot.js + testes/rodar_bot.js; ver docs/ANALISE_EQUILIBRIO.md)
 const DIF={vida:1.33, dano:1.48, danoBase:11, hp:38, spawn:0.15, base:1.6, cresc:0.1, onda:22, ondaN:20, max:280,
   rapido:42, rapidoCresc:5, rapidoMax:70, frente:0.2, frenteCresc:0.07, tiroElite:2.8, nivelAtrib:0.03, xpA:6, xpB:4, xpC:0.35,
-  mini:80, chefe:560, guardiao:760, chefe1:0.5, chefeQueda:0.12, rampa:2.0, rampaK:2.2};   /* mais difícil (o jogo estava fácil): mais dano, mais inimigos desde o começo e rampa inicial mais forte */   // vida de mini-chefe, chefe e Guardião da Era (em inimigos comuns); o 1º chefe leva chefe1 disso
+  mini:80, chefe:560, guardiao:760, chefe1:0.5, chefeQueda:0.12, rampa:2.0, rampaK:2.2,
+  // horda: quantos inimigos o diretor quer na tela = (hordaBase + mapa*hordaProf + segundos*(hordaT + mapa*hordaTProf)) * horda, até hordaMax.
+  // horda é a intensidade geral (também multiplica os nascimentos); hordaVida, hordaDano e hordaXp valem só para inimigos comuns
+  horda:1, hordaBase:7, hordaProf:7, hordaT:0.3, hordaTProf:0.04, hordaMax:120, hordaVida:1, hordaDano:1, hordaXp:1};   /* mais difícil (o jogo estava fácil): mais dano, mais inimigos desde o começo e rampa inicial mais forte */   // vida de mini-chefe, chefe e Guardião da Era (em inimigos comuns); o 1º chefe leva chefe1 disso
 // ameaças que crescem com a profundidade: começo suave, fim duro
 const velRapido=()=>Math.min(DIF.rapidoMax, DIF.rapido+DIF.rapidoCresc*R.profundidade);
 const chanceFrente=()=>Math.min(0.65, DIF.frente+DIF.frenteCresc*R.profundidade);
@@ -84,13 +87,13 @@ function spawnInimigo(kForcado){
   let lado=Math.floor(Math.random()*4); const dir=J.dir||{x:0,y:0};
   if(Math.random()<chanceFrente()&&Math.hypot(dir.x,dir.y)>0.2) lado = Math.abs(dir.x)>Math.abs(dir.y)? (dir.x>0?3:2) : (dir.y>0?1:0);
   const base=[{hp:.6,v:velRapido(),r:4,n:8},{hp:1,v:24,r:5,n:9},{hp:2.4,v:16,r:6,n:11}][k], elite=Math.random()<0.035;
-  const el=Math.random()<0.85?u.elemento:escolha(ELS), hp=DIF.hp*base.hp*dificuldade()*(1+J.t/90)*(elite?7:1);
+  const el=Math.random()<0.85?u.elemento:escolha(ELS), hp=DIF.hp*DIF.hordaVida*base.hp*dificuldade()*(1+J.t/90)*(elite?7:1);
   const hx=VW/2+10, hy=VH/2+10, px=lado<2? rnd(-hx,hx) : (lado===2?-hx:hx), py=lado<2? (lado===0?-hy:hy) : rnd(-hy,hy);
   J.inimigos.push({x:J.jogador.x+px, y:J.jogador.y+py, hp, max:hp, v:base.v*(1+R.profundidade*0.02), r:base.r*(elite?1.6:1), esc:elite?1.2:1,
-    dano:DIF.danoBase*danoDif()*(elite?2:1), tipo:k, el, elite, chefe:false, mini:false,
+    dano:DIF.danoBase*DIF.hordaDano*danoDif()*(elite?2:1), tipo:k, el, elite, chefe:false, mini:false,
     spr:gerarSprite(u.id+"i"+k+el, base.n, mistura(COR[el],["#d8473b","#8a4fd0","#e0904a"][k],0.35), {olhos:"#fff2a0"}),
     status:null, lenta:0, congela:0, cego:0, dot:0, dotT:0, reacCd:0, vulner:0, flash:0, marca:0});
-  const e=J.inimigos[J.inimigos.length-1]; e.xpF=fatorXPDiretor(); if(R.mods){ e.max*=1+MOD("inimigoVida"); e.hp=e.max; e.v*=1+MOD("inimigoVel"); } if((R.talismas&&R.talismas.mascara)||custo("risco")){ e.max*=tal.riscoVida()*(1+custo("risco")); e.hp=e.max; e.v*=tal.riscoVel(); } e.cor=mistura(COR[el],["#d8473b","#8a4fd0","#e0904a"][k],0.35); prepararCriatura(e,defInimigo(k),[17,20,23][k]);
+  const e=J.inimigos[J.inimigos.length-1]; e.xpF=fatorXPDiretor()*DIF.hordaXp; if(R.mods){ e.max*=1+MOD("inimigoVida"); e.hp=e.max; e.v*=1+MOD("inimigoVel"); } if((R.talismas&&R.talismas.mascara)||custo("risco")){ e.max*=tal.riscoVida()*(1+custo("risco")); e.hp=e.max; e.v*=tal.riscoVel(); } e.cor=mistura(COR[el],["#d8473b","#8a4fd0","#e0904a"][k],0.35); prepararCriatura(e,defInimigo(k),[17,20,23][k]);
 }
 // Onda de cerco: um anel de inimigos fecha em volta do jogador (use a esquiva para atravessar)
 function ondaCerco(){ const n=Math.round(DIF.ondaN*(1+R.profundidade*0.15)), P=J.jogador, r=Math.min(VW,VH)*0.42;
@@ -156,7 +159,7 @@ function ferir(e,dano,el,o={}){
   const ef=eficacia(el,e.el), crit=o.crit||Math.random()<0.08+tal.critico()+(ativos().some(s=>s.berserk>0)?0.2:0);
   let d=dano*ef*(crit?1.8:1)*(e.vulner>0?1.2:1)*(e.bebado>0?1.5:1)*fadigaChefe(e)*multDanoLenda(e)*relDano(e);
   for(const z of J.zonas) if(z.tipo==="circulo"&&dist2(z,e)<z.r*z.r) d*=z.amp;
-  e.hp-=d; e.flash=0.08; e.golpeT=J.t;
+  R.st.porFonte[FONTE]=(R.st.porFonte[FONTE]||0)+Math.min(d,Math.max(0,e.hp)); e.hp-=d; e.flash=0.08; e.golpeT=J.t;
   // impacto: o inimigo dá um tranco para trás no desenho, proporcional ao golpe (crítico mais forte). Só visual: empurrar de verdade
   // espalhava a horda, os golpes em área acertavam menos e as lutas ficavam até 7x mais longas
   if(!e.chefe&&!e.estatua&&e.max>0){ const P=J.jogador, dx=e.x-P.x, dy=e.y-P.y, dd=Math.hypot(dx,dy)||1, k=Math.min(1,d/e.max*3)*(crit?3:1.8)*(e.elite||e.mini?0.5:1); e.rx=(e.rx||0)+dx/dd*k; e.ry=(e.ry||0)+dy/dd*k; const m=Math.hypot(e.rx,e.ry); if(m>3.5){ e.rx*=3.5/m; e.ry*=3.5/m; } }
@@ -171,7 +174,7 @@ function ferir(e,dano,el,o={}){
   e.status={el,t:J.t};
   if(e.hp<=0) morrer(e);
 }
-function danoSimples(e,d){ if(e.ehProp){ danificarProp(e,d,null); return; } if(e.hp<=0||e.oculto) return; R.st.porFonte[FONTE]=(R.st.porFonte[FONTE]||0)+d; e.hp-=d; e.flash=0.06; if(e.hp<=0) morrer(e); }
+function danoSimples(e,d){ if(e.ehProp){ danificarProp(e,d,null); return; } if(e.hp<=0||e.oculto) return; R.st.porFonte[FONTE]=(R.st.porFonte[FONTE]||0)+Math.min(d,Math.max(0,e.hp)); e.hp-=d; e.flash=0.06; if(e.hp<=0) morrer(e); }
 function reagir(e,a,b,dano){
   const r=REAC[[a,b].sort().join("|")]; if(!r) return;
   const fonteAnt=FONTE; FONTE="reacao"; reagirEfeito(e,a,b,dano,r); FONTE=fonteAnt;

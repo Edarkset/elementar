@@ -78,13 +78,14 @@ function atualizar(dt){
     J.tFilhote-=dt; if(J.tFilhote<=0){ J.tFilhote=D.ovos.intervalo_filhote_seg*rnd(.8,1.2); spawnFilhote(); }
   } else if(J.portalEm!=null){ J.portalEm-=dt/(J.lento>0?0.3:1); if(J.portalEm<=0){ J.portalEm=null; mostrarPortais(); } }
   // inimigos
+  const temGuarda=J.crias.length>0&&J.crias.some(c=>c.guarda);   // só procura o servo-escudo se existir algum (era uma busca por inimigo, todo quadro)
   for(const e of J.inimigos){
     if(e.escAlvo&&e.esc!==e.escAlvo){ e.esc=Math.min(e.escAlvo,(e.esc||1)+dt*0.7); if(e.esc>=e.escAlvo) e.escAlvo=null; } if(e.virouElite>0) e.virouElite-=dt;
     if(e.flash>0) e.flash-=dt; if(e.reacCd>0) e.reacCd-=dt; if(e.vulner>0) e.vulner-=dt; if(e.cego>0) e.cego-=dt;
     if(e.dotT>0){ e.dotT-=dt; danoSimples(e,e.dot*dt); }
     if(e.congela>0){ e.congela-=dt; continue; }
     const sol=efeitoSoloInimigo(e,dt); const f=(e.lenta>0?0.45:1)*sol.vel; if(e.lenta>0) e.lenta-=dt;
-    let tx=P.x, ty=P.y; const guarda=J.crias.find(c=>c.guarda&&dist2(c,e)<400); if(guarda){ tx=guarda.x; ty=guarda.y; }
+    let tx=P.x, ty=P.y; if(temGuarda){ const guarda=J.crias.find(c=>c.guarda&&dist2(c,e)<400); if(guarda){ tx=guarda.x; ty=guarda.y; } }
     const dx=tx-e.x, dy=ty-e.y, d=Math.hypot(dx,dy)||1; const ac=sol.gelo?0.04:1; e.vx=(e.vx??dx/d*e.v)+(dx/d*e.v*f-(e.vx??0))*ac; e.vy=(e.vy??dy/d*e.v)+(dy/d*e.v*f-(e.vy??0))*ac; const ps=passoCriatura(e,dt,P); e.x+=e.vx*dt*ps.m+ps.dx; e.y+=e.vy*dt*ps.m+ps.dy;
     if(e.hp<=0) continue;
     const dP=Math.hypot(P.x-e.x,P.y-e.y);
@@ -120,7 +121,9 @@ function atualizar(dt){
   // crias, totens, armadilhas e zonas
   for(const c of J.crias){ c.vida-=dt; c.cd-=dt; FONTE=c.fonte||"basico";
     if(c.guarda){ const a=J.t*3+J.crias.indexOf(c); c.x+=(P.x+Math.cos(a)*16-c.x)*Math.min(1,dt*5); c.y+=(P.y+Math.sin(a)*16-c.y)*Math.min(1,dt*5); emArea(c.x,c.y,6,e=>{ if(c.cd<=0){ ferir(e,c.dano,c.el); c.cd=.4; } }); continue; }
-    const e=maisProximo(c,90); if(e){ const dx=e.x-c.x, dy=e.y-c.y, d=Math.hypot(dx,dy)||1, v=c.gigante?45:70; c.x+=dx/d*v*dt; c.y+=dy/d*v*dt;
+    // o servo guarda o alvo por 0,2 s em vez de procurar o mais próximo em toda a horda a cada quadro
+    c.tAlvo=(c.tAlvo||0)-dt; if(!c.alvoE||c.alvoE.hp<=0||c.tAlvo<=0){ c.alvoE=maisProximo(c,90); c.tAlvo=0.2; }
+    const e=c.alvoE; if(e){ const dx=e.x-c.x, dy=e.y-c.y, d=Math.hypot(dx,dy)||1, v=c.gigante?45:70; c.x+=dx/d*v*dt; c.y+=dy/d*v*dt;
       if(d<e.r+(c.gigante?7:3)&&c.cd<=0){ if(c.gigante){ emArea(c.x,c.y,18,o=>ferir(o,c.dano,c.el)); anel(c.x,c.y,18,c.cor,.3); tremor(2);} else ferir(e,c.dano,c.el); c.cd=c.gigante?.8:.5; } }
     if(c.vida<=0&&c.kami){ emArea(c.x,c.y,16,o=>ferir(o,c.dano*3,c.el)); anel(c.x,c.y,16,c.cor,.35); particulas(c.x,c.y,c.cor,8,70); } }
   J.crias=J.crias.filter(c=>c.vida>0);

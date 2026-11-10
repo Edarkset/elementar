@@ -25,8 +25,13 @@ function hash2(x,y,s){ let h=(x*374761393+y*668265263+s*982451653)|0; h=Math.imu
 function ruido(x,y,s){ const xi=Math.floor(x), yi=Math.floor(y), fx=x-xi, fy=y-yi, u=fx*fx*(3-2*fx), v=fy*fy*(3-2*fy);
   const a=hash2(xi,yi,s), b=hash2(xi+1,yi,s), c=hash2(xi,yi+1,s), d=hash2(xi+1,yi+1,s); return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v; }
 function terrenoBase(){ const u=UNIV[R.universo]; return D.terreno_especial[u.id]||D.terreno_natural[u.elemento]; }
-function soloNatural(cx,cy){ const se=soloEstrutura(cx,cy); if(se) return se; const [tipo,p]=terrenoBase(); const sem=R.universo.length*7+R.profundidade; return ruido(cx/6,cy/6,sem)<p? tipo : "chao"; }
-function soloEm(cx,cy){ const k=cx+","+cy, m=J.solo.get(k); if(m){ if(m.ate>J.t) return m.t; J.solo.delete(k); if(DEPOIS[m.t]){ J.solo.set(k,{t:DEPOIS[m.t],ate:J.t+DUR[DEPOIS[m.t]]}); return DEPOIS[m.t]; } } return soloNatural(cx,cy); }
+// o solo natural de uma célula não muda durante o mapa: fica guardado (era recalculado, com ruído e busca de lagos, várias vezes por
+// inimigo a cada quadro; com a horda cheia isso era uma das maiores fatias da lógica)
+function soloNatural(cx,cy){ const M=J.soloNat||(J.soloNat=new Map()), k=(cx+32768)*65536+(cy+32768); let t=M.get(k); if(t!==undefined) return t;
+  const se=soloEstrutura(cx,cy); if(se) t=se; else { const [tipo,p]=terrenoBase(); const sem=R.universo.length*7+R.profundidade; t=ruido(cx/6,cy/6,sem)<p? tipo : "chao"; }
+  if(J.cena){ if(M.size>30000) M.clear(); M.set(k,t); }   // só guarda com o cenário pronto (lagos e abismos já definidos)
+  return t; }
+function soloEm(cx,cy){ if(!J.solo.size) return soloNatural(cx,cy); const k=cx+","+cy, m=J.solo.get(k); if(m){ if(m.ate>J.t) return m.t; J.solo.delete(k); if(DEPOIS[m.t]){ J.solo.set(k,{t:DEPOIS[m.t],ate:J.t+DUR[DEPOIS[m.t]]}); return DEPOIS[m.t]; } } return soloNatural(cx,cy); }
 function mudarSolo(x,y,tipo,dur){ if(estruturaU()&&J.cena&&abismoEm(x,y,0)) return; const cx=Math.floor(x/CEL), cy=Math.floor(y/CEL); J.solo.set(cx+","+cy,{t:tipo,ate:J.t+(dur??DUR[tipo]??30)}); }
 const frio=()=>terrenoBase()[0]==="gelo";
 function aplicarElementoNoSolo(x,y,el){

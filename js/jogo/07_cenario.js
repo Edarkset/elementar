@@ -268,7 +268,9 @@ function atualizarTufos(dt){ const C=J.cena, V=VEG[C.veg], P=J.jogador; let h=dt
   tocarTufos(P.x,P.y,4,J.pvx,J.pvy,dt);
   for(const s of R.selos) if(s.mon&&s.x!=null) tocarTufos(s.x,s.y,3,s.vx||0,s.vy||0,dt);
   const ox=P.x-VW/2, oy=P.y-VH/2; let n=0;
-  for(const e of J.inimigos){ if(e.hp<=0||e.x<ox-10||e.x>ox+VW+10||e.y<oy-10||e.y>oy+VH+10) continue; if(++n>120) break; tocarTufos(e.x,e.y,e.r*0.8,e.vx||0,e.vy||0,dt,true); } }
+  // a horda toca a vegetação em quadros alternados: metade dos inimigos por quadro, com o dobro do empurrão (mesmo efeito, metade do custo)
+  const par=(C.quadro=(C.quadro||0)+1)&1, L=J.inimigos;
+  for(let i=par;i<L.length;i+=2){ const e=L[i]; if(e.hp<=0||e.x<ox-10||e.x>ox+VW+10||e.y<oy-10||e.y>oy+VH+10) continue; if(++n>70) break; tocarTufos(e.x,e.y,e.r*0.8,e.vx||0,e.vy||0,dt*2,true); } }
 
 // ---------------------------------------------------------------- pegadas e ondas na água
 function rastroDe(o,x,y,dist,r){ const C=J.cena; o._pd=(o._pd||0)+dist; if(o._pd<5) return; o._pd=0;
@@ -284,7 +286,8 @@ function rastroDe(o,x,y,dist,r){ const C=J.cena; o._pd=(o._pd||0)+dist; if(o._pd
 function atualizarPegadas(dt){ const C=J.cena, P=J.jogador;
   // na areia o vento apaga as pegadas mais depressa (transporte de grãos)
   const apaga=1+C.Wm/45;
-  for(const p of C.pegadas) p.vida-=dt*(p.cor===tom(COR_SOLO.areia[0],.75)?apaga:1); C.pegadas=C.pegadas.filter(p=>p.vida>0);
+  const corAreia=C.corAreia||(C.corAreia=tom(COR_SOLO.areia[0],.75));   // antes a cor era recalculada para cada pegada, a cada quadro
+  for(const p of C.pegadas) p.vida-=dt*(p.cor===corAreia?apaga:1); C.pegadas=C.pegadas.filter(p=>p.vida>0);
   for(const o of C.ondas){ o.vida-=dt; o.r+=dt*14; } C.ondas=C.ondas.filter(o=>o.vida>0);
   const vj=Math.hypot(J.pvx,J.pvy); if(vj>8) rastroDe(J,P.x,P.y+4,vj*dt,4);
   for(const s of R.selos){ if(!s.mon||s.x==null) continue; const v=Math.hypot(s.vx||0,s.vy||0); if(v>8) rastroDe(s,s.x,s.y+4,v*dt,3); }
@@ -874,18 +877,21 @@ function atualizarEstrutura(dt){ const E=estruturaU(), C=J.cena; if(!E||!C) retu
     if(f.tipo==="praca"&&folhaU("props")) for(let i=0;i<4;i++){ const a=i*Math.PI/2+Math.PI/4; const l=criarProp("luz",f.x+Math.cos(a)*f.rx*0.95,f.y+Math.sin(a)*f.ry*0.95); if(l) l.idx=6; } }
   if(!(J.dashT>0&&passiva("atravessa_abismo"))) sairDoAbismo(P,4);
   // chefes voam por cima do vazio, mas não ficam parados sobre ele (senão saem do alcance da equipe)
-  for(const e of J.inimigos) if((e.chefe||e.mini)&&e.hp>0&&!e.dash&&!e.noAr&&!e.oculto&&abismoEm(e.x,e.y,0)){ const f=abismoEm(e.x,e.y,0), dx=e.x-f.x, dy=e.y-f.y, d=Math.hypot(dx,dy)||1; e.x+=dx/d*60*dt; e.y+=dy/d*60*dt; }
+  if(J.chefeVivo||J.miniFeito) for(const e of J.inimigos) if((e.chefe||e.mini)&&e.hp>0&&!e.dash&&!e.noAr&&!e.oculto&&abismoEm(e.x,e.y,0)){ const f=abismoEm(e.x,e.y,0), dx=e.x-f.x, dy=e.y-f.y, d=Math.hypot(dx,dy)||1; e.x+=dx/d*60*dt; e.y+=dy/d*60*dt; }
   // inimigos andando: empurrados para a borda; se um golpe os jogou fundo no buraco, caem
-  for(const e of J.inimigos){ if(e.hp<=0||voa(e)||Math.abs(e.x-P.x)>VW||Math.abs(e.y-P.y)>VH) continue;
+  // sem abismo nas zonas vizinhas não há o que conferir; com abismo, confere metade dos inimigos por quadro
+  const temAbismo=pecasPerto(P.x,P.y).some(f=>f.tipo==="abismo"), parA=(C.quadroA=(C.quadroA||0)+1)&1, LI=J.inimigos;
+  if(temAbismo) for(let i=parA;i<LI.length;i+=2){ const e=LI[i]; if(e.hp<=0||voa(e)||Math.abs(e.x-P.x)>VW||Math.abs(e.y-P.y)>VH) continue;
     if(fundoDoAbismo(e.x,e.y)>0.12){ queda(e.x,e.y,e.spr,e.esc||1); texto(e.x,e.y-10,"Caiu!","#e8e0ff",12); evento("queda"); e.semCadaver=true; e.hp=0; morrer(e); continue; }
-    if(sairDoAbismo(e,e.r*0.6)){ const f=abismoEm(e.x,e.y,e.r+2)||pecasPerto(e.x,e.y).find(g=>g.tipo==="abismo"); if(f){ const dx=e.x-f.x, dy=e.y-f.y, d=Math.hypot(dx,dy)||1, lado=(e.semente||1)%2?1:-1; e.x+=-dy/d*lado*e.v*0.5*dt; e.y+=dx/d*lado*e.v*0.5*dt; } } }
+    if(sairDoAbismo(e,e.r*0.6)){ const f=abismoEm(e.x,e.y,e.r+2)||pecasPerto(e.x,e.y).find(g=>g.tipo==="abismo"); if(f){ const dx=e.x-f.x, dy=e.y-f.y, d=Math.hypot(dx,dy)||1, lado=(e.semente||1)%2?1:-1; e.x+=-dy/d*lado*e.v*0.5*dt*2; e.y+=dx/d*lado*e.v*0.5*dt*2; } } }
   // objetos empurrados para o vazio caem; cristais no chão escorregam para a beirada (nunca ficam perdidos)
-  for(const p of C.lista){ if(p.morto||p.mat.fixo||p.caindo) continue; if(abismoEm(p.x,p.y,-p.r*0.4)){ p.caindo=0.7; p.vx*=0.3; p.vy*=0.3; } }
+  if(temAbismo){
+    for(const p of C.lista){ if(p.morto||p.mat.fixo||p.caindo) continue; if(abismoEm(p.x,p.y,-p.r*0.4)){ p.caindo=0.7; p.vx*=0.3; p.vy*=0.3; } }
+    for(const g of C.destrocos) if(g.z<1&&abismoEm(g.x,g.y,0)) g.vida=Math.min(g.vida,0.2);
+    { const G=J.gemas; for(let i=parA;i<G.length;i+=2) sairDoAbismo(G[i],2); }   // cristais: metade por quadro (eram centenas de conferências por quadro)
+    // ovos e monstros selvagens nunca ficam no vazio (senão ficam inalcançáveis)
+    for(const o of J.ovosMapa) sairDoAbismo(o,5); for(const o of J.selvagens) sairDoAbismo(o,5); if(J.ovoAnc) sairDoAbismo(J.ovoAnc,6); }
   for(const p of C.lista){ if(p.caindo>0){ p.caindo-=dt; if(p.caindo<=0){ p.morto=true; } } }
-  for(const g of C.destrocos) if(g.z<1&&abismoEm(g.x,g.y,0)) g.vida=Math.min(g.vida,0.2);
-  for(const g of J.gemas) sairDoAbismo(g,2);
-  // ovos e monstros selvagens nunca ficam no vazio (senão ficam inalcançáveis)
-  for(const o of J.ovosMapa) sairDoAbismo(o,5); for(const o of J.selvagens) sairDoAbismo(o,5); if(J.ovoAnc) sairDoAbismo(J.ovoAnc,6);
   atualizarFauna(dt); }
 function queda(x,y,spr,esc){ J.quedas=J.quedas||[]; J.quedas.push({x,y,spr,esc,t:0}); }
 // ---------------------------------------------------------------- desenho: peças planas, abismo com paralaxe, paredões, ponte

@@ -228,12 +228,14 @@ function aplicarBloom(){ if(QUAL<2||SIM.ativo) return;   // também no celular: 
   ctx.save(); ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality="low"; ctx.globalCompositeOperation="lighter";
   const kb=0.55+0.45*Math.min(1,nivelEscuro()*2.2); ctx.globalAlpha=0.3*kb; ctx.drawImage(BL2,0,0,W,H); ctx.globalAlpha=0.15*kb; ctx.drawImage(BL2,-W*0.015,-H*0.015,W*1.03,H*1.03); ctx.restore(); }
 let comboAnt=0;
+let hudQuadro=0;
 function hud(){
   if(SIM.ativo) return;
+  if((hudQuadro=(hudQuadro+1)%3)!==0&&!pausado) return;   // 20 vezes por segundo bastam: mexer na página todo quadro custava ~5% da lógica
   { const ev=R.essenciaRun+Math.floor(R.abates/15), el=$("essHud"); if(el&&el._v!==ev){ el._v=ev; el.textContent=ev; el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); } }
   const rest=Math.max(0,MAPA_SEG-J.t); $("tempo").textContent=J.chefeFeito?"Chefe!":`${Math.floor(rest/60)}:${String(Math.floor(rest%60)).padStart(2,"0")}`;
   $("barVida").style.width=`${Math.max(0,J.vida/J.vidaMax*100)}%`; $("barEscudo").style.width=`${Math.min(100,J.escudo/J.vidaMax*100)}%`;
-  $("barXp").style.width=`${J.xp/J.xpProx*100}%`; if(J.pulsoXp>0){ J.pulsoXp-=0.08; $("barXp").parentElement.classList.toggle("pulso",J.pulsoXp>0); } $("ultFill").style.height=`${J.desp>0?J.desp/D.despertar.duracao_seg*100:J.ult}%`; $("btnUlt").classList.toggle("pronto",J.ult>=100&&J.desp<=0); { const b=$("btnBolsa"); if(b){ const u=itemUsavelAgora(); if(b._u!==u){ b._u=u; b.classList.toggle("util",u); } } }
+  $("barXp").style.width=`${J.xp/J.xpProx*100}%`; if(J.pulsoXp>0){ J.pulsoXp-=0.24; $("barXp").parentElement.classList.toggle("pulso",J.pulsoXp>0); } $("ultFill").style.height=`${J.desp>0?J.desp/D.despertar.duracao_seg*100:J.ult}%`; $("btnUlt").classList.toggle("pronto",J.ult>=100&&J.desp<=0); { const b=$("btnBolsa"); if(b){ const u=itemUsavelAgora(); if(b._u!==u){ b._u=u; b.classList.toggle("util",u); } } }
   const cb2=$("btnComb"), tc=tipoCombinado(); $("combNome").textContent=J.comb>0?Math.ceil(J.comb)+" s":tc.nome; cb2.title=tc.nome; cb2.classList.toggle("pronto",J.comb<=0); $("combFill").style.height=`${J.comb>0?(1-J.comb/D.combinado_regras.recarga_seg)*100:100}%`;
   $("esqFill").style.height=`${J.dashCd>0?(1-J.dashCd/D.esquiva.recarga_seg)*100:100}%`;
   const cb=$("combo"); if(J.combo>=5){ cb.classList.add("vis"); if(J.combo!==comboAnt){ cb.innerHTML=`Combo ${J.combo}<small>+${Math.round(Math.min(D.combo.xp_max,J.combo/10*D.combo.xp_por_10)*100)}% XP</small>`;

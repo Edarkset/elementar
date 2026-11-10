@@ -14,7 +14,11 @@ function corGema(v){ let c=CORES_GEMA[0][1]; for(const [m,k] of CORES_GEMA) if(v
 function desenharColunaNivel(ox,oy){ const c=J.colunaNivel; if(!c) return; c.t+=1/60; if(c.t>0.9){ J.colunaNivel=null; return; } const P=J.jogador, x=P.x-ox, y=P.y-oy, a=Math.sin(c.t/0.9*Math.PI), w=10+c.t*16;
   lg.globalCompositeOperation="lighter"; const g=lg.createLinearGradient(0,y-160,0,y); g.addColorStop(0,"rgba(255,230,140,0)"); g.addColorStop(1,`rgba(255,230,140,${0.55*a})`); lg.fillStyle=g; lg.fillRect(x-w/2,y-160,w,160);
   lg.globalAlpha=0.4*a; lg.drawImage(bolhaCor("#ffe080"),x-30,y-30,60,60); lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; }
+// multidão: com mais de 110 inimigos vivos, cada inimigo comum é desenhado com uma imagem só (sem o quadro intermediário do passo e sem
+// o véu escuro de 16%, que ninguém distingue no meio da horda). Corta até dois terços das cópias de imagem nos momentos mais pesados
+let MULTIDAO=false;
 function desenhar(dt){
+  MULTIDAO=J.inimigos.length>110;
   const P=J.jogador; J.shake*=0.86; const tq=performance.now()/1000, sx=J.shake*(Math.sin(tq*53)*0.35+Math.sin(tq*29+1.3)*0.25), sy=J.shake*(Math.sin(tq*47+0.7)*0.35+Math.sin(tq*23+2.1)*0.25);
   // câmera com precisão menor que 1 pixel do mundo: as posições continuam inteiras (ox, oy), e a sobra desloca a tela inteira.
   // Assim a rolagem é contínua em vez de andar em saltos de um pixel do mundo (3 a 4 pixels da tela).

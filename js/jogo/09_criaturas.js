@@ -352,8 +352,8 @@ function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||
   // levou golpe: brilho branco por cima do corpo (mais leve em chefe, que apanha o tempo todo)
   desenharSprite(spr,-w/2,-h,w,h);
   // quadro intermediário: no andar, mistura com o próximo passo pela fração do ciclo (animação mais fluida com os mesmos quadros)
-  if(QUAL>0&&!SIM.ativo&&pose==="anda"&&spr._src&&!e.eco&&!e.estatua){ const f=(e.passo||0)%1; if(f>0.15){ const nx=spriteDe(e,pose,(q+1)%4); if(nx&&nx!==spr){ const a0=lg.globalAlpha; lg.globalAlpha=a0*f*0.7; desenharSprite(nx,-w/2,-h,w,h); lg.globalAlpha=a0; } } }
-  if(!e.chefe&&!e.mini&&!e.elite&&QUAL>0&&!SIM.ativo){ const a0=lg.globalAlpha; lg.globalAlpha=a0*0.16; lg.drawImage(silhueta(spr,"#140c1c"),-w/2,-h,w,h); lg.globalAlpha=a0; }
+  if(QUAL>0&&!SIM.ativo&&!MULTIDAO&&pose==="anda"&&spr._src&&!e.eco&&!e.estatua){ const f=(e.passo||0)%1; if(f>0.15){ const nx=spriteDe(e,pose,(q+1)%4); if(nx&&nx!==spr){ const a0=lg.globalAlpha; lg.globalAlpha=a0*f*0.7; desenharSprite(nx,-w/2,-h,w,h); lg.globalAlpha=a0; } } }
+  if(!e.chefe&&!e.mini&&!e.elite&&QUAL>0&&!SIM.ativo&&!MULTIDAO){ const a0=lg.globalAlpha; lg.globalAlpha=a0*0.16; lg.drawImage(silhueta(spr,"#140c1c"),-w/2,-h,w,h); lg.globalAlpha=a0; }
   if(img!==spr){ const a0=lg.globalAlpha; lg.globalCompositeOperation="lighter"; lg.globalAlpha=a0*(e.chefe||e.mini?0.4:0.75)*Math.min(1,e.flash/0.05); lg.drawImage(img,-w/2,-h,w,h); lg.globalAlpha=a0; lg.globalCompositeOperation="source-over"; }
   if(e.virouElite>0){ lg.globalAlpha=Math.min(1,e.virouElite*2)*0.7; lg.globalCompositeOperation="lighter"; lg.drawImage(silhueta(spr,"#ffd34a"),-w/2,-h,w,h); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1; }
   if(e.chefe&&e.ia&&e.ia.fase===2){ lg.globalAlpha=0.18+0.12*Math.sin(J.t*6); lg.globalCompositeOperation="lighter"; lg.drawImage(silhueta(spr,COR[e.el]||"#ff5a4a"),-w/2,-h,w,h); lg.globalCompositeOperation="source-over"; }

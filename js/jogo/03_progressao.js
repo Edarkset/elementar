@@ -97,13 +97,17 @@ function numerosPoder(s,k,lv,prox){ try{ const base=atrib(s).dano*tal.dano();
     if(k==="b"){ const f0=1+0.2*(Math.max(1,lv)-1), f1=1+0.2*(prox-1); return ` <span class='bom'>Dano ${Math.round(base)} → ${Math.round(base*f1/f0)}</span>`; }
     const d0=lv? Math.round(base*fNivel(lv)) : 0, d1=Math.round(base*fNivel(prox)), cd=HAB[L(s).classe][k].cd*fRecarga(prox);
     return ` <span class='bom'>Força ${d0||"—"} → ${d1}</span> · recarga ${cd.toFixed(1).replace(".",",")} s`; }catch(e){ return ""; } }
-function cartasNivel(){ const eq=ativos(), maxN=Math.max(...eq.map(s=>s.nivel)), cand=[];
+// Ascensão com caminho: depois que um monstro tem todos os poderes no máximo, cada nível dele traz um de três caminhos (dano, cadência
+// ou vida) que se acumulam. Nas simulações, do nível 40 em diante 9 em cada 10 escolhas eram a mesma carta "+1 nível": a run ficava sem decisão
+const ASCENSAO={d:{nome:"Fúria",v:0.05,txt:"de dano"}, c:{nome:"Ímpeto",v:0.03,txt:"de cadência"}, v:{nome:"Vigor",v:0.06,txt:"de vida"}};
+function cartasNivel(){ const eq=ativos(), maxN=Math.max(...eq.map(s=>s.nivel)), cand=[], caminhos=embaralhar(Object.keys(ASCENSAO));
   for(const s of eq){ const c=D.classes[L(s).classe], lib=[["b","Ataque básico",`${c.basico} +20% de dano e +5% de cadência.`],["h1",c.h1.nome,c.h1.desc],...((est(s)>=1||estBase(s)>=1)?[["h2",c.h2.nome,c.h2.desc]]:[])];
     const peso=1+(maxN-s.nivel)*0.35; let algum=false;
     for(const [k,nome,desc] of lib){ const lv=s.pod[k]; if(lv>=5) continue; algum=true; const prox=lv+1;
       cand.push({peso, s, k, raridade: prox===5?"lendario": prox===3&&k!=="b"?"epico": prox>=2?"raro":"incomum",
         titulo:`${nome} ${lv?`${lv} → ${prox}`:"(novo)"}`, texto:`${pipsPoder(lv,prox)}<b style="color:${COR[elementoDe(s)]}">${nomeForma(s)}</b> · nível ${s.nivel}. ${desc}${numerosPoder(s,k,lv,prox)}${k!=="b"&&prox===3?" Libera um modificador.":""}${prox===5?" Nível máximo!":""}`}); }
-    if(!algum) cand.push({peso:0.8, s, asc:true, raridade:"lendario", titulo:`Ascensão de ${nomeForma(s)}`, texto:"Todos os poderes no máximo: +1 nível (+6% em todos os atributos)."}); }
+    if(!algum){ const k=caminhos[cand.filter(c=>c.asc).length%caminhos.length], A=ASCENSAO[k], tem=(s.asc&&s.asc[k])||0;   // monstros diferentes oferecem caminhos diferentes
+      cand.push({peso:0.8, s, asc:k, raridade:"lendario", titulo:`Ascensão de ${nomeForma(s)}: ${A.nome}`, texto:`Todos os poderes no máximo: +1 nível (+${Math.round(DIF.nivelAtrib*100)}% em todos os atributos) e <span class='bom'>+${Math.round(A.v*100)}% ${A.txt}</span> para sempre nesta run${tem?` (já tem +${Math.round(tem*A.v*100)}%)`:""}.`}); } }
   const sorteio=[], pool=cand.slice();
   while(sorteio.length<3&&pool.length){ const tot=pool.reduce((t,c)=>t+c.peso,0); let x=Math.random()*tot; const i=pool.findIndex(c=>(x-=c.peso)<=0); const c=pool.splice(i<0?0:i,1)[0]; sorteio.push(c); }
   if(sorteio.length&&Math.random()<0.07+((SIN.rm&&SIN.rm.talisma)||0)*0.1){ const c=escolha(sorteio.filter(c=>!c.asc&&c.s.pod[c.k]<=3)); if(c){ c.dourada=true; c.raridade="lendario"; c.titulo="✦ "+c.titulo.replace(/(\d) → (\d)/,(m,a)=>`${a} → ${Math.min(5,+a+2)}`); { const lv=c.s.pod[c.k], p2=Math.min(5,lv+2); c.texto=c.texto.replace(pipsPoder(lv,lv+1),pipsPoder(lv,p2)).replace(numerosPoder(c.s,c.k,lv,lv+1),numerosPoder(c.s,c.k,lv,p2)); } c.texto+=" <b>Carta dourada: +2 níveis!</b>"; } }
@@ -111,7 +115,7 @@ function cartasNivel(){ const eq=ativos(), maxN=Math.max(...eq.map(s=>s.nivel)),
 function aplicarCartaNivel(c){ const s=c.s;
   // escolha com efeito visível na hora: o monstro brilha, solta uma onda da cor do elemento e mostra o ganho
   if(J&&!SIM.ativo&&s.x!=null){ s._pop=1; const cor=COR[elementoDe(s)]; anel(s.x,s.y,30,cor,.5); particulas(s.x,s.y,cor,18,90,2); luzFlash(s.x,s.y,cor,60,0.4); texto(s.x,s.y-20,c.asc?"Ascensão!":"Mais forte!",cor,14); }
-  if(c.asc){ aplicarNivel(s,1); return proximaEscolha(); }
+  if(c.asc){ s.asc=s.asc||{d:0,c:0,v:0}; s.asc[c.asc]=(s.asc[c.asc]||0)+1; aplicarNivel(s,1); if(J) calcularSinergia(); return proximaEscolha(); }
   const vezes=c.dourada? Math.min(2,5-s.pod[c.k]) : 1; let mod=false;
   for(let i=0;i<vezes;i++){ s.pod[c.k]++; aplicarNivel(s,1); if(c.k!=="b"&&s.pod[c.k]===3&&s.mod[c.k]==null) mod=true; }
   if(c.dourada){ som("jackpot"); if(J) luzFlash(J.jogador.x,J.jogador.y,"#ffd34a",90,0.6); }
@@ -486,7 +490,7 @@ function aplicarPortal(u,rec){
     texto:`${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome} · ${D.linhagens[l.linhagem].nome}`,
     acao:()=>{ const vazio=R.selos.find(s=>!s.mon); if(vazio){ const o=ativos(); vazio.nivel=Math.max(1,Math.round(o.reduce((t,s)=>t+s.nivel,0)/o.length*0.6)); vazio.mon={id,rar:"raro",ramo:null}; } else R.reserva.push({id,rar:"raro",ramo:null}); seguir(); } }; }));
 }
-function salvarRun(){ RUN_SALVA=JSON.parse(JSON.stringify({...R, selos:R.selos.map(s=>({nivel:s.nivel,pod:s.pod,mod:s.mod,esp:s.esp??null,mon:s.mon,trocaCd:0}))})); gravar(); }
+function salvarRun(){ RUN_SALVA=JSON.parse(JSON.stringify({...R, selos:R.selos.map(s=>({nivel:s.nivel,pod:s.pod,mod:s.mod,esp:s.esp??null,asc:s.asc||null,mon:s.mon,trocaCd:0}))})); gravar(); }
 function carregarRun(s){ R=JSON.parse(JSON.stringify(s)); R.st=R.st||novoSt(); }
 // resumo da run na tela de fim: de onde veio o dano, a reação mais usada e o que mais machucou (com uma dica para a próxima)
 function resumoRun(){ const st=R.st||{}, pf=st.porFonte||{}, tot=Object.values(pf).reduce((a,b)=>a+b,0); if(!(tot>0)) return "";

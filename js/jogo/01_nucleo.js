@@ -268,14 +268,16 @@ function calcularSinergia(){
 // ajuste fino por classe, a partir de 40 partidas simuladas: assassino, xamã, caçador e invocador chegavam ~2 mapas
 // menos fundo que guerreiro, guardião e místico (ver docs/EQUILIBRIO_SIMULACOES.md)
 const AJUSTE_CLASSE={assassino:1.3, xama:1.2, cacador:1.12, invocador:1.08, mago:0.98, guerreiro:1.04, guardiao:0.93, mistico:0.96};
+const ASC0={d:0,c:0,v:0};
 function atrib(s){
   const l=L(s), b=D.classes[l.classe].base, e=est(s), eb=estBase(s);
   const md=MULT[e]*(1+DIF.nivelAtrib*Math.max(0,s.nivel-NIV[eb]));
   const r=ramoObj(s), fd=r?D.regras.ramos[r.tipo].dano:1, fv=r?D.regras.ramos[r.tipo].vida:1, rar=RAR_BONUS[s.mon.rar];
   const elo=R.elos.some(n=>D.elos.find(x=>x.nome===n&&(x.a===s.mon.id||x.b===s.mon.id)))?1.2:1;
+  const asc=s.asc||ASC0, ad=1+0.05*(asc.d||0), ac=1+0.03*(asc.c||0), av=1+0.06*(asc.v||0);   // caminhos da Ascensão (ASCENSAO em 03_progressao.js)
   const desp=J&&J.desp>0, buff=J&&J.buffCad>0?1.3:1, furia=s.furia>0?2:1, canto=J&&J.canto>0?1.35:1, furiaD=s.furia>0&&s.furiaMod===1?1.25:1;
-  return { dano:b.dano*(AJUSTE_CLASSE[l.classe]||1)*md*fd*rar*(1+0.2*(s.pod.b-1))*SIN.dano*elo*(desp?D.despertar.dano:1)*(J&&J.fervor>0?1.25:1)*furiaD*(J&&J.grito>0?1.6:1)*(J&&J.soloJog==="sombra"&&elementoDe(s)==="sombra"?1.2:1),
-           cad:b.cadencia*(1+0.05*(s.pod.b-1))*SIN.cad*elo*(desp?D.despertar.cadencia:1)*buff*furia*canto*(J&&J.totemAnc>0?1.4:1),
-           vida:b.vida/(1-b.defesa)*md*fv*rar, cura:(b.cura||0)*md*rar };
+  return { dano:b.dano*(AJUSTE_CLASSE[l.classe]||1)*md*fd*rar*ad*(1+0.2*(s.pod.b-1))*SIN.dano*elo*(desp?D.despertar.dano:1)*(J&&J.fervor>0?1.25:1)*furiaD*(J&&J.grito>0?1.6:1)*(J&&J.soloJog==="sombra"&&elementoDe(s)==="sombra"?1.2:1),
+           cad:b.cadencia*ac*(1+0.05*(s.pod.b-1))*SIN.cad*elo*(desp?D.despertar.cadencia:1)*buff*furia*canto*(J&&J.totemAnc>0?1.4:1),
+           vida:b.vida/(1-b.defesa)*md*fv*rar*av, cura:(b.cura||0)*md*rar };
 }
 const fNivel=lv=>1+0.25*Math.max(0,lv-1), fRecarga=lv=>1-0.06*Math.max(0,lv-1);

@@ -383,7 +383,7 @@ const tal={ dano:()=>(1+valTal("dano"))*(1+MOD("dano")), defesa:()=>Math.max(0.5
   coleta:()=>1+valTal("coleta"), regen:()=>valTal("regen"), duracao:()=>1+valTal("duracao")+passiva("duracao"), projeteis:()=>{ const lv=nivTal("espelho"); return (lv>=2?1:0)+(lv>=5?1:0); },
   velocidade:()=>(1+valTal("velocidade"))*(1+MOD("velocidade")), critico:()=>valTal("critico")+MOD("critico"), xp:()=>(1+valTal("xp")+valTal("risco")*1.25)*(1+MOD("xp")), riscoVida:()=>1+valTal("risco"), riscoVel:()=>1+valTal("risco")*0.5 };
 function talismasLiberados(){ const T=PD().talismas; return Object.keys(T).filter(id=>T[id].inicial||(META.talismas||[]).includes(id)||SIM.tudoLiberado); }
-function efeitoTalismaTxt(t,lv){ const v=t.valor*lv*100, sinal=t.efeito==="defesa"||t.efeito==="recarga"? "−" : "+"; return lv? `${sinal}${Math.round(v)}%` : "0%"; }
+function efeitoTalismaTxt(t,lv){ const v=t.valor*lv*100, sinal=t.efeito==="defesa"||t.efeito==="recarga"? "−" : "+"; return lv? `${sinal}${v<10&&Math.abs(v-Math.round(v))>0.04? v.toFixed(1).replace(".",",") : Math.round(v)}%` : "0%"; }   // valores pequenos (0,2% por nível) apareciam como "0% → 0%"
 function cartaTalisma(){ if(SIM.semTalismas||Math.random()>=PD().chance_carta+passiva("carta_extra")*0.35+((SIN.rm&&SIN.rm.talisma)||0)) return null; const tem=Object.keys(R.talismas||{}), cheio=tem.length>=PD().encaixes;
   const ops=talismasLiberados().filter(id=> cheio? (tem.includes(id)&&nivTal(id)<5) : nivTal(id)<5); if(!ops.length) return null;
   const util=ops.filter(id=>PD().despertos.some(d=>d.talisma===id&&ativos().some(s=>L(s).classe===d.classe)));   // prefere os que abrem Desperto da equipe

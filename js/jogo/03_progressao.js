@@ -488,13 +488,21 @@ function aplicarPortal(u,rec){
 }
 function salvarRun(){ RUN_SALVA=JSON.parse(JSON.stringify({...R, selos:R.selos.map(s=>({nivel:s.nivel,pod:s.pod,mod:s.mod,esp:s.esp??null,mon:s.mon,trocaCd:0}))})); gravar(); }
 function carregarRun(s){ R=JSON.parse(JSON.stringify(s)); R.st=R.st||novoSt(); }
+// resumo da run na tela de fim: de onde veio o dano, a reação mais usada e o que mais machucou (com uma dica para a próxima)
+function resumoRun(){ const st=R.st||{}, pf=st.porFonte||{}, tot=Object.values(pf).reduce((a,b)=>a+b,0); if(!(tot>0)) return "";
+  const N={basico:["Ataque básico","#c8d0e0"],habilidade:["Habilidades","#7fc8ff"],reacao:["Reações","#ffb040"],especial:["Especiais","#c58cff"],despertar:["Despertar","#ffd34a"],combinado:["Combinado","#ff8ab0"],ambiente:["Ambiente","#9ff07a"]};
+  const linhas=Object.entries(pf).map(([k,v])=>[k,v/tot*100]).filter(([,q])=>q>=2).sort((a,b)=>b[1]-a[1]).slice(0,5)
+    .map(([k,q])=>`<div class="rd-linha"><span>${(N[k]||[k])[0]}</span><i><b style="width:${Math.max(3,Math.round(q))}%;background:${(N[k]||[0,"#c8d0e0"])[1]}"></b></i><em>${Math.round(q)}%</em></div>`).join("");
+  const re=Object.entries(st.reacoes||{}).sort((a,b)=>b[1]-a[1])[0], rec=(st.recContato||0)+(st.recBala||0), pc=rec>0? st.recContato/rec : 0;
+  const dica= rec<=0? "" : pc>0.65? "A maior parte do dano que você levou veio de <b>encostar na horda</b>: guarde a esquiva para atravessar o cerco." : pc<0.4? "A maior parte do dano que você levou veio de <b>golpes e projéteis</b>: saia das marcas no chão antes do golpe." : "Você levou dano tanto da horda quanto dos golpes: troque de lugar antes de ficar cercado.";
+  return `<div class="resumo-dano"><div class="rd-titulo">De onde veio o seu dano</div>${linhas}${re?`<div class="rd-nota">Reação mais usada: <b>${re[0]}</b> (${re[1]}×)</div>`:""}${dica?`<div class="rd-nota">${dica}</div>`:""}</div>`; }
 function derrota(){
   rodando=false; if(SIM.aoDerrota){ SIM.aoDerrota(); return; } const ess=Math.round((R.essenciaRun+Math.floor(R.abates/15))*(1+passiva("essencia"))*(1+MOD("ouro"))*relMods().ess*bonusLoja("ganancia")); META.essencia+=ess; RUN_SALVA=null; gravar();
   // fim de run que puxa para a próxima: recorde, quanto falta para a próxima melhoria e atalho para o Santuário
   const recorde=R.profundidade>(R.recordeAntes??0)&&R.profundidade>0;
   const prox=LOJA.filter(it=>nivelLoja(it.id)<it.max).sort((a,b)=>precoLoja(a)-precoLoja(b))[0], podem=lojaAcessivel();
   const dica= podem.length? `Dá para comprar <b>${podem.length}</b> melhoria${podem.length>1?"s":""} no Santuário agora.` : prox? `Faltam <b>${precoLoja(prox)-META.essencia}</b> de Essência para ${prox.nome}.` : "";
-  mostrarCartas(recorde?"Novo recorde!":"A equipe caiu", `Profundidade: <b>${R.profundidade}</b> mapa${R.profundidade===1?"":"s"}${recorde?" (seu melhor)":` · recorde ${META.recorde}`} · Abates: ${R.abates} · Maior combo: ${J.comboMax}<br>Essência ganha: <b>+${ess}</b> (total ${META.essencia}). ${dica}`,
+  mostrarCartas(recorde?"Novo recorde!":"A equipe caiu", `Profundidade: <b>${R.profundidade}</b> mapa${R.profundidade===1?"":"s"}${recorde?" (seu melhor)":` · recorde ${META.recorde}`} · Abates: ${R.abates} · Maior combo: ${J.comboMax}<br>Essência ganha: <b>+${ess}</b> (total ${META.essencia}). ${dica}${resumoRun()}`,
     [...(podem.length? [{titulo:"Ir ao Santuário", raridade:"lendario", texto:"Gastar a Essência em melhorias permanentes.", acao:()=>telaSantuario()}] : []),
      {titulo:"Nova run", raridade:podem.length?"comum":"raro", texto:"Fechar um novo Pacto agora.", acao:()=>telaPacto()},
      {titulo:"Voltar ao Nexo", texto:"Ir para o menu.", acao:()=>menu()}],{fundo:recorde?"ui__vitoria":"ui__derrota"});

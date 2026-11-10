@@ -70,7 +70,10 @@ const DIF={vida:1.33, dano:1.48, danoBase:11, hp:38, spawn:0.15, base:1.6, cresc
   mini:80, chefe:560, guardiao:760, chefe1:0.5, chefeQueda:0.12, rampa:2.0, rampaK:2.2,
   // horda: quantos inimigos o diretor quer na tela = (hordaBase + mapa*hordaProf + segundos*(hordaT + mapa*hordaTProf)) * horda, até hordaMax.
   // horda é a intensidade geral (também multiplica os nascimentos); hordaVida, hordaDano e hordaXp valem só para inimigos comuns
-  horda:1, hordaBase:7, hordaProf:7, hordaT:0.3, hordaTProf:0.04, hordaMax:120, hordaVida:1, hordaDano:1, hordaXp:1};   /* mais difícil (o jogo estava fácil): mais dano, mais inimigos desde o começo e rampa inicial mais forte */   // vida de mini-chefe, chefe e Guardião da Era (em inimigos comuns); o 1º chefe leva chefe1 disso
+  // Valores escolhidos por simulação (docs/EQUILIBRIO_SIMULACOES.md): 1,6x mais inimigos, cada um com 62% da vida, 80% do dano e 62% das
+  // recompensas. A "massa" da horda e o ritmo de níveis ficam iguais, os abates por minuto dobram e a tela fica menos tempo vazia.
+  // Acima disso (2,4x) os abates não sobem mais e aparecem mortes no primeiro mapa
+  horda:1.6, hordaBase:7, hordaProf:7, hordaT:0.3, hordaTProf:0.04, hordaMax:190, hordaVida:0.62, hordaDano:0.8, hordaXp:0.62};   /* mais difícil (o jogo estava fácil): mais dano, mais inimigos desde o começo e rampa inicial mais forte */   // vida de mini-chefe, chefe e Guardião da Era (em inimigos comuns); o 1º chefe leva chefe1 disso
 // ameaças que crescem com a profundidade: começo suave, fim duro
 const velRapido=()=>Math.min(DIF.rapidoMax, DIF.rapido+DIF.rapidoCresc*R.profundidade);
 const chanceFrente=()=>Math.min(0.65, DIF.frente+DIF.frenteCresc*R.profundidade);
@@ -96,7 +99,7 @@ function spawnInimigo(kForcado){
   const e=J.inimigos[J.inimigos.length-1]; e.xpF=fatorXPDiretor()*DIF.hordaXp; if(R.mods){ e.max*=1+MOD("inimigoVida"); e.hp=e.max; e.v*=1+MOD("inimigoVel"); } if((R.talismas&&R.talismas.mascara)||custo("risco")){ e.max*=tal.riscoVida()*(1+custo("risco")); e.hp=e.max; e.v*=tal.riscoVel(); } e.cor=mistura(COR[el],["#d8473b","#8a4fd0","#e0904a"][k],0.35); prepararCriatura(e,defInimigo(k),[17,20,23][k]);
 }
 // Onda de cerco: um anel de inimigos fecha em volta do jogador (use a esquiva para atravessar)
-function ondaCerco(){ const n=Math.round(DIF.ondaN*(1+R.profundidade*0.15)), P=J.jogador, r=Math.min(VW,VH)*0.42;
+function ondaCerco(){ const n=Math.min(Math.round(DIF.ondaN*(1+R.profundidade*0.15)),Math.max(8,DIF.max+20-J.inimigos.length)), P=J.jogador, r=Math.min(VW,VH)*0.42;
   for(let i=0;i<n;i++){ spawnInimigo(); const e=J.inimigos[J.inimigos.length-1], a=i/n*Math.PI*2; e.x=P.x+Math.cos(a)*r; e.y=P.y+Math.sin(a)*r; e.v*=1.15; }
   tremor(3); }
 function spawnChefe(mini){
@@ -212,8 +215,8 @@ function morrer(e){
   if(!SIM.ativo){ J.janelaAbates=(J.janelaAbates||[]).filter(t=>J.t-t<1.4); J.janelaAbates.push(J.t); const n=J.janelaAbates.length;
     if(n===8||n===15||n===25||n===40){ const nome=n>=40?"Aniquilação":n>=25?"Carnificina":n>=15?"Massacre":"Sequência"; texto(J.jogador.x,J.jogador.y-34,`${nome} x${n}!`,n>=25?"#ff6a8a":n>=15?"#ffb040":"#ffe680",n>=25?20:16);
       som(n>=25?"jackpot":"combo"); soltarMoedas(e.x,e.y,Math.floor(n/8)); luzFlash(J.jogador.x,J.jogador.y,"#ffd34a",60,0.4); } }
-  R.abates++; diaria("abates"); if(R.ancestral&&R.ancestral.estado==="chocando") R.ancestral.prog+=D.ancestral_regras.por_abate_seg; if(R.st.primeiroAbate==null) R.st.primeiroAbate=J.t; J.combo++; J.comboT=D.combo.janela_seg; J.comboMax=Math.max(J.comboMax,J.combo);
-  J.ult=Math.min(100,J.ult+(e.chefe?25:e.mini?10:e.elite?2:0.07)*(1+Math.min(1,J.combo/200))*(1+MOD("despertar")));
+  R.abates++; diaria("abates"); if(R.ancestral&&R.ancestral.estado==="chocando") R.ancestral.prog+=D.ancestral_regras.por_abate_seg*DIF.hordaXp; if(R.st.primeiroAbate==null) R.st.primeiroAbate=J.t; J.combo++; J.comboT=D.combo.janela_seg; J.comboMax=Math.max(J.comboMax,J.combo);
+  J.ult=Math.min(100,J.ult+(e.chefe?25:e.mini?10:e.elite?2:0.07*DIF.hordaXp)*(1+Math.min(1,J.combo/200))*(1+MOD("despertar")));
   const cor=COR[e.el]; particulas(e.x,e.y,cor,e.chefe?60:e.elite?22:9,e.chefe?150:90,e.elite?2:1);
   if(e.elite){ tremor(e.chefe?10:4); parar(e.chefe?0.2:0.05); rajada(e.x,e.y,e.chefe?80:35,e.chefe?2:1); }
   const val=(e.chefe?40:e.mini?15:e.elite?8:1.6*(1+(e.tipo===2?1:0)))*(1+0.12*R.profundidade)*(e.xpF||1);   // inimigo comum vale mais: a horda é menor   // xpF: inimigos extras do diretor valem menos
@@ -221,7 +224,7 @@ function morrer(e){
   if(e.marca>0){ anel(e.x,e.y,24,"#c070ff",.35); emArea(e.x,e.y,24,o=>danoSimples(o,e.marca)); }
   if(e.elite&&!e.chefe&&!e.mini&&Math.random()<(e.daOnda?0.1:0.3)) darItem(itemUtil(["incenso","doce","pena","doce"]), e);
   // moedas de Essência e baús: recompensa pequena e frequente, e de vez em quando uma grande
-  { const nm=e.chefe?24:e.mini?10:e.elite?3+Math.floor(Math.random()*3):(Math.random()<0.035?1:0); soltarMoedas(e.x,e.y,nm); }
+  { const nm=e.chefe?24:e.mini?10:e.elite?3+Math.floor(Math.random()*3):(Math.random()<0.035*DIF.hordaXp?1:0); soltarMoedas(e.x,e.y,nm); }
   if(e.mini||(e.elite&&!e.chefe&&!e.daOnda&&Math.random()<0.1)) soltarBau(e.x,e.y,"prata");
   if(e.mini) evento("mini"); if(e.elite&&!e.chefe&&!e.mini) evento("elite"); if(!e.chefe&&!e.mini&&!e.clone&&!e.especial&&e.tipo<=2) evento("abate:"+e.tipo); if(e.especial&&e.roubou) evento("saci");
   if(e.mini){ darItem(itemUtil(["incenso","incenso","doce"]),e); if(!bauDesperto(e.x,e.y)) darItem(itemUtil(["pedra","doce","pena"]),e); }   // o baú entrega o Desperto no lugar do item

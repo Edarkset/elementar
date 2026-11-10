@@ -232,7 +232,7 @@ let hudQuadro=0;
 function hud(){
   if(SIM.ativo) return;
   if((hudQuadro=(hudQuadro+1)%3)!==0&&!pausado) return;   // 20 vezes por segundo bastam: mexer na página todo quadro custava ~5% da lógica
-  { const ev=R.essenciaRun+Math.floor(R.abates/15), el=$("essHud"); if(el&&el._v!==ev){ el._v=ev; el.textContent=ev; el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); } }
+  { const ev=R.essenciaRun+Math.floor(R.abates*DIF.hordaXp/15), el=$("essHud"); if(el&&el._v!==ev){ el._v=ev; el.textContent=ev; el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); } }
   const rest=Math.max(0,MAPA_SEG-J.t); $("tempo").textContent=J.chefeFeito?"Chefe!":`${Math.floor(rest/60)}:${String(Math.floor(rest%60)).padStart(2,"0")}`;
   $("barVida").style.width=`${Math.max(0,J.vida/J.vidaMax*100)}%`; $("barEscudo").style.width=`${Math.min(100,J.escudo/J.vidaMax*100)}%`;
   $("barXp").style.width=`${J.xp/J.xpProx*100}%`; if(J.pulsoXp>0){ J.pulsoXp-=0.24; $("barXp").parentElement.classList.toggle("pulso",J.pulsoXp>0); } $("ultFill").style.height=`${J.desp>0?J.desp/D.despertar.duracao_seg*100:J.ult}%`; $("btnUlt").classList.toggle("pronto",J.ult>=100&&J.desp<=0); { const b=$("btnBolsa"); if(b){ const u=itemUsavelAgora(); if(b._u!==u){ b._u=u; b.classList.toggle("util",u); } } }

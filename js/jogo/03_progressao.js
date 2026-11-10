@@ -501,7 +501,7 @@ function resumoRun(){ const st=R.st||{}, pf=st.porFonte||{}, tot=Object.values(p
   const dica= rec<=0? "" : pc>0.65? "A maior parte do dano que você levou veio de <b>encostar na horda</b>: guarde a esquiva para atravessar o cerco." : pc<0.4? "A maior parte do dano que você levou veio de <b>golpes e projéteis</b>: saia das marcas no chão antes do golpe." : "Você levou dano tanto da horda quanto dos golpes: troque de lugar antes de ficar cercado.";
   return `<div class="resumo-dano"><div class="rd-titulo">De onde veio o seu dano</div>${linhas}${re?`<div class="rd-nota">Reação mais usada: <b>${re[0]}</b> (${re[1]}×)</div>`:""}${dica?`<div class="rd-nota">${dica}</div>`:""}</div>`; }
 function derrota(){
-  rodando=false; if(SIM.aoDerrota){ SIM.aoDerrota(); return; } const ess=Math.round((R.essenciaRun+Math.floor(R.abates*DIF.hordaXp/15))*(1+passiva("essencia"))*(1+MOD("ouro"))*relMods().ess*bonusLoja("ganancia")); META.essencia+=ess; RUN_SALVA=null; gravar();
+  rodando=false; if(SIM.aoDerrota){ SIM.aoDerrota(); return; } const ess=Math.round((R.essenciaRun+Math.floor((R.abatesPeso??R.abates)/15))*(1+passiva("essencia"))*(1+MOD("ouro"))*relMods().ess*bonusLoja("ganancia")); META.essencia+=ess; RUN_SALVA=null; gravar();
   // fim de run que puxa para a próxima: recorde, quanto falta para a próxima melhoria e atalho para o Santuário
   const recorde=R.profundidade>(R.recordeAntes??0)&&R.profundidade>0;
   const prox=LOJA.filter(it=>nivelLoja(it.id)<it.max).sort((a,b)=>precoLoja(a)-precoLoja(b))[0], podem=lojaAcessivel();

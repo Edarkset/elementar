@@ -70,7 +70,7 @@ function atualizar(dt){
   if(J.regen>0) curar(J.vidaMax*J.regenV*dt);
   // spawns: inimigos, ovos e filhotes
   if(!J.fim){
-    if(J.t<MAPA_SEG){ J.spawn+=dt*(DIF.base+J.t*DIF.cresc)*(1+R.profundidade*DIF.spawn)*DIF.horda*multDiretor()*(1+MOD("horda")); while(J.spawn>1&&J.inimigos.length<DIF.max){ J.spawn--; spawnInimigo(); }
+    if(J.t<MAPA_SEG){ J.spawn+=dt*(DIF.base+J.t*DIF.cresc)*(1+R.profundidade*DIF.spawn)*hordaF("horda")*multDiretor()*(1+MOD("horda")); while(J.spawn>1&&J.inimigos.length<DIF.max){ J.spawn--; spawnInimigo(); }
       atualizarDiretor(dt); atualizarEventos(dt); }   // o diretor de horda decide densidade e ondas especiais (diretor.js)
     if(!J.miniFeito&&J.t>=MINI_SEG){ J.miniFeito=true; spawnChefe(true); }
     if(!J.chefeFeito&&J.t>=MAPA_SEG){ J.chefeFeito=true; spawnChefe(false); }

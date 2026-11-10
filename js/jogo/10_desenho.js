@@ -32,9 +32,8 @@ function desenhar(dt){
   desenharSolo(ox,oy); desenharFauna(ox,oy,"agua"); desenharCenaChao(ox,oy); desenharFauna(ox,oy,"chao"); desenharPerigos(ox,oy); desenharVfx(ox,oy,"chao"); desenharCadaveres(ox,oy); desenharQuedasAbismo(ox,oy);
   const sombra=(x,y,w)=>sombraContato(x,y+0.5,w*1.2,0.55);
   // zonas no chão
-  for(const z of J.zonas){ if(z.tipo==="circulo"||z.tipo==="rastro"||z.tipo==="chuva"){ lg.globalAlpha=0.18+0.06*Math.sin(J.t*8); lg.fillStyle=z.cor; lg.beginPath(); lg.arc(z.x-ox,z.y-oy,z.r,0,Math.PI*2); lg.fill(); lg.globalAlpha=1; }
-    if(z.tipo==="portal"){ lg.strokeStyle=z.cor; lg.beginPath(); lg.arc(z.x-ox,z.y-oy,6+Math.sin(J.t*10)*1.5,0,Math.PI*2); lg.stroke(); } }
-  for(const a of J.armadilhas){ lg.fillStyle=a.cor; lg.fillRect(Math.round(a.x-ox)-1,Math.round(a.y-oy)-1,3,3); lg.fillStyle="#120e1a"; lg.fillRect(Math.round(a.x-ox),Math.round(a.y-oy),1,1); }
+  for(const z of J.zonas) if(z.tipo!=="espirito") desenharZona(z,ox,oy);
+  for(const a of J.armadilhas) desenharArmadilha(a,ox,oy);
   // ovos e filhotes
   for(const o of J.ovosMapa){ const s=spriteOvo(LINHA[o.id].elemento,o.rar), b=Math.round(Math.sin(J.t*5+o.x)*1.5); sombra(o.x-ox,o.y-oy+6,8);
     if(o.rar!=="comum"){ const lend=o.rar==="lendario", cor=lend?"#ffd34a":"#8ab8ff", alt=lend?130:75, pul=0.5+0.5*Math.sin(J.t*4+o.x), X=o.x-ox, Y=o.y-oy;
@@ -69,7 +68,7 @@ function desenhar(dt){
   desenharAltar(ox,oy);
   const fila=[]; desenharCenaObjetos(ox,oy,fila);
   for(const e of J.inimigos) fila.push({y:e.y+(e.tam||8)*0.63-(e.z||0)*0,f:()=>desenharInimigo(e,ox,oy,P)});
-  for(const c of J.crias){ const t=c.gigante?6:3; lg.fillStyle=tom(c.cor,1.2); lg.fillRect(Math.round(c.x-ox)-t/2,Math.round(c.y-oy)-t/2,t,t); lg.fillStyle="#120e1a"; lg.fillRect(Math.round(c.x-ox),Math.round(c.y-oy),1,1); }
+  for(const c of J.crias) fila.push({y:c.y+2,f:()=>desenharCria(c,ox,oy)});   // servos entram na ordem de profundidade (antes ficavam embaixo de tudo)
   for(const f of J.fantasmas){ lg.globalAlpha=f.vida*3; lg.drawImage(f.spr,Math.round(f.x-ox-f.spr.width/2),Math.round(f.y-oy-f.spr.height/2)); } lg.globalAlpha=1;
   // o herói do centro é a Lenda (ou o deus) escolhida no começo da run; sem Lenda, o Invocador básico
   fila.push({y:P.y+6,f:()=>{ sombra(P.x-ox,P.y-oy+6,13); if(J.invuln>0) lg.globalAlpha=Math.floor(J.t*14)%2? .6 : 1; if(!(LENDA()&&desenharLenda(ox,oy))) desenharInvocador(P.x-ox,P.y-oy); lg.globalAlpha=1; }});
@@ -80,7 +79,7 @@ function desenhar(dt){
   // luzes aditivas
   lg.globalCompositeOperation="lighter";
   for(const p of J.proj) desenharProjetil(p,ox,oy);
-  for(const z of J.zonas) if(z.tipo==="espirito"){ lg.fillStyle=z.cor; lg.globalAlpha=.4; lg.fillRect(Math.round(z.x-ox)-3,Math.round(z.y-oy)-3,7,7); lg.globalAlpha=1; lg.fillRect(Math.round(z.x-ox)-1,Math.round(z.y-oy)-1,3,3); }
+  for(const z of J.zonas) if(z.tipo==="espirito") desenharEspirito(z,ox,oy);
   for(const b of J.balas) desenharBala(b,ox,oy);
   for(const p of J.parts) desenharParticula(p,ox,oy);
   // anéis e raios com halo: traço largo e fraco por baixo, fino e forte por cima
@@ -158,7 +157,8 @@ function desenharSelo(s,ox,oy,sombra){ movSelo(s);
   if(anim&&s._prox&&s._mix>0.05){ const a0=lg.globalAlpha; lg.globalAlpha=a0*s._mix; desenharSprite(s._prox,-w/2,-peS,w,h); lg.globalAlpha=a0; }   // quadro intermediário: mistura com o próximo
   if(s._pop>0){ lg.globalCompositeOperation="lighter"; lg.globalAlpha=Math.min(1,s._pop*1.2)*0.85; lg.drawImage(branco(spr),-w/2,-peS,w,h); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1; }
   lg.restore();
-  if(s.furia>0){ lg.fillStyle="#ff5a4a"; lg.fillRect(Math.round(x)-1,Math.round(pe-alvo)-3,2,1); } }
+  if(s.furia>0&&J.cena){ const pf=0.5+0.5*Math.sin(t*14+s.x); lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.3+0.2*pf; lg.drawImage(bolhaCor("#ff5a4a"),x-alvo*0.7,pe-alvo*1.05,alvo*1.4,alvo*1.2); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1;
+    if(QUAL>0&&Math.random()<0.25) J.parts.push({x:s.x+rnd(-5,5),y:s.y+rnd(-2,6),vx:rnd(-6,6),vy:-rnd(25,50),vida:rnd(.3,.6),max:.6,cor:Math.random()<.5?"#ffb040":"#ff5a4a",tam:1,forma:"brasa",g:-30}); } }
 // totem do Xamã: poste de madeira esculpido com rosto, asas laterais e uma gema na cor do elemento que pulsa e ilumina o chão
 function desenharTotem(t,ox,oy){ const x=t.x-ox, y=t.y-oy, tm=J.t+(t.x%7), pul=0.5+0.5*Math.sin(tm*4), cor=t.cor||"#9ff07a";
   sombraContato(x,y+0.5,9,0.5);

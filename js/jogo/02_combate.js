@@ -264,31 +264,31 @@ function ataqueBasico(s,a,el,cor){
 }
 // Habilidades 1 e 2: recarga base em segundos; o modificador é escolhido no nível 3.
 const HAB={
-  guardiao:{ h1:{cd:7, f(s,a,el,cor,lv,mod){ emArea(s.x,s.y,60,e=>{ e.x+=(s.x-e.x)*0.5; e.y+=(s.y-e.y)*0.5; if(mod===0) ferir(e,a.dano*2*fNivel(lv),el); }); J.reducao=3; anel(s.x,s.y,60,cor,.5); if(mod===1) J.escudo=Math.min(J.vidaMax*0.4,J.escudo+J.vidaMax*0.1); tremor(2); }},
-             h2:{cd:10,f(s,a,el,cor,lv,mod){ const rr=mod===0?65:50; emArea(s.x,s.y,rr,e=>{ ferir(e,a.dano*2*fNivel(lv),el); const dx=e.x-s.x,dy=e.y-s.y,d=Math.hypot(dx,dy)||1; e.x+=dx/d*30; e.y+=dy/d*30; e.congela=mod===0?3.2:1; }); anel(s.x,s.y,rr,cor,.6); tremor(3);
-               if(mod===1) agendar(1,()=>{ emArea(s.x,s.y,55,e=>ferir(e,a.dano*4*fNivel(lv),el)); anel(s.x,s.y,55,"#ffffff",.5); tremor(4); }); }} },
+  guardiao:{ h1:{cd:7, f(s,a,el,cor,lv,mod){ emArea(s.x,s.y,60,e=>{ e.x+=(s.x-e.x)*0.5; e.y+=(s.y-e.y)*0.5; if(mod===0) ferir(e,a.dano*2*fNivel(lv),el); }); J.reducao=3; efPuxao(s.x,s.y,60,el); efCupula(J.jogador.x,J.jogador.y+4,15,el,1.1); if(mod===1) J.escudo=Math.min(J.vidaMax*0.4,J.escudo+J.vidaMax*0.1); tremor(2); }},
+             h2:{cd:10,f(s,a,el,cor,lv,mod){ const rr=mod===0?65:50; emArea(s.x,s.y,rr,e=>{ ferir(e,a.dano*2*fNivel(lv),el); const dx=e.x-s.x,dy=e.y-s.y,d=Math.hypot(dx,dy)||1; e.x+=dx/d*30; e.y+=dy/d*30; e.congela=mod===0?3.2:1; }); anel(s.x,s.y,rr,cor,.6); efMuralha(s.x,s.y,rr,el,mod===0?1.6:0.9); efImpactoChao(s.x,s.y,rr*0.7,el);
+               if(mod===1) agendar(1,()=>{ emArea(s.x,s.y,55,e=>ferir(e,a.dano*4*fNivel(lv),el)); efExplosao(s.x,s.y,55,el,true); tremor(4); }); }} },
   guerreiro:{ h1:{cd:5, f(s,a,el,cor,lv,mod){ const e=pontoDenso(s,90)||maisProximo(s,90); if(!e) return false; J.fantasmas.push({x:s.x,y:s.y,spr:spriteSelo(s),vida:.25}); const x0=s.x,y0=s.y; s.x=e.x; s.y=e.y;
-               const r=mod===1?50:30; emArea(e.x,e.y,r,o=>ferir(o,a.dano*2.5*fNivel(lv),el)); anel(e.x,e.y,r,cor,.4); tremor(3); particulas(e.x,e.y,cor,14,100);
+               const r=mod===1?50:30; emArea(e.x,e.y,r,o=>ferir(o,a.dano*2.5*fNivel(lv),el)); efRastroSalto(x0,y0,e.x,e.y,el); efImpactoChao(e.x,e.y,r,el); efExplosao(e.x,e.y,r*0.8,el,mod===1);
                if(mod===0) J.zonas.push({fonte:FONTE,tipo:"rastro",x:(x0+e.x)/2,y:(y0+e.y)/2,r:22,el,cor,dano:a.dano*0.8,vida:3}); }},
-              h2:{cd:12,f(s,a,el,cor,lv,mod){ s.furia=4+lv*0.5; s.furiaMod=mod; anel(s.x,s.y,18,"#ff5a4a",.5); texto(s.x,s.y-12,"Fúria!","#ff5a4a",14); }} },
+              h2:{cd:12,f(s,a,el,cor,lv,mod){ s.furia=4+lv*0.5; s.furiaMod=mod; anel(s.x,s.y,18,"#ff5a4a",.5); efEspiral(s.x,s.y,16,"fogo",0.8); luzFlash(s.x,s.y,"#ff5a4a",50,0.3); texto(s.x,s.y-12,"Fúria!","#ff5a4a",14); }} },
   assassino:{ h1:{cd:4, f(s,a,el,cor,lv,mod){ const alvos=[maisForte(s,120)]; if(mod===0) alvos.push(maisForte(s,120)); let ok=false;
-               for(const e of alvos){ if(!e||e.hp<=0) continue; ok=true; J.fantasmas.push({x:s.x,y:s.y,spr:spriteSelo(s),vida:.2}); s.x=e.x-3; s.y=e.y-3; ferir(e,a.dano*3*fNivel(lv),el,{crit:true}); if(mod===1){e.dot=a.dano; e.dotT=4;} }
+               for(const e of alvos){ if(!e||e.hp<=0) continue; ok=true; J.fantasmas.push({x:s.x,y:s.y,spr:spriteSelo(s),vida:.2}); efRastroSalto(s.x,s.y,e.x,e.y,el); efCortes(e.x,e.y-3,13,el,2); s.x=e.x-3; s.y=e.y-3; ferir(e,a.dano*3*fNivel(lv),el,{crit:true}); if(mod===1){e.dot=a.dano; e.dotT=4;} }
                if(ok) tremor(2); return ok; }},
-              h2:{cd:8, f(s,a,el,cor,lv,mod){ let n=0; for(const e of embaralhar(J.inimigos)){ if(e.hp<=0||dist2(s,e)>110*110) continue; e.marca=a.dano*3*fNivel(lv); if(mod===0&&!e.chefe&&!e.mini&&e.hp<e.max*0.25) danoSimples(e,e.hp+1); if(++n>=(mod===1?5:3)) break; } return n>0; }} },
-  cacador:{ h1:{cd:4, f(s,a,el,cor,lv,mod){ const e=maisProximo(s,150); if(!e) return false; const base=Math.atan2(e.y-s.y,e.x-s.x);
+              h2:{cd:8, f(s,a,el,cor,lv,mod){ let n=0; for(const e of embaralhar(J.inimigos)){ if(e.hp<=0||dist2(s,e)>110*110) continue; e.marca=a.dano*3*fNivel(lv); efMarca(e); if(mod===0&&!e.chefe&&!e.mini&&e.hp<e.max*0.25) danoSimples(e,e.hp+1); if(++n>=(mod===1?5:3)) break; } return n>0; }} },
+  cacador:{ h1:{cd:4, f(s,a,el,cor,lv,mod){ const e=maisProximo(s,150); if(!e) return false; const base=Math.atan2(e.y-s.y,e.x-s.x); efLeque(s.x,s.y,base,el);
                for(let i=0;i<5;i++){ const ang=base+(i-2)*0.2; J.proj.push({fonte:FONTE,x:s.x,y:s.y,vx:Math.cos(ang)*190,vy:Math.sin(ang)*190,dano:a.dano*1.3*fNivel(lv),el,cor,vida:1.3,perf:mod===0?5:1,ric:mod===1?3:0,r:2}); } }},
-            h2:{cd:9, f(s,a,el,cor,lv,mod){ for(let i=0;i<3;i++) J.armadilhas.push({fonte:FONTE,x:s.x+rnd(-30,30),y:s.y+rnd(-30,30),dano:a.dano*(mod===1?6:4.5)*fNivel(lv),el,cor,raiz:mod===0,vida:12}); }} },
+            h2:{cd:9, f(s,a,el,cor,lv,mod){ vfxSelo(s.x,s.y,el,26); for(let i=0;i<3;i++) J.armadilhas.push({fonte:FONTE,x:s.x+rnd(-30,30),y:s.y+rnd(-30,30),dano:a.dano*(mod===1?6:4.5)*fNivel(lv),el,cor,raiz:mod===0,vida:12}); }} },
   mago:{ h1:{cd:6, f(s,a,el,cor,lv,mod){ const e=pontoDenso(s,140); if(!e) return false;
-            if(mod===0){ for(let i=0;i<6;i++) agendar(i*0.12,()=>{ const x=e.x+rnd(-28,28), y=e.y+rnd(-28,28); emArea(x,y,24,o=>ferir(o,a.dano*2*fNivel(lv),el)); anel(x,y,24,cor,.35); particulas(x,y,cor,8,70); tremor(1.5); }); }
-            else { const r=mod===1?70:40; emArea(e.x,e.y,r,o=>ferir(o,a.dano*(mod===1?5:3)*fNivel(lv),el)); anel(e.x,e.y,r,cor,.5); particulas(e.x,e.y,cor,26,130); tremor(mod===1?7:4); } }},
-         h2:{cd:12,f(s,a,el,cor,lv,mod){ J.zonas.push({fonte:FONTE,tipo:"circulo",x:J.jogador.x,y:J.jogador.y,r:55,amp:mod===0?1.6:1.3+0.05*lv,puxa:mod===1,cor,vida:5}); }} },
+            if(mod===0){ for(let i=0;i<6;i++){ const x=e.x+rnd(-28,28), y=e.y+rnd(-28,28); efQueda(x,y,el,i*0.12); agendar(0.18+i*0.12,()=>{ emArea(x,y,24,o=>ferir(o,a.dano*2*fNivel(lv),el)); efExplosao(x,y,24,el); tremor(1.5); }); } }
+            else { const r=mod===1?70:40; emArea(e.x,e.y,r,o=>ferir(o,a.dano*(mod===1?5:3)*fNivel(lv),el)); anel(e.x,e.y,r,cor,.5); efExplosao(e.x,e.y,r,el,mod===1); if(mod===1) efImpactoChao(e.x,e.y,r*0.7,el); tremor(mod===1?7:4); } }},
+         h2:{cd:12,f(s,a,el,cor,lv,mod){ J.zonas.push({fonte:FONTE,tipo:"circulo",el,x:J.jogador.x,y:J.jogador.y,r:55,amp:mod===0?1.6:1.3+0.05*lv,puxa:mod===1,cor,vida:5}); }} },
   invocador:{ h1:{cd:7, f(s,a,el,cor,lv,mod){ for(let i=0;i<4;i++) J.crias.push({fonte:FONTE,x:s.x+rnd(-8,8),y:s.y+rnd(-8,8),dano:a.dano*0.7*fNivel(lv),el,cor,vida:7,cd:0,kami:mod===0,guarda:mod===1}); particulas(s.x,s.y,cor,12,60); }},
               h2:{cd:14,f(s,a,el,cor,lv,mod){ const pos=[{x:s.x+20,y:s.y}]; if(mod===0) pos.push({x:s.x-20,y:s.y});
-               if(mod===1){ J.crias.push({fonte:FONTE,x:s.x,y:s.y,dano:a.dano*4*fNivel(lv),el,cor,vida:9,cd:0,gigante:true}); anel(s.x,s.y,20,cor,.5); return; }
-               pos.forEach(p=>J.zonas.push({fonte:FONTE,tipo:"portal",x:p.x,y:p.y,r:8,cor,el,dano:a.dano*(mod===0?0.85:0.6)*fNivel(lv),vida:5,cd:0})); }} },
-  mistico:{ h1:{cd:8, f(s,a,el,cor,lv,mod){ J.regen=4; J.regenV=0.03*fNivel(lv); J.regenMod=mod; anel(J.jogador.x,J.jogador.y,30,"#7fe0a0",.6); if(mod===1) J.buffCad=4; }},
+               if(mod===1){ J.crias.push({fonte:FONTE,x:s.x,y:s.y,dano:a.dano*4*fNivel(lv),el,cor,vida:9,cd:0,gigante:true}); anel(s.x,s.y,20,cor,.5); circuloInvocacao(s.x,s.y+3,el,22,0.9,true); efPilar(s.x,s.y+4,el,0.6,7); return; }
+               pos.forEach(p=>{ circuloInvocacao(p.x,p.y+2,el,13,0.8,false); luzFlash(p.x,p.y,cor,36,0.3); }); pos.forEach(p=>J.zonas.push({fonte:FONTE,tipo:"portal",x:p.x,y:p.y,r:8,cor,el,dano:a.dano*(mod===0?0.85:0.6)*fNivel(lv),vida:5,cd:0})); }} },
+  mistico:{ h1:{cd:8, f(s,a,el,cor,lv,mod){ J.regen=4; J.regenV=0.03*fNivel(lv); J.regenMod=mod; anel(J.jogador.x,J.jogador.y,30,"#7fe0a0",.6); efCura(30); if(mod===1) J.buffCad=4; }},
             h2:{cd:999,f(){ J.renascer=1; texto(J.jogador.x,J.jogador.y-18,"Renascer pronto","#fff3c4",13); }} },
-  xama:{ h1:{cd:8, f(s,a,el,cor,lv,mod){ J.canto=5; if(mod===0) J.fervor=5; anel(J.jogador.x,J.jogador.y,40,cor,.6); if(mod===1) emArea(J.jogador.x,J.jogador.y,45,e=>{const dx=e.x-J.jogador.x,dy=e.y-J.jogador.y,d=Math.hypot(dx,dy)||1; e.x+=dx/d*25; e.y+=dy/d*25;}); }},
+  xama:{ h1:{cd:8, f(s,a,el,cor,lv,mod){ J.canto=5; if(mod===0) J.fervor=5; efCanto(46,el); if(mod===1) emArea(J.jogador.x,J.jogador.y,45,e=>{const dx=e.x-J.jogador.x,dy=e.y-J.jogador.y,d=Math.hypot(dx,dy)||1; e.x+=dx/d*25; e.y+=dy/d*25;}); }},
          h2:{cd:10,f(s,a,el,cor,lv,mod){ J.zonas.push({fonte:FONTE,tipo:"espirito",x:J.jogador.x,y:J.jogador.y,r:4,ang:0,cor,el,el2:mod===0?escolha(ELS.filter(x=>x!==el)):null,cadeia:mod===1,dano:a.dano*1.2*fNivel(lv),vida:6,cd:0}); }} },
 };
 // força visual de um monstro: cresce com o estágio (filhote -> supremo), o nível do poder e a raridade.

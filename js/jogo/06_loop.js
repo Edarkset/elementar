@@ -126,7 +126,7 @@ function atualizar(dt){
   J.crias=J.crias.filter(c=>c.vida>0);
   for(const t of J.totens){ t.vida-=dt; t.cd-=dt; FONTE="basico"; if(t.cd<=0){ const e=maisProximo(t,80); if(e){ const dx=e.x-t.x, dy=e.y-t.y+4, d=Math.hypot(dx,dy)||1; J.proj.push({fonte:FONTE,alvoProp:e.ehProp?e:null,x:t.x,y:t.y-4,vx:dx/d*140,vy:dy/d*140,dano:t.dano,el:t.el,cor:t.cor,vida:1,perf:1,r:2}); } t.cd=.8; } }
   J.totens=J.totens.filter(t=>t.vida>0);
-  for(const a of J.armadilhas){ a.vida-=dt; FONTE=a.fonte||"habilidade"; const e=maisProximo(a,8); if(e){ a.vida=0; emArea(a.x,a.y,22,o=>{ ferir(o,a.dano,a.el); if(a.raiz) o.congela=2; }); anel(a.x,a.y,22,a.cor,.4); particulas(a.x,a.y,a.cor,12,90); tremor(2); } }
+  for(const a of J.armadilhas){ a.vida-=dt; FONTE=a.fonte||"habilidade"; const e=maisProximo(a,8); if(e){ a.vida=0; emArea(a.x,a.y,22,o=>{ ferir(o,a.dano,a.el); if(a.raiz) o.congela=2; }); anel(a.x,a.y,22,a.cor,.4); if(SIM.ativo) particulas(a.x,a.y,a.cor,12,90); else efExplosao(a.x,a.y,22,a.el,false); tremor(2); } }
   J.armadilhas=J.armadilhas.filter(a=>a.vida>0);
   for(const z of J.zonas){ z.vida-=dt; FONTE=z.fonte||"habilidade";
     if(z.tipo==="circulo"&&z.puxa) emArea(z.x,z.y,z.r,e=>{ e.x+=(z.x-e.x)*dt*1.5; e.y+=(z.y-e.y)*dt*1.5; });
@@ -162,8 +162,8 @@ function atualizar(dt){
   if(J.vida<=0&&temRel("Ovo de Koschei")&&!J.koschei){ J.koschei=true; J.vida=1; J.invuln=Math.max(J.invuln,1.5); anel(P.x,P.y,50,"#c8c8e0",.8); tremor(6); toast("Ovo de Koschei: a morte foi enganada!"); }
   if(J.vida<=0&&!lendaReviver()){
     if(J.renascer>0){ J.renascer=0; const mi=ativos().find(s=>L(s).classe==="mistico"&&s.pod.h2>0); const mod=mi?mi.mod.h2:null;
-      J.vida=J.vidaMax*(mod===1?0.7:0.4); anel(P.x,P.y,60,"#fff3c4",.8); tremor(8); toast("Renascer!");
-      if(mod===0){ emArea(P.x,P.y,70,e=>ferir(e,atrib(mi).dano*8,elementoDe(mi))); anel(P.x,P.y,70,"#ff8a3d",.7); particulas(P.x,P.y,"#ff8a3d",40,150,2); } }
+      J.vida=J.vidaMax*(mod===1?0.7:0.4); anel(P.x,P.y,60,"#fff3c4",.8); efPilar(P.x,P.y+6,"luz",1.0,14); efCirculo(P.x,P.y+6,40,"luz",1.1,true); tremor(8); toast("Renascer!");
+      if(mod===0){ emArea(P.x,P.y,70,e=>ferir(e,atrib(mi).dano*8,elementoDe(mi))); anel(P.x,P.y,70,"#ff8a3d",.7); efExplosao(P.x,P.y,70,"fogo",true); particulas(P.x,P.y,"#ff8a3d",24,150,2); } }
     else if(J.reviver>0){ J.reviver--; J.vida=J.vidaMax*0.5; toast("Ankh: a equipe se levanta!"); }
     else if(R.reviverMeta>0){ R.reviverMeta--; J.vida=J.vidaMax*0.5; J.invuln=Math.max(J.invuln,1.5); anel(P.x,P.y,60,"#ffd34a",.8); tremor(8); toast("Segunda Chance: a equipe se levanta!"); }
     else return derrota(); }

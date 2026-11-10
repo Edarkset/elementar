@@ -360,7 +360,7 @@ function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||
   lg.restore(); lg.globalAlpha=1;
   if(e.bebado>0&&Math.floor(J.t*4)%2){ lg.fillStyle="#ffb0c0"; lg.fillRect(Math.round(x)-2,Math.round(y-z-h*0.7),1,1); lg.fillRect(Math.round(x)+2,Math.round(y-z-h*0.75),1,1); }
   if(e.pavio>0&&Math.floor(J.t*12)%2){ lg.globalAlpha=.6; lg.drawImage(branco(spr),Math.round(x-w/2),Math.round(y-z-h*0.65),w,h); lg.globalAlpha=1; }
-  if(e.marca>0){ lg.fillStyle="#c070ff"; lg.fillRect(Math.round(x)-1,Math.round(y-z-h*0.65)-4,3,1); }
+  if(e.marca>0){ const my=y-z-h*0.35, g=J.t*2.5; lg.strokeStyle="#c070ff"; lg.lineWidth=0.9; lg.globalAlpha=0.9; for(let i=0;i<4;i++){ const t0=i*Math.PI/2+g; lg.beginPath(); lg.arc(x,my,5,t0,t0+0.7); lg.stroke(); } lg.globalAlpha=1; }   // mira do Assassino
   if(e.status){ lg.fillStyle=COR[e.status.el]; lg.fillRect(Math.round(x)-1,Math.round(y-z-h*0.65)-3,2,2); }
   if((e.elite||e.mini)&&!e.chefe){ lg.fillStyle="#000"; lg.fillRect(Math.round(x-w/3),Math.round(y-z-h*0.7)-6,Math.round(w*2/3),2); lg.fillStyle="#e06a5a"; lg.fillRect(Math.round(x-w/3),Math.round(y-z-h*0.7)-6,Math.round(w*2/3*Math.max(0,e.hp/e.max)),2); }
   // detalhes que dependem do quadro: escaravelho rolando a bolinha, faísca da bobina

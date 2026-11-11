@@ -151,7 +151,10 @@ function medirHud(){ const h=$("hud"); if(!h||!h.offsetHeight) return; HUD_BAIXO
 if(typeof ResizeObserver==="function") new ResizeObserver(medirHud).observe($("hud"));
 let R=null, J=null, rodando=false, pausado=false;
 // Ganchos para simulação e testes automatizados (não afetam o jogo normal)
-const SIM={ativo:false, entrada:null, aoDerrota:null, semEspeciais:false};
+// semArte: a simulação não pede nem usa imagens. Vários efeitos escolhem entre "com arte" e "sem arte" e gastam sorteios diferentes em
+// cada caso; com a arte chegando em momentos diferentes, a mesma semente dava partidas diferentes. O que existe no mapa (marcos,
+// construções) é decidido pela lista de artes, não pela imagem, então os obstáculos são os mesmos do jogo normal
+const SIM={ativo:false, entrada:null, aoDerrota:null, semEspeciais:false, semArte:false};
 let FONTE="basico";  // origem do dano corrente (básico, habilidade, especial, combinado, despertar, reação, ambiente)
 function agendar(seg,fn){ J.agenda.push({t:J.t+seg,fn}); }
 function novoSt(){ return {porFonte:{}, especiais:0, combinados:0, transformacoes:0, dano:0, golpes:0, superEf:0, poucoEf:0, recContato:0, recBala:0, reacoes:{}, ovos:0, chocados:0, capturas:0, trocas:0, itens:0, despertares:0, evolucoes:[0,0,0,0], mapas:[], primeiroAbate:null}; }

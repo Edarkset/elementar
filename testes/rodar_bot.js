@@ -8,10 +8,11 @@ const N=+arg('n',12), PAR=+arg('paralelo',4), MAPAS=+arg('mapas',12), SAIDA=arg(
   async function trab(){
     const ctx=await b.newContext({viewport:{width:900,height:600}}); const p=await ctx.newPage();
     p.on('pageerror',e=>console.error('ERRO pagina:',e.message));
-    await p.goto(URL); await p.waitForFunction(()=>typeof novaRun==='function'); await p.addScriptTag({url:'testes/bot.js'});
+    const pronto=()=>p.waitForFunction(()=>typeof novaRun==='function'&&typeof MANIFESTO!=='undefined'&&MANIFESTO);   // com a lista de artes carregada: ela decide o que existe no mapa
+    await p.goto(URL); await pronto(); await p.addScriptTag({url:'testes/bot.js'});
     while(prox<N){ const i=prox++; const sem=S0+i;
       await p.evaluate(()=>{ localStorage.clear(); });
-      await p.reload(); await p.waitForFunction(()=>typeof novaRun==='function'); await p.addScriptTag({url:'testes/bot.js'});
+      await p.reload(); await pronto(); await p.addScriptTag({url:'testes/bot.js'});
       const t0=Date.now();
       const r=await p.evaluate(([sem,m,dif,loja])=>{ if(loja==='max'){ META.loja={}; LOJA.forEach(it=>META.loja[it.id]=it.max); } return ElementarBot.rodar({semente:sem,maxMapas:m,dif:dif?JSON.parse(dif):null}); },[sem,MAPAS,DIF,LOJA]);
       res.push(r); require('fs').writeFileSync(SAIDA,JSON.stringify(res,null,1));   // grava a cada partida: uma bateria interrompida não se perde

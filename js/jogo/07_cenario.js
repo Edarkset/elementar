@@ -667,6 +667,9 @@ function desenharNuvens(ox,oy,soCriar){ const u=UNIV[R.universo]; if(!soCriar&&J
 // ================================================================ arte de cenário importada: chão, superfícies, marcos, objetos e efeitos dos chefes
 // Cada função devolve null quando a folha ainda não foi importada; aí o jogo continua com o desenho procedural.
 const cacheCel=new Map();
+// O que existe no mapa é decidido pela lista de artes (o manifesto), não por a imagem já ter chegado: antes, marcos e construções só
+// eram criados se a arte estivesse carregada naquele instante, então o mesmo mapa tinha obstáculos diferentes conforme a rede
+function temArteU(sufixo){ const u=UNIV[R.universo]; return !!(u&&MANIFESTO&&MANIFESTO[`arte/reinos/${u.era}/${u.id}__${sufixo}.png`]); }
 function folhaU(sufixo){ const u=UNIV[R.universo]; if(!u) return null; const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__${sufixo}.png`]; return img&&img.pronta? img : null; }
 function folhaArte(caminho){ const img=ARTE_IMG[caminho]; return img&&img.pronta? img : null; }
 // recorta a célula (col,row) de uma folha cols x rows e escala para w x h; base = altura relativa da linha de apoio (85% nas folhas)
@@ -802,7 +805,7 @@ function detalhesArte(r){ const img=folhaU("tiles"); if(!img) return null; const
 
 
 // ---------------------------------------------------------------- marcos, luzes e peças de primeiro plano (folha 4x2)
-function sortearMarcos(cx,cy,r,out){ const img=folhaU("props"); if(!img) return;
+function sortearMarcos(cx,cy,r,out){ if(!temArteU("props")) return;
   const x=cx*CH+10+r()*76, y=cy*CH+10+r()*76; if(Math.abs(x)<40&&Math.abs(y)<40) return; if(!lugarDeObjeto(x,y,22)) return;
   const sorte=r()*1.5; /* mapa menos poluído: ~1/3 menos marcos */ if(sorte<0.3) out.push(Object.assign(novoProp("marco",x,y,r),{idx:Math.floor(r()*6)}));
   else if(sorte<0.42) out.push(Object.assign(novoProp("luz",x,y,r),{idx:6}));
@@ -873,8 +876,8 @@ function voa(e){ const d=e.def; return e.chefe||e.mini||!d||d.andar==="voa"||d.a
 function atualizarEstrutura(dt){ const E=estruturaU(), C=J.cena; if(!E||!C) return; const P=J.jogador;
   // construções e luzes da praça viram objetos fixos quando a zona chega perto
   for(const f of pecasPerto(P.x,P.y)){ if(f.criado) continue; f.criado=true;
-    if(f.tipo==="construcao"&&folhaU("pecas")) criarProp("construcao",f.x,f.y);
-    if(f.tipo==="praca"&&folhaU("props")) for(let i=0;i<4;i++){ const a=i*Math.PI/2+Math.PI/4; const l=criarProp("luz",f.x+Math.cos(a)*f.rx*0.95,f.y+Math.sin(a)*f.ry*0.95); if(l) l.idx=6; } }
+    if(f.tipo==="construcao"&&temArteU("pecas")) criarProp("construcao",f.x,f.y);
+    if(f.tipo==="praca"&&temArteU("props")) for(let i=0;i<4;i++){ const a=i*Math.PI/2+Math.PI/4; const l=criarProp("luz",f.x+Math.cos(a)*f.rx*0.95,f.y+Math.sin(a)*f.ry*0.95); if(l) l.idx=6; } }
   if(!(J.dashT>0&&passiva("atravessa_abismo"))) sairDoAbismo(P,4);
   // chefes voam por cima do vazio, mas não ficam parados sobre ele (senão saem do alcance da equipe)
   if(J.chefeVivo||J.miniFeito) for(const e of J.inimigos) if((e.chefe||e.mini)&&e.hp>0&&!e.dash&&!e.noAr&&!e.oculto&&abismoEm(e.x,e.y,0)){ const f=abismoEm(e.x,e.y,0), dx=e.x-f.x, dy=e.y-f.y, d=Math.hypot(dx,dy)||1; e.x+=dx/d*60*dt; e.y+=dy/d*60*dt; }

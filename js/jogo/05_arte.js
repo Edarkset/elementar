@@ -6,7 +6,7 @@
 // ARTE_IMG[nome] devolve a imagem; se ela está no manifesto e ainda não foi pedida, começa a baixar na hora (sob demanda).
 // Quem usa confere .pronta: enquanto não chega, o jogo segue com o desenho por código.
 let MANIFESTO=null;
-const ARTE_IMG=new Proxy({},{ get(t,k){ if(typeof k==="string"&&!(k in t)&&MANIFESTO&&MANIFESTO[k]) registrarArte(k,MANIFESTO[k]); return t[k]; } }), cacheArte=new Map();
+const ARTE_IMG=new Proxy({},{ get(t,k){ if(SIM.semArte) return undefined; if(typeof k==="string"&&!(k in t)&&MANIFESTO&&MANIFESTO[k]) registrarArte(k,MANIFESTO[k]); return t[k]; } }), cacheArte=new Map();
 // o cache de recortes tem limite (o Safari do iPhone limita a memória total dos canvas): passando de 700, os mais antigos saem
 { const set0=cacheArte.set.bind(cacheArte); cacheArte.set=(k,v)=>{ if(cacheArte.size>700){ let n=0; for(const kk of cacheArte.keys()){ cacheArte.delete(kk); if(++n>=200) break; } } return set0(k,v); }; }
 let ARTE_PEND=0;

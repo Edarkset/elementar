@@ -63,12 +63,21 @@ Ficou para a etapa 1, de propósito:
 - `Inimigo`, `Selo` e `Carta` aceitam campos não listados (os de criatura e de animação são dezenas). Fechar essas formas é a maior parte dos 52 usos de `AindaSemTipo`.
 - O conteúdo (`js/dados.js`) entra tipado numa fronteira única (`LINHAS`, `ANCESTRAIS`, `UNIV`), sem validação. A validação é a etapa 3.
 
-### Etapa 1. Módulos (ainda JavaScript, ainda sem compilação)
+### Etapa 1. Módulos (ainda JavaScript, ainda sem compilação) — em andamento
 
-- Os 11 arquivos viram módulos ES com `import` e `export`. Acaba o escopo global de 667 nomes; cada arquivo declara do que depende.
-- `07_cenario.js` (1.111 linhas), `09_criaturas.js` e `08_sistemas.js` são divididos por assunto.
-- Formatador automático (Prettier) aplicado de uma vez, num commit só de formatação, para o histórico continuar legível.
-- Estado em um lugar: `J` e `R` deixam de ser variáveis globais mutáveis e passam a ser acessados por funções tipadas.
+| Item | Situação |
+|---|---|
+| As 11 partes viram módulos com `import` e `export` | Feito em 11/11/2026. Eram 667 nomes num escopo global; agora nenhum nome do jogo é global (só `D`, o conteúdo, até a etapa 3). 692 declarações exportadas; cada arquivo lista o que importa. |
+| Escrita entre módulos com nome | Feito. Um módulo lê as variáveis de outro direto, mas só o dono atribui: as 69 atribuições que cruzavam arquivos (em 11 variáveis) viraram `defJ`, `defR`, `defPausado`, `defFonte`... |
+| Ordem de carga | Mantida. Cada parte importa primeiro a anterior, então a avaliação continua 01 → 11. A verificação de arquivos confere essa cadeia. |
+| Ponte de teste | `js/jogo/ponte_teste.js`, carregada só com `?teste` ou `?moderador`: o robô e a verificação continuam usando os mesmos nomes. |
+| Prova | 6 partidas idênticas às gravadas antes; telas, desenho, mecânicas e 34 reinos sem problemas; velocidade da lógica igual (0,83 contra 0,82 ms por passo). |
+| Formatador automático (Prettier), num commit só de formatação | A fazer. |
+| Dividir `07_cenario.js`, `08_sistemas.js` e `09_criaturas.js` por assunto | A fazer. Com módulos, mover uma função de arquivo passou a ser uma mudança local. |
+
+Como a conversão foi feita: um programa usou o compilador do TypeScript para resolver cada nome (quem declara, quem lê, quem escreve), em vez de procurar texto. Por isso nenhum import ficou faltando nem sobrando, e nomes iguais em escopos diferentes não se confundiram.
+
+Não testado nesta etapa: a versão de computador (`desktop/`, Electron). Ela serve os mesmos arquivos por um protocolo próprio e deve carregar módulos normalmente, mas precisa ser aberta uma vez para confirmar.
 
 ### Etapa 2. TypeScript de verdade
 

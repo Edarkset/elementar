@@ -41,7 +41,9 @@ elementar/
 │   │                     # conquistas, 34 Lendas e Panteão (13 deuses)
 │   ├── tipos.d.ts        # formas centrais do jogo para o verificador de tipos (o navegador não carrega)
 │   ├── plataforma.js     # save e recursos do navegador ou do app de computador
-│   ├── jogo/             # lógica do jogo, em partes carregadas em ordem pelo index.html
+│   ├── jogo/             # lógica do jogo, em módulos (import/export); o index.html carrega só a entrada
+│   │   ├── principal.js      # entrada: puxa as 11 partes na ordem e, com ?teste, a ponte de teste
+│   │   ├── ponte_teste.js    # publica os nomes do jogo na página para o robô e a verificação (só com ?teste ou ?moderador)
 │   │   ├── 01_nucleo.js      # utilidades, som, save, estado da run, sinergias, Santuário
 │   │   ├── 02_combate.js     # mapa, dificuldade (DIF), Presságio, dano, reações, ataques
 │   │   ├── 03_progressao.js  # níveis, escolhas, ovos, Bestiário, baús, portais, especiais
@@ -107,7 +109,7 @@ node testes/reproduzir.js --conferir antes.json     # depois: tudo igual = o jog
 
 A cada envio o GitHub roda tipos, telas, mecânicas, os 34 reinos e a repetição de partidas (`.github/workflows/verificar.yml`). O caminho para TypeScript está em [docs/PLANO_CODIGO.md](docs/PLANO_CODIGO.md).
 
-O resultado fica em `testes/relatorio.md` (com `--fotos`, as fotos ficam em `testes/fotos/`). O código usa o escopo global: uma parte de `js/jogo/` pode usar funções das outras, desde que o uso aconteça durante o jogo e não no carregamento da página.
+O resultado fica em `testes/relatorio.md` (com `--fotos`, as fotos ficam em `testes/fotos/`). A lógica são módulos: cada parte de `js/jogo/` importa o que usa das outras e exporta o que oferece, e nada do jogo fica no escopo global. Para o robô, a verificação e o console do navegador enxergarem os nomes do jogo (`J`, `R`, `novaRun`...), abra com `?teste` ou `?moderador` no endereço.
 
 ### Simular partidas (equilíbrio)
 

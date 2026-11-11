@@ -31,7 +31,7 @@ jobs:
         # o Playwright fica fora do package.json de propósito: quem roda os testes na própria máquina usa o que já tem instalado
         run: |
           npm install --no-save playwright@1.63.0
-          npx playwright install --with-deps chromium
+          npx playwright install chromium   # sem --with-deps: a máquina do GitHub já tem as bibliotecas, e instalar pacotes do sistema falha quando o servidor do Ubuntu oscila
       - name: Arquivos, telas e mecânicas
         run: |
           node testes/verificar.js --so carga

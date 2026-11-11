@@ -72,7 +72,7 @@ Ficou para a etapa 1, de propósito:
 | Ordem de carga | Mantida. Cada parte importa primeiro a anterior, então a avaliação continua 01 → 11. A verificação de arquivos confere essa cadeia. |
 | Ponte de teste | `js/jogo/ponte_teste.js`, carregada só com `?teste` ou `?moderador`: o robô e a verificação continuam usando os mesmos nomes. |
 | Prova | 6 partidas idênticas às gravadas antes; telas, desenho, mecânicas e 34 reinos sem problemas; velocidade da lógica igual (0,83 contra 0,82 ms por passo). |
-| Formatador automático (Prettier), num commit só de formatação | A fazer. |
+| Formatador automático (Prettier 3.10.0 fixo), num commit só de formatação | Feito. `npm run formatar` aplica, `npm run formato` confere (também a cada envio). A lógica passou de 4.964 linhas densas para 22.700 linhas, uma instrução por linha; as 6 partidas continuaram idênticas. O commit está em `.git-blame-ignore-revs`, para o histórico de autoria pular a formatação. |
 | Dividir `07_cenario.js`, `08_sistemas.js` e `09_criaturas.js` por assunto | A fazer. Com módulos, mover uma função de arquivo passou a ser uma mudança local. |
 
 Como a conversão foi feita: um programa usou o compilador do TypeScript para resolver cada nome (quem declara, quem lê, quem escreve), em vez de procurar texto. Por isso nenhum import ficou faltando nem sobrando, e nomes iguais em escopos diferentes não se confundiram.

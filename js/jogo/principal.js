@@ -5,4 +5,4 @@ import "./11_menu.js";
 
 // Modo de teste (endereço com ?teste ou ?moderador): expõe os nomes do jogo na página, como eram quando tudo era global.
 // É o que o robô, a verificação automática e o console do navegador usam. Sem isso, nada do jogo fica no escopo global.
-if(/[?&](teste|moderador|mod)\b/.test(location.search)) import("./ponte_teste.js");
+if (/[?&](teste|moderador|mod)\b/.test(location.search)) import("./ponte_teste.js");

@@ -1,0 +1,7 @@
+# conteúdo do jogo: precisa continuar sendo JSON válido depois de "const D = " (vira JSON com esquema na etapa 3 do plano)
+js/dados.js
+# gerados e de terceiros
+node_modules/
+desktop/jogo/
+desktop/dist/
+package-lock.json

@@ -4,10 +4,13 @@
   "description": "Ferramentas de desenvolvimento do Elementar. O jogo não tem dependências: o navegador carrega os arquivos como estão.",
   "scripts": {
     "tipos": "tsc -p tsconfig.json",
+    "formatar": "prettier --write js testes",
+    "formato": "prettier --check js testes",
     "verificar": "node testes/verificar.js",
     "reproduzir": "node testes/reproduzir.js"
   },
   "devDependencies": {
+    "prettier": "3.10.0",
     "typescript": "5.9.3"
   }
 }

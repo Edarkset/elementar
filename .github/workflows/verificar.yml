@@ -23,10 +23,12 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - name: Instalar o verificador de tipos (versão fixa)
+      - name: Instalar o verificador de tipos e o formatador (versões fixas)
         run: npm ci
       - name: Tipos
         run: npm run tipos
+      - name: Formato
+        run: npm run formato
       - name: Instalar o navegador de teste
         # o Playwright fica fora do package.json de propósito: quem roda os testes na própria máquina usa o que já tem instalado
         run: |

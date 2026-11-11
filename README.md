@@ -95,6 +95,20 @@ node testes/verificar.js --so telas # só uma parte: carga, telas, jogo, tela, m
 
 O resultado fica em `testes/relatorio.md` (com `--fotos`, as fotos ficam em `testes/fotos/`). O código usa o escopo global: uma parte de `js/jogo/` pode usar funções das outras, desde que o uso aconteça durante o jogo e não no carregamento da página.
 
+### Simular partidas (equilíbrio)
+
+O robô joga partidas inteiras sozinho e mede profundidade, tempo de chefe, dano por fonte e a horda (inimigos na tela, abates por minuto, níveis por mapa):
+
+```bash
+python3 -m http.server 8765 &
+node testes/rodar_bot.js --n 24 --paralelo 4 --mapas 9 --saida testes/res.json
+python3 testes/resumo.py testes/res.json
+# testar outra intensidade de horda sem mexer no código:
+node testes/rodar_bot.js --n 24 --saida testes/res2.json --dif '{"horda":2.4,"hordaVida":0.42,"hordaXp":0.42}'
+```
+
+A intensidade da horda fica em `DIF` (`js/jogo/02_combate.js`). Resultados e decisões: [docs/EQUILIBRIO_SIMULACOES.md](docs/EQUILIBRIO_SIMULACOES.md).
+
 ## Save
 
 O progresso fica no navegador (`localStorage`, chave `elementar_proto_v2`). Cada endereço onde o jogo roda tem o seu próprio save.

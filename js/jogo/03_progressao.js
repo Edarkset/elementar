@@ -469,7 +469,7 @@ function mostrarPortais(){
   const era=D.eras_ordem[R.eraIdx], opcoes=mostrarPortais._ops||embaralhar(D.universos.filter(u=>u.era===era&&u.id!==R.universo)).slice(0,3+((SIN.rm&&SIN.rm.portais)||0)+nivelLoja("oraculo"));
   // adianta a arte da abertura e o chão de cada portal (o resto vem quando o mapa começa)
   // as capas dos portais são a arte de abertura de cada reino: se ainda não chegaram, espera até 2,5 s (uma vez)
-  if(!mostrarPortais._jaEsperou&&opcoes.some(u=>{ const im=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`]; return im&&!im.pronta&&!im.falhou; })){
+  if(!SIM.ativo&&!mostrarPortais._jaEsperou&&opcoes.some(u=>{   /* na simulação não espera: a espera em tempo real fazia a mesma semente dar partidas diferentes */ const im=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`]; return im&&!im.pronta&&!im.falhou; })){
     Promise.race([preCarregar(opcoes.map(u=>`arte/reinos/${u.era}/${u.id}__keyart.png`)),new Promise(ok=>setTimeout(ok,2500))]).then(()=>{ mostrarPortais._jaEsperou=true; mostrarPortais._ops=opcoes; mostrarPortais(); }); return; }
   opcoes.forEach(u=>preCarregar(artesQue(n=>n.startsWith(`arte/reinos/${u.era}/${u.id}__keyart`)||n.startsWith(`arte/reinos/${u.era}/${u.id}__piso`))));
   mostrarPortais._ops=null; mostrarPortais._jaEsperou=false; const recs=embaralhar(["Recrutar","Cura total","Relíquia","Ovo Raro","Item"]); while(recs.length<opcoes.length) recs.push(escolha(["Relíquia","Ovo Raro","Item","Recrutar"]));

@@ -27,7 +27,7 @@
   }
   async function rodar(cfg){
     cfg=Object.assign({semente:1, maxMapas:12, maxSeg:3600, dif:null, passo:1/30}, cfg||{});
-    const r=rng(cfg.semente); const rOrig=Math.random; Math.random=rng(cfg.semente*7919+13);
+    const r=rng(cfg.semente); const rOrig=Math.random, semeado=rng(cfg.semente*7919+13); Math.random=semeado;
     SIM.ativo=true; SIM.entrada=()=>entrada(r); let morreu=false; SIM.aoDerrota=()=>{ morreu=true; };
     if(cfg.dif) Object.assign(DIF,cfg.dif);
     const log=[]; document.getElementById("telaMenu").classList.remove("ativa");
@@ -51,7 +51,10 @@
         if(J.vida<=0&&!morreu){ /* derrota() chama SIM.aoDerrota */ }
         if(morreu||R.profundidade>=cfg.maxMapas) break;
       }
-      await new Promise(ok=>setTimeout(ok,0));
+      // Partida reproduzível: enquanto o navegador respira, (1) o laço normal do jogo fica parado (iniciarMapa religa "rodando" a cada mapa,
+      // e um quadro extra em tempo real mudava a partida) e (2) o acaso da semente fica guardado, para que cargas de imagem e avisos
+      // não gastem números dela. Sem isso a mesma semente repetia o primeiro mapa e depois divergia
+      rodando=false; Math.random=rOrig; await new Promise(ok=>setTimeout(ok,0)); Math.random=semeado; rodando=false;
     }
     Math.random=rOrig; SIM.ativo=false; SIM.entrada=null; SIM.aoDerrota=null;
     fechaAm(); const st=R.st;

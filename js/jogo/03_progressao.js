@@ -99,7 +99,8 @@ function numerosPoder(s,k,lv,prox){ try{ const base=atrib(s).dano*tal.dano();
     return ` <span class='bom'>Força ${d0||"—"} → ${d1}</span> · recarga ${cd.toFixed(1).replace(".",",")} s`; }catch(e){ return ""; } }
 // Ascensão com caminho: depois que um monstro tem todos os poderes no máximo, cada nível dele traz um de três caminhos (dano, cadência
 // ou vida) que se acumulam. Nas simulações, do nível 40 em diante 9 em cada 10 escolhas eram a mesma carta "+1 nível": a run ficava sem decisão
-const ASCENSAO={d:{nome:"Fúria",v:0.05,txt:"de dano"}, c:{nome:"Ímpeto",v:0.03,txt:"de cadência"}, v:{nome:"Vigor",v:0.06,txt:"de vida"}};
+// Valores: com +5% / +3% / +6% o robô ia ~1,7 mapa mais fundo (a run ficava bem mais fácil no fim); estes mantêm a escolha sem derrubar a dificuldade
+const ASCENSAO={d:{nome:"Fúria",v:0.03,txt:"de dano"}, c:{nome:"Ímpeto",v:0.02,txt:"de cadência"}, v:{nome:"Vigor",v:0.04,txt:"de vida"}};
 function cartasNivel(){ const eq=ativos(), maxN=Math.max(...eq.map(s=>s.nivel)), cand=[], caminhos=embaralhar(Object.keys(ASCENSAO));
   for(const s of eq){ const c=D.classes[L(s).classe], lib=[["b","Ataque básico",`${c.basico} +20% de dano e +5% de cadência.`],["h1",c.h1.nome,c.h1.desc],...((est(s)>=1||estBase(s)>=1)?[["h2",c.h2.nome,c.h2.desc]]:[])];
     const peso=1+(maxN-s.nivel)*0.35; let algum=false;

@@ -1,17 +1,32 @@
 // Elementar · níveis, telas de escolha, ovos, Ovo Ancestral, missões, Bestiário, captura, cenas, baús, portais e especiais
-// Parte 3 de 11 da lógica do jogo: os arquivos de js/jogo/ são carregados em ordem pelo index.html e
-// compartilham o mesmo escopo global (funções e constantes de uma parte valem nas outras).
-"use strict";
+// Parte 3 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
+// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
+import "./02_combate.js";   // ordem de carga: os módulos são avaliados de 01 a 11, como antes (cada um puxa o anterior primeiro)
+import { $, agendar, ANCESTRAIS, ativos, atrib, bonusLoja, calcularSinergia, classeExtraDe, COR, defFonte, defPausado, defR, defRodando, defRunSalva,
+  dist2, elementoBase, elementoDe, ELS, embaralhar, escolha, est, estBase, filaEsp, filaRamo, fNivel, FONTE, fRecarga, gerarSprite, gravar, J, L, lg,
+  LINHA, linhagemDe, LOJA, lojaAcessivel, MAPAS_POR_ERA, META, NIV, nivelLoja, NOME_EL, nomeForma, novoSt, pausado, poolPacto, precoLoja, R, ramoObj,
+  RAR_NOME, REAC, relatar, relMods, rnd, semente, SIM, SIN, som, spriteLinha, spriteOvo, spriteSelo, TAM, telaSantuario, temRel, tom, UNIV, VH, VW } from "./01_nucleo.js";
+import { anel, cartaProibida, curar, danoSimples, dicaVantagem, DIF, dificuldade, emArea, ferir, HAB, iniciarMapa, itemUtil, maisProximo, MOD,
+  morrer, parar, particulas, pontoDenso, raio, texto, tremor } from "./02_combate.js";
+import { mudarSolo } from "./04_ambiente.js";
+import { ARTE_IMG, arteMonstro, artesQue, correcaoAltura, fatiarFolha, folhaAnimMonstro, preCarregar } from "./05_arte.js";
+import { ganharXp } from "./06_loop.js";
+import { bolhaCor, silhueta, spriteUI } from "./07_cenario.js";
+import { cartaLenda, cartaTalisma, circuloInvocacao, eventosVitoria, luzFlash, nivTal, passiva, PD, tal, UI_ARQ, vfx, vfxCombinado, vfxEspecial,
+  vfxOnda } from "./08_sistemas.js";
+import { anunciar, arteCriatura } from "./09_criaturas.js";
+import { desenharEquipe, desenharNinho, toast } from "./10_desenho.js";
+import { menu, telaPacto } from "./11_menu.js";
 // ================================================================ progressão: níveis, poderes, evolução
-function aplicarNivel(s,qtd){ for(let i=0;i<qtd;i++){ const antes=estBase(s); s.nivel++; checarEvolucao(s,antes); } }
-function checarEvolucao(s,antes){
+export function aplicarNivel(s,qtd){ for(let i=0;i<qtd;i++){ const antes=estBase(s); s.nivel++; checarEvolucao(s,antes); } }
+export function checarEvolucao(s,antes){
   if(s.mon.ramo==null&&s.nivel>=NIV[2]&&!filaRamo.includes(s)) filaRamo.push(s);
   if(s.esp==null&&s.nivel>=NIV[1]&&!filaEsp.includes(s)) filaEsp.push(s);
   const depois=estBase(s);
   if(depois>antes){ if(depois===2) diaria("evolucoes"); registrarDex(s.mon.id,depois,s.mon.ramo,s.mon.rar); R.st.evolucoes[depois]++; efeitoEvolucao(s); som("evolucao"); cenaEvolucao(s,antes,depois); calcularSinergia(); desenharEquipe(); }
 }
-function efeitoEvolucao(s){ if(!J) return; anel(s.x,s.y,30,"#ffffff",.6); anel(s.x,s.y,50,COR[elementoDe(s)],.8); particulas(s.x,s.y,COR[elementoDe(s)],30,120,2); particulas(s.x,s.y,"#fff3c4",14,90); tremor(5); parar(0.08); }
-function ramosElegiveis(s,ignorarPedra,base){
+export function efeitoEvolucao(s){ if(!J) return; anel(s.x,s.y,30,"#ffffff",.6); anel(s.x,s.y,50,COR[elementoDe(s)],.8); particulas(s.x,s.y,COR[elementoDe(s)],30,120,2); particulas(s.x,s.y,"#fff3c4",14,90); tremor(5); parar(0.08); }
+export function ramosElegiveis(s,ignorarPedra,base){
   const l=L(s), outros=ativos().filter(o=>o!==s), u=UNIV[R.universo], ok=[], elDe=base?elementoBase:elementoDe;
   if(R.pedraAtiva&&!ignorarPedra) return [0,1,2];
   l.ramos.forEach((r,i)=>{ const c=r.condicao;
@@ -21,14 +36,14 @@ function ramosElegiveis(s,ignorarPedra,base){
     else if(c.tipo==="regional"&&(u.era===c.era||u.elemento===c.elemento)) ok.push(i); });
   return ok;
 }
-function textoCondicao(r){ const c=r.condicao;
+export function textoCondicao(r){ const c=r.condicao;
   if(c.tipo==="afinidade") return "Afinidade: 1+ aliado do mesmo elemento"; if(c.tipo==="solitario") return "Solitário: nenhum aliado do mesmo elemento";
   if(c.tipo==="alianca") return `Aliança: aliado ${D.classes[c.classe].nome} (vira classe dupla)`;
   return `Regional: ${D.eras[c.era].nome} ou mapa de ${NOME_EL(c.elemento)} (vira ${NOME_EL(c.elemento)})`; }
 
 // ================================================================ telas de escolha
-function mostrarCartas(titulo,sub,cartas,op={}){
-  pausado=true; { const tc=$("telaCartas"), f=op.fundo&&UI_ARQ(op.fundo); tc.style.backgroundImage=f? `linear-gradient(180deg,rgba(8,6,16,.35),rgba(8,6,16,.78)), url(${f.src})` : ""; tc.classList.toggle("com-fundo",!!f); }
+export function mostrarCartas(titulo,sub,cartas,op={}){
+  defPausado(true); { const tc=$("telaCartas"), f=op.fundo&&UI_ARQ(op.fundo); tc.style.backgroundImage=f? `linear-gradient(180deg,rgba(8,6,16,.35),rgba(8,6,16,.78)), url(${f.src})` : ""; tc.classList.toggle("com-fundo",!!f); }
   $("cartasTitulo").textContent=titulo; $("cartasSub").innerHTML=sub||""; const box=$("cartas"); box.innerHTML=""; box.className="cartas"+(op.grade?" grade":"");
   $("cartasRodape").innerHTML="";
   { const rl=/** @type {HTMLElement} */($("telaCartas").querySelector(".rolagem")); if(rl&&rl.dataset.t!==titulo){ rl.scrollTop=0; rl.dataset.t=titulo; } }   // tela nova começa do topo
@@ -44,17 +59,17 @@ function mostrarCartas(titulo,sub,cartas,op={}){
   box.classList.toggle("revelar",!!op.revelar);
   $("telaCartas").classList.add("ativa"); /** @type {HTMLElement} */(box.querySelector("button:not([disabled])"))?.focus();
 }
-function fechar(){ $("telaCartas").classList.remove("ativa"); }
+export function fechar(){ $("telaCartas").classList.remove("ativa"); }
 // retratos animados nas cartas (quadros "parado" da folha de animação), enquanto a tela estiver aberta
-let animRet=null;
-function animarRetratos(){ if(animRet) return; const passo=t=>{ const cs=[.../** @type {NodeListOf<HTMLCanvasElement>} */(document.querySelectorAll("#cartas canvas.anim-retrato"))].filter(c=>c._quadros);
+export let animRet=null;
+export function animarRetratos(){ if(animRet) return; const passo=t=>{ const cs=[.../** @type {NodeListOf<HTMLCanvasElement>} */(document.querySelectorAll("#cartas canvas.anim-retrato"))].filter(c=>c._quadros);
     if(!cs.length||!$("telaCartas").classList.contains("ativa")){ animRet=null; return; }
     const f=Math.floor(t/1000*6); for(const c of cs){ if(c._geo){ desenharRetrato(c,c._geo,f); continue; } const q=c._quadros[f%c._quadros.length], g=c.getContext("2d"); g.clearRect(0,0,c.width,c.height); g.drawImage(q,0,0); }
     animRet=requestAnimationFrame(passo); }; animRet=requestAnimationFrame(passo); }
 // quadros do monstro parado, em alta resolução, para a tela de escolha; sem folha de animação, usa a imagem fixa
 // retrato animado (linha "parado" da folha): caixa calculada pela união de todos os quadros (nada sai cortado), margem,
 // ampliação inteira pixel a pixel (pixel nítido, sem borrão) e uma sombra macia no chão; os pés ficam na mesma linha em todos os quadros
-function quadrosForma(id,e,ramo,rar){ const fa=folhaAnimMonstro(id,e,ramo,rar); if(!fa) return null; const img=fa.img, fo=fa.cor||img, f=fatiarFolha(img,6,3); if(!f.valida||!f.linhas[0].qs.length) return null;
+export function quadrosForma(id,e,ramo,rar){ const fa=folhaAnimMonstro(id,e,ramo,rar); if(!fa) return null; const img=fa.img, fo=fa.cor||img, f=fatiarFolha(img,6,3); if(!f.valida||!f.linhas[0].qs.length) return null;
   const L=f.linhas[0], ky=correcaoAltura(img); let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
   for(const q of L.qs){ const ax=q.bx-q.ref-L.centro; x0=Math.min(x0,ax); x1=Math.max(x1,ax+q.bw); y0=Math.min(y0,(q.by-L.pe)*ky); y1=Math.max(y1,(q.by+q.bh-L.pe)*ky); }
   const w=x1-x0, h=y1-y0, lado=Math.max(w,h)*1.22, K=Math.max(2,Math.round(340/lado)), C=Math.round(lado*K), cx=C/2-(x0+w/2)*K, peY=C/2+(h/2)*K-(y1>0?y1*K:0)+C*0.02;
@@ -66,20 +81,20 @@ function quadrosForma(id,e,ramo,rar){ const fa=folhaAnimMonstro(id,e,ramo,rar); 
   return qs; }
 // desenha um quadro do retrato no canvas da carta, que tem o tamanho exato da tela do aparelho:
 // ampliação inteira (cada pixel da arte vira um bloco igual) e nenhuma segunda ampliação do navegador, que borrava tudo
-function desenharRetrato(c,geo,i){ const d=Math.min(3,window.devicePixelRatio||1), T=Math.round((c.clientWidth||0)*d);
+export function desenharRetrato(c,geo,i){ const d=Math.min(3,window.devicePixelRatio||1), T=Math.round((c.clientWidth||0)*d);
   if(T>0&&c.width!==T){ c.width=c.height=T; } const C=c.width, g=c.getContext("2d"); g.clearRect(0,0,C,C);
   const k=Math.max(1,Math.floor(C/geo.lado)), o=Math.round((C-geo.lado*k)/2), peY=o+geo.peY*k, q=geo.qs[i%geo.qs.length];
   const sg=g.createRadialGradient(C/2,peY,0,C/2,peY,geo.w*k*0.55); sg.addColorStop(0,"rgba(0,0,0,.45)"); sg.addColorStop(1,"rgba(0,0,0,0)");
   g.save(); g.translate(0,peY); g.scale(1,0.22); g.translate(0,-peY); g.fillStyle=sg; g.fillRect(0,peY-geo.w*k,C,geo.w*k*2); g.restore();
   g.imageSmoothingEnabled=false; g.drawImage(geo.fo,q.bx,q.by,q.bw,q.bh,o+Math.round((geo.cx+q.dx)*k),Math.round(peY+q.dy*k),q.bw*k,Math.round(q.bh*geo.ky*k)); }
-function quadrosRetrato(id){ return quadrosForma(id,0,null,"comum"); }
-function proximaEscolha(){
+export function quadrosRetrato(id){ return quadrosForma(id,0,null,"comum"); }
+export function proximaEscolha(){
   if(filaRamo.length) return escolherRamo(filaRamo.shift());
   if(filaEsp.length) return escolherEspecial(filaEsp.shift());
   if(J&&J.niveisPend>0){ J.niveisPend--; return abrirNivel(); }
-  fechar(); pausado=false; calcularSinergia(); desenharEquipe();
+  fechar(); defPausado(false); calcularSinergia(); desenharEquipe();
 }
-function escolherRamo(s){
+export function escolherRamo(s){
   if(!s.mon||s.mon.ramo!=null) return proximaEscolha();
   if(LINHA[s.mon.id].ancestral){ const antes=estBase(s); s.mon.ramo=0; checarEvolucao(s,antes); return proximaEscolha(); }
   const l=L(s), ok=ramosElegiveis(s), pedra=R.pedraAtiva;
@@ -88,20 +103,20 @@ function escolherRamo(s){
       texto:`${textoCondicao(r)}<br>Supremo: ${r.supremo}. ${r.ultimate}`, classe:"medio", quadros:quadrosForma(s.mon.id,2,i,s.mon.rar), sprite:arteMonstro(s.mon.id,2,i,s.mon.rar)||gerarSprite(s.mon.id+"#2#"+i,TAM[2],COR[r.elemento],{rar:s.mon.rar}),
       acao:()=>{ const antes=estBase(s); s.mon.ramo=i; if(pedra) R.pedraAtiva=false; checarEvolucao(s,antes); proximaEscolha(); } })));
 }
-function resumoPoderes(s){ const c=D.classes[L(s).classe]; return `Básico ${s.pod.b} · ${c.h1.nome} ${s.pod.h1} · ${c.h2.nome} ${s.pod.h2}`; }
+export function resumoPoderes(s){ const c=D.classes[L(s).classe]; return `Básico ${s.pod.b} · ${c.h1.nome} ${s.pod.h1} · ${c.h2.nome} ${s.pod.h2}`; }
 // level up no estilo survivor: 3 cartas sorteadas entre os poderes da equipe (com raridade), mais Elo, Talismã e Lenda quando houver.
 // Às vezes vem uma carta dourada (+2 níveis). Dá para sortear de novo algumas vezes por run.
 // a carta mostra o que muda de verdade: dano por golpe antes -> depois e a recarga, e bolinhas do nível do poder
-function pipsPoder(lv,prox){ let h="<span class='pips'>"; for(let i=1;i<=5;i++) h+=`<i class='${i<=lv?"tem":i<=prox?"novo":""}'></i>`; return h+"</span>"; }
-function numerosPoder(s,k,lv,prox){ try{ const base=atrib(s).dano*tal.dano();
+export function pipsPoder(lv,prox){ let h="<span class='pips'>"; for(let i=1;i<=5;i++) h+=`<i class='${i<=lv?"tem":i<=prox?"novo":""}'></i>`; return h+"</span>"; }
+export function numerosPoder(s,k,lv,prox){ try{ const base=atrib(s).dano*tal.dano();
     if(k==="b"){ const f0=1+0.2*(Math.max(1,lv)-1), f1=1+0.2*(prox-1); return ` <span class='bom'>Dano ${Math.round(base)} → ${Math.round(base*f1/f0)}</span>`; }
     const d0=lv? Math.round(base*fNivel(lv)) : 0, d1=Math.round(base*fNivel(prox)), cd=HAB[L(s).classe][k].cd*fRecarga(prox);
     return ` <span class='bom'>Força ${d0||"—"} → ${d1}</span> · recarga ${cd.toFixed(1).replace(".",",")} s`; }catch(e){ return ""; } }
 // Ascensão com caminho: depois que um monstro tem todos os poderes no máximo, cada nível dele traz um de três caminhos (dano, cadência
 // ou vida) que se acumulam. Nas simulações, do nível 40 em diante 9 em cada 10 escolhas eram a mesma carta "+1 nível": a run ficava sem decisão
 // Valores: com +5% / +3% / +6% o robô ia ~1,7 mapa mais fundo (a run ficava bem mais fácil no fim); estes mantêm a escolha sem derrubar a dificuldade
-const ASCENSAO={d:{nome:"Fúria",v:0.03,txt:"de dano"}, c:{nome:"Ímpeto",v:0.02,txt:"de cadência"}, v:{nome:"Vigor",v:0.04,txt:"de vida"}};
-function cartasNivel(){ const eq=ativos(), maxN=Math.max(...eq.map(s=>s.nivel)), /** @type {CartaNivel[]} */ cand=[], caminhos=/** @type {("d"|"c"|"v")[]} */(embaralhar(Object.keys(ASCENSAO)));
+export const ASCENSAO={d:{nome:"Fúria",v:0.03,txt:"de dano"}, c:{nome:"Ímpeto",v:0.02,txt:"de cadência"}, v:{nome:"Vigor",v:0.04,txt:"de vida"}};
+export function cartasNivel(){ const eq=ativos(), maxN=Math.max(...eq.map(s=>s.nivel)), /** @type {CartaNivel[]} */ cand=[], caminhos=/** @type {("d"|"c"|"v")[]} */(embaralhar(Object.keys(ASCENSAO)));
   for(const s of eq){ const c=D.classes[L(s).classe], lib=/** @type {[ChavePoder,string,string][]} */([["b","Ataque básico",`${c.basico} +20% de dano e +5% de cadência.`],["h1",c.h1.nome,c.h1.desc],...((est(s)>=1||estBase(s)>=1)?[["h2",c.h2.nome,c.h2.desc]]:[])]);
     const peso=1+(maxN-s.nivel)*0.35; let algum=false;
     for(const [k,nome,desc] of lib){ const lv=s.pod[k]; if(lv>=5) continue; algum=true; const prox=lv+1;
@@ -113,7 +128,7 @@ function cartasNivel(){ const eq=ativos(), maxN=Math.max(...eq.map(s=>s.nivel)),
   while(sorteio.length<3&&pool.length){ const tot=pool.reduce((t,c)=>t+c.peso,0); let x=Math.random()*tot; const i=pool.findIndex(c=>(x-=c.peso)<=0); const c=pool.splice(i<0?0:i,1)[0]; sorteio.push(c); }
   if(sorteio.length&&Math.random()<0.07+((SIN.rm&&SIN.rm.talisma)||0)*0.1){ const c=escolha(sorteio.filter(c=>!c.asc&&c.s.pod[c.k]<=3)); if(c){ c.dourada=true; c.raridade="lendario"; c.titulo="✦ "+c.titulo.replace(/(\d) → (\d)/,(m,a)=>`${a} → ${Math.min(5,+a+2)}`); { const lv=c.s.pod[c.k], p2=Math.min(5,lv+2); c.texto=c.texto.replace(pipsPoder(lv,lv+1),pipsPoder(lv,p2)).replace(numerosPoder(c.s,c.k,lv,lv+1),numerosPoder(c.s,c.k,lv,p2)); } c.texto+=" <b>Carta dourada: +2 níveis!</b>"; } }
   return sorteio; }
-function aplicarCartaNivel(c){ const s=c.s;
+export function aplicarCartaNivel(c){ const s=c.s;
   // escolha com efeito visível na hora: o monstro brilha, solta uma onda da cor do elemento e mostra o ganho
   if(J&&!SIM.ativo&&s.x!=null){ s._pop=1; const cor=COR[elementoDe(s)]; anel(s.x,s.y,30,cor,.5); particulas(s.x,s.y,cor,18,90,2); luzFlash(s.x,s.y,cor,60,0.4); texto(s.x,s.y-20,c.asc?"Ascensão!":"Mais forte!",cor,14); }
   if(c.asc){ s.asc=s.asc||{d:0,c:0,v:0}; s.asc[c.asc]=(s.asc[c.asc]||0)+1; aplicarNivel(s,1); if(J) calcularSinergia(); return proximaEscolha(); }
@@ -121,7 +136,7 @@ function aplicarCartaNivel(c){ const s=c.s;
   for(let i=0;i<vezes;i++){ s.pod[c.k]++; aplicarNivel(s,1); if(c.k!=="b"&&s.pod[c.k]===3&&s.mod[c.k]==null) mod=true; }
   if(c.dourada){ som("jackpot"); if(J) luzFlash(J.jogador.x,J.jogador.y,"#ffd34a",90,0.6); }
   if(mod) return escolherMod(s,c.k); proximaEscolha(); }
-function abrirNivel(){
+export function abrirNivel(){
   if(R.rerolagens==null) R.rerolagens=2+nivelLoja("oraculo");
   const sorteadas=cartasNivel();
   /** @type {Carta[]} */
@@ -139,14 +154,14 @@ function abrirNivel(){
   mostrarCartas(`Nível ${J.nivel}`, "Escolha uma carta.", cartas, {revelar:true});
   if(R.rerolagens>0){ const b=document.createElement("button"); b.className="botao sec"; b.textContent=`Sortear de novo (${R.rerolagens})`; b.onclick=()=>{ R.rerolagens--; som("tic"); abrirNivel(); }; $("cartasRodape").appendChild(b); }
 }
-function escolherMod(s,k){ const c=D.classes[L(s).classe][k];
+export function escolherMod(s,k){ const c=D.classes[L(s).classe][k];
   mostrarCartas(`${c.nome}: modificador`, "Escolha como esta habilidade vai funcionar daqui pra frente.",
     c.mods.map((m,i)=>({titulo:m.split(":")[0], texto:m.split(":").slice(1).join(":").trim(), raridade:"epico", acao:()=>{ s.mod[k]=i; proximaEscolha(); }}))); }
 
 // ================================================================ ovos, filhotes, reserva, troca
-function sortearRaridade(){ const r=Math.random(), o=D.ovos.raridades; const bonus=Math.min(0.15,R.profundidade*0.01)+MOD("sorte");
+export function sortearRaridade(){ const r=Math.random(), o=D.ovos.raridades; const bonus=Math.min(0.15,R.profundidade*0.01)+MOD("sorte");
   return r<o.lendario.chance+bonus*0.3?"lendario": r<o.lendario.chance+o.raro.chance+bonus?"raro":"comum"; }
-function receberMonstro(mon,origem){
+export function receberMonstro(mon,origem){
   const vazio=R.selos.find(s=>!s.mon);
   if(vazio){ const outros=ativos(); vazio.nivel=Math.max(vazio.nivel, Math.round((outros.reduce((t,s)=>t+s.nivel,0)/Math.max(1,outros.length))*0.6)||1);
     vazio.mon=mon; if(J){ vazio.x=J.jogador.x; vazio.y=J.jogador.y; vazio.cd=0; vazio.cd1=2; vazio.cd2=4; efeitoInvocacao(vazio); }
@@ -157,38 +172,38 @@ function receberMonstro(mon,origem){
   calcularSinergia(); desenharEquipe();
   if(filaRamo.length&&!pausado) proximaEscolha();
 }
-function efeitoInvocacao(s){ if(!J) return; const cor=COR[elementoDe(s)]; circuloInvocacao(s.x,s.y+3,elementoDe(s),26,1.3,true); anel(s.x,s.y,10,"#ffffff",.4); anel(s.x,s.y,36,cor,.7); particulas(s.x,s.y,cor,26,110,2); tremor(3); }
+export function efeitoInvocacao(s){ if(!J) return; const cor=COR[elementoDe(s)]; circuloInvocacao(s.x,s.y+3,elementoDe(s),26,1.3,true); anel(s.x,s.y,10,"#ffffff",.4); anel(s.x,s.y,36,cor,.7); particulas(s.x,s.y,cor,26,110,2); tremor(3); }
 // seta na borda da tela apontando para algo valioso fora da vista
-function setaFora(x,y,cor){ if(x>=6&&y>=6&&x<=VW-6&&y<=VH-6) return; const cx=VW/2, cy=VH/2, ang=Math.atan2(y-cy,x-cx), m=Math.min((VW/2-10)/Math.abs(Math.cos(ang)||1e-6),(VH/2-10)/Math.abs(Math.sin(ang)||1e-6));
+export function setaFora(x,y,cor){ if(x>=6&&y>=6&&x<=VW-6&&y<=VH-6) return; const cx=VW/2, cy=VH/2, ang=Math.atan2(y-cy,x-cx), m=Math.min((VW/2-10)/Math.abs(Math.cos(ang)||1e-6),(VH/2-10)/Math.abs(Math.sin(ang)||1e-6));
   const ax=cx+Math.cos(ang)*m, ay=cy+Math.sin(ang)*m, p=1+0.15*Math.sin(J.t*8); lg.fillStyle=cor; lg.beginPath(); lg.moveTo(ax+Math.cos(ang)*7*p,ay+Math.sin(ang)*7*p);
   lg.lineTo(ax+Math.cos(ang+2.5)*5*p,ay+Math.sin(ang+2.5)*5*p); lg.lineTo(ax+Math.cos(ang-2.5)*5*p,ay+Math.sin(ang-2.5)*5*p); lg.fill(); }
-function spawnOvo(rar,id,x,y){ const pool=poolPacto(); id=id||escolha(pool); rar=rar||sortearRaridade();
+export function spawnOvo(rar,id,x,y){ const pool=poolPacto(); id=id||escolha(pool); rar=rar||sortearRaridade();
   if(!SIM.ativo&&J){ if(rar==="lendario"){ anunciar({el:"luz"},"Ovo Lendário!","Siga a luz dourada."); som("jackpot"); } else if(rar==="raro") som("ding"); }
   const a=Math.random()*Math.PI*2, d=rnd(55,95); J.ovosMapa.push({x:x??J.jogador.x+Math.cos(a)*d, y:y??J.jogador.y+Math.sin(a)*d, id, rar, vida:35}); }
-function spawnFilhote(){ const id=escolha(poolPacto()), a=Math.random()*Math.PI*2, d=rnd(60,90);
+export function spawnFilhote(){ const id=escolha(poolPacto()), a=Math.random()*Math.PI*2, d=rnd(60,90);
   J.selvagens.push({x:J.jogador.x+Math.cos(a)*d, y:J.jogador.y+Math.sin(a)*d, id, rar:Math.random()<0.2?"incomum":"comum", vida:25}); if(!R.avisoFilhote){ R.avisoFilhote=true; toast("Um filhote selvagem apareceu! Encoste nele para capturar."); } else texto(J.selvagens[J.selvagens.length-1].x,J.selvagens[J.selvagens.length-1].y-14,"Filhote!","#fff3c4",12); }
-function pegarOvo(o){
+export function pegarOvo(o){
   if(R.ninho.length>=D.ovos.ninho_max){ ganharXp(10); texto(o.x,o.y-8,"Ninho cheio: +XP","#9fd6d0",13); return; }
   R.ninho.push({id:o.id, rar:o.rar, prog:0, alvo:D.ovos.raridades[o.rar].xp}); R.st.ovos++; particulas(o.x,o.y,"#fff3c4",12,70); anel(o.x,o.y,14,"#fff3c4",.4);
   texto(o.x,o.y-10,`Ovo ${RAR_NOME[o.rar]}!`,o.rar==="lendario"?"#ffd34a":"#fff3c4",15); desenharNinho();
 }
 // ================================================================ Ovo Ancestral (Dragões lendários do Covil)
-function surgirOvoAncestral(){ const opts=ANCESTRAIS.filter(a=>R.pacto.includes(a.elemento)); if(!opts.length) return;
+export function surgirOvoAncestral(){ const opts=ANCESTRAIS.filter(a=>R.pacto.includes(a.elemento)); if(!opts.length) return;
   const a=escolha(opts), ang=Math.random()*Math.PI*2, d=rnd(200,260);
   J.ovoAnc={x:J.jogador.x+Math.cos(ang)*d, y:J.jogador.y+Math.sin(ang)*d, id:a.id, el:a.elemento}; R.ancestral={estado:"mapa", id:a.id, el:a.elemento};
   toast(`Um <b>${a.ovo}</b> apareceu no mapa!<br><small>Siga a coluna de luz.</small>`); }
-function pegarOvoAncestral(o){ const l=LINHA[o.id];
+export function pegarOvoAncestral(o){ const l=LINHA[o.id];
   R.ancestral={estado:"chocando", id:o.id, el:o.el, prog:0, alvo:D.ancestral_regras.chocar_seg}; R.st.ovoAncestral=(R.st.ovoAncestral||0)+1;
   particulas(o.x,o.y,COR[o.el],40,140,2); anel(o.x,o.y,40,COR[o.el],.5); tremor(5);
   toast(`Você pegou o <b>${l.ovo}</b>!<br><small>Ele choca com o tempo de jogo, e mais rápido a cada abate.</small>`); desenharNinho(); }
-function checarAncestral(){ const A=R.ancestral; if(!A||A.estado!=="chocando"||A.prog<A.alvo) return;
+export function checarAncestral(){ const A=R.ancestral; if(!A||A.estado!=="chocando"||A.prog<A.alvo) return;
   A.estado="chocado"; const l=LINHA[A.id]; R.st.dragaoChocado=1;
   if(J){ particulas(J.jogador.x,J.jogador.y,COR[A.el],80,180,2); anel(J.jogador.x,J.jogador.y,90,COR[A.el],.6); tremor(10); parar(0.15); }
   receberMonstro({id:A.id, rar:"lendario", ramo:null}, `O ${l.ovo} chocou! Um Dragão Ancestral foi liberado.`); desenharNinho(); }
-function chocar(ov){ R.st.chocados++; diaria("chocados"); const mon={id:ov.id, rar:ov.rar==="raro"?"raro":ov.rar, ramo:null}; cenaChoco(mon);
+export function chocar(ov){ R.st.chocados++; diaria("chocados"); const mon={id:ov.id, rar:ov.rar==="raro"?"raro":ov.rar, ramo:null}; cenaChoco(mon);
   particulas(J.jogador.x,J.jogador.y,"#fff3c4",30,120,2); anel(J.jogador.x,J.jogador.y,30,COR[LINHA[ov.id].elemento],.7); tremor(4);
   receberMonstro(mon,"Chocou no Ninho"); }
-function abrirEquipe(seloIdx){
+export function abrirEquipe(seloIdx){
   if(!J||J.fim) return;
   const s=R.selos[seloIdx];
   /** @type {Carta[]} */
@@ -200,17 +215,17 @@ function abrirEquipe(seloIdx){
   cartas.push({titulo:"Fechar", texto:"", acao:()=>proximaEscolha()});
   mostrarCartas("Equipe e reserva", sub + (R.reserva.length?"":"<br>A reserva está vazia. Choque ovos e capture filhotes para ter opções."), cartas);
 }
-function trocar(si,ri){
+export function trocar(si,ri){
   R.st.trocas++; const s=R.selos[si], novo=R.reserva.splice(ri,1)[0];
   if(s.mon){ R.reserva.push({...s.mon}); } else { const outros=ativos(); s.nivel=Math.max(1,Math.round((outros.reduce((t,o)=>t+o.nivel,0)/Math.max(1,outros.length))*0.6)); }
   s.mon=novo; s.tmpRamo=null; s.trocaCd=J&&R.mapaNaEra!==0?15:0; s.x=J.jogador.x; s.y=J.jogador.y;
   efeitoInvocacao(s); s.cdEsp=Math.max(s.cdEsp||0,8);
   // entrada em cena: quem entra chega com um golpe em área do seu elemento (troca vira jogada, não só arrumação)
-  if(J&&!J.fim){ const el=elementoDe(s), dano=atrib(s).dano*6; FONTE="habilidade"; J.inimigos.forEach(e=>{ if(e.hp>0&&Math.hypot(e.x-s.x,e.y-s.y)<55) ferir(e,dano,el); });
+  if(J&&!J.fim){ const el=elementoDe(s), dano=atrib(s).dano*6; defFonte("habilidade"); J.inimigos.forEach(e=>{ if(e.hp>0&&Math.hypot(e.x-s.x,e.y-s.y)<55) ferir(e,dano,el); });
     vfxOnda({x:s.x,y:s.y},el,55); luzFlash(s.x,s.y,COR[el],80,0.4); tremor(4); if(!SIM.ativo) texto(s.x,s.y-24,"Entrou em cena!",COR[el],14); } if(s.mon.ramo==null&&s.nivel>=NIV[2]&&!filaRamo.includes(s)) filaRamo.push(s); if(s.esp==null&&s.nivel>=NIV[1]&&!filaEsp.includes(s)) filaEsp.push(s);
   calcularSinergia(); desenharEquipe();
 }
-function abrirBolsa(){
+export function abrirBolsa(){
   if(!J||J.fim||pausado) return;
   const ks=Object.keys(D.itens);
   /** @type {Carta[]} */
@@ -218,7 +233,7 @@ function abrirBolsa(){
   cartas.push({titulo:"Fechar", acao:()=>proximaEscolha()});
   mostrarCartas("Bolsa", "Itens caem de elites, baús de mini-chefe e chefes.", cartas);
 }
-function usarItem(k){
+export function usarItem(k){
   R.itens[k]--; R.st.itens++;
   if(k==="incenso"){ const id=escolha(poolPacto()); receberMonstro({id, rar:"raro", ramo:null}, "Invocado com Incenso"); particulas(J.jogador.x,J.jogador.y,"#c4ccd8",30,120,2); return proximaEscolha(); }
   if(k==="chamado"){ const id=escolha(poolPacto()); receberMonstro({id, rar:"lendario", ramo:null}, "Atendeu ao Chamado Lendário"); anel(J.jogador.x,J.jogador.y,80,"#ffd34a",.9); tremor(8); return proximaEscolha(); }
@@ -228,37 +243,37 @@ function usarItem(k){
 }
 
 // ================================================================ missões do dia: 3 objetivos sorteados pela data, Essência por missão e sequência de dias
-const TIPOS_DIARIA={abates:{txt:n=>`Derrote ${n} inimigos`,alvos:[300,500,800]}, capturas:{txt:n=>`Capture ${n} filhotes selvagens`,alvos:[2,3,5]}, chocados:{txt:n=>`Choque ${n} ovos`,alvos:[2,3,4]},
+export const TIPOS_DIARIA={abates:{txt:n=>`Derrote ${n} inimigos`,alvos:[300,500,800]}, capturas:{txt:n=>`Capture ${n} filhotes selvagens`,alvos:[2,3,5]}, chocados:{txt:n=>`Choque ${n} ovos`,alvos:[2,3,4]},
   evolucoes:{txt:n=>`Evolua ${n} monstros para Adulto`,alvos:[1,2,3]}, reacoes:{txt:n=>`Provoque ${n} reações elementais`,alvos:[30,60,100]}, chefes:{txt:n=>`Derrote ${n} chefes`,alvos:[1,2,3]}, eventos:{txt:n=>`Complete ${n} eventos do mapa`,alvos:[2,3,5]}};
-function hojeStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
-function diarias(){ const hoje=hojeStr(); let D2=META.diarias; if(!D2||D2.dia!==hoje){ const r=semente("diaria"+hoje), tipos=Object.keys(TIPOS_DIARIA), lista=[];
+export function hojeStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+export function diarias(){ const hoje=hojeStr(); let D2=META.diarias; if(!D2||D2.dia!==hoje){ const r=semente("diaria"+hoje), tipos=Object.keys(TIPOS_DIARIA), lista=[];
     while(lista.length<3){ const t=tipos[Math.floor(r()*tipos.length)]; if(lista.some(x=>x.t===t)) continue; const al=TIPOS_DIARIA[t].alvos; lista.push({t,alvo:al[Math.floor(r()*al.length)],prog:0,feito:false}); }
     const ontem=new Date(Date.now()-864e5), ontemStr=ontem.getFullYear()+"-"+String(ontem.getMonth()+1).padStart(2,"0")+"-"+String(ontem.getDate()).padStart(2,"0");
     const seq=D2&&D2.ultimoDiaFeito&&(D2.ultimoDiaFeito===ontemStr||D2.ultimoDiaFeito===hoje)? (D2.seq||0) : 0;
     D2=META.diarias={dia:hoje,lista,seq,ultimoDiaFeito:D2&&D2.ultimoDiaFeito}; } return D2; }
-function diaria(t,n){ if(SIM.ativo||!R||R.teste) return; const D2=diarias(); let mudou=false;
+export function diaria(t,n){ if(SIM.ativo||!R||R.teste) return; const D2=diarias(); let mudou=false;
   for(const m of D2.lista){ if(m.t!==t||m.feito) continue; m.prog=Math.min(m.alvo,m.prog+(n||1)); mudou=true;
     if(m.prog>=m.alvo){ m.feito=true; META.essencia+=40; toast(`<b>Missão do dia completa!</b><br><small>${TIPOS_DIARIA[t].txt(m.alvo)} · +40 de Essência</small>`); som("ding");
       if(D2.lista.every(x=>x.feito)){ D2.seq=(D2.seq||0)+1; D2.ultimoDiaFeito=hojeStr(); const bonus=60+Math.min(7,D2.seq)*10; META.essencia+=bonus; setTimeout(()=>toast(`<b>As 3 missões de hoje!</b><br><small>+${bonus} de Essência · sequência de ${D2.seq} dia${D2.seq>1?"s":""}</small>`),2600); } } }
   if(mudou&&Math.random()<0.1) gravar(); }
-function telaDiarias(){ $("telaMenu").classList.remove("ativa"); const D2=diarias(), feitas=D2.lista.filter(m=>m.feito).length;
+export function telaDiarias(){ $("telaMenu").classList.remove("ativa"); const D2=diarias(), feitas=D2.lista.filter(m=>m.feito).length;
   mostrarCartas("Missões do dia", `Renovam à meia-noite. Cada uma vale 40 de Essência; as três juntas dão um bônus que cresce com a sequência de dias (agora: ${D2.seq||0}).`,
     [...D2.lista.map(m=>({titulo:TIPOS_DIARIA[m.t].txt(m.alvo), raridade:m.feito?"lendario":"raro", manter:true, texto:m.feito?"Completa!":`${m.prog}/${m.alvo}<div class="prog-diaria"><b style="width:${m.prog/m.alvo*100}%"></b></div>`, acao:()=>{} })),
      {titulo:"Voltar",texto:feitas===3?"Volte amanhã para novas missões.":"",acao:()=>menu()}]); }
 // ================================================================ Bestiário: cada forma descoberta (8 por linhagem) e cada raridade vista
 // META.dex[id] = {f: bits das 8 formas (0 filhote, 1 jovem, 2-4 adultos, 5-7 supremos), r: raridades vistas}.
 // A cada 10 formas novas, Essência de presente. Descobrir algo novo mostra "Novo no Bestiário!".
-const FORMAS_TOTAL=()=>D.linhas.length*8;
-function celulaForma(e,ramo){ return e<=1? e : e===2? 2+(ramo??0) : 5+(ramo??0); }
-function registrarDex(id,e,ramo,rar){ if(SIM.ativo&&!SIM.dex) return; META.dex=META.dex||{}; const d=META.dex[id]||(META.dex[id]={f:0,r:[]}); const c=celulaForma(e,ramo); let novo=false;
+export const FORMAS_TOTAL=()=>D.linhas.length*8;
+export function celulaForma(e,ramo){ return e<=1? e : e===2? 2+(ramo??0) : 5+(ramo??0); }
+export function registrarDex(id,e,ramo,rar){ if(SIM.ativo&&!SIM.dex) return; META.dex=META.dex||{}; const d=META.dex[id]||(META.dex[id]={f:0,r:[]}); const c=celulaForma(e,ramo); let novo=false;
   if(!(d.f&(1<<c))){ d.f|=1<<c; novo=true; } if(rar&&!d.r.includes(rar)){ d.r.push(rar); if(rar!=="comum") novo=true; }
   if(novo&&J&&!SIM.ativo){ texto(J.jogador.x,J.jogador.y-38,"Novo no Bestiário!","#9fe0ff",14); som("ding"); }
   const tot=formasVistas(), marco=Math.floor(tot/10); META.dexMarco=META.dexMarco??marco;
   if(marco>META.dexMarco){ const ganho=(marco-META.dexMarco)*50; META.dexMarco=marco; META.essencia+=ganho; if(!SIM.ativo) toast(`<b>Bestiário: ${tot} formas descobertas!</b><br><small>+${ganho} de Essência</small>`); }
   if(!SIM.ativo) gravar(); }
-function formasVistas(){ let n=0; for(const id in (META.dex||{})){ let f=META.dex[id].f; while(f){ n+=f&1; f>>=1; } } return n; }
-function nomeFormaCel(l,c){ return c===0? l.filhote : c===1? l.jovem : c<5? l.ramos[c-2].nome : l.ramos[c-5].supremo; }
-function telaBestiario(){ $("telaMenu").classList.remove("ativa"); const dex=META.dex||{}, tot=formasVistas(), prox=(Math.floor(tot/10)+1)*10;
+export function formasVistas(){ let n=0; for(const id in (META.dex||{})){ let f=META.dex[id].f; while(f){ n+=f&1; f>>=1; } } return n; }
+export function nomeFormaCel(l,c){ return c===0? l.filhote : c===1? l.jovem : c<5? l.ramos[c-2].nome : l.ramos[c-5].supremo; }
+export function telaBestiario(){ $("telaMenu").classList.remove("ativa"); const dex=META.dex||{}, tot=formasVistas(), prox=(Math.floor(tot/10)+1)*10;
   const cartas=D.linhas.map(l=>{ const d=dex[l.id], n=d? [...Array(8)].reduce((a,_,i)=>a+((d.f>>i)&1),0) : 0, conhecido=META.liberados.includes(l.id)||n>0;
     let melhor=0; if(d) for(let c=7;c>=0;c--) if(d.f&(1<<c)){ melhor=c; break; }
     const e=melhor<=1?melhor:melhor<5?2:3, ramo=melhor>=5?melhor-5:melhor>=2?melhor-2:null, spr=conhecido? (arteMonstro(l.id,e,ramo,"comum")||spriteLinha(l.id,"comum")) : null;
@@ -266,7 +281,7 @@ function telaBestiario(){ $("telaMenu").classList.remove("ativa"); const dex=MET
       texto: conhecido? `<span style="color:${COR[l.elemento]}">${NOME_EL(l.elemento)}</span> · formas ${n}/8${d&&d.r.length>1?` · ${d.r.length} raridades`:""}<span class="prog-dex"><b style="width:${n/8*100}%;background:${COR[l.elemento]}"></b></span>` : "Ainda não encontrado", manter:true, classe:conhecido?(n>=8?"completo":null):"oculto", acao:()=>telaDexLinha(l) }; });
   mostrarCartas("Bestiário", `Formas descobertas: <b>${tot}</b> de ${FORMAS_TOTAL()} · próxima recompensa em ${prox} (+50 de Essência). Evolua, capture e choque ovos para completar.`,
     [...cartas,{titulo:"Voltar",texto:"",acao:()=>menu()}],{grade:true,fundo:"ui__livro"}); }
-function telaDexLinha(l){ const d=(META.dex||{})[l.id]||{f:0,r:[]};
+export function telaDexLinha(l){ const d=(META.dex||{})[l.id]||{f:0,r:[]};
   const formas=[...Array(8)].map((_,c)=>{ const e=c<=1?c:c<5?2:3, ramo=c>=5?c-5:c>=2?c-2:null, visto=!!(d.f&(1<<c)), spr=arteMonstro(l.id,e,ramo,"comum")||gerarSprite(l.id+"#"+e+"#"+(ramo??"-"),TAM[e],COR[l.elemento]);
     return { titulo: visto? nomeFormaCel(l,c) : "???", raridade: visto?(c>=5?"lendario":c>=2?"epico":"raro"):"comum", sprite: visto? spr : silhueta(spr,"#1a1426"),
       texto: ["Filhote","Jovem","Adulto","Adulto","Adulto","Supremo","Supremo","Supremo"][c]+(visto&&c>=2?` · ${NOME_EL(l.ramos[(c-2)%3].elemento)}`:""), manter:true, acao:()=>{} }; });
@@ -275,7 +290,7 @@ function telaDexLinha(l){ const d=(META.dex||{})[l.id]||{f:0,r:[]};
 
 // ================================================================ captura com suspense e choco animado
 // o filhote é selado num sigilo que balança três vezes; incomum e acima podem escapar (e fugir mais rápido; dá para tentar de novo)
-function tentarCaptura(f){ if(f.selando) return; f.selando=true; const chance=f.rar==="comum"?1:f.rar==="incomum"?0.72:0.55, ok=Math.random()<chance, x0=f.x, y0=f.y, cor=COR[LINHA[f.id].elemento];
+export function tentarCaptura(f){ if(f.selando) return; f.selando=true; const chance=f.rar==="comum"?1:f.rar==="incomum"?0.72:0.55, ok=Math.random()<chance, x0=f.x, y0=f.y, cor=COR[LINHA[f.id].elemento];
   f.vida=99; particulas(x0,y0,"#fff3c4",10,60); tremor(2);
   vfx({max:1.5,desenhar(ox,oy,q){ const x=x0-ox, y=y0-oy, t=q*1.5, enc=Math.min(1,t/0.3), bal=t>0.35&&t<1.25? Math.sin((t-0.35)/0.3*Math.PI)*Math.max(0,1-(t-0.35)/0.9)*0.45 : 0;
     lg.save(); lg.translate(x,y-4*(1-enc)); lg.rotate(bal); lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.5+0.3*Math.sin(t*20); lg.drawImage(bolhaCor(cor),-10,-10,20,20); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1;
@@ -288,26 +303,26 @@ function tentarCaptura(f){ if(f.selando) return; f.selando=true; const chance=f.
       receberMonstro({id:f.id, rar:f.rar, ramo:null},"Capturado!"); }
     else { f.selando=false; f.vida=14; f.fugaRapida=1; f.imune=1; particulas(x0,y0,"#ffffff",14,80); tremor(2); if(!SIM.ativo) texto(x0,y0-14,"Escapou! Tente de novo","#ff9a7a",13); } }); }
 // ovo chocando: treme cada vez mais, racha, clarão e o monstro aparece (a cena dura ~2,6 s; um toque pula)
-function cenaChoco(mon){ if(SIM.ativo||!J) return; const l=LINHA[mon.id], cor=COR[l.elemento], ovo=spriteOvo(l.elemento,mon.rar==="lendario"?"lendario":mon.rar==="comum"||mon.rar==="incomum"?"comum":"raro");
+export function cenaChoco(mon){ if(SIM.ativo||!J) return; const l=LINHA[mon.id], cor=COR[l.elemento], ovo=spriteOvo(l.elemento,mon.rar==="lendario"?"lendario":mon.rar==="comum"||mon.rar==="incomum"?"comum":"raro");
   const q=quadrosForma(mon.id,0,null,mon.rar), novo=(q&&q[0])||spriteLinha(mon.id,mon.rar); let urlNovo=""; try{ urlNovo=(novo._src&&!novo._alvo? spriteUI(novo):novo).toDataURL(); }catch(e){ relatar("retrato do monstro novo: imagem não pôde ser lida",e); }
   cenaTocar(`<div class="cine-raios" style="--cor:${cor}"></div><div class="cine-choco" style="--cor:${cor}"><img class="ovo" src="${ovo.toDataURL()}" alt=""><div class="racha"></div><img class="novo" src="${urlNovo}" alt=""></div><div class="cine-clarao choco"></div>
     <div class="cine-texto choco"><small>Chocou!${mon.rar!=="comum"?` · ${RAR_NOME[mon.rar]}`:""}</small><b style="color:${cor}">${l.filhote}</b><i>${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome}</i></div>`, "evolucao choco", 2800); }
 // ================================================================ cenas: evolução e chegada do chefe (o jogo para por um instante)
 // monstro nunca visto: a silhueta escura aparece, acende com um clarão e o nome é revelado
-function cenaDescoberta(mon){ if(SIM.ativo||!J) return; const l=LINHA[mon.id], cor=COR[l.elemento], q=quadrosForma(mon.id,0,null,mon.rar), img=(q&&q[0])||spriteLinha(mon.id,mon.rar);
+export function cenaDescoberta(mon){ if(SIM.ativo||!J) return; const l=LINHA[mon.id], cor=COR[l.elemento], q=quadrosForma(mon.id,0,null,mon.rar), img=(q&&q[0])||spriteLinha(mon.id,mon.rar);
   let url=""; try{ url=(img._src&&!img._alvo? spriteUI(img):img).toDataURL(); }catch(e){ relatar("retrato do monstro: imagem não pôde ser lida",e); }
   cenaTocar(`<div class="cine-raios" style="--cor:${cor}"></div><div class="cine-descoberta" style="--cor:${cor}"><img src="${url}" alt=""></div><div class="cine-clarao descoberta"></div>
     <div class="cine-texto descoberta"><small>Novo monstro descoberto!</small><b style="color:${cor}">${l.filhote}</b><i>${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome} · ${D.linhagens[l.linhagem].nome}</i><em>Agora ele aparece no Pacto, nos ovos e nos filhotes.</em></div>`, "evolucao descoberta", 3400);
   som("jackpot"); }
-const CINE={ativa:false, fila:[]};
-function cenaTocar(html,classe,dur,aoFim){ if(SIM.ativo) return; CINE.fila.push({html,classe,dur,aoFim}); if(!CINE.ativa) cenaProxima(); }
-function cenaProxima(){ const c=CINE.fila.shift(); let el=$("cine"); if(!c){ CINE.ativa=false; if(el) el.className="cine"; return; }
+export const CINE={ativa:false, fila:[]};
+export function cenaTocar(html,classe,dur,aoFim){ if(SIM.ativo) return; CINE.fila.push({html,classe,dur,aoFim}); if(!CINE.ativa) cenaProxima(); }
+export function cenaProxima(){ const c=CINE.fila.shift(); let el=$("cine"); if(!c){ CINE.ativa=false; if(el) el.className="cine"; return; }
   CINE.ativa=true; if(!el){ el=document.createElement("div"); el.id="cine"; $("jogo").appendChild(el); }
   el.className="cine "+c.classe; el.innerHTML=c.html; void el.offsetWidth; el.classList.add("vis");
   let feito=false; const fim=()=>{ if(feito) return; feito=true; el.classList.remove("vis"); if(c.aoFim) c.aoFim(); setTimeout(cenaProxima,220); };
   el.onclick=fim; setTimeout(fim,c.dur); }
-function imgDe(spr){ const h=spriteUI(spr); try{ return h.toDataURL(); }catch(e){ return ""; } }
-function cenaEvolucao(s,antes,depois){ if(SIM.ativo||!J) return;
+export function imgDe(spr){ const h=spriteUI(spr); try{ return h.toDataURL(); }catch(e){ return ""; } }
+export function cenaEvolucao(s,antes,depois){ if(SIM.ativo||!J) return;
   const q=(e,r)=>{ const f=quadrosForma(s.mon.id,e,r,s.mon.rar); return f&&f[0]; };
   const velho=q(antes,antes>=2?s.mon.ramo:null)||arteMonstro(s.mon.id,antes,s.mon.ramo,s.mon.rar)||gerarSprite(s.mon.id+"#"+antes+"#-",TAM[antes],COR[elementoDe(s)],{rar:s.mon.rar});
   const novo=q(depois,s.mon.ramo)||spriteSelo(s), cor=COR[elementoDe(s)], etapa=["Filhote","Jovem","Adulto","Supremo"][depois];
@@ -315,15 +330,15 @@ function cenaEvolucao(s,antes,depois){ if(SIM.ativo||!J) return;
   const faiscas=Array.from({length:18},(_,i)=>`<i style="--a:${i*20+Math.random()*12}deg;--d:${90+Math.random()*90}px;--t:${0.5+Math.random()*0.5}s"></i>`).join("");
   cenaTocar(`<div class="cine-raios" style="--cor:${cor}"></div><div class="cine-evo" style="--cor:${cor}"><div class="evo-aura"></div><img class="velho" src="${url(velho)}" alt=""><img class="novo" src="${url(novo)}" alt=""><div class="evo-faiscas">${faiscas}</div></div><div class="cine-clarao"></div>
     <div class="cine-texto"><small>Evoluiu para ${etapa}!</small><b style="color:${cor}">${nomeForma(s)}</b>${depois===3&&ramoObj(s)?`<i>${ramoObj(s).ultimate}</i>`:""}</div>`, "evolucao", 3600); som("ding"); }
-function cenaChefe(e,nome,guardiao){ if(SIM.ativo) return; const u=UNIV[R.universo], spr=arteCriatura(e,"parado",0), cor=COR[e.el]||"#ff5a4a";
+export function cenaChefe(e,nome,guardiao){ if(SIM.ativo) return; const u=UNIV[R.universo], spr=arteCriatura(e,"parado",0), cor=COR[e.el]||"#ff5a4a";
   cenaTocar(`<div class="cine-faixa" style="--cor:${cor}"></div><div class="cine-chefe">${spr?`<img src="${imgDe(spr)}" alt="">`:""}</div>
     <div class="cine-texto chefe"><small>${guardiao?"Guardião da Era":"Chefe"} · ${u?u.nome.split(",")[0]:""}</small><b>${nome}</b><i>Inimigo de ${NOME_EL(e.el)}. ${dicaVantagem(e.el)}</i></div>`, "chefe", 2600); }
 
 // ================================================================ moedas, baús e a roleta de prêmios
-function soltarMoedas(x,y,n){ if(!J||n<=0) return; { const m=n*(1+MOD("ouro")); n=Math.floor(m)+(Math.random()<m%1?1:0); } J.moedas=J.moedas||[]; for(let i=0;i<n;i++){ if(J.moedas.length>120) break; const a=Math.random()*Math.PI*2, v=rnd(30,80);
+export function soltarMoedas(x,y,n){ if(!J||n<=0) return; { const m=n*(1+MOD("ouro")); n=Math.floor(m)+(Math.random()<m%1?1:0); } J.moedas=J.moedas||[]; for(let i=0;i<n;i++){ if(J.moedas.length>120) break; const a=Math.random()*Math.PI*2, v=rnd(30,80);
   J.moedas.push({x,y,z:4,vx:Math.cos(a)*v,vy:Math.sin(a)*v*0.6,vz:rnd(50,95),f:Math.random()*6,v:1,t:0}); } }
-function soltarBau(x,y,tipo){ if(!J) return; J.baus=J.baus||[]; if(J.baus.length>=4) return; J.baus.push({x,y,tipo,t:0}); texto(x,y-18,tipo==="ouro"?"Baú dourado!":"Baú!","#ffd34a",15); luzFlash(x,y,"#ffd34a",60,0.6); som("bau"); }
-function atualizarMoedasBaus(dt,ima){ const P=J.jogador;
+export function soltarBau(x,y,tipo){ if(!J) return; J.baus=J.baus||[]; if(J.baus.length>=4) return; J.baus.push({x,y,tipo,t:0}); texto(x,y-18,tipo==="ouro"?"Baú dourado!":"Baú!","#ffd34a",15); luzFlash(x,y,"#ffd34a",60,0.6); som("bau"); }
+export function atualizarMoedasBaus(dt,ima){ const P=J.jogador;
   if(J.moedas){ for(const m of J.moedas){ m.t+=dt; if(m.z>0||m.vz>0){ m.vz-=260*dt; m.z=Math.max(0,m.z+m.vz*dt); if(m.z===0&&m.vz<0){ m.vz=Math.abs(m.vz)>40? -m.vz*0.35 : 0; } }
       m.x+=m.vx*dt; m.y+=m.vy*dt; m.vx*=0.9; m.vy*=0.9; const d=Math.hypot(P.x-m.x,P.y-m.y);
       if(m.t>0.45&&(d<ima*1.3||J.fim)){ const k=Math.min(1,dt*9); m.x+=(P.x-m.x)*k; m.y+=(P.y-m.y)*k; }
@@ -331,7 +346,7 @@ function atualizarMoedasBaus(dt,ima){ const P=J.jogador;
     J.moedas=J.moedas.filter(m=>!m.pega&&m.t<30); }
   if(J.baus){ for(const b of J.baus){ b.t+=dt; if(!J.fim&&Math.hypot(P.x-b.x,P.y-b.y)<11){ b.aberto=true; abrirBau(b); break; } } J.baus=J.baus.filter(b=>!b.aberto); } }
 // baú desenhado em vetor (prata ou ouro), com feixe de luz e brilhos
-function desenharBauMapa(b,x,y){ const ouro=b.tipo==="ouro", bob=Math.sin(J.t*3+b.x)*1, pul=0.5+0.5*Math.sin(J.t*5);
+export function desenharBauMapa(b,x,y){ const ouro=b.tipo==="ouro", bob=Math.sin(J.t*3+b.x)*1, pul=0.5+0.5*Math.sin(J.t*5);
   lg.globalCompositeOperation="lighter"; const gr=lg.createLinearGradient(0,y-60,0,y); gr.addColorStop(0,"rgba(255,211,74,0)"); gr.addColorStop(1,`rgba(255,211,74,${0.25+0.15*pul})`); lg.fillStyle=gr; lg.fillRect(x-5,y-60,10,60);
   lg.globalAlpha=0.5+0.3*pul; lg.drawImage(bolhaCor(ouro?"#ffd34a":"#bfe6ff"),x-14,y-14,28,28); lg.globalAlpha=1; lg.globalCompositeOperation="source-over";
   lg.fillStyle="rgba(0,0,0,.35)"; lg.beginPath(); lg.ellipse(x,y+5,8,2.4,0,0,Math.PI*2); lg.fill();
@@ -340,7 +355,7 @@ function desenharBauMapa(b,x,y){ const ouro=b.tipo==="ouro", bob=Math.sin(J.t*3+
   lg.strokeStyle=aro; lg.lineWidth=1; lg.strokeRect(x-7,yy-5,14,9); lg.beginPath(); lg.moveTo(x-7.5,yy-5); lg.quadraticCurveTo(x,yy-12,x+7.5,yy-5); lg.stroke(); lg.beginPath(); lg.moveTo(x-7,yy-1); lg.lineTo(x+7,yy-1); lg.stroke();
   lg.fillStyle=aro; lg.fillRect(x-1.5,yy-4,3,4); lg.fillStyle="#fff8e0"; lg.beginPath(); lg.arc(x,yy-2.2,0.7,0,Math.PI*2); lg.fill();
   if(Math.floor(J.t*6+b.x)%7===0){ lg.globalCompositeOperation="lighter"; lg.fillStyle="#ffffff"; lg.beginPath(); lg.arc(x+rnd(-8,8),yy-rnd(2,12),0.8,0,Math.PI*2); lg.fill(); lg.globalCompositeOperation="source-over"; } }
-function desenharMoedasBaus(ox,oy){
+export function desenharMoedasBaus(ox,oy){
   for(const b of (J.baus||[])) desenharBauMapa(b,b.x-ox,b.y-oy);
   for(const m of (J.moedas||[])){ const x=m.x-ox, y=m.y-oy-m.z; if(x<-6||y<-6||x>VW+6||y>VH+6) continue; const w=Math.max(0.4,Math.abs(Math.cos(J.t*7+m.f)))*2.2;
     lg.fillStyle="rgba(0,0,0,.3)"; lg.beginPath(); lg.ellipse(m.x-ox,m.y-oy+1.5,1.8,0.6,0,0,Math.PI*2); lg.fill();
@@ -348,12 +363,12 @@ function desenharMoedasBaus(ox,oy){
     lg.fillStyle="#b8860b"; lg.beginPath(); lg.ellipse(x,y,w,2.2,0,0,Math.PI*2); lg.fill(); lg.fillStyle="#ffd34a"; lg.beginPath(); lg.ellipse(x,y,w*0.75,1.7,0,0,Math.PI*2); lg.fill();
     lg.fillStyle="#fff8d0"; lg.beginPath(); lg.ellipse(x-w*0.25,y-0.6,w*0.25,0.5,0,0,Math.PI*2); lg.fill(); } }
 // ---- prêmios
-const ICONE_HUD={estrela:7,gema:6,coracao:8,ampulheta:4,bolsa:0,trofeu:10,fogo:5,livro:11,mapa:3};
-let ICONES_URL=null;
-function iconeHud(nome){ const img=UI_ARQ("ui__hud_icones"); if(!img) return null; if(!ICONES_URL){ ICONES_URL={}; const cw=img.width/6, ch=img.height/2;
+export const ICONE_HUD={estrela:7,gema:6,coracao:8,ampulheta:4,bolsa:0,trofeu:10,fogo:5,livro:11,mapa:3};
+export let ICONES_URL=null;
+export function iconeHud(nome){ const img=UI_ARQ("ui__hud_icones"); if(!img) return null; if(!ICONES_URL){ ICONES_URL={}; const cw=img.width/6, ch=img.height/2;
     for(const [k,i] of Object.entries(ICONE_HUD)){ const c=document.createElement("canvas"); c.width=cw; c.height=ch; c.getContext("2d").drawImage(img,(i%6)*cw,Math.floor(i/6)*ch,cw,ch,0,0,cw,ch); ICONES_URL[k]=c.toDataURL(); } }
   return ICONES_URL[nome]; }
-function sortearPremios(tipo){ const sorte=(SIN.rm&&SIN.rm.talisma?1.5:1), r=Math.random(), ouro=tipo==="ouro";
+export function sortearPremios(tipo){ const sorte=(SIN.rm&&SIN.rm.talisma?1.5:1), r=Math.random(), ouro=tipo==="ouro";
   const n= ouro? (r<0.22*sorte?5:3) : (r<0.04*sorte?5: r<0.28*sorte?3:1);
   const eq=ativos(), tals=Object.keys(R.talismas||{}).filter(id=>nivTal(id)<5), ess=Math.round((6+R.profundidade*3)*(ouro?2:1));
   const pool=[
@@ -369,7 +384,7 @@ function sortearPremios(tipo){ const sorte=(SIN.rm&&SIN.rm.talisma?1.5:1), r=Mat
   for(let i=0;i<n;i++){ let x=Math.random()*tot; const p=pool.find(p=>(x-=p.peso)<=0)||pool[0]; out.push(p.f()); }
   if(n===5){ out[4]={icone:"estrela", rar:"lendario", texto:`JACKPOT: toda a equipe +1 nível`, aplicar:()=>eq.forEach(premioNivel)}; }
   return out; }
-function premioNivel(s){ if(!s||!s.mon) return; const lib=["b","h1",...((est(s)>=1||estBase(s)>=1)?["h2"]:[])].filter(k=>s.pod[k]<5);
+export function premioNivel(s){ if(!s||!s.mon) return; const lib=["b","h1",...((est(s)>=1||estBase(s)>=1)?["h2"]:[])].filter(k=>s.pod[k]<5);
   if(lib.length){ const k=lib.sort((a,b)=>s.pod[a]-s.pod[b])[0]; s.pod[k]++; if(k!=="b"&&s.pod[k]===3&&s.mod[k]==null) s.mod[k]=Math.floor(Math.random()*2); }
   aplicarNivel(s,1); calcularSinergia(); desenharEquipe(); }
 // tela do baú: o baú treme, abre com moedas voando e as casas giram como uma roleta até parar uma por uma
@@ -378,7 +393,7 @@ function premioNivel(s){ if(!s||!s.mon) return; const lib=["b","h1",...((est(s)>
 // baú da tela de prêmio: de frente, mais alto que largo o bastante para ler como baú (antes era uma caixa larga e baixa),
 // madeira em tábuas, cantoneiras, cintas com rebites e fechadura. Ao abrir, a tampa sobe e tomba para trás (achata em Y a partir
 // da dobradiça de trás) e aparece o interior brilhando, em vez de girar de lado e ficar solta.
-function svgBau(ouro){ const m=ouro?["#fff4c0","#f0c048","#a87418","#5a3a08"]:["#f4f6fa","#b8c0cc","#6e7686","#3a404c"], mad=ouro?["#9a4a8e","#6e2c66","#4a1a46","#2a0c28"]:["#b8743a","#8a4e22","#5e3214","#341a08"];
+export function svgBau(ouro){ const m=ouro?["#fff4c0","#f0c048","#a87418","#5a3a08"]:["#f4f6fa","#b8c0cc","#6e7686","#3a404c"], mad=ouro?["#9a4a8e","#6e2c66","#4a1a46","#2a0c28"]:["#b8743a","#8a4e22","#5e3214","#341a08"];
   const reb=(x,y,r=1.9)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".6"/><circle cx="${x-r*.35}" cy="${y-r*.35}" r="${r*.35}" fill="#fff" opacity=".7"/>`;
   const tabuas=(y0,y1)=>[34,52,68,86].map(x=>`<path d="M${x} ${y0}V${y1}" stroke="${mad[3]}" stroke-opacity=".55" stroke-width="1"/><path d="M${x+1.2} ${y0}V${y1}" stroke="#fff" stroke-opacity=".07" stroke-width="1"/>`).join("");
   const veios=`<path d="M38 66q6-1.5 12 0M56 80q5 1.5 10 0M72 64q5-1.5 12 0M40 90q4 1 9 0M74 88q4-1 9 0" stroke="${mad[3]}" stroke-opacity=".35" stroke-width=".8" fill="none"/>`;
@@ -417,9 +432,9 @@ function svgBau(ouro){ const m=ouro?["#fff4c0","#f0c048","#a87418","#5a3a08"]:["
       <rect x="8" y="44" width="104" height="7" rx="2" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".9"/>${[14,44,76,106].map(x=>reb(x,47.5,1.4)).join("")}
       <path d="M53 44h14v9q0 6-7 8q-7-2-7-8z" fill="url(#bauM)" stroke="${m[3]}" stroke-width="1.1"/><circle cx="60" cy="52" r="1.6" fill="#140804"/>
       ${ouro?`<circle cx="60" cy="27" r="5.5" fill="#d84aff" stroke="${m[1]}" stroke-width="2"/><circle cx="58.3" cy="25.3" r="1.6" fill="#fff" opacity=".85"/>`:""}</g></svg>`; }
-function abrirBau(b){ const premios=sortearPremios(b.tipo);
+export function abrirBau(b){ const premios=sortearPremios(b.tipo);
   if(SIM.ativo){ premios.forEach(p=>p.aplicar()); return; }
-  pausado=true; som("bau"); let tela=$("bau"); if(!tela){ tela=document.createElement("div"); tela.id="bau"; $("jogo").appendChild(tela); }
+  defPausado(true); som("bau"); let tela=$("bau"); if(!tela){ tela=document.createElement("div"); tela.id="bau"; $("jogo").appendChild(tela); }
   const ouro=b.tipo==="ouro";
   tela.className="bau-tela"+(ouro?" ouro":""); tela.innerHTML=`<div class="bau-raios"></div><div class="bau-titulo">${ouro?"Baú dourado":"Baú"}</div>
     <div class="bau-arca">${svgBau(ouro)}</div>
@@ -437,13 +452,13 @@ function abrirBau(b){ const premios=sortearPremios(b.tipo);
       atraso=Math.min(240,atraso*(passou>fim-700?1.18:1.04)); setTimeout(girar,atraso); };
     setTimeout(girar,60); });
   /** @type {HTMLElement} */(tela.querySelector(".bau-coletar")).onclick=()=>{ if(!tela.classList.contains("pronto")) return; premios.forEach(p=>p.aplicar()); tela.classList.remove("vis"); setTimeout(()=>{ tela.innerHTML=""; },250);
-    pausado=false; som("moeda"); if(filaRamo.length||filaEsp.length||(J&&J.niveisPend>0)) proximaEscolha(); };
+    defPausado(false); som("moeda"); if(filaRamo.length||filaEsp.length||(J&&J.niveisPend>0)) proximaEscolha(); };
 }
-function chuvaMoedas(el,n){ for(let i=0;i<n;i++){ const m=document.createElement("i"); m.className="moeda-voa"; m.style.setProperty("--x",(Math.random()*2-1)*160+"px"); m.style.setProperty("--y",-(80+Math.random()*160)+"px");
+export function chuvaMoedas(el,n){ for(let i=0;i<n;i++){ const m=document.createElement("i"); m.className="moeda-voa"; m.style.setProperty("--x",(Math.random()*2-1)*160+"px"); m.style.setProperty("--y",-(80+Math.random()*160)+"px");
     m.style.setProperty("--d",(0.8+Math.random()*0.7)+"s"); m.style.setProperty("--r",(Math.random()*720-360)+"deg"); m.style.animationDelay=(Math.random()*0.25)+"s"; el.appendChild(m); setTimeout(()=>m.remove(),1800); } }
 
 // ================================================================ fim de mapa, portais, derrota
-function vencerChefe(e){ diaria("chefes");
+export function vencerChefe(e){ diaria("chefes");
   eventosVitoria(e);
   J.escuroFixo=0; J.escuroAlvo=0; J.perigos=[]; e.puxao=false;
   R.xp=J.xp; R.nivel=J.nivel;
@@ -464,13 +479,13 @@ function vencerChefe(e){ diaria("chefes");
   J.portalEm=6;
 }
 // capa do portal: a arte de abertura do reino recortada, com moldura na cor do elemento
-function capaReino(u){ const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`]; if(!img||!img.pronta) return null;
+export function capaReino(u){ const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`]; if(!img||!img.pronta) return null;
   const c=document.createElement("canvas"); c.width=240; c.height=150; const g=c.getContext("2d"), e=Math.max(c.width/img.width,c.height/img.height); g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
   g.drawImage(img,(c.width-img.width*e)/2,(c.height-img.height*e)/2,img.width*e,img.height*e);
   const vg=g.createRadialGradient(120,75,40,120,75,150); vg.addColorStop(0,"rgba(0,0,0,0)"); vg.addColorStop(1,"rgba(0,0,0,.55)"); g.fillStyle=vg; g.fillRect(0,0,240,150); return c; }
 // a tela de portais pode esperar a arte das capas uma vez; enquanto espera, guarda as opções já sorteadas
-const PORTAIS={ops:null, jaEsperou:false};
-function mostrarPortais(){
+export const PORTAIS={ops:null, jaEsperou:false};
+export function mostrarPortais(){
   const era=D.eras_ordem[R.eraIdx], opcoes=PORTAIS.ops||embaralhar(D.universos.filter(u=>u.era===era&&u.id!==R.universo)).slice(0,3+((SIN.rm&&SIN.rm.portais)||0)+nivelLoja("oraculo"));
   // adianta a arte da abertura e o chão de cada portal (o resto vem quando o mapa começa)
   // as capas dos portais são a arte de abertura de cada reino: se ainda não chegaram, espera até 2,5 s (uma vez)
@@ -483,7 +498,7 @@ function mostrarPortais(){
       texto:`Inimigos de ${NOME_EL(u.elemento)}. ${dicaVantagem(u.elemento)}<br>Recompensa: ${rec}${rec==="Relíquia"?` (${u.reliquia.nome}: ${u.reliquia.efeito})`:""}`,
       acao:()=>aplicarPortal(u,rec) }; }));
 }
-function aplicarPortal(u,rec){
+export function aplicarPortal(u,rec){
   R.universo=u.id; R.selos.forEach(s=>s.trocaCd=0);
   const bussola=temRel("Bússola Enlouquecida"), itemExtra=()=>{ const k=escolha(["incenso","pedra","doce","pena","chamado"]); R.itens[k]++; return D.itens[k].nome; };
   const seguir=()=>{ if(bussola&&rec!=="Item"&&rec!=="Ovo Raro") toast(`Bússola: + ${itemExtra()}`); salvarRun(); iniciarMapa(); };
@@ -496,10 +511,10 @@ function aplicarPortal(u,rec){
     texto:`${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome} · ${D.linhagens[l.linhagem].nome}`,
     acao:()=>{ const vazio=R.selos.find(s=>!s.mon); if(vazio){ const o=ativos(); vazio.nivel=Math.max(1,Math.round(o.reduce((t,s)=>t+s.nivel,0)/o.length*0.6)); vazio.mon={id,rar:"raro",ramo:null}; } else R.reserva.push({id,rar:"raro",ramo:null}); seguir(); } }; }));
 }
-function salvarRun(){ RUN_SALVA=JSON.parse(JSON.stringify({...R, selos:R.selos.map(s=>({nivel:s.nivel,pod:s.pod,mod:s.mod,esp:s.esp??null,asc:s.asc||null,mon:s.mon,trocaCd:0}))})); gravar(); }
-function carregarRun(s){ R=JSON.parse(JSON.stringify(s)); R.st=R.st||novoSt(); }
+export function salvarRun(){ defRunSalva(JSON.parse(JSON.stringify({...R, selos:R.selos.map(s=>({nivel:s.nivel,pod:s.pod,mod:s.mod,esp:s.esp??null,asc:s.asc||null,mon:s.mon,trocaCd:0}))}))); gravar(); }
+export function carregarRun(s){ defR(JSON.parse(JSON.stringify(s))); R.st=R.st||novoSt(); }
 // resumo da run na tela de fim: de onde veio o dano, a reação mais usada e o que mais machucou (com uma dica para a próxima)
-function resumoRun(){ const st=R.st||/** @type {Partial<EstatisticasRun>} */({}), pf=st.porFonte||{}, tot=Object.values(pf).reduce((a,b)=>a+b,0); if(!(tot>0)) return "";
+export function resumoRun(){ const st=R.st||/** @type {Partial<EstatisticasRun>} */({}), pf=st.porFonte||{}, tot=Object.values(pf).reduce((a,b)=>a+b,0); if(!(tot>0)) return "";
   /** nome e cor de cada fonte de dano @type {Record<string,[string,string]>} */
   const N={reliquia:["Relíquias","#e8c070"],lenda:["Lenda","#ffe6a6"],basico:["Ataque básico","#c8d0e0"],habilidade:["Habilidades","#7fc8ff"],reacao:["Reações","#ffb040"],especial:["Especiais","#c58cff"],despertar:["Despertar","#ffd34a"],combinado:["Combinado","#ff8ab0"],ambiente:["Ambiente","#9ff07a"]};
   const linhas=Object.entries(pf).map(([k,v])=>/** @type {[string,number]} */([k,v/tot*100])).filter(([,q])=>q>=2).sort((a,b)=>b[1]-a[1]).slice(0,5)
@@ -507,8 +522,8 @@ function resumoRun(){ const st=R.st||/** @type {Partial<EstatisticasRun>} */({})
   const re=Object.entries(st.reacoes||{}).sort((a,b)=>b[1]-a[1])[0], rec=(st.recContato||0)+(st.recBala||0), pc=rec>0? st.recContato/rec : 0;
   const dica= rec<=0? "" : pc>0.65? "A maior parte do dano que você levou veio de <b>encostar na horda</b>: guarde a esquiva para atravessar o cerco." : pc<0.4? "A maior parte do dano que você levou veio de <b>golpes e projéteis</b>: saia das marcas no chão antes do golpe." : "Você levou dano tanto da horda quanto dos golpes: troque de lugar antes de ficar cercado.";
   return `<div class="resumo-dano"><div class="rd-titulo">De onde veio o seu dano</div>${linhas}${re?`<div class="rd-nota">Reação mais usada: <b>${re[0]}</b> (${re[1]}×)</div>`:""}${dica?`<div class="rd-nota">${dica}</div>`:""}</div>`; }
-function derrota(){
-  rodando=false; if(SIM.aoDerrota){ SIM.aoDerrota(); return; } const ess=Math.round((R.essenciaRun+Math.floor((R.abatesPeso??R.abates)/15))*(1+passiva("essencia"))*(1+MOD("ouro"))*relMods().ess*bonusLoja("ganancia")); META.essencia+=ess; RUN_SALVA=null; gravar();
+export function derrota(){
+  defRodando(false); if(SIM.aoDerrota){ SIM.aoDerrota(); return; } const ess=Math.round((R.essenciaRun+Math.floor((R.abatesPeso??R.abates)/15))*(1+passiva("essencia"))*(1+MOD("ouro"))*relMods().ess*bonusLoja("ganancia")); META.essencia+=ess; defRunSalva(null); gravar();
   // fim de run que puxa para a próxima: recorde, quanto falta para a próxima melhoria e atalho para o Santuário
   const recorde=R.profundidade>(R.recordeAntes??0)&&R.profundidade>0;
   const prox=LOJA.filter(it=>nivelLoja(it.id)<it.max).sort((a,b)=>precoLoja(a)-precoLoja(b))[0], podem=lojaAcessivel();
@@ -520,15 +535,15 @@ function derrota(){
 }
 
 // ================================================================ especial individual (escolhido pelo jogador, dispara sozinho)
-function recargaEspecial(s){ const r=D.especial_regras; return Math.max(r.recarga_min_seg, r.recarga_base_seg*(1-r.reducao_por_nivel*Math.max(0,s.nivel-NIV[1]))); }
-function nomeEspecial(s){ const op=D.especiais[L(s).classe][s.esp]; return est(s)===3? `${op[0]} · ${ramoObj(s).supremo}` : op[0]; }
-function escolherEspecial(s){
+export function recargaEspecial(s){ const r=D.especial_regras; return Math.max(r.recarga_min_seg, r.recarga_base_seg*(1-r.reducao_por_nivel*Math.max(0,s.nivel-NIV[1]))); }
+export function nomeEspecial(s){ const op=D.especiais[L(s).classe][s.esp]; return est(s)===3? `${op[0]} · ${ramoObj(s).supremo}` : op[0]; }
+export function escolherEspecial(s){
   if(!s.mon||s.esp!=null) return proximaEscolha();
   const ops=D.especiais[L(s).classe];
   mostrarCartas(`Especial de ${nomeForma(s)}`, `Escolha o especial deste Selo. Ele dispara sozinho a cada ~${Math.round(recargaEspecial(s))} s; no Supremo fica 50% mais forte. Trocar de monstro mantém a escolha.`,
     ops.map((o,i)=>({titulo:o[0], texto:o[1], raridade:"epico", sprite:spriteSelo(s), acao:()=>{ s.esp=i; s.cdEsp=6; proximaEscolha(); }})));
 }
-function dispararEspecial(s,a,el,cor){
+export function dispararEspecial(s,a,el,cor){
   const m=est(s)===3?D.especial_regras.bonus_supremo:1, d=a.dano*m, P=J.jogador, cls=L(s).classe, op=s.esp;
   R.st.especiais++; if(s._nomeMapa!==R.profundidade){ s._nomeMapa=R.profundidade; texto(s.x,s.y-18,nomeEspecial(s),cor,13); }   /* nome do especial só na 1ª vez do mapa */ anel(s.x,s.y,24,"#ffffff",.4); particulas(s.x,s.y,cor,20,110,2); tremor(4);
   const naTela=f=>J.inimigos.forEach(e=>{ if(e.hp>0&&Math.abs(e.x-P.x)<VW/2+10&&Math.abs(e.y-P.y)<VH/2+10) f(e); });
@@ -555,7 +570,7 @@ function dispararEspecial(s,a,el,cor){
   }
 }
 // ================================================================ especial combinado (muda conforme o time)
-function tipoCombinado(){
+export function tipoCombinado(){
   const eq=ativos(), F=D.combinado_regras.forca;
   for(const n of R.elos){ const e=D.elos.find(x=>x.nome===n); if(e&&eq.some(s=>s.mon.id===e.a)&&eq.some(s=>s.mon.id===e.b)) return {tipo:"elo",nome:n.replace(" (fusão)",""),forca:F.elo}; }
   if(eq.length===3){ const li=linhagemDe(eq[0]); if(li!=="errante"&&eq.every(s=>linhagemDe(s)===li)) return {tipo:"linhagem",chave:li,nome:D.combinados_linhagem[li],forca:F.linhagem};
@@ -565,10 +580,10 @@ function tipoCombinado(){
   for(let i=0;i<els.length;i++) for(let j=i+1;j<els.length;j++){ const r=REAC[[els[i],els[j]].sort().join("|")]; if(r) return {tipo:"reacao",a:els[i],b:els[j],nome:`${r.nome} Suprema`,forca:F.reacao}; }
   return {tipo:"basico",nome:"Investida Conjunta",forca:F.basico};
 }
-function usarCombinado(){
+export function usarCombinado(){
   if(!J||pausado||J.comb>0||SIM.semEspeciais||!ativos().length) return;
   const c=tipoCombinado(), P=J.jogador, eq=ativos(), els=[...new Set(eq.map(elementoDe))];
-  J.comb=D.combinado_regras.recarga_seg; R.st.combinados++; FONTE="combinado";
+  J.comb=D.combinado_regras.recarga_seg; R.st.combinados++; defFonte("combinado");
   const total=eq.reduce((t,s)=>t+atrib(s).dano,0)*7*c.forca;
   const naTela=f=>J.inimigos.forEach(e=>{ if(e.hp>0&&Math.abs(e.x-P.x)<VW/2+10&&Math.abs(e.y-P.y)<VH/2+10) f(e); });
   texto(P.x,P.y-28,c.nome,"#e0b0ff",26); J.flash={vida:.45,cor:COR[els[0]]}; tremor(14); parar(0.18); vfxCombinado(c,P);

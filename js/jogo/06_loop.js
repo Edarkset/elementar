@@ -1,38 +1,51 @@
 // Elementar · entrada (toque, teclado) e laço principal do jogo
-// Parte 6 de 11 da lógica do jogo: os arquivos de js/jogo/ são carregados em ordem pelo index.html e
-// compartilham o mesmo escopo global (funções e constantes de uma parte valem nas outras).
-"use strict";
+// Parte 6 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
+// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
+import "./05_arte.js";   // ordem de carga: os módulos são avaliados de 01 a 11, como antes (cada um puxa o anterior primeiro)
+import { $, agendar, ativos, atrib, atualizarReliquias, calcularSinergia, COR, cv, defFonte, dist2, elementoDe, FONTE, J, L, MAPA_SEG, MINI_SEG,
+  pausado, R, redimensionar, rnd, rodando, SIM, SIN, som, temRel, VH, VW } from "./01_nucleo.js";
+import { agirSelo, anel, curar, danoSimples, DIF, dificuldade, emArea, ferir, hordaF, maisProximo, MOD, parar, particulas, raio, spawnChefe,
+  spawnInimigo, texto, tremor, xpPara } from "./02_combate.js";
+import { abrirBolsa, abrirNivel, atualizarMoedasBaus, checarAncestral, chocar, CINE, derrota, efeitoEvolucao, mostrarPortais, pegarOvo,
+  pegarOvoAncestral, spawnFilhote, spawnOvo, surgirOvoAncestral, tentarCaptura, usarCombinado } from "./03_progressao.js";
+import { aplicarElementoNoSolo, atualizarSolo, CEL, efeitoSoloInimigo, soloEm } from "./04_ambiente.js";
+import { atualizarCena, danificarProp, lascas, passoAbertura, propNoPonto, pularAbertura, rajada } from "./07_cenario.js";
+import { ameacaDiretor, atualizarArvore, atualizarAvisos, atualizarConquistas, atualizarDiretor, atualizarEventos, atualizarLenda, atualizarLuz,
+  atualizarVfx, custo, efCirculo, efExplosao, efPilar, lendaReviver, luzFlash, multDiretor, passiva, tal, textoUnico } from "./08_sistemas.js";
+import { atualizarCriaturas, atualizarPerigos, criarProp, feriJogador, iaChefe, passoCriatura, pintarSolo } from "./09_criaturas.js";
+import { chao, desenhar, desenharEquipe, desenharNinho, hud, quadroHeroi, toast } from "./10_desenho.js";
+import { pausar } from "./11_menu.js";
 // ================================================================ entrada
-const teclas=new Set(); let toque=null, ultimoToque=0;
+export const teclas=new Set(); export let toque=null, ultimoToque=0;
 addEventListener("pointerdown",()=>pularAbertura());
 addEventListener("keydown",e=>{ pularAbertura(); const k=e.key.toLowerCase(); teclas.add(k); if(e.key===" ") usarDespertar(); if(k==="shift") esquivar(); if(k==="e") usarCombinado(); });
 addEventListener("keyup",e=>teclas.delete(e.key.toLowerCase()));
 cv.addEventListener("pointerdown",e=>{ const agora=performance.now(); if(agora-ultimoToque<260) esquivar(); ultimoToque=agora;
   toque={ox:e.clientX,oy:e.clientY,x:e.clientX,y:e.clientY,id:e.pointerId}; cv.setPointerCapture(e.pointerId); });
 cv.addEventListener("pointermove",e=>{ if(toque&&e.pointerId===toque.id){ toque.x=e.clientX; toque.y=e.clientY; } });
-const soltar=e=>{ if(toque&&e.pointerId===toque.id) toque=null; }; cv.addEventListener("pointerup",soltar); cv.addEventListener("pointercancel",soltar);
+export const soltar=e=>{ if(toque&&e.pointerId===toque.id) toque=null; }; cv.addEventListener("pointerup",soltar); cv.addEventListener("pointercancel",soltar);
 document.addEventListener("visibilitychange",()=>{ if(document.hidden&&rodando&&!pausado) pausar(); });
 $("btnUlt").onclick=()=>usarDespertar(); $("btnComb").onclick=()=>usarCombinado(); $("btnEsq").onclick=()=>esquivar(); $("btnBolsa").onclick=()=>abrirBolsa();
 $("btnPausa").onclick=()=>{ if(!pausado) pausar(); };
-function esquivar(){ if(!J||pausado||J.dashCd>0) return; J.usouEsquiva=true; J.dashCd=D.esquiva.recarga_seg; J.dashT=0.15; J.invuln=D.esquiva.invulneravel_seg; particulas(J.jogador.x,J.jogador.y,"#9fd6d0",8,50); }
-function usarDespertar(){
+export function esquivar(){ if(!J||pausado||J.dashCd>0) return; J.usouEsquiva=true; J.dashCd=D.esquiva.recarga_seg; J.dashT=0.15; J.invuln=D.esquiva.invulneravel_seg; particulas(J.jogador.x,J.jogador.y,"#9fd6d0",8,50); }
+export function usarDespertar(){
   if(!J||J.ult<100||pausado) return; J.ult=0; J.desp=D.despertar.duracao_seg; rajada(J.jogador.x,J.jogador.y,90,2.5); R.st.despertares++; ativos().forEach(s=>s.tmpRamo=null);
-  FONTE="despertar"; const els=[...new Set(ativos().map(elementoDe))], dano=ativos().reduce((t,s)=>t+atrib(s).dano,0)*2.5;
+  defFonte("despertar"); const els=[...new Set(ativos().map(elementoDe))], dano=ativos().reduce((t,s)=>t+atrib(s).dano,0)*2.5;
   for(const e of J.inimigos){ if(Math.abs(e.x-J.jogador.x)<VW/2+10&&Math.abs(e.y-J.jogador.y)<VH/2+10) els.forEach(el=>ferir(e,dano/els.length,el)); }
   ativos().forEach(s=>efeitoEvolucao(s)); calcularSinergia(); desenharEquipe();
   J.flash={vida:.5,cor:COR[els[0]]}; tremor(12); parar(0.15); texto(J.jogador.x,J.jogador.y-24,"Despertar Elemental!","#ffd34a",24);
 }
 
 // ================================================================ loop
-let ultimoT=0;
+export let ultimoT=0;
 // qualidade automática: mede o tempo de cada quadro e, se o aparelho não der conta, reduz primeiro o que menos se nota
-let QUAL=2, MSQ=16.7, tQual=0, ultimoQuadro=0, desenhouPausado=false;
+export let QUAL=2, MSQ=16.7, tQual=0, ultimoQuadro=0, desenhouPausado=false;
 // - limite de 60 quadros por segundo (telas de 120 Hz desenhavam o dobro sem ganho);
 // - pausado (cartas, baú, cenas) ou em segundo plano: desenha um quadro e para, em vez de redesenhar a mesma imagem 60 vezes por segundo;
 // - qualidade pelo tempo real entre quadros (inclui o trabalho da placa de vídeo, que é onde o celular esquenta)
 document.addEventListener("visibilitychange",()=>{ ultimoT=performance.now(); desenhouPausado=false; });
-function mudarQual(q){ if(q===QUAL) return; QUAL=q; tQual=performance.now()/1000; redimensionar(); if(typeof chao!=="undefined"&&chao&&chao.pat) chao.pat=null; }
-function passo(t){ requestAnimationFrame(passo); if(document.hidden) return;
+export function mudarQual(q){ if(q===QUAL) return; QUAL=q; tQual=performance.now()/1000; redimensionar(); if(typeof chao!=="undefined"&&chao&&chao.pat) chao.pat=null; }
+export function passo(t){ requestAnimationFrame(passo); if(document.hidden) return;
   if(t-ultimoQuadro<15.5) return; const intervalo=t-ultimoQuadro; ultimoQuadro=t;
   let dt=Math.min(0.05,(t-ultimoT)/1000||0); ultimoT=t;
   if(!rodando||!J) return; const parado=pausado||CINE.ativa;
@@ -41,8 +54,8 @@ function passo(t){ requestAnimationFrame(passo); if(document.hidden) return;
   if(J){ desenhar(dt); desenhouPausado=parado;
     if(!parado&&intervalo<200){ MSQ=MSQ*0.95+intervalo*0.05; const agora=t/1000;
       if(MSQ>21&&QUAL>0&&agora-tQual>2.5){ mudarQual(QUAL-1); MSQ=16.7; } else if(MSQ<17.6&&QUAL<2&&agora-tQual>10){ mudarQual(QUAL+1); } } } }
-function tick(dt){ if(J.hitstop>0){ J.hitstop-=dt; return; } if(J.lento>0){ J.lento-=dt; dt*=0.3; } if(J.deus) J.vida=J.vidaMax; atualizar(dt); if(J&&J.deus) J.vida=J.vidaMax; }
-function atualizar(dt){
+export function tick(dt){ if(J.hitstop>0){ J.hitstop-=dt; return; } if(J.lento>0){ J.lento-=dt; dt*=0.3; } if(J.deus) J.vida=J.vidaMax; atualizar(dt); if(J&&J.deus) J.vida=J.vidaMax; }
+export function atualizar(dt){
   if(J.intro&&passoAbertura(dt)) return;
   J.t+=dt; const P=J.jogador, rm=SIN.rm;
   if(J.agenda.length){ const vence=J.agenda.filter(a=>a.t<=J.t); J.agenda=J.agenda.filter(a=>a.t>J.t); vence.forEach(a=>a.fn()); if(!J) return; }
@@ -98,14 +111,14 @@ function atualizar(dt){
   J.inimigos=J.inimigos.filter(e=>e.hp>0&&((Math.abs(e.x-P.x)<VW*1.6&&Math.abs(e.y-P.y)<VH*1.6)||e.chefe||e.mini));
   atualizarCena(dt); if(!J) return; if(J.imparavel>0) J.imparavel-=dt; atualizarReliquias(dt); atualizarPerigos(dt); atualizarCriaturas(dt); atualizarAvisos(dt); atualizarVfx(dt); atualizarLuz(dt); if(tal.regen()+passiva("regen")>0&&!custo("regen_zero")) J.vida=Math.min(J.vidaMax,J.vida+J.vidaMax*(tal.regen()+passiva("regen"))*dt); atualizarArvore(dt); atualizarConquistas(dt); atualizarLenda(dt);
   for(const b of J.balas){ b.x+=b.vx*dt; b.y+=b.vy*dt; b.vida-=dt;
-    if(b.contraInimigo){ for(const o of J.inimigos){ if(o===b.dono||o.hp<=0) continue; if(dist2(b,o)<(o.r+2)*(o.r+2)){ b.vida=0; const f=FONTE; FONTE="ambiente"; danoSimples(o,b.dano*3); FONTE=f; break; } } }
+    if(b.contraInimigo){ for(const o of J.inimigos){ if(o===b.dono||o.hp<=0) continue; if(dist2(b,o)<(o.r+2)*(o.r+2)){ b.vida=0; const f=FONTE; defFonte("ambiente"); danoSimples(o,b.dano*3); defFonte(f); break; } } }
     else if(J.invuln<=0&&dist2(b,P)<25){ b.vida=0; feriJogador(b.dano,b.el); if(b.cura&&b.dono&&b.dono.hp>0) b.dono.hp=Math.min(b.dono.max,b.dono.hp+b.dano*0.5); }
     if(b.solo&&Math.random()<dt*2.5) pintarSolo(b.x,b.y,3,b.solo,b.solo==="fogo"?5:undefined);
     if(b.vida>0&&J.cena){ const q=propNoPonto(b.x,b.y,1); if(q){ b.vida=0; danificarProp(q,b.quebra?q.max*2:DIF.hp*dificuldade()*0.35,null); particulas(b.x,b.y,"#ff8a6a",3,40); } }
     if(b.vida<=0&&!b.acabou){ b.acabou=true; if(b.deixa&&J.cena) criarProp(b.deixa,b.x,b.y); if(b.deixaLascas&&J.cena){ b.deixaLascas.x=b.x; b.deixaLascas.y=b.y; lascas(b.deixaLascas,8,true); } } }
   J.balas=J.balas.filter(b=>b.vida>0);
   // projéteis
-  for(const p of J.proj){ FONTE=p.fonte||"basico";
+  for(const p of J.proj){ defFonte(p.fonte||"basico");
     if(p.alvo){ if(p.alvo.hp<=0) p.alvo=maisProximo(p,130); if(p.alvo){ const dx=p.alvo.x-p.x, dy=p.alvo.y-p.y, d=Math.hypot(dx,dy)||1; p.vx=dx/d*p.vel; p.vy=dy/d*p.vel; } }
     p.x+=p.vx*dt; p.y+=p.vy*dt; p.vida-=dt;
     for(const e of J.inimigos){ if(e.hp<=0||(p.ja&&p.ja.has(e))) continue; if(dist2(p,e)<(e.r+p.r)*(e.r+p.r)){
@@ -119,7 +132,7 @@ function atualizar(dt){
   }
   J.proj=J.proj.filter(p=>p.vida>0);
   // crias, totens, armadilhas e zonas
-  for(const c of J.crias){ c.vida-=dt; c.cd-=dt; FONTE=c.fonte||"basico";
+  for(const c of J.crias){ c.vida-=dt; c.cd-=dt; defFonte(c.fonte||"basico");
     if(c.guarda){ const a=J.t*3+J.crias.indexOf(c); c.x+=(P.x+Math.cos(a)*16-c.x)*Math.min(1,dt*5); c.y+=(P.y+Math.sin(a)*16-c.y)*Math.min(1,dt*5); emArea(c.x,c.y,6,e=>{ if(c.cd<=0){ ferir(e,c.dano,c.el); c.cd=.4; } }); continue; }
     // o servo guarda o alvo por 0,2 s em vez de procurar o mais próximo em toda a horda a cada quadro
     c.tAlvo=(c.tAlvo||0)-dt; if(!c.alvoE||c.alvoE.hp<=0||c.tAlvo<=0){ c.alvoE=maisProximo(c,90); c.tAlvo=0.2; }
@@ -127,11 +140,11 @@ function atualizar(dt){
       if(d<e.r+(c.gigante?7:3)&&c.cd<=0){ if(c.gigante){ emArea(c.x,c.y,18,o=>ferir(o,c.dano,c.el)); anel(c.x,c.y,18,c.cor,.3); tremor(2);} else ferir(e,c.dano,c.el); c.cd=c.gigante?.8:.5; } }
     if(c.vida<=0&&c.kami){ emArea(c.x,c.y,16,o=>ferir(o,c.dano*3,c.el)); anel(c.x,c.y,16,c.cor,.35); particulas(c.x,c.y,c.cor,8,70); } }
   J.crias=J.crias.filter(c=>c.vida>0);
-  for(const t of J.totens){ t.vida-=dt; t.cd-=dt; FONTE="basico"; if(t.cd<=0){ const e=maisProximo(t,80); if(e){ const dx=e.x-t.x, dy=e.y-t.y+4, d=Math.hypot(dx,dy)||1; J.proj.push({fonte:FONTE,alvoProp:e.ehProp?e:null,x:t.x,y:t.y-4,vx:dx/d*140,vy:dy/d*140,dano:t.dano,el:t.el,cor:t.cor,vida:1,perf:1,r:2}); } t.cd=.8; } }
+  for(const t of J.totens){ t.vida-=dt; t.cd-=dt; defFonte("basico"); if(t.cd<=0){ const e=maisProximo(t,80); if(e){ const dx=e.x-t.x, dy=e.y-t.y+4, d=Math.hypot(dx,dy)||1; J.proj.push({fonte:FONTE,alvoProp:e.ehProp?e:null,x:t.x,y:t.y-4,vx:dx/d*140,vy:dy/d*140,dano:t.dano,el:t.el,cor:t.cor,vida:1,perf:1,r:2}); } t.cd=.8; } }
   J.totens=J.totens.filter(t=>t.vida>0);
-  for(const a of J.armadilhas){ a.vida-=dt; FONTE=a.fonte||"habilidade"; const e=maisProximo(a,8); if(e){ a.vida=0; emArea(a.x,a.y,22,o=>{ ferir(o,a.dano,a.el); if(a.raiz) o.congela=2; }); anel(a.x,a.y,22,a.cor,.4); if(SIM.ativo) particulas(a.x,a.y,a.cor,12,90); else efExplosao(a.x,a.y,22,a.el,false); tremor(2); } }
+  for(const a of J.armadilhas){ a.vida-=dt; defFonte(a.fonte||"habilidade"); const e=maisProximo(a,8); if(e){ a.vida=0; emArea(a.x,a.y,22,o=>{ ferir(o,a.dano,a.el); if(a.raiz) o.congela=2; }); anel(a.x,a.y,22,a.cor,.4); if(SIM.ativo) particulas(a.x,a.y,a.cor,12,90); else efExplosao(a.x,a.y,22,a.el,false); tremor(2); } }
   J.armadilhas=J.armadilhas.filter(a=>a.vida>0);
-  for(const z of J.zonas){ z.vida-=dt; FONTE=z.fonte||"habilidade";
+  for(const z of J.zonas){ z.vida-=dt; defFonte(z.fonte||"habilidade");
     if(z.tipo==="circulo"&&z.puxa) emArea(z.x,z.y,z.r,e=>{ e.x+=(z.x-e.x)*dt*1.5; e.y+=(z.y-e.y)*dt*1.5; });
     if(z.tipo==="chuva"){ if(z.segue){ z.x=J.jogador.x; z.y=J.jogador.y; } z.cd-=dt; if(z.cd<=0){ z.cd=.25; emArea(z.x,z.y,z.r,e=>ferir(e,z.dano,z.el)); for(let i=0;i<3;i++){ const a=Math.random()*Math.PI*2, r=Math.random()*z.r; J.efeitos.push({x:z.x+Math.cos(a)*r,y:z.y+Math.sin(a)*r-10,x2:z.x+Math.cos(a)*r,y2:z.y+Math.sin(a)*r,cor:z.cor,vida:.15,max:.15,linha:true}); } } }
     if(z.tipo==="rastro"){ z.cd=(z.cd||0)-dt; if(z.cd<=0){ z.cd=.5; emArea(z.x,z.y,z.r,e=>ferir(e,z.dano,z.el)); } }
@@ -173,10 +186,10 @@ function atualizar(dt){
   hud();
 }
 // subida de nível: câmera lenta curta, onda dourada, coluna de luz e faíscas; o "NÍVEL X" grande aparece no HUD
-function efeitoNivel(){ if(SIM.ativo||!J) return; const P=J.jogador; J.lento=Math.max(J.lento||0,0.35); luzFlash(P.x,P.y,"#ffe080",110,0.8);
+export function efeitoNivel(){ if(SIM.ativo||!J) return; const P=J.jogador; J.lento=Math.max(J.lento||0,0.35); luzFlash(P.x,P.y,"#ffe080",110,0.8);
   anel(P.x,P.y,22,"#ffffff",.35); anel(P.x,P.y,70,"#ffd34a",.7); particulas(P.x,P.y,"#fff3a0",26,140,2);
   J.colunaNivel={t:0}; const el=$("nivelPop"); if(el){ el.textContent=`Nível ${J.nivel+1}!`; el.classList.remove("vis"); void el.offsetWidth; el.classList.add("vis"); } }
-function ganharXp(v){
+export function ganharXp(v){
   v*=tal.xp()*(1+passiva("xp")); J.xp+=v; for(const ov of R.ninho) ov.prog+=v;
   const prontos=R.ninho.filter(o=>o.prog>=o.alvo); if(prontos.length){ R.ninho=R.ninho.filter(o=>o.prog<o.alvo); prontos.forEach(chocar); }
   desenharNinho();

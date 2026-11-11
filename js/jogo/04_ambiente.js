@@ -1,9 +1,14 @@
 // Elementar · física do ambiente: o chão reage aos elementos
-// Parte 4 de 11 da lógica do jogo: os arquivos de js/jogo/ são carregados em ordem pelo index.html e
-// compartilham o mesmo escopo global (funções e constantes de uma parte valem nas outras).
-"use strict";
+// Parte 4 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
+// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
+import "./03_progressao.js";   // ordem de carga: os módulos são avaliados de 01 a 11, como antes (cada um puxa o anterior primeiro)
+import { ativos, defFonte, elementoDe, FONTE, hexRgb, J, lg, Q, R, ramoObj, rnd, semente, SIM, tom, UNIV, VH, VW } from "./01_nucleo.js";
+import { curar, danoSimples } from "./02_combate.js";
+import { abismoEm, estruturaU, folhaU, lagoEm, soloEstrutura, soloLago } from "./07_cenario.js";
+import { pctMax } from "./09_criaturas.js";
+import { chao } from "./10_desenho.js";
 // ================================================================ física do ambiente: o chão reage aos elementos
-const CEL=8, INTER={}; D.interacoes.forEach(([el,de,vira])=>{ INTER[el+"|"+de]=vira; });
+export const CEL=8, INTER={}; D.interacoes.forEach(([el,de,vira])=>{ INTER[el+"|"+de]=vira; });
 // chão que reage aos monstros: água molha, fogo chamusca, terra racha (somem sozinhos com o tempo)
 Object.assign(INTER,{"agua|chao":"molhado","agua|queimado":"molhado","agua|rachado":"lama","agua|molhado":"molhado",
   "fogo|chao":"queimado","fogo|molhado":"vapor","fogo|rachado":"queimado","raio|molhado":"eletrico","terra|chao":"rachado","terra|molhado":"lama",
@@ -12,36 +17,36 @@ Object.assign(INTER,{"agua|chao":"molhado","agua|queimado":"molhado","agua|racha
   "gelo|agua":"gelo","gelo|molhado":"gelo","gelo|lama":"gelo","gelo|eletrico":"gelo","gelo|fogo":"agua","gelo|vapor":"agua","gelo|queimado":"molhado",
   "fogo|gelo":"agua"});
 // formas de gelo (pelo nome do ramo): contam como "gelo" para o chão
-const GELADO=/gelo|neve|glacia|inverno|congel/i;
-function elementoNoSolo(s){ const el=elementoDe(s); if(el!=="agua") return el; const r=ramoObj(s); if((r&&GELADO.test(r.nome+" "+(r.supremo||"")))||frio()) return "gelo"; return el; }
+export const GELADO=/gelo|neve|glacia|inverno|congel/i;
+export function elementoNoSolo(s){ const el=elementoDe(s); if(el!=="agua") return el; const r=ramoObj(s); if((r&&GELADO.test(r.nome+" "+(r.supremo||"")))||frio()) return "gelo"; return el; }
 // o chão mudou embaixo de um monstro: um sinal pequeno para a mudança ser vista (com limite, para não poluir)
-const SINAL_SOLO={vapor:["#e8eef4",3,"fumaca"],gelo:["#cfefff",3,"estrela"],agua:["#7fc8ff",3,null],grama:["#7fd05a",2,"folha"],vinha:["#4f9a3c",2,"folha"],fogo:["#ffb040",3,"faisca"],
+export const SINAL_SOLO={vapor:["#e8eef4",3,"fumaca"],gelo:["#cfefff",3,"estrela"],agua:["#7fc8ff",3,null],grama:["#7fd05a",2,"folha"],vinha:["#4f9a3c",2,"folha"],fogo:["#ffb040",3,"faisca"],
   eletrico:["#fff3a0",2,"faisca"],cinza:["#9a9690",2,"fumaca"],lama:["#7a5a3a",2,null],luz:["#fff3c4",2,"estrela"],sombra:["#9070c0",2,"fumaca"],queimado:["#5a4a40",1,"fumaca"],molhado:["#9fd0ff",1,null]};
-function sinalSolo(cx,cy,vira){ const sg=SINAL_SOLO[vira]; if(!sg||SIM.ativo||J.parts.length>300) return; J._sinalT=J._sinalT||0; if(J.t-J._sinalT<0.05) return; J._sinalT=J.t;
+export function sinalSolo(cx,cy,vira){ const sg=SINAL_SOLO[vira]; if(!sg||SIM.ativo||J.parts.length>300) return; J._sinalT=J._sinalT||0; if(J.t-J._sinalT<0.05) return; J._sinalT=J.t;
   for(let i=0;i<sg[1];i++){ const v=10+Math.random()*16, a=-Math.PI/2+rnd(-0.9,0.9); J.parts.push({x:cx*CEL+4+rnd(-3,3),y:cy*CEL+4+rnd(-2,2),vx:Math.cos(a)*v,vy:Math.sin(a)*v,vida:rnd(.5,.9),max:.9,cor:sg[0],tam:sg[2]==="fumaca"?3:1,forma:sg[2]||undefined}); } }
-const DUR={agua:40,lama:25,fogo:5,cinza:60,vapor:3,eletrico:4,grama:60,vinha:15,sombra:15,luz:15,gelo:60,chao:40,molhado:14,queimado:12,rachado:16};
-const DEPOIS={fogo:"cinza",eletrico:"agua",vinha:"grama"};
-function hash2(x,y,s){ let h=(x*374761393+y*668265263+s*982451653)|0; h=Math.imul(h^(h>>>13),1274126177); return ((h^(h>>>16))>>>0)/4294967296; }
-function ruido(x,y,s){ const xi=Math.floor(x), yi=Math.floor(y), fx=x-xi, fy=y-yi, u=fx*fx*(3-2*fx), v=fy*fy*(3-2*fy);
+export const DUR={agua:40,lama:25,fogo:5,cinza:60,vapor:3,eletrico:4,grama:60,vinha:15,sombra:15,luz:15,gelo:60,chao:40,molhado:14,queimado:12,rachado:16};
+export const DEPOIS={fogo:"cinza",eletrico:"agua",vinha:"grama"};
+export function hash2(x,y,s){ let h=(x*374761393+y*668265263+s*982451653)|0; h=Math.imul(h^(h>>>13),1274126177); return ((h^(h>>>16))>>>0)/4294967296; }
+export function ruido(x,y,s){ const xi=Math.floor(x), yi=Math.floor(y), fx=x-xi, fy=y-yi, u=fx*fx*(3-2*fx), v=fy*fy*(3-2*fy);
   const a=hash2(xi,yi,s), b=hash2(xi+1,yi,s), c=hash2(xi,yi+1,s), d=hash2(xi+1,yi+1,s); return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v; }
-function terrenoBase(){ const u=UNIV[R.universo]; return D.terreno_especial[u.id]||D.terreno_natural[u.elemento]; }
+export function terrenoBase(){ const u=UNIV[R.universo]; return D.terreno_especial[u.id]||D.terreno_natural[u.elemento]; }
 // o solo natural de uma célula não muda durante o mapa: fica guardado (era recalculado, com ruído e busca de lagos, várias vezes por
 // inimigo a cada quadro; com a horda cheia isso era uma das maiores fatias da lógica)
-function soloNatural(cx,cy){ const M=J.soloNat||(J.soloNat=new Map()), k=(cx+32768)*65536+(cy+32768); let t=M.get(k); if(t!==undefined) return t;
+export function soloNatural(cx,cy){ const M=J.soloNat||(J.soloNat=new Map()), k=(cx+32768)*65536+(cy+32768); let t=M.get(k); if(t!==undefined) return t;
   const se=soloEstrutura(cx,cy); if(se) t=se; else { const [tipo,p]=terrenoBase(); const sem=R.universo.length*7+R.profundidade; t=ruido(cx/6,cy/6,sem)<p? tipo : "chao"; }
   if(J.cena){ if(M.size>30000) M.clear(); M.set(k,t); }   // só guarda com o cenário pronto (lagos e abismos já definidos)
   return t; }
-function soloEm(cx,cy){ if(!J.solo.size) return soloNatural(cx,cy); const k=cx+","+cy, m=J.solo.get(k); if(m){ if(m.ate>J.t) return m.t; J.solo.delete(k); if(DEPOIS[m.t]){ J.solo.set(k,{t:DEPOIS[m.t],ate:J.t+DUR[DEPOIS[m.t]]}); return DEPOIS[m.t]; } } return soloNatural(cx,cy); }
-function mudarSolo(x,y,tipo,dur){ if(estruturaU()&&J.cena&&abismoEm(x,y,0)) return; const cx=Math.floor(x/CEL), cy=Math.floor(y/CEL); J.solo.set(cx+","+cy,{t:tipo,ate:J.t+(dur??DUR[tipo]??30)}); }
-const frio=()=>terrenoBase()[0]==="gelo";
-function aplicarElementoNoSolo(x,y,el){
+export function soloEm(cx,cy){ if(!J.solo.size) return soloNatural(cx,cy); const k=cx+","+cy, m=J.solo.get(k); if(m){ if(m.ate>J.t) return m.t; J.solo.delete(k); if(DEPOIS[m.t]){ J.solo.set(k,{t:DEPOIS[m.t],ate:J.t+DUR[DEPOIS[m.t]]}); return DEPOIS[m.t]; } } return soloNatural(cx,cy); }
+export function mudarSolo(x,y,tipo,dur){ if(estruturaU()&&J.cena&&abismoEm(x,y,0)) return; const cx=Math.floor(x/CEL), cy=Math.floor(y/CEL); J.solo.set(cx+","+cy,{t:tipo,ate:J.t+(dur??DUR[tipo]??30)}); }
+export const frio=()=>terrenoBase()[0]==="gelo";
+export function aplicarElementoNoSolo(x,y,el){
   const cx=Math.floor(x/CEL), cy=Math.floor(y/CEL), atual=soloEm(cx,cy); let vira=INTER[el+"|"+atual]; if(!vira) return;
   if(vira==="fogo?"){ if(Math.random()>0.15) return; vira="fogo"; }
   if(vira==="fogo+"){ for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const v=soloEm(cx+dx,cy+dy); if(v==="grama"||v==="vinha") J.solo.set((cx+dx)+","+(cy+dy),{t:"fogo",ate:J.t+DUR.fogo}); } return; }
   if(el==="agua"&&frio()&&(vira==="lama"||vira==="agua"||vira==="molhado")) vira="gelo";
   if(vira!==atual){ J.solo.set(cx+","+cy,{t:vira,ate:J.t+(DUR[vira]??30)}); R.st.transformacoes++; sinalSolo(cx,cy,vira); }
 }
-function atualizarSolo(dt){
+export function atualizarSolo(dt){
   // cada monstro marca o chão embaixo dele e um pouco em volta (rastro largo, não uma célula só)
   J.tSolo-=dt; if(J.tSolo<=0){ J.tSolo=0.2; ativos().forEach(s=>{ const el=elementoNoSolo(s); aplicarElementoNoSolo(s.x,s.y+3,el); for(let i=0;i<2;i++) aplicarElementoNoSolo(s.x+rnd(-9,9),s.y+3+rnd(-6,6),el); }); }
   J.tFogo-=dt; if(J.tFogo<=0){ J.tFogo=0.5; const fogos=[]; J.solo.forEach((m,k)=>{ if(m.t==="fogo"&&m.ate>J.t) fogos.push(k); });
@@ -56,8 +61,8 @@ function atualizarSolo(dt){
   if(sj==="eletrico"&&!temEl("raio")&&J.invuln<=0) J.vida-=J.vidaMax*0.05*dt;
   if(sj==="luz") curar(J.vidaMax*0.01*dt);
 }
-function fatorVentoFogo(dx,dy){ const C=J.cena; if(!C||C.kit.submerso) return 1; const m=Math.min(1.5,C.Wm/45), d=dx*C.dx+dy*C.dy; return Math.max(0.2,1+d*m); }
-function efeitoSoloInimigo(e,dt){
+export function fatorVentoFogo(dx,dy){ const C=J.cena; if(!C||C.kit.submerso) return 1; const m=Math.min(1.5,C.Wm/45), d=dx*C.dx+dy*C.dy; return Math.max(0.2,1+d*m); }
+export function efeitoSoloInimigo(e,dt){
   const t=soloEm(Math.floor(e.x/CEL),Math.floor(e.y/CEL)); const r={vel:1,gelo:false};
   const marcar=el=>{ if(!e.status||J.t-e.status.t>3) e.status={el,t:J.t}; };
   switch(t){
@@ -68,20 +73,20 @@ function efeitoSoloInimigo(e,dt){
     case "vapor": e.cego=Math.max(e.cego,0.5); r.vel=0.8; break;
     case "molhado": r.vel=0.92; marcar("agua"); break;   // inimigo molhado: o próximo golpe de outro elemento vira reação
     case "queimado": marcar("fogo"); break;
-    case "fogo": marcar("fogo"); e.tSolo=(e.tSolo||0)-dt; if(e.tSolo<=0){ e.tSolo=0.5; const f=FONTE; FONTE="ambiente"; if(!((e.chefe||e.mini)&&e.el==="fogo")) danoSimples(e,pctMax(e,0.07)+2); FONTE=f; } break;
-    case "eletrico": marcar("raio"); e.tSolo=(e.tSolo||0)-dt; if(e.tSolo<=0){ e.tSolo=0.5; const f=FONTE; FONTE="ambiente"; if(!((e.chefe||e.mini)&&e.el==="raio")) danoSimples(e,pctMax(e,0.09)+3); FONTE=f; } break;
+    case "fogo": marcar("fogo"); e.tSolo=(e.tSolo||0)-dt; if(e.tSolo<=0){ e.tSolo=0.5; const f=FONTE; defFonte("ambiente"); if(!((e.chefe||e.mini)&&e.el==="fogo")) danoSimples(e,pctMax(e,0.07)+2); defFonte(f); } break;
+    case "eletrico": marcar("raio"); e.tSolo=(e.tSolo||0)-dt; if(e.tSolo<=0){ e.tSolo=0.5; const f=FONTE; defFonte("ambiente"); if(!((e.chefe||e.mini)&&e.el==="raio")) danoSimples(e,pctMax(e,0.09)+3); defFonte(f); } break;
   }
   return r;
 }
-const COR_SOLO={gelo:["#8fc4e0","#e8f8ff"],agua:["#3a7fd0","#7fc0ff"],lama:["#5a4028","#7a5838"],fogo:["#e8603c","#ffd34a"],grama:["#3f7a34","#6aa84f"],cinza:["#4a4650","#6a6670"],
+export const COR_SOLO={gelo:["#8fc4e0","#e8f8ff"],agua:["#3a7fd0","#7fc0ff"],lama:["#5a4028","#7a5838"],fogo:["#e8603c","#ffd34a"],grama:["#3f7a34","#6aa84f"],cinza:["#4a4650","#6a6670"],
   vapor:["#d8e4ee","#ffffff"],eletrico:["#3a6fd0","#f2d23a"],vinha:["#2c5a28","#5aa83c"],areia:["#b89a60","#d8bc80"],sombra:["#2a1840","#4a2a70"],luz:["#e8d080","#fff3c4"],
   molhado:["#7a8fae","#cfe6ff"],queimado:["#5e4a40","#ff8a3a"],rachado:["#f4efe6","#3a2a1c"]};
 // O terreno vira mancha orgânica: as células de 8 px formam um campo suave (interpolação com smoothstep + ruído na borda),
 // que recorta uma textura própria de cada tipo. Nada de escada de quadrados chapados por cima do piso pintado.
-const TEX_SOLO={}, TEX_K=3, TEX_N=64, BASE_TEX={};
+export const TEX_SOLO={}, TEX_K=3, TEX_N=64, BASE_TEX={};
 // molhado, rachado e queimado escurecem o piso por multiplicação (o desenho do chão continua por baixo, como pedra molhada de verdade)
-const SOLO_MULT={molhado:1, rachado:1, queimado:1};
-function texturaSolo(t){ if(TEX_SOLO[t]) return TEX_SOLO[t]; const cor=COR_SOLO[t], N=TEX_N, c=document.createElement("canvas"); c.width=c.height=N*TEX_K;
+export const SOLO_MULT={molhado:1, rachado:1, queimado:1};
+export function texturaSolo(t){ if(TEX_SOLO[t]) return TEX_SOLO[t]; const cor=COR_SOLO[t], N=TEX_N, c=document.createElement("canvas"); c.width=c.height=N*TEX_K;
   const g=c.getContext("2d"), r=semente("solo:"+t); g.scale(TEX_K,TEX_K); g.globalAlpha=BASE_TEX[t]??1; g.fillStyle=cor[0]; g.fillRect(0,0,N,N); g.globalAlpha=1;
   // desenha com repetição nas bordas para a textura emendar sem costura
   const rep=fn=>{ for(const dx of [-N,0,N]) for(const dy of [-N,0,N]){ g.save(); g.translate(dx,dy); fn(); g.restore(); } };
@@ -105,20 +110,20 @@ function texturaSolo(t){ if(TEX_SOLO[t]) return TEX_SOLO[t]; const cor=COR_SOLO[
     case "rachado": for(let i=0;i<10;i++) ponto(r()*N,r()*N,0.5+r()*0.9,"#b8a890",0.7); for(let i=0;i<10;i++){ let x=r()*N, y=r()*N; const p=[x,y]; for(let s2=0;s2<5;s2++){ x+=(r()-.5)*9; y+=(r()-.5)*9; p.push(x,y); } traco(p,"#2a1a10",0.75,0.95); traco(p.map((v,k)=>v+(k%2?0.7:0)),"#d8c8b0",0.3,0.6); } break; }
   TEX_SOLO[t]=c; return c; }
 // reflexos do chão molhado (camada somada por cima, só onde está molhado)
-let TEX_BRILHO=null;
-function texturaBrilho(){ if(TEX_BRILHO) return TEX_BRILHO; const N=TEX_N, c=document.createElement("canvas"); c.width=c.height=N*TEX_K; const g=c.getContext("2d"), r=semente("brilho"); g.scale(TEX_K,TEX_K); g.lineCap="round";
+export let TEX_BRILHO=null;
+export function texturaBrilho(){ if(TEX_BRILHO) return TEX_BRILHO; const N=TEX_N, c=document.createElement("canvas"); c.width=c.height=N*TEX_K; const g=c.getContext("2d"), r=semente("brilho"); g.scale(TEX_K,TEX_K); g.lineCap="round";
   for(let i=0;i<16;i++){ const x=r()*N, y=r()*N, w=5+r()*10; for(const dx of [-N,0,N]) for(const dy of [-N,0,N]){ g.strokeStyle="#e8f4ff"; g.globalAlpha=0.5+r()*0.4; g.lineWidth=0.5+r()*0.6; g.beginPath(); g.moveTo(x+dx,y+dy); g.quadraticCurveTo(x+dx+w*0.5,y+dy-1.2,x+dx+w,y+dy-0.4); g.stroke(); } }
   for(let i=0;i<14;i++){ const x=r()*N, y=r()*N; for(const dx of [-N,0,N]) for(const dy of [-N,0,N]){ g.fillStyle="#ffffff"; g.globalAlpha=0.9; g.beginPath(); g.arc(x+dx,y+dy,0.45,0,Math.PI*2); g.fill(); } }
   TEX_BRILHO=c; return c; }
 // força do terreno natural sobre um piso pintado (o piso já tem a própria textura; areia nele seria só uma mancha cinza)
-const SOLO_NAT_PINTADO={areia:0, grama:0, cinza:0, sombra:0.5, gelo:0.6};
-const ALFA_SOLO={molhado:0.6, queimado:0.42, rachado:0.6, agua:0.8, lama:0.8, fogo:0.95, gelo:0.85, grama:0.72, cinza:0.55, vapor:0.42, sombra:0.32, luz:0.3, eletrico:0.9, vinha:0.88, areia:0.7};
-const cacheSolo=new Map(), SOLO_FOLGA=8;
+export const SOLO_NAT_PINTADO={areia:0, grama:0, cinza:0, sombra:0.5, gelo:0.6};
+export const ALFA_SOLO={molhado:0.6, queimado:0.42, rachado:0.6, agua:0.8, lama:0.8, fogo:0.95, gelo:0.85, grama:0.72, cinza:0.55, vapor:0.42, sombra:0.32, luz:0.3, eletrico:0.9, vinha:0.88, areia:0.7};
+export const cacheSolo=new Map(), SOLO_FOLGA=8;
 // A camada é montada para uma área maior que a tela (folga de 8 células, ancorada numa grade de 8): andar não obriga a refazer.
 // Refaz só quando a âncora muda ou o terreno daquele tipo muda (no máximo ~6 vezes por segundo por tipo).
 // o que o desenho do chão guarda entre um quadro e outro (antes ficava pendurado na própria função desenharSolo)
-const SOLO_DES={/** estado da última montagem */ es:null, /** grade de tipos de solo */ G:null, /** @type {Float32Array} grade de força de cada célula */ F:null};
-function desenharSolo(ox,oy){
+export const SOLO_DES={/** estado da última montagem */ es:null, /** grade de tipos de solo */ G:null, /** @type {Float32Array} grade de força de cada célula */ F:null};
+export function desenharSolo(ox,oy){
   const A=SOLO_FOLGA, c0=Math.floor(Math.floor(ox/CEL)/A)*A-A, r0=Math.floor(Math.floor(oy/CEL)/A)*A-A;
   const W2=2*A+Math.ceil(VW/CEL)+3, H2=2*A+Math.ceil(VH/CEL)+3;   // tamanho fixo: cobre a tela em qualquer ponto da âncora
   // J.solo ganha um contador de versão: sem mudança no terreno e sem sair da âncora, só redesenha o que já está pronto
@@ -137,7 +142,7 @@ function desenharSolo(ox,oy){
     lg.imageSmoothingEnabled=suave; lg.imageSmoothingQuality="high"; }
   lg.globalAlpha=1;
 }
-function montarSolo(c0,r0,W2,H2,UK,Kb,ancora){ const ES=SOLO_DES.es; ES.ancora=ancora; ES.J=J; ES.ver=J.solo.__ver; ES.t=J.t;
+export function montarSolo(c0,r0,W2,H2,UK,Kb,ancora){ const ES=SOLO_DES.es; ES.ancora=ancora; ES.J=J; ES.ver=J.solo.__ver; ES.t=J.t;
   const est=estruturaU()&&J.cena, lagoArte=est&&folhaU("pecas"), pintado=!!(chao&&chao.suave);
   const n=W2*H2, G=SOLO_DES.G&&SOLO_DES.G.length>=n? SOLO_DES.G : (SOLO_DES.G=new Array(n));
   const F=SOLO_DES.F&&SOLO_DES.F.length>=n? SOLO_DES.F : (SOLO_DES.F=new Float32Array(n));

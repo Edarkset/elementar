@@ -7,10 +7,10 @@
 // Suba VERSAO sempre que trocar artes: as artes ficam guardadas no aparelho e só a versão nova do cache as apaga.
 // v2: artes refeitas (ambiente, Fênix, enfeites de chão, dragão Árvore).
 const VERSAO = "v2";
-// o código tem a própria versão: subir esta não apaga as artes guardadas (v3: lógica dividida em js/jogo/)
-const CODIGO = "elementar-codigo-v3";
+// o código tem a própria versão: subir esta não apaga as artes guardadas (v3: lógica dividida em js/jogo/; v4: partes viram módulos, entrada em js/jogo/principal.js)
+const CODIGO = "elementar-codigo-v4";
 const ARTES = `elementar-artes-${VERSAO}`;
-const BASICO = ["./", "index.html", "css/estilo.css", "js/dados.js", "js/jogo/01_nucleo.js", "js/jogo/02_combate.js", "js/jogo/03_progressao.js", "js/jogo/04_ambiente.js", "js/jogo/05_arte.js", "js/jogo/06_loop.js", "js/jogo/07_cenario.js", "js/jogo/08_sistemas.js", "js/jogo/09_criaturas.js", "js/jogo/10_desenho.js", "js/jogo/11_menu.js", "js/plataforma.js", "js/app.js",
+const BASICO = ["./", "index.html", "css/estilo.css", "js/dados.js", "js/jogo/01_nucleo.js", "js/jogo/02_combate.js", "js/jogo/03_progressao.js", "js/jogo/04_ambiente.js", "js/jogo/05_arte.js", "js/jogo/06_loop.js", "js/jogo/07_cenario.js", "js/jogo/08_sistemas.js", "js/jogo/09_criaturas.js", "js/jogo/10_desenho.js", "js/jogo/11_menu.js", "js/jogo/principal.js", "js/plataforma.js", "js/app.js",
   "manifest.webmanifest", "app/icones/icone-192.png", "app/icones/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {

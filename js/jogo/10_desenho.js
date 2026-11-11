@@ -1,24 +1,38 @@
 // Elementar · desenho de cada quadro, herói e HUD
-// Parte 10 de 11 da lógica do jogo: os arquivos de js/jogo/ são carregados em ordem pelo index.html e
-// compartilham o mesmo escopo global (funções e constantes de uma parte valem nas outras).
-"use strict";
+// Parte 10 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
+// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
+import "./09_criaturas.js";   // ordem de carga: os módulos são avaliados de 01 a 11, como antes (cada um puxa o anterior primeiro)
+import { $, ativos, branco, COR, ctx, cv, elementoDe, est, H, hexRgb, J, lg, LINHA, lo, MAPA_SEG, nomeForma, pausado, Q, R, rnd, S, semente, SIM,
+  spriteLinha, spriteOvo, spriteSelo, tom, VH, VW, W } from "./01_nucleo.js";
+import { itemUsavelAgora, particulas, sombraContato } from "./02_combate.js";
+import { abrirEquipe, desenharMoedasBaus, setaFora, tipoCombinado } from "./03_progressao.js";
+import { desenharSolo } from "./04_ambiente.js";
+import { artesQue, MANIFESTO, movSelo, preCarregar, quadroAnimSelo } from "./05_arte.js";
+import { QUAL, toque } from "./06_loop.js";
+import { ALVO_ARTE, bolhaCor, chaoArte, desenharAbertura, desenharCamadaArte, desenharCenaAr, desenharCenaBrilho, desenharCenaChao, desenharCenaLuz,
+  desenharCenaObjetos, desenharDetalhesChao, desenharEstrutura, desenharFauna, desenharNuvens, desenharQuedasAbismo, desenharSprite, silhueta,
+  spriteUI } from "./07_cenario.js";
+import { desenharAltar, desenharArmadilha, desenharAvisos, desenharConquista, desenharCria, desenharEspirito, desenharLenda, desenharLuzAmbiente,
+  desenharMapaLuz, desenharParticula, desenharProjetil, desenharVfx, desenharZona, LENDA, luzFlash, nivelEscuro, sombraProjetada } from "./08_sistemas.js";
+import { desenharBala, desenharBarraChefe, desenharBrilhoInimigos, desenharCadaveres, desenharEscuridao, desenharFalas, desenharGolpesLuz,
+  desenharInimigo, desenharPerigos, desenharQuedas } from "./09_criaturas.js";
 // ================================================================ desenho
-let chao=null;
-function gerarChao(u){ if(chaoArte(u)) return; const c=document.createElement("canvas"); c.width=c.height=64; const g=c.getContext("2d"), r=semente(u.id), base=COR[u.elemento];
+export let chao=null;
+export function gerarChao(u){ if(chaoArte(u)) return; const c=document.createElement("canvas"); c.width=c.height=64; const g=c.getContext("2d"), r=semente(u.id), base=COR[u.elemento];
   g.fillStyle=tom(base,0.26); g.fillRect(0,0,64,64);
   for(let i=0;i<260;i++){ g.fillStyle=r()<.5?tom(base,0.33):tom(base,0.2); g.fillRect(Math.floor(r()*64),Math.floor(r()*64),1+Math.floor(r()*2),1); }
   for(let i=0;i<5;i++){ g.fillStyle=tom(base,0.45); const x=Math.floor(r()*60), y=Math.floor(r()*60); g.fillRect(x,y,3,2); g.fillStyle=tom(base,0.15); g.fillRect(x,y+2,3,1); }
   chao={cv:c,u}; }
 /** valor mínimo do cristal e a cor dele @type {[number,string][]} */
-const CORES_GEMA=[[0,"#6ab0ff"],[3,"#5fe08a"],[8,"#c07cff"],[20,"#ffd34a"]];
-function corGema(v){ let c=CORES_GEMA[0][1]; for(const [m,k] of CORES_GEMA) if(v>=m) c=k; return c; }
-function desenharColunaNivel(ox,oy){ const c=J.colunaNivel; if(!c) return; c.t+=1/60; if(c.t>0.9){ J.colunaNivel=null; return; } const P=J.jogador, x=P.x-ox, y=P.y-oy, a=Math.sin(c.t/0.9*Math.PI), w=10+c.t*16;
+export const CORES_GEMA=[[0,"#6ab0ff"],[3,"#5fe08a"],[8,"#c07cff"],[20,"#ffd34a"]];
+export function corGema(v){ let c=CORES_GEMA[0][1]; for(const [m,k] of CORES_GEMA) if(v>=m) c=k; return c; }
+export function desenharColunaNivel(ox,oy){ const c=J.colunaNivel; if(!c) return; c.t+=1/60; if(c.t>0.9){ J.colunaNivel=null; return; } const P=J.jogador, x=P.x-ox, y=P.y-oy, a=Math.sin(c.t/0.9*Math.PI), w=10+c.t*16;
   lg.globalCompositeOperation="lighter"; const g=lg.createLinearGradient(0,y-160,0,y); g.addColorStop(0,"rgba(255,230,140,0)"); g.addColorStop(1,`rgba(255,230,140,${0.55*a})`); lg.fillStyle=g; lg.fillRect(x-w/2,y-160,w,160);
   lg.globalAlpha=0.4*a; lg.drawImage(bolhaCor("#ffe080"),x-30,y-30,60,60); lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; }
 // multidão: com mais de 110 inimigos vivos, cada inimigo comum é desenhado com uma imagem só (sem o quadro intermediário do passo e sem
 // o véu escuro de 16%, que ninguém distingue no meio da horda). Corta até dois terços das cópias de imagem nos momentos mais pesados
-let MULTIDAO=false;
-function desenhar(dt){
+export let MULTIDAO=false;
+export function desenhar(dt){
   MULTIDAO=J.inimigos.length>110;
   const P=J.jogador; J.shake*=0.86; const tq=performance.now()/1000, sx=J.shake*(Math.sin(tq*53)*0.35+Math.sin(tq*29+1.3)*0.25), sy=J.shake*(Math.sin(tq*47+0.7)*0.35+Math.sin(tq*23+2.1)*0.25);
   // câmera com precisão menor que 1 pixel do mundo: as posições continuam inteiras (ox, oy), e a sobra desloca a tela inteira.
@@ -126,7 +140,7 @@ function desenhar(dt){
 }
 // monstro da equipe: quadro da folha (ou imagem fixa) + "corpo" por código: antecipação e esticada no ataque,
 // investida na direção do alvo, inclinação ao andar, virada suave, pulinho/respiração sem folha e pulo de tamanho ao evoluir
-function desenharSelo(s,ox,oy,sombra){ movSelo(s);
+export function desenharSelo(s,ox,oy,sombra){ movSelo(s);
   const anim=quadroAnimSelo(s), spr=anim||spriteSelo(s), x=s.x-ox, y=s.y-oy, alvo=spr._alvo||spr.width, pe=y+alvo/2, t=J.t;
   const dt=Math.min(0.1,Math.max(0,t-(s._td??t))); s._td=t; const vel=s._vel||0, anda=Math.min(1,vel/40), e=est(s);
   if(s._eAnt!=null&&s._eAnt!==e&&s._eMon===s.mon){ s._pop=1; luzFlash(s.x,s.y,COR[elementoDe(s)],60,0.5); particulas(s.x,s.y,COR[elementoDe(s)],14,60); }
@@ -165,7 +179,7 @@ function desenharSelo(s,ox,oy,sombra){ movSelo(s);
   if(s.furia>0&&J.cena){ const pf=0.5+0.5*Math.sin(t*14+s.x); lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.3+0.2*pf; lg.drawImage(bolhaCor("#ff5a4a"),x-alvo*0.7,pe-alvo*1.05,alvo*1.4,alvo*1.2); lg.globalCompositeOperation="source-over"; lg.globalAlpha=1;
     if(QUAL>0&&Math.random()<0.25) J.parts.push({x:s.x+rnd(-5,5),y:s.y+rnd(-2,6),vx:rnd(-6,6),vy:-rnd(25,50),vida:rnd(.3,.6),max:.6,cor:Math.random()<.5?"#ffb040":"#ff5a4a",tam:1,forma:"brasa",g:-30}); } }
 // totem do Xamã: poste de madeira esculpido com rosto, asas laterais e uma gema na cor do elemento que pulsa e ilumina o chão
-function desenharTotem(t,ox,oy){ const x=t.x-ox, y=t.y-oy, tm=J.t+(t.x%7), pul=0.5+0.5*Math.sin(tm*4), cor=t.cor||"#9ff07a";
+export function desenharTotem(t,ox,oy){ const x=t.x-ox, y=t.y-oy, tm=J.t+(t.x%7), pul=0.5+0.5*Math.sin(tm*4), cor=t.cor||"#9ff07a";
   sombraContato(x,y+0.5,9,0.5);
   lg.globalCompositeOperation="lighter"; lg.globalAlpha=0.25+0.2*pul; lg.drawImage(bolhaCor(cor),x-11,y-4,22,8); lg.globalAlpha=0.35+0.25*pul; lg.drawImage(bolhaCor(cor),x-6,y-19,12,12); lg.globalAlpha=1; lg.globalCompositeOperation="source-over";
   const pau=lg.createLinearGradient(x-2.5,0,x+2.5,0); pau.addColorStop(0,"#3a2416"); pau.addColorStop(0.45,"#8a5a32"); pau.addColorStop(1,"#4a2c18");
@@ -182,7 +196,7 @@ function desenharTotem(t,ox,oy){ const x=t.x-ox, y=t.y-oy, tm=J.t+(t.x%7), pul=0
 // Cabeçudo e simpático: cabelo castanho com topete, olhos grandes, cachecol azul-marinho, capa creme, túnica azul com cinto
 // dourado e espada curta com a gema do elemento. Olha para o lado em que anda (espelhado), anda com as pernas alternando e
 // o corpo balançando, respira parado e pisca de vez em quando. Antes era um desenho vetorial de costas, difícil de ler.
-const HEROI={
+export const HEROI={
   // proporção de herói (cabeça ~1/3 da altura; antes era metade, cabeçudo demais): cabelo em tons com reflexo, olhos com brilho,
   // bochechas, cachecol vermelho, capa azul por trás, túnica creme com cinto dourado, botas de couro e espada com guarda dourada
   pal:{o:"#2b1a24",H:"#7a4222",h:"#552c16",j:"#a8622c",y:"#dc9a52",S:"#fbd8b6",s:"#e2a684",E:"#2a1f3a",I:"#4a86e8",w:"#ffffff",N:"#c8403a",n:"#8a2a26",C:"#2f4c8e",c:"#1f3468",k:"#4a70b8",T:"#efe2c2",t:"#c4ae86",G:"#f4c85c",g:"#a87a2a",B:"#5a3a22",P:"#3c3256",p:"#2a2240",O:"#86532a",q:"#4e2e16",M:"#f2f7fd",l:"#a8b6c8",r:"#f0a0a0",L:"#7a5236"},
@@ -192,7 +206,7 @@ const HEROI={
   espada:[[17,12,"o"],[17,13,"G"],[16,14,"o"],[17,14,"G"],[18,14,"o"],[17,15,"o"],[17,16,"M"],[17,17,"M"],[17,18,"l"],[17,19,"l"],[17,20,"l"],[17,21,"o"]],
   cache:new Map() };
 // quadro do herói: pernas (p parado, a e b passada), corpo e cabeça descidos 'bob' px, olhos fechados se 'pisca'; a gema da espada leva a cor do elemento
-function quadroHeroi(pernas,bob,pisca,corGema){ const k=pernas+bob+(pisca?1:0)+corGema; if(HEROI.cache.has(k)) return HEROI.cache.get(k);
+export function quadroHeroi(pernas,bob,pisca,corGema){ const k=pernas+bob+(pisca?1:0)+corGema; if(HEROI.cache.has(k)) return HEROI.cache.get(k);
   const nc=HEROI.cab.length, ncp=HEROI.corpo.length, W=20, H=nc+ncp+HEROI.pernas.p.length+1, c=document.createElement("canvas"); c.width=W; c.height=H;
   const g=c.getContext("2d"), px=(x,y,ch)=>{ const cor=ch==="X"? corGema : HEROI.pal[ch]; if(!cor) return; g.fillStyle=cor; g.fillRect(x,y,1,1); };
   HEROI.pernas[pernas].forEach((L,y)=>{ for(let x=0;x<W;x++) if(L[x]!==".") px(x,nc+ncp-1+y,L[x]); });
@@ -200,8 +214,8 @@ function quadroHeroi(pernas,bob,pisca,corGema){ const k=pernas+bob+(pisca?1:0)+c
   HEROI.cab.forEach((L,y)=>{ for(let x=0;x<W;x++){ let ch=L[x]; if(ch===".") continue; if(pisca&&(ch==="E"||ch==="w"||ch==="I")) ch= y===7? "E" : "S"; px(x,y+bob,ch); } });
   for(const [x,y,ch] of HEROI.espada) px(x,y+bob,ch); px(17,13+bob,"X");   // gema do elemento no pomo
   HEROI.cache.set(k,c); return c; }
-let LADO_INVOCADOR=1;   // para que lado o herói olhava por último (antes ficava pendurado na própria função)
-function desenharInvocador(x,y){
+export let LADO_INVOCADOR=1;   // para que lado o herói olhava por último (antes ficava pendurado na própria função)
+export function desenharInvocador(x,y){
   const vel=Math.hypot(J.pvx||0,J.pvy||0), anda=vel>6, t=J.t;
   const lado=(J.dir&&J.dir.x<-0.1)? -1 : (J.dir&&J.dir.x>0.1)? 1 : LADO_INVOCADOR; LADO_INVOCADOR=lado;
   const a0=ativos()[0], el=a0? elementoDe(a0) : (R.pacto&&R.pacto[0]), cor=COR[el]||"#7fe0ff";
@@ -214,16 +228,16 @@ function desenharInvocador(x,y){
   const gx=x+lado*7.5, gy=y+7-spr.height+13.5+bob, pul=0.5+0.5*Math.sin(t*4), [r1,g1,b1]=hexRgb(cor); lg.globalCompositeOperation="lighter";
   const gg=lg.createRadialGradient(gx,gy,0,gx,gy,3+pul); gg.addColorStop(0,`rgba(${r1},${g1},${b1},${0.5+0.2*pul})`); gg.addColorStop(1,`rgba(${r1},${g1},${b1},0)`); lg.fillStyle=gg; lg.fillRect(gx-5,gy-5,10,10);
   lg.globalCompositeOperation="source-over"; }
-let SOBRE=null;
-function sobreposicao(cor,aLuz,aVin){ const k=cor+"|"+aLuz+"|"+aVin+"|"+W+"x"+H; if(SOBRE&&SOBRE.k===k) return SOBRE.c;
+export let SOBRE=null;
+export function sobreposicao(cor,aLuz,aVin){ const k=cor+"|"+aLuz+"|"+aVin+"|"+W+"x"+H; if(SOBRE&&SOBRE.k===k) return SOBRE.c;
   const w=Math.max(16,Math.round(W/4)), h=Math.max(16,Math.round(H/4)), c=(SOBRE&&SOBRE.c)||document.createElement("canvas"); c.width=w; c.height=h; const g=c.getContext("2d"), m=Math.min(w,h), [r,gg,b]=hexRgb(cor);
   const vg=g.createRadialGradient(w/2,h/2,m*0.3,w/2,h/2,Math.max(w,h)*0.75); vg.addColorStop(0,"rgba(10,8,20,0)"); vg.addColorStop(1,`rgba(10,8,20,${aVin})`); g.fillStyle=vg; g.fillRect(0,0,w,h);
   g.globalCompositeOperation="lighter"; const lz=g.createRadialGradient(w/2,h/2,0,w/2,h/2,m*0.45); lz.addColorStop(0,`rgba(${r},${gg},${b},${aLuz})`); lz.addColorStop(1,"rgba(0,0,0,0)"); g.fillStyle=lz; g.fillRect(0,0,w,h);
   c._suave=true; SOBRE={k,c}; return c; }
 // brilho (bloom): reduz a tela, guarda só o que é claro (multiplicar a imagem por ela mesma) e soma de volta, borrado.
 // Custa pouco (imagens pequenas) e some sozinho quando o aparelho está lento (QUAL<2).
-let BL1=null, BL2=null;
-function aplicarBloom(){ if(QUAL<2||SIM.ativo) return;   // também no celular: é barato e o jogo desliga sozinho (QUAL<2) se ficar lento
+export let BL1=null, BL2=null;
+export function aplicarBloom(){ if(QUAL<2||SIM.ativo) return;   // também no celular: é barato e o jogo desliga sozinho (QUAL<2) se ficar lento
   const w1=Math.max(8,Math.round(W/4)), h1=Math.max(8,Math.round(H/4)), w2=Math.max(4,w1>>1), h2=Math.max(4,h1>>1);
   if(!BL1){ BL1=document.createElement("canvas"); BL2=document.createElement("canvas"); }
   if(BL1.width!==w1||BL1.height!==h1){ BL1.width=w1; BL1.height=h1; BL2.width=w2; BL2.height=h2; }
@@ -233,9 +247,9 @@ function aplicarBloom(){ if(QUAL<2||SIM.ativo) return;   // também no celular: 
   g2.globalCompositeOperation="multiply"; g2.drawImage(BL2,0,0); g2.drawImage(BL2,0,0); g2.drawImage(BL2,0,0); g2.globalCompositeOperation="source-over";
   ctx.save(); ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality="low"; ctx.globalCompositeOperation="lighter";
   const kb=0.55+0.45*Math.min(1,nivelEscuro()*2.2); ctx.globalAlpha=0.3*kb; ctx.drawImage(BL2,0,0,W,H); ctx.globalAlpha=0.15*kb; ctx.drawImage(BL2,-W*0.015,-H*0.015,W*1.03,H*1.03); ctx.restore(); }
-let comboAnt=0;
-let hudQuadro=0;
-function hud(){
+export let comboAnt=0;
+export let hudQuadro=0;
+export function hud(){
   if(SIM.ativo) return;
   if((hudQuadro=(hudQuadro+1)%3)!==0&&!pausado) return;   // 20 vezes por segundo bastam: mexer na página todo quadro custava ~5% da lógica
   { const ev=R.essenciaRun+Math.floor((R.abatesPeso??R.abates)/15), el=$("essHud"); if(el&&el._v!==ev){ el._v=ev; el.textContent=String(ev); el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); } }
@@ -250,17 +264,20 @@ function hud(){
   R.selos.forEach((s,i)=>{ const el=document.getElementById("cd"+i); if(el) el.style.height=s.trocaCd>0?`${s.trocaCd/15*100}%`:"0"; });
 }
 // artes de quem está na equipe e no ninho: baixadas assim que eles entram (evolução e troca já encontram a arte pronta)
-function preCarregarEquipe(){ if(SIM.ativo||!MANIFESTO||!R) return; const ids=new Set(); R.selos.forEach(s=>s.mon&&ids.add(s.mon.id)); (R.ninho||[]).forEach(o=>ids.add(o.id));
+export function preCarregarEquipe(){ if(SIM.ativo||!MANIFESTO||!R) return; const ids=new Set(); R.selos.forEach(s=>s.mon&&ids.add(s.mon.id)); (R.ninho||[]).forEach(o=>ids.add(o.id));
   const nomes=[]; for(const id of ids){ const l=LINHA[id]; if(!l) continue; const pasta=l.ancestral? "arte/lendarios/" : `arte/monstros/${l.elemento}/`; nomes.push(...artesQue(n=>n.startsWith(pasta+id+"__"))); } preCarregar(nomes); }
-function desenharEquipe(){ if(SIM.ativo) return; preCarregarEquipe(); const box=$("equipe"); box.innerHTML="";
+export function desenharEquipe(){ if(SIM.ativo) return; preCarregarEquipe(); const box=$("equipe"); box.innerHTML="";
   R.selos.forEach((s,i)=>{ const b=document.createElement("button"); b.className="retrato"+(s.mon?"":" vazio"); b.setAttribute("aria-label",`Selo ${i+1}`);
     if(s.mon){ const c=document.createElement("canvas"); c.className="mini"; const spr=spriteUI(spriteSelo(s)); c.width=spr.width; c.height=spr.height; c.getContext("2d").drawImage(spr,0,0); if(spr.hi===undefined&&spr!==spriteSelo(s)) c.style.imageRendering="auto"; if(spr!==spriteSelo(s)) c.style.imageRendering="auto"; b.appendChild(c);
       b.style.borderColor=COR[elementoDe(s)]; b.insertAdjacentHTML("beforeend",`${nomeForma(s)}<br>nv ${s.nivel}<div class="cd" id="cd${i}" style="height:0; top:auto; bottom:0"></div>`); }
     else b.insertAdjacentHTML("beforeend",`<div style="height:38px;line-height:38px">vazio</div>Selo ${i+1}`);
     b.onclick=()=>{ if(!pausado&&J&&!J.fim) abrirEquipe(i); }; box.appendChild(b); }); }
-function desenharNinho(){ if(SIM.ativo) return; const box=$("ninho"); if(!R){ box.innerHTML=""; return; }
+export function desenharNinho(){ if(SIM.ativo) return; const box=$("ninho"); if(!R){ box.innerHTML=""; return; }
   const anc=R.ancestral&&R.ancestral.estado==="chocando"; box.innerHTML=(R.ninho.length||anc)?"Ninho":"";
   if(anc){ const A=R.ancestral, d=document.createElement("div"); d.className="ovo anc"; d.title=LINHA[A.id].ovo; const c=document.createElement("canvas"); c.className="mini"; const s=spriteOvo(A.el,"lendario");
     c.width=s.width; c.height=s.height; c.getContext("2d").drawImage(s,0,0); d.appendChild(c); d.insertAdjacentHTML("beforeend",`<i><b style="width:${Math.min(100,A.prog/A.alvo*100)}%;background:#ffd34a"></b></i>`); box.appendChild(d); } R.ninho.forEach(o=>{ const d=document.createElement("div"); d.className="ovo"; const c=document.createElement("canvas"); c.className="mini"; const s=spriteOvo(LINHA[o.id].elemento,o.rar);
     c.width=s.width; c.height=s.height; c.getContext("2d").drawImage(s,0,0); d.appendChild(c); d.insertAdjacentHTML("beforeend",`<i><b style="width:${Math.min(100,o.prog/o.alvo*100)}%"></b></i>`); box.appendChild(d); }); }
-let toastT=null; function toast(h){ if(SIM.ativo) return; const t=$("toast"); t.innerHTML=h; t.classList.add("vis"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("vis"),2400); }
+export let toastT=null; export function toast(h){ if(SIM.ativo) return; const t=$("toast"); t.innerHTML=h; t.classList.add("vis"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("vis"),2400); }
+
+/** troca o chão do mapa (quem monta o piso é o cenário) @param {AindaSemTipo} v */
+export function defChao(v){ return chao=v; }

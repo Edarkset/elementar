@@ -1,11 +1,20 @@
 // Elementar · cenário vivo, desenho do cenário, arte de cenário e estrutura do mapa (abismos, pontes, lagos)
-// Parte 7 de 11 da lógica do jogo: os arquivos de js/jogo/ são carregados em ordem pelo index.html e
-// compartilham o mesmo escopo global (funções e constantes de uma parte valem nas outras).
-"use strict";
+// Parte 7 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
+// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
+import "./06_loop.js";   // ordem de carga: os módulos são avaliados de 01 a 11, como antes (cada um puxa o anterior primeiro)
+import { $, ativos, baseHi, branco, COR, ctx, cv, defFonte, dist2, elementoDe, escolha, FONTE, H, hexRgb, J, lg, mistura, Q, R, relatar, rnd, S,
+  semente, SIM, tom, UNIV, VH, VW, W } from "./01_nucleo.js";
+import { anel, curar, danoSimples, darItem, DIF, dificuldade, emArea, maisProximo, morrer, parar, particulas, raio, sombraContato, texto, tremor } from "./02_combate.js";
+import { aplicarElementoNoSolo, CEL, COR_SOLO, DUR, frio, hash2, mudarSolo, soloEm, soloNatural } from "./04_ambiente.js";
+import { ARTE_IMG, correcaoAltura, MANIFESTO } from "./05_arte.js";
+import { QUAL } from "./06_loop.js";
+import { crepusculo, escurecimentoArte, evento, lugarDeObjeto, nivelEscuro, passiva, sombraProjetada, vEl } from "./08_sistemas.js";
+import { aoQuebrarProp, criarProp, pctMax } from "./09_criaturas.js";
+import { chao, defChao, gerarChao } from "./10_desenho.js";
 // ================================================================ cenário vivo: vento, vegetação, objetos físicos e clima
 // Escala física: 1 px do mundo ≈ 7 cm (um monstrinho de 10 px tem ~70 cm). Gravidade: 9,8 m/s² ≈ 140 px/s².
 // Vento em px/s: 30 ≈ brisa (2 m/s), 70 ≈ vento forte (5 m/s), 110 ≈ tempestade (8 m/s).
-const GRAV=140, VREF=110, K_EMPURRA=200, CH=96;
+export const GRAV=140, VREF=110, K_EMPURRA=200, CH=96;
 
 // Os kits de cada universo (vento, vegetação, clima, objetos) estão em dados/fonte_cenario.py
 
@@ -13,8 +22,8 @@ const GRAV=140, VREF=110, K_EMPURRA=200, CH=96;
 // Materiais. m = massa (kg); mu = atrito de deslizamento; rola = resistência ao rolamento (bem menor que o atrito);
 // e = restituição (quique); fragil = velocidade de impacto (px/s) a partir da qual o objeto começa a trincar;
 // hp em "inimigos comuns" (escala com a profundidade); res = multiplicador de dano por elemento.
-const MAT=D.materiais;   // dados/fonte_cenario.py
-const VEG={
+export const MAT=D.materiais;   // dados/fonte_cenario.py
+export const VEG={
   capim:{cores:["#2f6a2c","#4f9a3c","#8fd05a"],n:[2,4],L:[3,6],k:60,c:4},
   seca:{cores:["#6a4a24","#9a7a3a","#d8c070"],n:[2,3],L:[3,5],k:70,c:4},
   junco:{cores:["#2a5a40","#4a8a58","#7a4a28"],n:[2,3],L:[6,9],k:40,c:3.5,cabeca:true},
@@ -25,8 +34,8 @@ const VEG={
   cogumelo:{cogu:true,k:90,c:2.2,solta:"esporos"}};
 
 // ---------------------------------------------------------------- vento
-const VT={x:0,y:0};
-function vento(x,y){ const C=J.cena; if(!C){ VT.x=VT.y=0; return VT; }
+export const VT={x:0,y:0};
+export function vento(x,y){ const C=J.cena; if(!C){ VT.x=VT.y=0; return VT; }
   if(C.kit.submerso){ // corrente de fundo: vai e volta com as ondas da superfície (período ~6 s)
     const s=Math.sin(C.t*0.97+(x*C.dx+y*C.dy)*0.004), v=C.vBase*(0.2+0.8*s); VT.x=C.dx*v; VT.y=C.dy*v; return VT; }
   // rajadas: frentes que viajam na mesma velocidade do vento médio (como no mundo real)
@@ -38,10 +47,10 @@ function vento(x,y){ const C=J.cena; if(!C){ VT.x=VT.y=0; return VT; }
     // vórtice de Rankine: no núcleo a velocidade cresce com o raio; fora dele cai com 1/r
     const vt=w.vmax*(d<w.r? d/w.r : w.r/d)*Math.min(1,w.vida/1.5), vr=-0.35*vt; VT.x+=(-dy/d)*vt+(dx/d)*vr; VT.y+=(dx/d)*vt+(dy/d)*vr; }
   return VT; }
-function sustentacao(x,y){ let s=0; for(const w of J.cena.vort){ const d=Math.hypot(x-w.x,y-w.y); if(d<w.r*2) s+=110*(1-d/(w.r*2)); } return s; }
+export function sustentacao(x,y){ let s=0; for(const w of J.cena.vort){ const d=Math.hypot(x-w.x,y-w.y); if(d<w.r*2) s+=110*(1-d/(w.r*2)); } return s; }
 
 // ---------------------------------------------------------------- início do mapa
-function iniciarCena(u){
+export function iniciarCena(u){
   const kit=JSON.parse(JSON.stringify(u.kit));   // cópia: a segunda fase dos chefes muda o kit durante a luta
   const r=semente(u.id+"cena"+R.profundidade), ang0=r()*Math.PI*2;
   const C=J.cena={u, kit, veg:kit.veg, t:0, ang0, dx:Math.cos(ang0), dy:Math.sin(ang0), vBase:kit.vento, Wx:0,Wy:0,Wm:0,
@@ -52,36 +61,36 @@ function iniciarCena(u){
   if(kit.submerso) J.cena.causticas=gerarCausticas();
   if(!SOMBRA_SUAVE) SOMBRA_SUAVE=gerarBolha();
 }
-let SOMBRA_SUAVE=null;
-function gerarBolha(){ const c=document.createElement("canvas"); c.width=c.height=64; const g=c.getContext("2d"), gr=g.createRadialGradient(32,32,0,32,32,32);
+export let SOMBRA_SUAVE=null;
+export function gerarBolha(){ const c=document.createElement("canvas"); c.width=c.height=64; const g=c.getContext("2d"), gr=g.createRadialGradient(32,32,0,32,32,32);
   gr.addColorStop(0,"rgba(255,255,255,1)"); gr.addColorStop(.6,"rgba(255,255,255,.55)"); gr.addColorStop(1,"rgba(255,255,255,0)"); g.fillStyle=gr; g.fillRect(0,0,64,64); return c; }
-function bolhaCor(cor){ const C=J.cena, k="bolha"+cor; if(C.sprites.has(k)) return C.sprites.get(k);
+export function bolhaCor(cor){ const C=J.cena, k="bolha"+cor; if(C.sprites.has(k)) return C.sprites.get(k);
   const c=document.createElement("canvas"); c.width=c.height=64; const g=c.getContext("2d"); g.drawImage(SOMBRA_SUAVE,0,0); g.globalCompositeOperation="source-in"; g.fillStyle=cor; g.fillRect(0,0,64,64); C.sprites.set(k,c); return c; }
 // luz que atravessa a superfície ondulada da água e se concentra no fundo (cáusticas)
-function gerarCausticas(){ const fr=[]; for(let f=0;f<8;f++){ const c=document.createElement("canvas"); c.width=c.height=64; const g=c.getContext("2d"), im=g.createImageData(64,64), ph=f/8*Math.PI*2;
+export function gerarCausticas(){ const fr=[]; for(let f=0;f<8;f++){ const c=document.createElement("canvas"); c.width=c.height=64; const g=c.getContext("2d"), im=g.createImageData(64,64), ph=f/8*Math.PI*2;
     for(let y=0;y<64;y++) for(let x=0;x<64;x++){ const a=x/64*Math.PI*2, b=y/64*Math.PI*2;
       const v=Math.sin(a*2+ph)+Math.sin(b*3-ph)+Math.sin((a+b)*2+ph*2)+Math.sin((a-b)*3-ph); const t=Math.max(0,1-Math.abs(v)*1.4);
       const i=(y*64+x)*4; im.data[i]=200; im.data[i+1]=240; im.data[i+2]=255; im.data[i+3]=Math.round(t*t*255); }
     g.putImageData(im,0,0); fr.push(c); } return fr; }
 
 // ---------------------------------------------------------------- objetos: geração por pedaço do mapa
-function pesoAleatorio(r,pesos){ let tot=0; for(const k in pesos) tot+=pesos[k]; let x=r()*tot; for(const k in pesos){ x-=pesos[k]; if(x<=0) return k; } return Object.keys(pesos)[0]; }
-function gerarPedaco(cx,cy){ const C=J.cena, k=cx+":"+cy; if(C.props.has(k)) return; const r=semente(C.u.id+"p"+k+"#"+R.profundidade), out=[];
+export function pesoAleatorio(r,pesos){ let tot=0; for(const k in pesos) tot+=pesos[k]; let x=r()*tot; for(const k in pesos){ x-=pesos[k]; if(x<=0) return k; } return Object.keys(pesos)[0]; }
+export function gerarPedaco(cx,cy){ const C=J.cena, k=cx+":"+cy; if(C.props.has(k)) return; const r=semente(C.u.id+"p"+k+"#"+R.profundidade), out=[];
   if(r()<0.4){ const tipo=pesoAleatorio(r,C.kit.props), n=r()<0.2? 2 : 1,   /* mapa menos poluído: menos objetos soltos e grupos menores */ bx=cx*CH+14+r()*68, by=cy*CH+14+r()*68;
     for(let i=0;i<n;i++){ const x=bx+(i%2)*13+r()*3, y=by+Math.floor(i/2)*11+r()*3; if(Math.abs(x)<36&&Math.abs(y)<36) continue;
       const t=soloNatural(Math.floor(x/CEL),Math.floor(y/CEL)); if(t==="agua"&&!C.kit.submerso) continue; if(!lugarDeObjeto(x,y,10)) continue;
       out.push(novoProp(i>0&&r()<0.3? pesoAleatorio(r,C.kit.props) : tipo, x, y, r)); } }
   sortearMarcos(cx,cy,r,out); C.props.set(k,out); }
-function novoProp(tipo,x,y,r){ const M=MAT[tipo], hp=M.indestrutivel? Infinity : M.hp*DIF.hp*dificuldade();
+export function novoProp(tipo,x,y,r){ const M=MAT[tipo], hp=M.indestrutivel? Infinity : M.hp*DIF.hp*dificuldade();
   return {ehProp:true, tipo, mat:M, x, y, vx:0, vy:0, r:M.r, m:M.m, esc:1, hp, max:hp, eixo:r()<.5?"h":"v", rolou:0, queima:0, carvao:0, molhado:0, congela:0, pavio:0,
     flash:0, morto:false, flut:0, el:null, status:null, tCond:0, tSolo:r()*0.3, var:Math.floor(r()*3)}; }
-function carregarProps(ox,oy){ const C=J.cena, c0=Math.floor((ox-60)/CH), c1=Math.floor((ox+VW+60)/CH), r0=Math.floor((oy-60)/CH), r1=Math.floor((oy+VH+60)/CH);
+export function carregarProps(ox,oy){ const C=J.cena, c0=Math.floor((ox-60)/CH), c1=Math.floor((ox+VW+60)/CH), r0=Math.floor((oy-60)/CH), r1=Math.floor((oy+VH+60)/CH);
   C.lista.length=0; for(let cy=r0;cy<=r1;cy++) for(let cx=c0;cx<=c1;cx++){ gerarPedaco(cx,cy); for(const p of C.props.get(cx+":"+cy)) if(!p.morto) C.lista.push(p); } }
 
 // ---------------------------------------------------------------- objetos: física
-function atritoSolo(t){ return t==="gelo"?0.15 : t==="agua"?0.6 : t==="lama"?1.6 : t==="areia"?1.2 : 1; }
-function rolamentoSolo(t){ return t==="areia"?3 : t==="lama"?4 : t==="grama"||t==="vinha"?1.5 : 1; }   // areia e lama "engolem" a roda
-function colidir(p,ent,r,m,vx,vy,inimigo){ if(p.mat.fantasma) return false;
+export function atritoSolo(t){ return t==="gelo"?0.15 : t==="agua"?0.6 : t==="lama"?1.6 : t==="areia"?1.2 : 1; }
+export function rolamentoSolo(t){ return t==="areia"?3 : t==="lama"?4 : t==="grama"||t==="vinha"?1.5 : 1; }   // areia e lama "engolem" a roda
+export function colidir(p,ent,r,m,vx,vy,inimigo){ if(p.mat.fantasma) return false;
   const R=r+p.r*p.esc, dx=p.x-ent.x, dy=p.y-ent.y, d2=dx*dx+dy*dy; if(d2>=R*R) return false;
   const d=Math.sqrt(d2)||0.01, nx=dx/d, ny=dy/d, ov=R-d, M=p.mat;
   const vn=(vx-p.vx)*nx+(vy-p.vy)*ny;   // velocidade de aproximação ao longo da normal
@@ -91,17 +100,17 @@ function colidir(p,ent,r,m,vx,vy,inimigo){ if(p.mat.fantasma) return false;
   const wm=p.m/(m+p.m), wp=m/(m+p.m); ent.x-=nx*ov*wm; ent.y-=ny*ov*wm; p.x+=nx*ov*wp; p.y+=ny*ov*wp;
   if(vn>0){ const j=(1+M.e)*vn/(1/m+1/p.m); p.vx+=j/p.m*nx; p.vy+=j/p.m*ny;
     // o objeto que vem rápido machuca: energia cinética ½·m·v²
-    if(inimigo&&vn>55&&Math.hypot(p.vx,p.vy)>40){ const f=FONTE; FONTE="ambiente"; danoSimples(inimigo,0.5*p.m*vn*vn*1.2e-4*dificuldade()); FONTE=f;
+    if(inimigo&&vn>55&&Math.hypot(p.vx,p.vy)>40){ const f=FONTE; defFonte("ambiente"); danoSimples(inimigo,0.5*p.m*vn*vn*1.2e-4*dificuldade()); defFonte(f);
       inimigo.x-=nx*Math.min(14,j/m*0.08); inimigo.y-=ny*Math.min(14,j/m*0.08); particulas(ent.x,ent.y,"#fff3c4",4,60); }
     const lim=M.fragil*(p.congela>0?0.6:1); if(vn>lim) danificarProp(p,p.max*(vn/lim-0.7)*1.2,null); }
   return true; }
-function colidirProps(a,b){ if(a.mat.fantasma||b.mat.fantasma) return; const R=a.r*a.esc+b.r*b.esc, dx=b.x-a.x, dy=b.y-a.y, d2=dx*dx+dy*dy; if(d2>=R*R) return;
+export function colidirProps(a,b){ if(a.mat.fantasma||b.mat.fantasma) return; const R=a.r*a.esc+b.r*b.esc, dx=b.x-a.x, dy=b.y-a.y, d2=dx*dx+dy*dy; if(d2>=R*R) return;
   const d=Math.sqrt(d2)||0.01, nx=dx/d, ny=dy/d, ov=R-d, fa=a.mat.fixo||a.flut<0, fb=b.mat.fixo||b.flut<0; if(fa&&fb) return;
   const ia=fa?0:1/a.m, ib=fb?0:1/b.m, s=ia+ib; a.x-=nx*ov*ia/s; a.y-=ny*ov*ia/s; b.x+=nx*ov*ib/s; b.y+=ny*ov*ib/s;
   const vn=(a.vx-b.vx)*nx+(a.vy-b.vy)*ny; if(vn<=0) return;
   const e=Math.min(a.mat.e,b.mat.e), j=(1+e)*vn/s; a.vx-=j*ia*nx; a.vy-=j*ia*ny; b.vx+=j*ib*nx; b.vy+=j*ib*ny;
   for(const p of [a,b]) if(!p.mat.indestrutivel&&vn>p.mat.fragil*(p.congela>0?.6:1)) danificarProp(p,p.max*(vn/p.mat.fragil-0.7)*1.2,null); }
-function atualizarProps(dt){
+export function atualizarProps(dt){
   const C=J.cena, L0=C.lista, P=J.jogador;
   for(const p of L0){ const M=p.mat; if(p.flash>0) p.flash-=dt; if(p.subindo>0){ p.subindo-=dt; if(Math.random()<dt*20) particulas(p.x+rnd(-p.r,p.r),p.y+2,"#a89878",1,25); }
     if(p.temporario>0){ p.temporario-=dt; if(p.temporario<=0){ p.semDrop=true; quebrar(p); continue; } } if(p.molhado>0) p.molhado-=dt; if(p.congela>0) p.congela-=dt;
@@ -148,7 +157,7 @@ function atualizarProps(dt){
       p.tQ=(p.tQ||0)-dt; if(p.tQ<=0){ p.tQ=0.4; mudarSolo(p.x,p.y+2,"fogo");
         for(const q of L0){ if(q===p||q.morto||!q.mat.inflam||q.queima>0) continue; const dx=q.x-p.x, dy=q.y-p.y, d=Math.hypot(dx,dy); if(d>p.r+q.r+10) continue;
           const vientre=(dx*C.dx+dy*C.dy)/(d||1); if(Math.random()<0.35*(1+Math.max(0,vientre)*Math.min(1.5,W/40))) danificarProp(q,0,"fogo"); }
-        emArea(p.x,p.y,p.r+5,e=>{ if(e.ehProp) return; e.status={el:"fogo",t:J.t}; const f=FONTE; FONTE="ambiente"; danoSimples(e,pctMax(e,0.05)+1); FONTE=f; });
+        emArea(p.x,p.y,p.r+5,e=>{ if(e.ehProp) return; e.status={el:"fogo",t:J.t}; const f=FONTE; defFonte("ambiente"); danoSimples(e,pctMax(e,0.05)+1); defFonte(f); });
         if(Math.hypot(P.x-p.x,P.y-p.y)<p.r+5&&J.invuln<=0&&!ativos().some(s=>elementoDe(s)==="fogo")) J.vida-=J.vidaMax*0.02; }
       if(p.molhado>0||C.kit.submerso) apagar(p);
       if(p.hp<=0){ quebrar(p); continue; } } }
@@ -156,18 +165,18 @@ function atualizarProps(dt){
   // explosões em cadeia: a pólvora vizinha não explode no mesmo instante
   for(const x of C.filaExp) x.t-=dt; const prontas=C.filaExp.filter(x=>x.t<=0); C.filaExp=C.filaExp.filter(x=>x.t>0); prontas.forEach(x=>explodir(x.x,x.y,x.R));
 }
-function acender(p){ const M=p.mat; if(J.cena.kit.submerso||p.molhado>0) return;
+export function acender(p){ const M=p.mat; if(J.cena.kit.submerso||p.molhado>0) return;
   if(M.explode){ if(!(p.pavio>0)){ p.pavio=1.1; } return; }
   if(M.inflam&&p.queima<=0){ p.queima=M.queimaT; } }
-function apagar(p){ if(p.queima>0){ p.queima=0; fumaca(p.x,p.y-p.r,6); fumaca(p.x+2,p.y-p.r,5); } if(p.pavio>0) p.pavio=0; }
-function derreter(p,q){ p.esc=Math.max(0,p.esc-q); p.m=p.mat.m*p.esc*p.esc; if(Math.random()<.4) J.cena.destrocos.push(gota(p.x+rnd(-3,3),p.y));
+export function apagar(p){ if(p.queima>0){ p.queima=0; fumaca(p.x,p.y-p.r,6); fumaca(p.x+2,p.y-p.r,5); } if(p.pavio>0) p.pavio=0; }
+export function derreter(p,q){ p.esc=Math.max(0,p.esc-q); p.m=p.mat.m*p.esc*p.esc; if(Math.random()<.4) J.cena.destrocos.push(gota(p.x+rnd(-3,3),p.y));
   if(p.esc<0.35){ mudarSolo(p.x,p.y,frio()?"gelo":"agua"); mudarSolo(p.x+CEL,p.y,frio()?"gelo":"agua"); p.hp=0; quebrar(p); } }
-function afundar(p){ p.morto=true; for(let i=0;i<3;i++) J.cena.ondas.push({x:p.x,y:p.y,r:1+i*3,vida:1}); particulas(p.x,p.y,"#bfe6ff",8,50); }
-function conduzir(p,dano,alc){ if(J.t<p.tCond) return; p.tCond=J.t+0.5; const vistos=new Set(); let n=0, o=p;
+export function afundar(p){ p.morto=true; for(let i=0;i<3;i++) J.cena.ondas.push({x:p.x,y:p.y,r:1+i*3,vida:1}); particulas(p.x,p.y,"#bfe6ff",8,50); }
+export function conduzir(p,dano,alc){ if(J.t<p.tCond) return; p.tCond=J.t+0.5; const vistos=new Set(); let n=0, o=p;
   for(let i=0;i<4;i++){ const alvo=maisProximo(o,alc,e=>!vistos.has(e)); if(!alvo) break; vistos.add(alvo); raio(o.x,o.y-(o===p?p.r:0),alvo.x,alvo.y,"#bfe0ff");
-    const f=FONTE; FONTE="ambiente"; danoSimples(alvo,dano*(1-i*0.15)); FONTE=f; alvo.status={el:"raio",t:J.t}; o=alvo; n++; }
+    const f=FONTE; defFonte("ambiente"); danoSimples(alvo,dano*(1-i*0.15)); defFonte(f); alvo.status={el:"raio",t:J.t}; o=alvo; n++; }
   if(n){ particulas(p.x,p.y-p.r,"#fff3a0",6,70); anel(p.x,p.y,10,"#bfe0ff",.25); } }
-function danificarProp(p,dano,el){ if(p.morto) return; const M=p.mat;
+export function danificarProp(p,dano,el){ if(p.morto) return; const M=p.mat;
   // objetos indestrutíveis têm vida infinita: golpes calculados "em % da vida" viram um valor finito antes de seguir (senão o raio conduzido seria infinito)
   if(!isFinite(dano)) dano=DIF.hp*dificuldade()*2;
   if(el==="fogo"){ if(M.inflam) acender(p); if(M.derrete) derreter(p,Math.min(.25,0.05+dano/p.max*0.4)); }
@@ -177,7 +186,7 @@ function danificarProp(p,dano,el){ if(p.morto) return; const M=p.mat;
   const mult=(M.res&&el&&M.res[el]!=null)? M.res[el] : (M.res&&M.res._!=null? M.res._ : 1);
   p.hp-=dano*mult; if(dano>0){ p.flash=0.07; lascas(p,1+Math.floor(Math.random()*2),false); }
   if(p.hp<=0){ if(M.explode&&!(p.pavio>0)&&el!=="explosao"){ p.hp=0; quebrar(p); } else if(M.explode){ p.pavio=Math.min(p.pavio||1,rnd(.12,.35)); p.hp=1; } else quebrar(p); } }
-function quebrar(p){ if(p.morto) return; p.morto=true; const M=p.mat, C=J.cena; if(!p.semDrop&&!p.temporario) evento("quebra:"+(p.saque?"barril":p.tipo)); if(typeof aoQuebrarProp==="function") aoQuebrarProp(p);
+export function quebrar(p){ if(p.morto) return; p.morto=true; const M=p.mat, C=J.cena; if(!p.semDrop&&!p.temporario) evento("quebra:"+(p.saque?"barril":p.tipo)); if(typeof aoQuebrarProp==="function") aoQuebrarProp(p);
   if(p.semDrop){ lascas(p,6,true); return; }
   lascas(p, M.frag==="pedra"?12:M.frag==="palha"?16:10, true);
   particulas(p.x,p.y,"#d8d0c0",6,50); tremor(M.m>100?3:1.2);
@@ -194,15 +203,15 @@ function quebrar(p){ if(p.morto) return; p.morto=true; const M=p.mat, C=J.cena; 
   }
   if(p.queima>0||p.carvao>0.5){ mudarSolo(p.x,p.y,"cinza"); for(let i=0;i<4;i++) fumaca(p.x+rnd(-3,3),p.y-2,5); }
   if(M.explode) C.filaExp.push({x:p.x,y:p.y,R:44,t:0.02}); }
-function explodir(x,y,R){ const C=J.cena, P=J.jogador; evento("explosao");
+export function explodir(x,y,R){ const C=J.cena, P=J.jogador; evento("explosao");
   tremor(9); parar(0.06); J.flash={cor:"#ffb060",vida:.14}; anel(x,y,R,"#ffd34a",.5); anel(x,y,R*0.6,"#ff6a2a",.4);
   particulas(x,y,"#ffd34a",26,190,2); particulas(x,y,"#ff6a2a",18,150,2);
   for(let i=0;i<10;i++) fumaca(x+rnd(-R*.4,R*.4),y+rnd(-R*.3,R*.3),rnd(6,10)); for(let i=0;i<24;i++) brasa(x+rnd(-8,8),y+rnd(-6,6),rnd(10,30),rnd(-120,120),rnd(-120,120));
   C.luzes=(C.luzes||[]); C.luzes.push({x,y,r:R*2.2,cor:"255,170,80",vida:.35,max:.35});
-  const f=FONTE; FONTE="ambiente";
+  const f=FONTE; defFonte("ambiente");
   for(const e of J.inimigos){ if(e.hp<=0) continue; const dx=e.x-x, dy=e.y-y, d=Math.hypot(dx,dy)||1; if(d>R+e.r) continue; const q=Math.max(.25,1-d/R);
     danoSimples(e,DIF.hp*3.5*dificuldade()*q); e.status={el:"fogo",t:J.t}; const m=(e.chefe?3000:e.mini?800:[15,30,70][e.tipo]||30); const k=Math.min(28,9000*q*q/m*0.1); e.x+=dx/d*k; e.y+=dy/d*k; }
-  FONTE=f;
+  defFonte(f);
   // impulso radial: Δv = I/m, caindo com o quadrado da distância
   for(const p of C.lista){ if(p.morto) continue; const dx=p.x-x, dy=p.y-y, d=Math.hypot(dx,dy)||1; if(d>R) continue; const q=1-d/R;
     if(!p.mat.fixo){ const dv=Math.min(420,9000*q*q/p.m); p.vx+=dx/d*dv; p.vy+=dy/d*dv; } danificarProp(p,p.max*2.2*q,"fogo"); if(p.mat.explode&&!p.morto){ p.pavio=Math.min(p.pavio||1,rnd(.15,.4)); } }
@@ -211,20 +220,20 @@ function explodir(x,y,R){ const C=J.cena, P=J.jogador; evento("explosao");
   for(let i=-2;i<=2;i++) for(let j=-2;j<=2;j++){ if(i*i+j*j>5) continue; const cx=x+i*CEL, cy=y+j*CEL; if(i*i+j*j<=1) mudarSolo(cx,cy,"cinza"); else aplicarElementoNoSolo(cx,cy,"fogo"); if(Math.random()<.4){ const t=soloEm(Math.floor(cx/CEL),Math.floor(cy/CEL)); if(t==="grama"||t==="vinha"||t==="chao") mudarSolo(cx,cy,"fogo"); } } }
 
 // ---------------------------------------------------------------- destroços (lascas com gravidade, quique e atrito)
-const COR_FRAG={ceramica:null, madeira:["#8a5a30","#b07a44","#5a3a20"], palha:["#d8b85a","#a8843c","#f0d88a"], fruta:null, pedra:["#7a7680","#9a96a0","#5a5660"],
+export const COR_FRAG={ceramica:null, madeira:["#8a5a30","#b07a44","#5a3a20"], palha:["#d8b85a","#a8843c","#f0d88a"], fruta:null, pedra:["#7a7680","#9a96a0","#5a5660"],
   gelo:["#bfe6ff","#e8f8ff","#8fc4e0"], cristal:null, metal:["#8a8a90","#c8c8d0","#5a5a60"]};
-function corFrag(p){ const C=J.cena, f=p.mat.frag;
+export function corFrag(p){ const C=J.cena, f=p.mat.frag;
   if(f==="ceramica"){ const v=C.kit.vaso||["#b8683a","#2a3a5a"]; return [v[0],tom(v[0],.7),v[1]]; }
   if(f==="fruta") return C.kit.fruta==="abobora"? ["#e07a2a","#f0a040","#f8e0a0"] : ["#6a4a2a","#f4f0e8","#8a6a3a"];
   if(f==="cristal"){ const c=C.kit.cristal||"#c8f0ff"; return [c,tom(c,1.3),tom(c,.7)]; }
   if(f==="pedra"&&C.kit.rocha==="obsidiana") return ["#2a2030","#4a3a58","#e8603c"];
   const base=COR_FRAG[f]||COR_FRAG.madeira; return p.carvao>0.5? ["#2a2224","#4a3a34","#1a1416"] : base; }
-function lascas(p,n,quebra){ const C=J.cena, cores=corFrag(p), leve=p.mat.frag==="palha";
+export function lascas(p,n,quebra){ const C=J.cena, cores=corFrag(p), leve=p.mat.frag==="palha";
   for(let i=0;i<n;i++){ if(C.destrocos.length>260) C.destrocos.shift(); const a=Math.random()*Math.PI*2, v=quebra? rnd(25,90) : rnd(10,40);
     C.destrocos.push({x:p.x+rnd(-2,2),y:p.y+rnd(-2,2),z:rnd(2,p.r*1.4),vx:p.vx*0.4+Math.cos(a)*v,vy:p.vy*0.4+Math.sin(a)*v,vz:quebra?rnd(40,110):rnd(20,50),
       cor:escolha(cores),tam:leve?1:(Math.random()<.35?2:1),vida:rnd(4,7),leve,brilho:p.mat.frag==="cristal"||p.mat.frag==="gelo",img:Math.random()<.6?cacoArte(p):null}); } }
-function gota(x,y){ return {x,y,z:rnd(1,4),vx:rnd(-5,5),vy:rnd(-5,5),vz:0,cor:"#bfe6ff",tam:1,vida:.6,leve:false}; }
-function atualizarDestrocos(dt){ const C=J.cena, P=J.jogador, sub=C.kit.submerso;
+export function gota(x,y){ return {x,y,z:rnd(1,4),vx:rnd(-5,5),vy:rnd(-5,5),vz:0,cor:"#bfe6ff",tam:1,vida:.6,leve:false}; }
+export function atualizarDestrocos(dt){ const C=J.cena, P=J.jogador, sub=C.kit.submerso;
   for(const g of C.destrocos){ g.vida-=dt;
     const lift=C.vort.length? sustentacao(g.x,g.y) : 0;
     if(g.leve||sub||lift>0){ const w=vento(g.x,g.y), k=1-Math.exp(-dt/(g.leve?0.35:sub?0.8:1.2)); g.vx+=(w.x-g.vx)*k; g.vy+=(w.y-g.vy)*k; g.vz+=lift*dt*Math.max(0,1-g.z/35); }
@@ -236,19 +245,19 @@ function atualizarDestrocos(dt){ const C=J.cena, P=J.jogador, sub=C.kit.submerso
   C.destrocos=C.destrocos.filter(g=>g.vida>0); }
 
 // ---------------------------------------------------------------- vegetação: balanço com o vento + mola amortecida quando é tocada
-function tufoInfo(cx,cy){ const C=J.cena, t=soloEm(cx,cy), h=hash2(cx,cy,41), d=C.kit.dens;
+export function tufoInfo(cx,cy){ const C=J.cena, t=soloEm(cx,cy), h=hash2(cx,cy,41), d=C.kit.dens;
   let lim; switch(t){ case "grama": case "vinha": lim=0.5; break; case "chao": lim=d; break; case "areia": lim=C.veg==="seca"? d*0.6 : d*0.15; break;
     case "gelo": lim=d*0.7; break; case "fogo": case "cinza": lim=Math.max(d,0.45); break; case "lama": lim=d*0.5; break;
     case "agua": lim=C.veg==="junco"||C.veg==="alga"? Math.max(d,0.3) : d*0.3; break; case "eletrico": lim=d*0.3; break; default: lim=d; }
   if(h>=lim) return null; if(C.u.estrutura&&abismoEm(cx*CEL+4,cy*CEL+4,0)) return null; return t; }
 // onda de choque no ambiente: dobra a grama para fora, empurra objetos soltos e levanta poeira (golpes em área, mortes de elite,
 // chefes e Despertar)
-function rajada(x,y,R,forca){ const C=J&&J.cena; if(!C||SIM.ativo) return; const f=forca||1;
+export function rajada(x,y,R,forca){ const C=J&&J.cena; if(!C||SIM.ativo) return; const f=forca||1;
   for(let cy=Math.floor((y-R)/CEL);cy<=Math.floor((y+R)/CEL);cy++) for(let cx=Math.floor((x-R)/CEL);cx<=Math.floor((x+R)/CEL);cx++){ const bx=cx*CEL+4, by=cy*CEL+4, dx=bx-x, dy=by-y, d=Math.hypot(dx,dy)||1; if(d>R) continue;
     if(!tufoInfo(cx,cy)) continue; const k=cx+","+cy; let st=C.tufos.get(k); if(!st){ st={bx:0,by:0,vx:0,vy:0}; C.tufos.set(k,st); } const q=(1-d/R)*f*60; st.vx+=dx/d*q; st.vy+=dy/d*q; }
   for(const p of C.lista){ if(p.morto||p.mat.fixo) continue; const dx=p.x-x, dy=p.y-y, d=Math.hypot(dx,dy)||1; if(d>R) continue; const q=(1-d/R)*f*55/Math.max(1,(p.m||10)/10); /* objeto leve voa longe, pesado mal se mexe */ p.vx=(p.vx||0)+dx/d*q; p.vy=(p.vy||0)+dy/d*q; }
   if(QUAL>0) for(let i=0;i<Math.round(4*f);i++){ const a=Math.random()*6.28; particulaAr("poeira",x+Math.cos(a)*R*0.6,y+Math.sin(a)*R*0.5,1,Math.cos(a)*20,Math.sin(a)*12); } }
-function tocarTufos(x,y,r,vx,vy,dt,horda){ const C=J.cena, V=VEG[C.veg], R=r+4, sp=Math.hypot(vx,vy);
+export function tocarTufos(x,y,r,vx,vy,dt,horda){ const C=J.cena, V=VEG[C.veg], R=r+4, sp=Math.hypot(vx,vy);
   const cx0=Math.floor((x-R)/CEL), cx1=Math.floor((x+R)/CEL), cy0=Math.floor((y-R)/CEL), cy1=Math.floor((y+R+3)/CEL);
   for(let cy=cy0;cy<=cy1;cy++) for(let cx=cx0;cx<=cx1;cx++){ const t=tufoInfo(cx,cy); if(!t||t==="cinza") continue;
     const bx=cx*CEL+1+Math.floor(hash2(cx,cy,43)*6), by=cy*CEL+2+Math.floor(hash2(cx,cy,47)*5), dx=bx-x, dy=by-y, d=Math.hypot(dx,dy)||1; if(d>R) continue;
@@ -258,7 +267,7 @@ function tocarTufos(x,y,r,vx,vy,dt,horda){ const C=J.cena, V=VEG[C.veg], R=r+4, 
     if(V.quebra&&t!=="fogo"&&sp>20&&!marca){ C.marcas.set(k,J.t); for(let i=0;i<3;i++) C.destrocos.push({x:bx,y:by,z:rnd(1,4),vx:rnd(-30,30),vy:rnd(-30,30),vz:rnd(20,50),cor:"#e8f8ff",tam:1,vida:2,brilho:true}); }
     else if(V.solta&&!horda&&sp>15&&!marca&&Math.random()<dt*8){ if(V.solta==="sementes") C.marcas.set(k,J.t); for(let i=0;i<(V.solta==="sementes"?5:2);i++) particulaAr(V.solta,bx,by,rnd(3,7)); }
     if(t==="agua"&&sp>10&&Math.random()<dt*3) C.ondas.push({x:bx,y:by,r:1,vida:0.8}); } }
-function atualizarTufos(dt){ const C=J.cena, V=VEG[C.veg], P=J.jogador; let h=dt; const passos=dt>0.025?2:1; h=dt/passos;
+export function atualizarTufos(dt){ const C=J.cena, V=VEG[C.veg], P=J.jogador; let h=dt; const passos=dt>0.025?2:1; h=dt/passos;
   for(let i=0;i<passos;i++) for(const st of C.tufos.values()){ const am=Math.exp(-V.c*h); st.vx*=am; st.vy*=am; st.vx-=V.k*st.bx*h; st.vy-=V.k*st.by*h; st.bx+=st.vx*h; st.by+=st.vy*h;
     const m=Math.hypot(st.bx,st.by); if(m>1.3){ st.bx*=1.3/m; st.by*=1.3/m; } }
   for(const [k,st] of C.tufos) if(Math.abs(st.bx)+Math.abs(st.by)<0.01&&Math.abs(st.vx)+Math.abs(st.vy)<0.05) C.tufos.delete(k);
@@ -273,7 +282,7 @@ function atualizarTufos(dt){ const C=J.cena, V=VEG[C.veg], P=J.jogador; let h=dt
   for(let i=par;i<L.length;i+=2){ const e=L[i]; if(e.hp<=0||e.x<ox-10||e.x>ox+VW+10||e.y<oy-10||e.y>oy+VH+10) continue; if(++n>70) break; tocarTufos(e.x,e.y,e.r*0.8,e.vx||0,e.vy||0,dt*2,true); } }
 
 // ---------------------------------------------------------------- pegadas e ondas na água
-function rastroDe(o,x,y,dist,r){ const C=J.cena; o._pd=(o._pd||0)+dist; if(o._pd<5) return; o._pd=0;
+export function rastroDe(o,x,y,dist,r){ const C=J.cena; o._pd=(o._pd||0)+dist; if(o._pd<5) return; o._pd=0;
   const t=soloEm(Math.floor(x/CEL),Math.floor(y/CEL)), antes=o._soloAnt; o._soloAnt=t;
   // entrou na água: respingo de gotas; passos no chão seco levantam um pouco de poeira
   if((t==="agua"||t==="eletrico")&&antes&&antes!=="agua"&&antes!=="eletrico"&&!SIM.ativo){ particulas(x,y,"#cfeaff",6,55); for(let i=0;i<3;i++) C.ondas.push({x:x+rnd(-3,3),y:y+2,r:1+i*2,vida:0.9}); }
@@ -283,7 +292,7 @@ function rastroDe(o,x,y,dist,r){ const C=J.cena; o._pd=(o._pd||0)+dist; if(o._pd
   const cor=t==="molhado"?"#16202e": t==="queimado"?"#0e0a08": t==="lama"?"#3a2818": t==="areia"?tom(COR_SOLO.areia[0],.75): t==="cinza"?"#2a2830": (t==="gelo"&&frio())?"#9ab8d0": t==="grama"||t==="vinha"? null : null;
   if(!cor) return; o._lado=!o._lado; if(C.pegadas.length>240) C.pegadas.shift();
   C.pegadas.push({x:x+(o._lado?-1:1)*Math.max(1,r*0.3),y:y+r*0.6,cor,vida:t==="areia"?7:10,max:t==="areia"?7:10,tam:r>6?2:1}); }
-function atualizarPegadas(dt){ const C=J.cena, P=J.jogador;
+export function atualizarPegadas(dt){ const C=J.cena, P=J.jogador;
   // na areia o vento apaga as pegadas mais depressa (transporte de grãos)
   const apaga=1+C.Wm/45;
   const corAreia=C.corAreia||(C.corAreia=tom(COR_SOLO.areia[0],.75));   // antes a cor era recalculada para cada pegada, a cada quadro
@@ -294,7 +303,7 @@ function atualizarPegadas(dt){ const C=J.cena, P=J.jogador;
   for(const e of J.inimigos){ if(e.hp<=0||(e.tipo!==2&&!e.chefe&&!e.mini&&!e.elite)) continue; const v=Math.hypot(e.vx||0,e.vy||0); if(v>6) rastroDe(e,e.x,e.y+e.r*0.6,v*dt,e.r); } }
 
 // ---------------------------------------------------------------- clima: partículas do ar
-function particulaAr(k,x,y,z,vx,vy){ const C=J.cena; if(C.ar.length>300) C.ar.shift();
+export function particulaAr(k,x,y,z,vx,vy){ const C=J.cena; if(C.ar.length>300) C.ar.shift();
   const p={k,x,y,z:z??0,vx:vx??0,vy:vy??0,vz:0,vida:3,max:3,fase:Math.random()*6.28,cor:null,tam:1};
   switch(k){
     case "neve": p.vz=-rnd(14,20); p.vida=p.max=8; p.cor="#f4f8ff"; p.tam=Math.random()<.25?2:1; break;
@@ -313,10 +322,10 @@ function particulaAr(k,x,y,z,vx,vy){ const C=J.cena; if(C.ar.length>300) C.ar.sh
     case "bolhas": p.vz=rnd(10,18); p.vida=p.max=rnd(2.5,4); p.cor="#bfe6ff"; p.tam=Math.random()<.3?2:1; break;
   }
   C.ar.push(p); return p; }
-function brasa(x,y,z,vx,vy){ const p=particulaAr("brasas",x,y,z,vx,vy); p.vx=vx||0; p.vy=vy||0; }
-function fumaca(x,y,r,cor){ const C=J.cena; if(C.fumaca.length>120) C.fumaca.shift(); C.fumaca.push({x,y,z:rnd(2,6),r:r*0.5,r1:r*1.8,vida:rnd(1.8,2.8),max:2.8,cor:cor||"#4a4650",vz:rnd(8,14)}); }
-const QUEDA={neve:1,cinzas:1,chuva:1,garoa:1,folhas:1,petalas:1};
-function atualizarAr(dt,ox,oy){ const C=J.cena, k=C.kit;
+export function brasa(x,y,z,vx,vy){ const p=particulaAr("brasas",x,y,z,vx,vy); p.vx=vx||0; p.vy=vy||0; }
+export function fumaca(x,y,r,cor){ const C=J.cena; if(C.fumaca.length>120) C.fumaca.shift(); C.fumaca.push({x,y,z:rnd(2,6),r:r*0.5,r1:r*1.8,vida:rnd(1.8,2.8),max:2.8,cor:cor||"#4a4650",vz:rnd(8,14)}); }
+export const QUEDA={neve:1,cinzas:1,chuva:1,garoa:1,folhas:1,petalas:1};
+export function atualizarAr(dt,ox,oy){ const C=J.cena, k=C.kit;
   // geração: as que caem nascem no alto e "a barlavento", para pousarem dentro da tela
   const taxa={neve:30,cinzas:8,chuva:150,garoa:55,folhas:2.5,petalas:3,sementes:4+C.Wm/12,poeira:4+C.Wm/6,brasas:5,polen:4,esporos:4,esporos_luz:5,vagalumes:1.2,faiscas:1.2,bolhas:6};
   // com a horda grande, o clima abre espaço para os golpes (menos partículas de ambiente)
@@ -362,16 +371,16 @@ function atualizarAr(dt,ox,oy){ const C=J.cena, k=C.kit;
   for(const n of C.nevoa){ n.x+=C.Wx*0.8*ww*dt; n.y+=C.Wy*0.8*ww*dt; envolver(n,ox,oy,n.r); }
   for(const n of C.nuvens){ n.x+=C.Wx*1.6*dt; n.y+=C.Wy*1.6*dt; envolver(n,ox,oy,n.r); }
   if(C.luzes){ for(const l of C.luzes) l.vida-=dt; C.luzes=C.luzes.filter(l=>l.vida>0); } }
-function envolver(n,ox,oy,r){ const w=VW+2*r+40, h=VH+2*r+40, x0=ox-r-20, y0=oy-r-20;
+export function envolver(n,ox,oy,r){ const w=VW+2*r+40, h=VH+2*r+40, x0=ox-r-20, y0=oy-r-20;
   n.x=x0+(((n.x-x0)%w)+w)%w; n.y=y0+(((n.y-y0)%h)+h)%h; }
-function respingo(x,y){ const C=J.cena, t=soloEm(Math.floor(x/CEL),Math.floor(y/CEL));
+export function respingo(x,y){ const C=J.cena, t=soloEm(Math.floor(x/CEL),Math.floor(y/CEL));
   if((t==="agua"||t==="eletrico")&&C.ondas.length<80&&Math.random()<.5) C.ondas.push({x,y,r:0.5,vida:.6});
   else if(Math.random()<.25&&C.destrocos.length<260) C.destrocos.push({x,y,z:1,vx:rnd(-12,12),vy:rnd(-12,12),vz:rnd(15,30),cor:"#c8d8f0",tam:1,vida:.25});
   // chuva apaga fogo aos poucos e molha os objetos
   if(t==="fogo"&&Math.random()<0.04) aplicarElementoNoSolo(x,y,"agua"); }
 
 // ---------------------------------------------------------------- redemoinhos de poeira e de fogo
-function atualizarVortices(dt,ox,oy){ const C=J.cena, P=J.jogador;
+export function atualizarVortices(dt,ox,oy){ const C=J.cena, P=J.jogador;
   if(C.kit.redemoinho&&!J.fim){ C.tVort-=dt; if(C.tVort<=0&&C.vort.length<2){ C.tVort=rnd(16,28); const a=Math.random()*Math.PI*2, d=rnd(50,90);
     C.vort.push({x:P.x+Math.cos(a)*d,y:P.y+Math.sin(a)*d,r:9,vmax:150,vida:rnd(10,16),fogo:false,f:rnd(0,6)}); } }
   for(const w of C.vort){ w.vida-=dt;
@@ -380,7 +389,7 @@ function atualizarVortices(dt,ox,oy){ const C=J.cena, P=J.jogador;
     let t=null; for(const [ax,ay] of [[0,0],[1,0],[-1,0],[0,1],[0,-1]]){ const v=soloEm(Math.floor((w.x+ax*w.r*0.7)/CEL),Math.floor((w.y+ay*w.r*0.7)/CEL)); if(v==="fogo"){ t=v; break; } }
     if(t==="fogo"&&!w.fogo){ w.fogo=true; w.vida=Math.max(w.vida,6); texto(w.x,w.y-20,"Redemoinho de fogo!","#ff8a3d",14); }
     if(w.fogo){ w.tf=(w.tf||0)-dt; if(w.tf<=0){ w.tf=0.2; aplicarElementoNoSolo(w.x+rnd(-6,6),w.y+rnd(-6,6),"fogo"); const tt=soloEm(Math.floor(w.x/CEL),Math.floor(w.y/CEL)); if(tt==="grama"||tt==="vinha"||tt==="chao") mudarSolo(w.x,w.y,"fogo");
-        const f=FONTE; FONTE="ambiente"; emArea(w.x,w.y,w.r+3,e=>{ if(e.ehProp){ danificarProp(e,0,"fogo"); return; } e.status={el:"fogo",t:J.t}; danoSimples(e,pctMax(e,0.06)+2); }); FONTE=f;
+        const f=FONTE; defFonte("ambiente"); emArea(w.x,w.y,w.r+3,e=>{ if(e.ehProp){ danificarProp(e,0,"fogo"); return; } e.status={el:"fogo",t:J.t}; danoSimples(e,pctMax(e,0.06)+2); }); defFonte(f);
         if(Math.hypot(P.x-w.x,P.y-w.y)<w.r&&J.invuln<=0&&!ativos().some(s=>elementoDe(s)==="fogo")) J.vida-=J.vidaMax*0.015; }
       for(let i=0;i<2;i++){ const a=Math.random()*Math.PI*2, r=w.r*rnd(.6,1.2); brasa(w.x+Math.cos(a)*r,w.y+Math.sin(a)*r,rnd(0,8)); const q=J.cena.ar[J.cena.ar.length-1]; if(q){ q.vz=rnd(6,14); q.vida=q.max=rnd(.8,1.4); } } }
     else if(Math.random()<dt*18){ const a=Math.random()*Math.PI*2, r=Math.random()*w.r*1.4; const p=particulaAr("poeira",w.x+Math.cos(a)*r,w.y+Math.sin(a)*r,rnd(0,6)); p.vida=p.max=rnd(1,1.8); }
@@ -389,7 +398,7 @@ function atualizarVortices(dt,ox,oy){ const C=J.cena, P=J.jogador;
   C.vort=C.vort.filter(w=>w.vida>0); }
 
 // ---------------------------------------------------------------- relâmpagos: preferem o que é alto e condutor (para-raios)
-function atualizarRaios(dt){ const C=J.cena, P=J.jogador;
+export function atualizarRaios(dt){ const C=J.cena, P=J.jogador;
   if(C.kit.relampago&&!J.fim){ C.tRaio-=dt;
     if(C.tRaio<=0&&!C.aviso){ C.tRaio=C.raioRapido? rnd(2.5,4.5) : rnd(8,15); const a=Math.random()*Math.PI*2, d=rnd(30,100); let x=P.x+Math.cos(a)*d, y=P.y+Math.sin(a)*d, alvo=null, bd=140*140;
       for(const p of C.lista) if(p.mat.condutor){ const dd=(p.x-x)**2+(p.y-y)**2; if(dd<bd){ bd=dd; alvo=p; } }
@@ -397,18 +406,18 @@ function atualizarRaios(dt){ const C=J.cena, P=J.jogador;
   if(C.aviso){ C.aviso.t-=dt; if(Math.random()<dt*20) particulaAr("faiscas",C.aviso.x+rnd(-6,6),C.aviso.y+rnd(-4,4),0);
     if(C.aviso.t<=0){ const {x,y,alvo}=C.aviso; C.aviso=null; cairRaio(x,y,alvo); } }
   for(const r of C.raios) r.vida-=dt; C.raios=C.raios.filter(r=>r.vida>0); }
-function cairRaio(x,y,alvo){ const C=J.cena, P=J.jogador;
+export function cairRaio(x,y,alvo){ const C=J.cena, P=J.jogador;
   const pts=[]; let px=x+rnd(-20,20), py=y-VH; for(let i=0;i<=10;i++){ const t=i/10; pts.push([px+(x-px)*t+(i&&i<10?rnd(-7,7):0), py+(y-py)*t]); }
   C.raios.push({pts,vida:.28,max:.28}); J.flash={cor:"#e8f0ff",vida:.16}; tremor(6); parar(0.04); anel(x,y,22,"#e8f0ff",.4); particulas(x,y,"#fff3a0",16,140,2);
   C.luzes=(C.luzes||[]); C.luzes.push({x,y,r:120,cor:"200,220,255",vida:.3,max:.3});
-  const f=FONTE; FONTE="ambiente"; const dano=DIF.hp*2.2*dificuldade();
-  emArea(x,y,24,e=>{ if(e.ehProp){ danificarProp(e,dano*0.5,"raio"); return; } danoSimples(e,dano); e.status={el:"raio",t:J.t}; }); FONTE=f;
+  const f=FONTE; defFonte("ambiente"); const dano=DIF.hp*2.2*dificuldade();
+  emArea(x,y,24,e=>{ if(e.ehProp){ danificarProp(e,dano*0.5,"raio"); return; } danoSimples(e,dano); e.status={el:"raio",t:J.t}; }); defFonte(f);
   if(alvo){ conduzir(alvo,dano*0.7,90); evento("raio_metal"); } if(Math.hypot(P.x-x,P.y-y)<60) evento("relampago");
   for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++){ const cx=x+i*CEL, cy=y+j*CEL, t=soloEm(Math.floor(cx/CEL),Math.floor(cy/CEL)); if(t==="grama"||t==="vinha") mudarSolo(cx,cy,"fogo"); else aplicarElementoNoSolo(cx,cy,"raio"); }
   if(Math.hypot(P.x-x,P.y-y)<18&&J.invuln<=0){ J.vida-=J.vidaMax*0.07; texto(P.x,P.y-14,"Raio!","#e8f0ff",14); } }
 
 // ---------------------------------------------------------------- passo do cenário (chamado uma vez por quadro)
-function atualizarCena(dt){ const C=J.cena; if(!C) return; C.t+=dt;
+export function atualizarCena(dt){ const C=J.cena; if(!C) return; C.t+=dt;
   const ang=C.ang0+0.3*Math.sin(C.t*0.031); C.dx=Math.cos(ang); C.dy=Math.sin(ang);
   const temAr=ativos().some(s=>elementoDe(s)==="ar");   // monstros de Ar atiçam o vento
   C.vBase=C.kit.vento*(0.82+0.18*Math.sin(C.t*0.11+1.3))*(temAr?1.3:1);
@@ -418,14 +427,14 @@ function atualizarCena(dt){ const C=J.cena; if(!C) return; C.t+=dt;
   carregarProps(ox,oy); atualizarProps(dt); atualizarTufos(dt); atualizarPegadas(dt); atualizarDestrocos(dt);
   atualizarAr(dt,ox,oy); atualizarVortices(dt,ox,oy); atualizarRaios(dt); atualizarEstrutura(dt); }
 // golpe que atinge um objeto (projéteis e balas)
-function propNoPonto(x,y,r){ const C=J.cena; if(!C) return null; for(const p of C.lista){ if(p.morto||p.mat.fantasma) continue; const R=p.r*p.esc+r; if((p.x-x)**2+(p.y-p.r*0.4-y)**2<R*R) return p; } return null; }
-function propMaisProximo(o,alc){ const C=J.cena; if(!C) return null; let best=null, bd=alc*alc;
+export function propNoPonto(x,y,r){ const C=J.cena; if(!C) return null; for(const p of C.lista){ if(p.morto||p.mat.fantasma) continue; const R=p.r*p.esc+r; if((p.x-x)**2+(p.y-p.r*0.4-y)**2<R*R) return p; } return null; }
+export function propMaisProximo(o,alc){ const C=J.cena; if(!C) return null; let best=null, bd=alc*alc;
   for(const p of C.lista){ if(p.morto||p.mat.indestrutivel) continue; const d=dist2(o,p); if(d<bd){ bd=d; best=p; } } return best; }
 
 // ================================================================ desenho do cenário
-function spriteCena(chave,w,h,fn){ const C=J.cena; if(C.sprites.has(chave)) return C.sprites.get(chave);
+export function spriteCena(chave,w,h,fn){ const C=J.cena; if(C.sprites.has(chave)) return C.sprites.get(chave);
   const c=document.createElement("canvas"); c.width=w; c.height=h; const g=c.getContext("2d"); fn(g,(x,y,cor)=>{ g.fillStyle=cor; g.fillRect(x,y,1,1); }); C.sprites.set(chave,c); return c; }
-function spriteProp(p){ const C=J.cena, k=C.kit, t=p.tipo;
+export function spriteProp(p){ const C=J.cena, k=C.kit, t=p.tipo;
   if(t==="marco"||t==="luz"||t==="frente") return spriteMarco(p); const arte=spriteObjetoArte(p); if(arte) return arte;
   switch(t){
     case "vaso": { const [cor,faixa]=k.vaso||["#b8683a","#2a3a5a"], v=p.var; return spriteCena("vaso"+v,9,12,(g,px)=>{ const cla=tom(cor,1.25), esc=tom(cor,.66);
@@ -477,17 +486,17 @@ function spriteProp(p){ const C=J.cena, k=C.kit, t=p.tipo;
         for(let x=1;x<7;x++){ px(x,1,tom(cor,1.1)); px(x,0,tom(cor,.8)); } if(v==="braseiro"){ px(3,0,"#ffd34a"); px(4,0,"#e8603c"); } }); } }
   return null; }
 // marcos e objetos entram na fila de profundidade (ordenada pelo pé): quem está mais embaixo na tela fica na frente
-function desenharProps(ox,oy,fila){ const C=J.cena;
+export function desenharProps(ox,oy,fila){ const C=J.cena;
   for(const p of C.lista){ if(p.tipo==="frente") fila.push({y:p.y,f:()=>desenharFrente(p,ox,oy)}); else fila.push({y:p.y+p.r*0.6,f:()=>desenharUmProp(p,ox,oy)}); } }
 // alguém da equipe (ou o Invocador) atrás de um objeto alto: o objeto fica translúcido para não esconder ninguém
-function equipeAtras(xc,yPe,w,h){ const dentro=(x,y)=>y<yPe&&y>yPe-h&&Math.abs(x-xc)<w/2; const P=J.jogador; if(dentro(P.x,P.y+6)) return true;
+export function equipeAtras(xc,yPe,w,h){ const dentro=(x,y)=>y<yPe&&y>yPe-h&&Math.abs(x-xc)<w/2; const P=J.jogador; if(dentro(P.x,P.y+6)) return true;
   for(const s of R.selos) if(s.mon&&s.x!=null&&dentro(s.x,s.y+8)) return true; return false; }
-function desenharFrente(p,ox,oy){ const s=spriteMarco(p); if(!s) return; const atras=equipeAtras(p.x,p.y,s.width,s.height*(s.base||0.85));
+export function desenharFrente(p,ox,oy){ const s=spriteMarco(p); if(!s) return; const atras=equipeAtras(p.x,p.y,s.width,s.height*(s.base||0.85));
   sombraContato(p.x-ox,p.y-oy+1,s.width*0.7,0.45); p._alfa=(p._alfa??1)+((atras?0.45:1)-(p._alfa??1))*0.2; lg.globalAlpha=p._alfa;
   // planta de primeiro plano balança com o vento (inclinação a partir da base) e treme quando alguém passa por trás
   const C=J.cena, vento=(C&&C.Wx||0)*0.004, bal=Math.sin(J.t*1.3+p.x*0.05)*0.035+vento+(atras?Math.sin(J.t*9)*0.02:0), bx=Math.round(p.x-ox), by=Math.round(p.y-oy);
   lg.save(); lg.translate(bx,by); lg.transform(1,0,bal,1,0,0); lg.drawImage(s,-s.width/2,-s.height*(s.base||0.85)); lg.restore(); lg.globalAlpha=1; }
-function desenharUmProp(p,ox,oy){ const spr=p.spriteFixo||spriteProp(p); if(!spr) return; const kq=p.caindo>0? p.caindo/0.7 : 1, w=Math.round(spr.width*p.esc*kq), h=Math.round(spr.height*p.esc*kq); if(kq<1) lg.globalAlpha=kq;
+export function desenharUmProp(p,ox,oy){ const spr=p.spriteFixo||spriteProp(p); if(!spr) return; const kq=p.caindo>0? p.caindo/0.7 : 1, w=Math.round(spr.width*p.esc*kq), h=Math.round(spr.height*p.esc*kq); if(kq<1) lg.globalAlpha=kq;
     const bob=p.flut>0? Math.round(Math.sin(J.t*2.5+p.x)*1) : 0, lev=p.levita? Math.round(6+Math.sin(J.t*8+p.x)*1.5) : 0, x=Math.round(p.x-ox-w/2), y=Math.round(p.y-oy-h*(spr.base||1)+p.r*0.6)+bob-lev; if(p.tipo==="frente") return;
     if(x<-20||y<-20||x>VW+20||y>VH+20) return;
     if(h>22){ const at=equipeAtras(p.x,p.y+p.r*0.6,w,h); p._alfa=(p._alfa??1)+((at?0.5:1)-(p._alfa??1))*0.2; }
@@ -503,16 +512,16 @@ function desenharUmProp(p,ox,oy){ const spr=p.spriteFixo||spriteProp(p); if(!spr
     if(p.molhado>0&&!p.mat.fixo){ lg.globalAlpha=.25; lg.drawImage(silhueta(spr,"#1a3050"),x,y,w,h); lg.globalAlpha=1; }
     if(p.congela>0){ lg.globalAlpha=.55; lg.drawImage(silhueta(spr,"#dff4ff"),x,y,w,h); lg.globalAlpha=1; }
     if(p.mat.condutor&&p.solo==="eletrico"&&Math.random()<.3){ lg.fillStyle="#fff3a0"; lg.fillRect(x+Math.floor(Math.random()*w),y+Math.floor(Math.random()*h),1,1); } }
-const cacheSil=new WeakMap(), cacheSilM=new WeakMap();
+export const cacheSil=new WeakMap(), cacheSilM=new WeakMap();
 // silhueta com o tamanho do sprite (para virar o próprio sprite: estátua, ouro...). A silhueta comum é feita em alta resolução
 // e por isso é bem maior: usada no lugar do sprite, o inimigo aparecia como um borrão cinza gigante cobrindo a tela.
-function silhuetaMundo(spr,cor){ let m=cacheSilM.get(spr); if(!m){ m={}; cacheSilM.set(spr,m); } if(m[cor]) return m[cor];
+export function silhuetaMundo(spr,cor){ let m=cacheSilM.get(spr); if(!m){ m={}; cacheSilM.set(spr,m); } if(m[cor]) return m[cor];
   const c=document.createElement("canvas"); c.width=spr.width; c.height=spr.height; const g=c.getContext("2d"); g.drawImage(spr,0,0); g.globalCompositeOperation="source-in"; g.fillStyle=cor; g.fillRect(0,0,c.width,c.height);
   const hi=silhueta(spr,cor); if(hi.width!==c.width) c._hi=hi; c.base=spr.base; c._pe=spr._pe; c._alvo=spr._alvo; m[cor]=c; return c; }
-function silhueta(spr,cor){ const k=cor; let m=cacheSil.get(spr); if(!m){ m={}; cacheSil.set(spr,m); } if(m[k]) return m[k];
+export function silhueta(spr,cor){ const k=cor; let m=cacheSil.get(spr); if(!m){ m={}; cacheSil.set(spr,m); } if(m[k]) return m[k];
   const b=baseHi(spr), c=document.createElement("canvas"); c.width=b.width; c.height=b.height; const g=c.getContext("2d"); g.drawImage(b,0,0); g.globalCompositeOperation="source-in"; g.fillStyle=cor; g.fillRect(0,0,c.width,c.height); if(b!==spr) c._suave=true; m[k]=c; return c; }
 // detalhes do chão desenhados uma vez por pedaço (pedrinhas, rachaduras, flores, lajotas...)
-function detalhePedaco(cx,cy){ const C=J.cena, k=cx+":"+cy; if(C.detalhes.has(k)) return C.detalhes.get(k);
+export function detalhePedaco(cx,cy){ const C=J.cena, k=cx+":"+cy; if(C.detalhes.has(k)) return C.detalhes.get(k);
   if(C.detalhes.size>48){ const pk=C.detalhes.keys().next().value; C.detalhes.delete(pk); }
   const c=document.createElement("canvas"); c.width=c.height=CH; const g=c.getContext("2d"), r=semente(C.u.id+"d"+k), base=COR[C.u.elemento];
   const px=(x,y,cor,w,h)=>{ g.fillStyle=cor; g.fillRect(Math.floor(x),Math.floor(y),w||1,h||1); };
@@ -532,15 +541,15 @@ function detalhePedaco(cx,cy){ const C=J.cena, k=cx+":"+cy; if(C.detalhes.has(k)
       case "raizes": for(let i=0;i<2;i++){ let x=r()*CH, y=r()*CH; const a=r()*6.28; for(let s=0;s<18;s++){ x+=Math.cos(a+Math.sin(s*.5))*1.1; y+=Math.sin(a+Math.sin(s*.5))*1.1; px(x,y,"#5a3a20"); } } break;
       case "neve": for(let i=0;i<5;i++){ const x=r()*CH, y=r()*CH, w=3+Math.floor(r()*6); g.fillStyle="rgba(240,246,255,.55)"; g.fillRect(x,y,w,2); g.fillRect(x+1,y-1,w-2,1); } break; } }
   C.detalhes.set(k,c); return c; }
-function desenharDetalhesChao(ox,oy){ const c0=Math.floor(ox/CH), r0=Math.floor(oy/CH);
+export function desenharDetalhesChao(ox,oy){ const c0=Math.floor(ox/CH), r0=Math.floor(oy/CH);
   for(let cy=r0;cy<=r0+Math.ceil(VH/CH)+1;cy++) for(let cx=c0;cx<=c0+Math.ceil(VW/CH)+1;cx++){ const d=detalhePedaco(cx,cy);
     // arte importada: cada enfeite vai direto da folha original em alta resolução (antes saía de um canvas pequeno e ficava borrado)
     if(Array.isArray(d)){ for(const e of d){ lg.globalAlpha=e.a; lg.drawImage(e.s,cx*CH-ox+e.x,cy*CH-oy+e.y,e.w,e.w); } lg.globalAlpha=1; }
     else lg.drawImage(d,cx*CH-ox,cy*CH-oy); } }
 // vegetação: cada folha é uma curva fina (traço suave), curvada pelo vento e pelo contato
-const BALDES=new Map();
-function balde(cor,lw){ const k=cor+"|"+(lw||0.8); let b=BALDES.get(k); if(!b){ b={cor,lw:lw||0.8,v:[],p:[]}; BALDES.set(k,b); } return b; }
-function desenharTufos(ox,oy){ const C=J.cena, V=VEG[C.veg]; if(!V) return; for(const b of BALDES.values()){ b.v.length=0; b.p.length=0; }
+export const BALDES=new Map();
+export function balde(cor,lw){ const k=cor+"|"+(lw||0.8); let b=BALDES.get(k); if(!b){ b={cor,lw:lw||0.8,v:[],p:[]}; BALDES.set(k,b); } return b; }
+export function desenharTufos(ox,oy){ const C=J.cena, V=VEG[C.veg]; if(!V) return; for(const b of BALDES.values()){ b.v.length=0; b.p.length=0; }
   const c0=Math.floor(ox/CEL)-1, r0=Math.floor(oy/CEL)-1, nc=Math.ceil(VW/CEL)+3, nr=Math.ceil(VH/CEL)+4, pisca=Math.floor(J.t*10), sub=C.kit.submerso;
   const capC=C.kit.cogu||"#c070ff", pintado=!!(chao&&chao.suave);
   for(let j=0;j<nr;j++) for(let i=0;i<nc;i++){ const cx=c0+i, cy=r0+j, t=tufoInfo(cx,cy); if(!t) continue; if(QUAL<2&&hash2(cx,cy,91)>(QUAL===1?0.6:0.35)) continue;
@@ -575,7 +584,7 @@ function desenharTufos(ox,oy){ const C=J.cena, V=VEG[C.veg]; if(!V) return; for(
     if(b.v.length){ lg.strokeStyle=b.cor; lg.lineWidth=b.lw; lg.beginPath(); const v=b.v; for(let i=0;i<v.length;i+=6){ lg.moveTo(v[i],v[i+1]); lg.quadraticCurveTo(v[i+2],v[i+3],v[i+4],v[i+5]); } lg.stroke(); }
     if(b.p.length){ lg.fillStyle=b.cor; lg.beginPath(); const p=b.p; for(let i=0;i<p.length;i+=3){ lg.moveTo(p[i]+p[i+2],p[i+1]); lg.arc(p[i],p[i+1],p[i+2],0,Math.PI*2); } lg.fill(); } }
   lg.lineWidth=1; lg.lineCap="butt"; lg.globalAlpha=1; }
-function desenharCenaChao(ox,oy){ const C=J.cena; if(!C) return;
+export function desenharCenaChao(ox,oy){ const C=J.cena; if(!C) return;
   for(const p of C.pegadas){ lg.globalAlpha=Math.min(1,p.vida/p.max*1.5)*0.45; lg.fillStyle=p.cor; lg.beginPath(); lg.ellipse(p.x-ox,p.y-oy+0.5,p.tam*0.6,0.5,0,0,Math.PI*2); lg.fill(); }
   lg.globalAlpha=1; lg.strokeStyle="#d8f0ff"; lg.lineWidth=1;
   for(const o of C.ondas){ lg.globalAlpha=o.vida*0.5; lg.beginPath(); lg.ellipse(o.x-ox,o.y-oy,o.r,o.r*0.55,0,0,Math.PI*2); lg.stroke(); }
@@ -583,11 +592,11 @@ function desenharCenaChao(ox,oy){ const C=J.cena; if(!C) return;
   desenharTufos(ox,oy);
   for(const g of C.destrocos){ if(g.z>=1) continue; const x=Math.round(g.x-ox), y=Math.round(g.y-oy); if(x<-4||y<-4||x>VW+4||y>VH+4) continue; lg.globalAlpha=Math.min(1,g.vida); if(g.img) lg.drawImage(g.img,x-3,y-3); else { lg.fillStyle=g.cor; lg.beginPath(); lg.ellipse(x,y,g.tam*0.7+0.2,g.tam*0.5+0.2,(g.x+g.y)*0.3,0,Math.PI*2); lg.fill(); } }
   lg.globalAlpha=1; }
-function desenharCenaObjetos(ox,oy,fila){ const C=J.cena; if(!C) return; desenharProps(ox,oy,fila);
+export function desenharCenaObjetos(ox,oy,fila){ const C=J.cena; if(!C) return; desenharProps(ox,oy,fila);
   for(const g of C.destrocos){ if(g.z<1) continue; const x=Math.round(g.x-ox), y=Math.round(g.y-oy); if(x<-4||y<-40||x>VW+4||y>VH+4) continue;
     lg.globalAlpha=Math.min(1,g.vida)*0.25; lg.fillStyle="#000"; lg.beginPath(); lg.ellipse(x,y,g.tam*0.7,0.45,0,0,Math.PI*2); lg.fill(); lg.globalAlpha=Math.min(1,g.vida); if(g.img) lg.drawImage(g.img,x-3,Math.round(y-g.z)-3); else { lg.fillStyle=g.cor; lg.beginPath(); lg.ellipse(x,y-g.z,g.tam*0.7+0.2,g.tam*0.5+0.2,(g.x+g.y)*0.3,0,Math.PI*2); lg.fill(); } }
   lg.globalAlpha=1; }
-function desenharCenaAr(ox,oy){ const C=J.cena; if(!C) return;
+export function desenharCenaAr(ox,oy){ const C=J.cena; if(!C) return;
   // fumaça
   for(const f of C.fumaca){ const a=Math.min(1,f.vida/f.max*1.4)*0.32; lg.globalAlpha=a; lg.drawImage(bolhaCor(f.cor),f.x-ox-f.r,f.y-f.z-oy-f.r,f.r*2,f.r*2); }
   lg.globalAlpha=1;
@@ -617,7 +626,7 @@ function desenharCenaAr(ox,oy){ const C=J.cena; if(!C) return;
   lg.globalAlpha=1;
   // aviso do relâmpago
   if(C.aviso){ const a=C.aviso, q=1-a.t/0.9; lg.strokeStyle="#e8f0ff"; lg.globalAlpha=0.3+0.5*q*Math.abs(Math.sin(J.t*30)); lg.beginPath(); lg.ellipse(a.x-ox,a.y-oy,22*(1-q*0.4),12*(1-q*0.4),0,0,Math.PI*2); lg.stroke(); lg.globalAlpha=1; } }
-function desenharCenaLuz(ox,oy){ const C=J.cena; if(!C) return;
+export function desenharCenaLuz(ox,oy){ const C=J.cena; if(!C) return;
   for(const p of C.ar){ if(!p.luz) continue; const x=Math.round(p.x-ox), y=Math.round(p.y-oy-p.z); if(x<-2||y<-2||x>VW+2||y>VH+2) continue; const q=p.vida/p.max;
     if(p.k==="brasas"){ lg.fillStyle=q>.6?"#ffd34a":q>.3?"#ff8a3d":"#c8473b"; lg.globalAlpha=Math.min(1,q*2)*(0.7+0.3*Math.sin(J.t*20+p.fase)); }
     else if(p.k==="vagalumes"){ const pis=Math.max(0,Math.sin(J.t*2.2+p.fase)); lg.fillStyle=p.cor; lg.globalAlpha=pis*Math.min(1,p.vida); if(pis>.6){ lg.globalAlpha=pis*0.25; lg.fillRect(x-1,y-1,3,3); lg.globalAlpha=pis; } }
@@ -637,7 +646,7 @@ function desenharCenaLuz(ox,oy){ const C=J.cena; if(!C) return;
     lg.strokeStyle="#9fc0ff"; lg.globalAlpha*=0.5; lg.beginPath(); r.pts.forEach(([x,y],i)=>i? lg.lineTo(x-ox+1,y-oy) : lg.moveTo(x-ox+1,y-oy)); lg.stroke(); }
   lg.globalAlpha=1; }
 // brilho na tela cheia: objetos em chamas, explosões e relâmpagos iluminam o entorno
-function desenharCenaBrilho(ox,oy){ const C=J.cena; if(!C) return; ctx.globalCompositeOperation="lighter";
+export function desenharCenaBrilho(ox,oy){ const C=J.cena; if(!C) return; ctx.globalCompositeOperation="lighter";
   const luz=(x,y,r,cor,a)=>{ const X=(x-ox)*S, Y=(y-oy)*S, RR=r*S, gr=ctx.createRadialGradient(X,Y,0,X,Y,RR); gr.addColorStop(0,`rgba(${cor},${a})`); gr.addColorStop(1,`rgba(${cor},0)`); ctx.fillStyle=gr; ctx.fillRect(X-RR,Y-RR,RR*2,RR*2); };
   let n=0; for(const p of C.lista){ if(p.queima>0&&n++<6) luz(p.x,p.y-p.r,34,"255,150,60",0.22+0.05*Math.sin(J.t*17+p.x)); if(p.tipo==="luz") luz(p.x,p.y-12,44,"255,190,110",0.2+0.04*Math.sin(J.t*9+p.x)); }
   for(const w of C.vort) if(w.fogo) luz(w.x,w.y-8,44,"255,140,50",0.3);
@@ -649,13 +658,13 @@ function desenharCenaBrilho(ox,oy){ const C=J.cena; if(!C) return; ctx.globalCom
     for(let i=0;i<np;i++){ const p=J.proj[i], v=vEl(p.el), [r,g,b]=hexRgb(v.c1); luz(p.x,p.y,p.alvo||p.explode?22:13,`${r},${g},${b}`,0.16*orc); } }
   ctx.globalCompositeOperation="source-over"; }
 // sombras de nuvens passando devagar pelo chão (só nos mapas a céu aberto e de dia)
-const SEM_CEU=new Set(["centro_terra","mar_profundo","atlantida","laboratorio","xibalba"]); let NUVENS=null;
+export const SEM_CEU=new Set(["centro_terra","mar_profundo","atlantida","laboratorio","xibalba"]); export let NUVENS=null;
 // desenha as sombras de nuvem num contexto qualquer (k = pixels por pixel de mundo); usado dentro da camada de luz (sem passada extra)
-function nuvensEm(g,ox,oy,k){ const u=UNIV[R.universo]; if(QUAL<1||SIM.ativo||!u||SEM_CEU.has(u.id)||(u.luz&&u.luz.noite)) return; const A=0.13*(1-crepusculo()*0.6); if(A<0.03) return;
+export function nuvensEm(g,ox,oy,k){ const u=UNIV[R.universo]; if(QUAL<1||SIM.ativo||!u||SEM_CEU.has(u.id)||(u.luz&&u.luz.noite)) return; const A=0.13*(1-crepusculo()*0.6); if(A<0.03) return;
   if(!NUVENS) desenharNuvens(null,null,true); const esc=4.4, T=128*esc, px=(((ox+J.t*7)%T)+T)%T, py=(((oy+J.t*3)%T)+T)%T;
   if(!NUVENS.patL||NUVENS.patCtx!==g){ NUVENS.patL=g.createPattern(NUVENS.c,"repeat"); NUVENS.patCtx=g; }
   g.save(); g.imageSmoothingEnabled=true; g.globalAlpha=A; g.scale(k,k); g.translate(-px,-py); g.scale(esc,esc); g.fillStyle=NUVENS.patL; g.fillRect(0,0,(g.canvas.width/k+T)/esc,(g.canvas.height/k+T)/esc); g.restore(); }
-function desenharNuvens(ox,oy,soCriar){ const u=UNIV[R.universo]; if(!soCriar&&J._nuvemFeita) return; if(!soCriar&&(QUAL<2||SIM.ativo||!u||SEM_CEU.has(u.id)||(u.luz&&u.luz.noite))) return; const A=0.13*(1-crepusculo()*0.6); if(!soCriar&&A<0.03) return;
+export function desenharNuvens(ox,oy,soCriar){ const u=UNIV[R.universo]; if(!soCriar&&J._nuvemFeita) return; if(!soCriar&&(QUAL<2||SIM.ativo||!u||SEM_CEU.has(u.id)||(u.luz&&u.luz.noite))) return; const A=0.13*(1-crepusculo()*0.6); if(!soCriar&&A<0.03) return;
   if(!NUVENS){ const T=128, c=document.createElement("canvas"); c.width=c.height=T; const g=c.getContext("2d"), r=semente("nuvens");
     // manchas macias espalhadas, repetidas nas bordas para emendar
     for(let i=0;i<22;i++){ const x=r()*T, y=r()*T, rr=10+r()*26, a=0.25+r()*0.35; for(const dx of [-T,0,T]) for(const dy of [-T,0,T]){ const gr=g.createRadialGradient(x+dx,y+dy,0,x+dx,y+dy,rr); gr.addColorStop(0,`rgba(0,0,0,${a})`); gr.addColorStop(1,"rgba(0,0,0,0)"); g.fillStyle=gr; g.fillRect(x+dx-rr,y+dy-rr,rr*2,rr*2); } }
@@ -666,18 +675,18 @@ function desenharNuvens(ox,oy,soCriar){ const u=UNIV[R.universo]; if(!soCriar&&J
 
 // ================================================================ arte de cenário importada: chão, superfícies, marcos, objetos e efeitos dos chefes
 // Cada função devolve null quando a folha ainda não foi importada; aí o jogo continua com o desenho procedural.
-const cacheCel=new Map();
+export const cacheCel=new Map();
 // O que existe no mapa é decidido pela lista de artes (o manifesto), não por a imagem já ter chegado: antes, marcos e construções só
 // eram criados se a arte estivesse carregada naquele instante, então o mesmo mapa tinha obstáculos diferentes conforme a rede
-function temArteU(sufixo){ const u=UNIV[R.universo]; return !!(u&&MANIFESTO&&MANIFESTO[`arte/reinos/${u.era}/${u.id}__${sufixo}.png`]); }
-function folhaU(sufixo){ const u=UNIV[R.universo]; if(!u) return null; const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__${sufixo}.png`]; return img&&img.pronta? img : null; }
-function folhaArte(caminho){ const img=ARTE_IMG[caminho]; return img&&img.pronta? img : null; }
+export function temArteU(sufixo){ const u=UNIV[R.universo]; return !!(u&&MANIFESTO&&MANIFESTO[`arte/reinos/${u.era}/${u.id}__${sufixo}.png`]); }
+export function folhaU(sufixo){ const u=UNIV[R.universo]; if(!u) return null; const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__${sufixo}.png`]; return img&&img.pronta? img : null; }
+export function folhaArte(caminho){ const img=ARTE_IMG[caminho]; return img&&img.pronta? img : null; }
 // recorta a célula (col,row) de uma folha cols x rows e escala para w x h; base = altura relativa da linha de apoio (85% nas folhas)
-let ID_IMG=0;   // ler img.src de uma imagem embutida copia um texto enorme; cada imagem ganha um número fixo
+export let ID_IMG=0;   // ler img.src de uma imagem embutida copia um texto enorme; cada imagem ganha um número fixo
 // faixas de desenho de uma folha: algumas folhas foram exportadas com as linhas deslocadas da grade (uma faixa vazia em cima,
 // poses mais baixas), e o corte pela grade pegava pedaço da pose vizinha. Se a folha tem exatamente 'rows' faixas separadas
 // por linhas vazias, cada linha usa a sua faixa; senão, a grade comum
-function faixasFolha(img,rows){ const k="_faixas"+rows; if(img[k]!==undefined) return img[k]; img[k]=null;
+export function faixasFolha(img,rows){ const k="_faixas"+rows; if(img[k]!==undefined) return img[k]; img[k]=null;
   try{ const c=document.createElement("canvas"); c.width=img.width; c.height=img.height; const g=c.getContext("2d"); g.drawImage(img,0,0); const d=g.getImageData(0,0,c.width,c.height).data, W=c.width, H=c.height;
     const bandas=[]; let on=false, y0=0; for(let y=0;y<H;y++){ let n=0; for(let x=0;x<W;x+=2) if(d[(y*W+x)*4+3]>40) n++; if(n>1&&!on){ on=true; y0=y; } else if(n<=1&&on){ on=false; if(y-y0>=6) bandas.push([y0,y]); } }
     if(on&&H-y0>=6) bandas.push([y0,H]);
@@ -686,14 +695,14 @@ function faixasFolha(img,rows){ const k="_faixas"+rows; if(img[k]!==undefined) r
   return img[k]; }
 // pedaço da pose de cima invadindo o topo da célula: se no terço de cima existe uma linha vazia com desenho acima dela,
 // o que está acima é de outra pose e sai
-function limparTopoSolto(c){ try{ const g=c.getContext("2d"), W=c.width, H=c.height, d=g.getImageData(0,0,W,H).data, cheia=y=>{ for(let x=0;x<W;x++) if(d[(y*W+x)*4+3]>30) return true; return false; };
+export function limparTopoSolto(c){ try{ const g=c.getContext("2d"), W=c.width, H=c.height, d=g.getImageData(0,0,W,H).data, cheia=y=>{ for(let x=0;x<W;x++) if(d[(y*W+x)*4+3]>30) return true; return false; };
     let viu=false; for(let y=0;y<Math.floor(H*0.35);y++){ const t=cheia(y); if(t) viu=true; else if(viu){ let corpo=false; for(let y2=y+1;y2<H;y2++) if(cheia(y2)){ corpo=true; break; } if(corpo) g.clearRect(0,0,W,y); break; } }
     // o mesmo na base: pedaço da pose de baixo abaixo de uma linha vazia, no terço de baixo
     viu=false; for(let y=H-1;y>Math.floor(H*0.65);y--){ const t=cheia(y); if(t) viu=true; else if(viu){ let corpo=false; for(let y2=y-1;y2>=0;y2--) if(cheia(y2)){ corpo=true; break; } if(corpo) g.clearRect(0,y,W,H-y); break; } }
     // laterais: fiapo da coluna vizinha separado do corpo por uma coluna vazia, nos 15% de cada lado
     const col=x=>{ for(let y=0;y<H;y++) if(d[(y*W+x)*4+3]>30) return true; return false; }, L=Math.floor(W*0.15);
     for(const [ini,passo] of [[0,1],[W-1,-1]]){ let v=false; for(let i=0;i<L;i++){ const x=ini+i*passo, t=col(x); if(t) v=true; else if(v){ if(passo>0) g.clearRect(0,0,x,H); else g.clearRect(x+1,0,W-x-1,H); break; } } } }catch(e){ relatar("cenário: bordas da célula não puderam ser lidas",e); } }
-function celulaArte(img,cols,rows,col,row,w,h,base){ if(!img) return null; if(!img._id) img._id=++ID_IMG; const k=img._id+"|"+cols+"|"+rows+"|"+col+"|"+row+"|"+w+"|"+h;
+export function celulaArte(img,cols,rows,col,row,w,h,base){ if(!img) return null; if(!img._id) img._id=++ID_IMG; const k=img._id+"|"+cols+"|"+rows+"|"+col+"|"+row+"|"+w+"|"+h;
   if(cacheCel.has(k)) return cacheCel.get(k); if(cacheCel.size>3000) cacheCel.clear();
   const cw=img.width/cols, ch=img.height/rows, c=document.createElement("canvas"); c.width=w; c.height=h; const g=c.getContext("2d"); g.imageSmoothingEnabled=false;
   // a célula entra inteira mantendo a proporção (folhas exportadas com outra proporção não ficam esticadas); a linha de apoio
@@ -706,9 +715,9 @@ function celulaArte(img,cols,rows,col,row,w,h,base){ if(!img) return null; if(!i
 // ---------------------------------------------------------------- camada de arte em alta resolução
 // O mundo é desenhado em baixa resolução (estilo pixel art) e ampliado para a tela. Arte pintada (monstros, inimigos, chefes,
 // Lendas) reduzida a 20-40 px vira borrão; por isso ela é desenhada por cima, na resolução real da tela, a partir do original.
-const CAMADA_ARTE=[]; let cvArte=null;
+export const CAMADA_ARTE=[]; export let cvArte=null;
 // versão da célula em K pixels por pixel de mundo, recortada do arquivo original com suavização de alta qualidade
-function versaoHi(c,K){ if(!c||!c._src) return null; K=Math.max(1,Math.min(8,Math.ceil(K||4))); if(c.hi&&c.hiK===K) return c.hi;
+export function versaoHi(c,K){ if(!c||!c._src) return null; K=Math.max(1,Math.min(8,Math.ceil(K||4))); if(c.hi&&c.hiK===K) return c.hi;
   const h=document.createElement("canvas"); h.width=Math.max(1,Math.round(c.width*K)); h.height=Math.max(1,Math.round(c.height*K));
   const g=h.getContext("2d"), s=c._src, d=s.dest||[0,0,1,1], dx=d[0]*h.width, dy=d[1]*h.height, dw=d[2]*h.width, dh=d[3]*h.height, amp=Math.min(dw/s.sw,dh/s.sh);
   g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
@@ -736,45 +745,45 @@ function versaoHi(c,K){ if(!c||!c._src) return null; K=Math.max(1,Math.min(8,Mat
     else desenhoOriginal(hi,a*kx,b*ky,c*kx,d*ky,e,f,g2,h2);
     lg.imageSmoothingEnabled=suave; })); }
 // área desenhada de uma célula (para encaixar o monstro pelo desenho visível, não pela célula)
-const cacheBB=new Map();
-function bboxCelula(img,sx,sy,sw,sh){ if(!img._id) img._id=++ID_IMG; const k=img._id+"|"+sx+"|"+sy; if(cacheBB.has(k)) return cacheBB.get(k);
+export const cacheBB=new Map();
+export function bboxCelula(img,sx,sy,sw,sh){ if(!img._id) img._id=++ID_IMG; const k=img._id+"|"+sx+"|"+sy; if(cacheBB.has(k)) return cacheBB.get(k);
   const c=document.createElement("canvas"); c.width=Math.max(1,Math.round(sw)); c.height=Math.max(1,Math.round(sh)); const g=c.getContext("2d"); g.drawImage(img,sx,sy,sw,sh,0,0,c.width,c.height);
   let x0=c.width, y0=c.height, x1=-1, y1=-1; try{ const d=g.getImageData(0,0,c.width,c.height).data;
     for(let y=0;y<c.height;y++) for(let x=0;x<c.width;x++) if(d[(y*c.width+x)*4+3]>24){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } }catch(err){ relatar("arte: contorno do recorte não pôde ser lido",err); }
   const bb= x1<0? {x:sx,y:sy,w:sw,h:sh} : {x:sx+x0*sw/c.width, y:sy+y0*sh/c.height, w:(x1-x0+1)*sw/c.width, h:(y1-y0+1)*sh/c.height}; cacheBB.set(k,bb); return bb; }
-const ALVO_ARTE=[18,21,24,28];   // altura do monstro com arte, por estágio (pixels de mundo). Antes 24 a 44: os evoluídos ficavam maiores que o herói e cobriam tudo
-function encaixarArte(img,sx,sy,sw,sh,alvo){ const bb=bboxCelula(img,sx,sy,sw,sh), ky=correcaoAltura(img), k=Math.min(alvo/bb.w,alvo/(bb.h*ky)), w=Math.max(1,Math.round(bb.w*k)), h=Math.max(1,Math.round(bb.h*ky*k));
+export const ALVO_ARTE=[18,21,24,28];   // altura do monstro com arte, por estágio (pixels de mundo). Antes 24 a 44: os evoluídos ficavam maiores que o herói e cobriam tudo
+export function encaixarArte(img,sx,sy,sw,sh,alvo){ const bb=bboxCelula(img,sx,sy,sw,sh), ky=correcaoAltura(img), k=Math.min(alvo/bb.w,alvo/(bb.h*ky)), w=Math.max(1,Math.round(bb.w*k)), h=Math.max(1,Math.round(bb.h*ky*k));
   const c=document.createElement("canvas"); c.width=c.height=alvo; const g=c.getContext("2d"); g.imageSmoothingEnabled=true; const ox=Math.round((alvo-w)/2), oy=alvo-h;
   g.drawImage(img,bb.x,bb.y,bb.w,bb.h,ox,oy,w,h); c._src={img,sx:bb.x,sy:bb.y,sw:bb.w,sh:bb.h,dest:[ox/alvo,oy/alvo,w/alvo,h/alvo]}; return c; }
 // Com a tela interna em alta resolução (Q>1) a arte vai direto para o mundo: fica na ordem certa com
 // efeitos e recebe a luz do mapa. A camada separada só é usada se a tela interna estiver em baixa resolução.
-function desenharSprite(spr,dx,dy,dw,dh){ const hi=(!SIM.ativo&&Q<=1&&spr&&spr._src)? versaoHi(spr) : null;
+export function desenharSprite(spr,dx,dy,dw,dh){ const hi=(!SIM.ativo&&Q<=1&&spr&&spr._src)? versaoHi(spr) : null;
   if(!hi){ lg.drawImage(spr,dx,dy,dw,dh); return; } const t=lg.getTransform(); CAMADA_ARTE.push({hi,t,dx,dy,dw,dh,al:lg.globalAlpha}); }
-function desenharCamadaArte(){ if(!CAMADA_ARTE.length) return; if(!cvArte) cvArte=document.createElement("canvas"); if(cvArte.width!==W||cvArte.height!==H){ cvArte.width=W; cvArte.height=H; }
+export function desenharCamadaArte(){ if(!CAMADA_ARTE.length) return; if(!cvArte) cvArte=document.createElement("canvas"); if(cvArte.width!==W||cvArte.height!==H){ cvArte.width=W; cvArte.height=H; }
   const g=cvArte.getContext("2d"); g.setTransform(1,0,0,1,0,0); g.clearRect(0,0,W,H); g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
   for(const o of CAMADA_ARTE){ const t=o.t, k=S/Q; g.setTransform(k*t.a,k*t.b,k*t.c,k*t.d,k*t.e,k*t.f); g.globalAlpha=o.al; g.drawImage(o.hi,o.dx,o.dy,o.dw,o.dh); }
   CAMADA_ARTE.length=0; g.setTransform(1,0,0,1,0,0); g.globalAlpha=1;
   // a mesma luz do mapa escurece a arte (senão os monstros brilhariam nos mapas noturnos)
   const e=typeof escurecimentoArte==="function"? escurecimentoArte() : null; if(e&&e.a>0.02){ g.globalCompositeOperation="source-atop"; g.globalAlpha=e.a; g.fillStyle=e.cor; g.fillRect(0,0,W,H); g.globalCompositeOperation="source-over"; g.globalAlpha=1; }
   ctx.drawImage(cvArte,0,0); }
-function spriteUI(spr){ return (spr&&spr._src&&versaoHi(spr))||spr; }
+export function spriteUI(spr){ return (spr&&spr._src&&versaoHi(spr))||spr; }
 // quando uma imagem termina de carregar, refaz o que foi desenhado sem ela
-function arteCarregou(ns){ if(!J||!R||typeof chao==="undefined"||!chao||!chao.u) return; const u=chao.u, pre=`arte/reinos/${u.era}/${u.id}__`;
+export function arteCarregou(ns){ if(!J||!R||typeof chao==="undefined"||!chao||!chao.u) return; const u=chao.u, pre=`arte/reinos/${u.era}/${u.id}__`;
   const doMapa=(ns||[]).filter(n=>n.startsWith(pre)||n.startsWith("arte/ambiente/")); if(ns&&!doMapa.length) return;
   if(!chao.tam&&(!ns||doMapa.some(n=>/__(piso|tiles)\.png$/.test(n)))) gerarChao(u);
   if(J.cena){ J.cena.detalhes.clear(); J.cena.sprites.clear(); } }
 
 // ---------------------------------------------------------------- chão: 8 peças sorteadas lado a lado (16 px no mundo cada)
 // piso jogável grande (1024 px da folha = 512 px no mundo); emendas pequenas são escondidas misturando uma cópia deslocada perto das bordas
-const TAM_PISO=220;   // o piso de 512 px cobre 220 px de mundo (antes 300: as peças do piso ficavam enormes perto dos personagens)
+export const TAM_PISO=220;   // o piso de 512 px cobre 220 px de mundo (antes 300: as peças do piso ficavam enormes perto dos personagens)
 // realce leve de nitidez (máscara de desfoque), feito uma vez quando o piso carrega; a borda dá a volta para continuar emendando
-function nitidez(c,k){ if(SIM.ativo) return c; try{ const g=c.getContext("2d"), w=c.width, h=c.height, im=g.getImageData(0,0,w,h), d=im.data, o=new Uint8ClampedArray(d);
+export function nitidez(c,k){ if(SIM.ativo) return c; try{ const g=c.getContext("2d"), w=c.width, h=c.height, im=g.getImageData(0,0,w,h), d=im.data, o=new Uint8ClampedArray(d);
     for(let y=0;y<h;y++){ const ym=((y-1+h)%h)*w, yp=((y+1)%h)*w, y0=y*w; for(let x=0;x<w;x++){ const xm=(x-1+w)%w, xp=(x+1)%w, i=(y0+x)*4;
       for(let ch=0;ch<3;ch++){ const blur=(o[(ym+x)*4+ch]+o[(yp+x)*4+ch]+o[(y0+xm)*4+ch]+o[(y0+xp)*4+ch])*0.25; d[i+ch]=o[i+ch]+(o[i+ch]-blur)*k; } } }
     g.putImageData(im,0,0); }catch(e){ relatar("piso: emenda não pôde ser suavizada",e); } return c; }
 // piso pintado mais calmo: a arte do chão tem muito contraste e detalhe (flores, trepadeiras, ladrilhos) e competia com
 // monstros e inimigos; tira 20% do contraste, 25% da saturação e escurece um pouco, uma vez só quando o mapa começa
-function acalmarPiso(c){ if(SIM.ativo) return c; try{ const g=c.getContext("2d"), im=g.getImageData(0,0,c.width,c.height), d=im.data;
+export function acalmarPiso(c){ if(SIM.ativo) return c; try{ const g=c.getContext("2d"), im=g.getImageData(0,0,c.width,c.height), d=im.data;
     let soma=0, n=0; for(let i=0;i<d.length;i+=4*97){ soma+=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114; n++; } const media=soma/n, luz=media<25? 1.45 : media<45? 1.25 : 0.97;   /* piso muito escuro clareia */
     for(let i=0;i<d.length;i+=4){ const r=d[i], gg=d[i+1], b=d[i+2], L=r*0.299+gg*0.587+b*0.114;
       for(let ch=0;ch<3;ch++){ const v=d[i+ch], s=L+(v-L)*0.75; d[i+ch]=(118+(s-118)*0.8)*luz; } }
@@ -782,22 +791,22 @@ function acalmarPiso(c){ if(SIM.ativo) return c; try{ const g=c.getContext("2d")
 // piso repetido sem costura. A maioria das artes já emenda sozinha e volta como está. As que não emendam nas bordas
 // (padrões geométricos como o da Pérsia) viram 4 cópias espelhadas, que emendam sem costura nenhuma; cada cópia cobre
 // o mesmo tamanho de mundo, então quem usa dobra o tamanho do piso (c._espelho)
-function emendaNasBordas(g,T){ try{ const d=g.getImageData(0,0,T,T).data, px=(x,y)=>(y*T+x)*4, dif=(a,b)=>Math.abs(d[a]-d[b])+Math.abs(d[a+1]-d[b+1])+Math.abs(d[a+2]-d[b+2]);
+export function emendaNasBordas(g,T){ try{ const d=g.getImageData(0,0,T,T).data, px=(x,y)=>(y*T+x)*4, dif=(a,b)=>Math.abs(d[a]-d[b])+Math.abs(d[a+1]-d[b+1])+Math.abs(d[a+2]-d[b+2]);
     let meio=0, ex=0, ey=0, n=0; for(let k=0;k<T;k+=2){ meio+=dif(px(T>>1,k),px((T>>1)+1,k))+dif(px(k,T>>1),px(k,(T>>1)+1)); ex+=dif(px(0,k),px(T-1,k)); ey+=dif(px(k,0),px(k,T-1)); n++; }
     meio/=2*n; return ex/n<=meio*1.3+4&&ey/n<=meio*1.3+4; }catch(e){ return true; } }   // costura = borda bem mais diferente que pixels vizinhos do meio
-function tornarContinuo(img,T){ const c=document.createElement("canvas"); c.width=c.height=T; const g=c.getContext("2d"); g.imageSmoothingEnabled=false; g.drawImage(img,0,0,T,T);
+export function tornarContinuo(img,T){ const c=document.createElement("canvas"); c.width=c.height=T; const g=c.getContext("2d"); g.imageSmoothingEnabled=false; g.drawImage(img,0,0,T,T);
   if(emendaNasBordas(g,T)) return c;
   const T2=Math.min(2048,T*2), h2=T2/2, e=document.createElement("canvas"); e.width=e.height=T2; const ge=e.getContext("2d"); ge.imageSmoothingEnabled=true; ge.imageSmoothingQuality="high";
   for(const [sx,sy] of [[1,1],[-1,1],[1,-1],[-1,-1]]){ ge.save(); ge.translate(sx<0?T2:0,sy<0?T2:0); ge.scale(sx,sy); ge.drawImage(img,0,0,h2,h2); ge.restore(); }   // normal, espelhada na horizontal, na vertical e nas duas
   e._espelho=true; return e; }
 // o piso é guardado na resolução do arquivo (até 2048 px) e desenhado com 512 px de mundo
-function chaoArte(u){ const piso=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__piso.png`]; if(piso&&piso.pronta){ const T=SIM.ativo?512:Math.max(512,Math.min(2048,piso.width)); const cv=acalmarPiso(nitidez(tornarContinuo(piso,T),0.2)); chao={cv,u,tam:TAM_PISO*(cv._espelho?2:1),suave:true}; return true; }
+export function chaoArte(u){ const piso=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__piso.png`]; if(piso&&piso.pronta){ const T=SIM.ativo?512:Math.max(512,Math.min(2048,piso.width)); const cv=acalmarPiso(nitidez(tornarContinuo(piso,T),0.2)); defChao({cv,u,tam:TAM_PISO*(cv._espelho?2:1),suave:true}); return true; }
   const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__tiles.png`]; if(!img||!img.pronta) return false;
   const c=document.createElement("canvas"); c.width=c.height=128; const g=c.getContext("2d"), r=semente(u.id+"chao"); g.imageSmoothingEnabled=false;
   for(let y=0;y<8;y++) for(let x=0;x<8;x++){ const v=Math.floor(r()*8); g.drawImage(celulaArte(img,8,3,v,0,16,16),x*16,y*16); }
-  chao={cv:c,u}; return true; }
+  defChao({cv:c,u}); return true; }
 // manchas (linha 2) e enfeites (linha 3) espalhados em cada pedaço de 96 px
-function detalhesArte(r){ const img=folhaU("tiles"); if(!img) return null; const out=[];
+export function detalhesArte(r){ const img=folhaU("tiles"); if(!img) return null; const out=[];
   // mapa menos poluído: menos manchas e enfeites por pedaço; sobre piso pintado (que já tem detalhe próprio), quase nenhum
   const pintado=!!(chao&&chao.suave), nM=pintado?0:1+(r()<0.4?1:0), pE=pintado?0.25:0.45;
   for(let i=0;i<nM;i++) out.push({s:celulaArte(img,8,3,Math.floor(r()*8),1,32,32), x:r()*80-8, y:r()*80-8, w:14+r()*6, a:0.5+r()*0.2});
@@ -806,44 +815,44 @@ function detalhesArte(r){ const img=folhaU("tiles"); if(!img) return null; const
 
 
 // ---------------------------------------------------------------- marcos, luzes e peças de primeiro plano (folha 4x2)
-function sortearMarcos(cx,cy,r,out){ if(!temArteU("props")) return;
+export function sortearMarcos(cx,cy,r,out){ if(!temArteU("props")) return;
   const x=cx*CH+10+r()*76, y=cy*CH+10+r()*76; if(Math.abs(x)<40&&Math.abs(y)<40) return; if(!lugarDeObjeto(x,y,22)) return;
   const sorte=r()*1.5; /* mapa menos poluído: ~1/3 menos marcos */ if(sorte<0.3) out.push(Object.assign(novoProp("marco",x,y,r),{idx:Math.floor(r()*6)}));
   else if(sorte<0.42) out.push(Object.assign(novoProp("luz",x,y,r),{idx:6}));
   else if(sorte<0.54) out.push(Object.assign(novoProp("frente",x,y,r),{idx:7})); }
 // marcos: recorta só a parte desenhada da célula (a folha tem muita margem vazia) e dá a altura certa para cada tipo
 // (colunas e estátuas altas, templo e árvore grandes, braseiro baixo); antes a célula inteira virava um quadrado e tudo saía pequeno
-const ALT_MARCO=[56,30,60,56,62,48,44,74];   // 6 = luz (lampião, braseiro): era 32 e ficava baixinho perto das construções
-function spriteMarco(p){ const img=folhaU("props"); if(!img) return null; if(!img._id) img._id=++ID_IMG; const k="marco|"+img._id+"|"+p.idx; if(cacheCel.has(k)) return cacheCel.get(k);
+export const ALT_MARCO=[56,30,60,56,62,48,44,74];   // 6 = luz (lampião, braseiro): era 32 e ficava baixinho perto das construções
+export function spriteMarco(p){ const img=folhaU("props"); if(!img) return null; if(!img._id) img._id=++ID_IMG; const k="marco|"+img._id+"|"+p.idx; if(cacheCel.has(k)) return cacheCel.get(k);
   const cw=img.width/4, ch=img.height/2, sx=(p.idx%4)*cw, sy=Math.floor(p.idx/4)*ch, bb=bboxCelula(img,sx,sy,cw,ch), H=ALT_MARCO[p.idx]||46;
   const e=H/bb.h, w=Math.max(1,Math.round(bb.w*e)), h=Math.max(1,Math.round(bb.h*e)), c=document.createElement("canvas"); c.width=w; c.height=h; const g=c.getContext("2d"); g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
   g.drawImage(img,bb.x,bb.y,bb.w,bb.h,0,0,w,h); c._src={img,sx:bb.x,sy:bb.y,sw:bb.w,sh:bb.h}; c.base=0.97; cacheCel.set(k,c); return c; }
 
 // ---------------------------------------------------------------- objetos físicos (folha 8xN: intacto, trincado, quebrado, estado especial, 4 cacos)
-const TAM_OBJ={vaso:13,caixote:13,barril:14,polvora:14,feno:14,fruta:9,rocha:17,gelo:15,cristal:17,metal:18,arvore:26,tronco:16,ovo:9,saque:14};
-function linhaObjeto(p){ const u=UNIV[R.universo]; return u&&u.objetos? u.objetos.indexOf(p.saque?"saque":p.tipo) : -1; }
-function spriteObjetoArte(p){ const img=folhaU("objetos"); if(!img) return null; const u=UNIV[R.universo], lin=linhaObjeto(p); if(lin<0) return null;
+export const TAM_OBJ={vaso:13,caixote:13,barril:14,polvora:14,feno:14,fruta:9,rocha:17,gelo:15,cristal:17,metal:18,arvore:26,tronco:16,ovo:9,saque:14};
+export function linhaObjeto(p){ const u=UNIV[R.universo]; return u&&u.objetos? u.objetos.indexOf(p.saque?"saque":p.tipo) : -1; }
+export function spriteObjetoArte(p){ const img=folhaU("objetos"); if(!img) return null; const u=UNIV[R.universo], lin=linhaObjeto(p); if(lin<0) return null;
   const rows=u.objetos.length, q=p.max>0&&isFinite(p.max)? p.hp/p.max : 1, t=p.saque?"saque":p.tipo; let col=q<0.34?2:q<0.67?1:0;
   if(t==="metal") col=p.solo==="eletrico"?1:p.congela>0?3:0;
   else if(t==="arvore") col=p.carvao>0.5?3:p.queima>0?2:q<0.6?1:0;
   else if(p.carvao>0.5||(p.congela>0&&["rocha","gelo","cristal","vaso","ovo"].includes(t))) col=3;
   const tam=Math.round((TAM_OBJ[t]||14)*1.8*(p.carvalho?1.4:1));   /* antes 1,35: vaso e caixote saíam menores que a cabeça do herói */ return celulaArte(img,8,rows,col,lin,tam,tam,0.85); }
-function cacoArte(p){ const img=folhaU("objetos"); if(!img) return null; const lin=linhaObjeto(p); if(lin<0) return null; const u=UNIV[R.universo];
+export function cacoArte(p){ const img=folhaU("objetos"); if(!img) return null; const lin=linhaObjeto(p); if(lin<0) return null; const u=UNIV[R.universo];
   return celulaArte(img,8,u.objetos.length,4+Math.floor(Math.random()*4),lin,6,6,1); }
 
 // ---------------------------------------------------------------- efeitos dos golpes dos chefes (8x2 por chefe, 8x3 por Guardião)
-function folhaEfeitos(e){ const u=UNIV[R.universo]; if(!u||!(e&&(e.chefe))) return null;
+export function folhaEfeitos(e){ const u=UNIV[R.universo]; if(!u||!(e&&(e.chefe))) return null;
   return e.eraChefe? folhaArte(`arte/reinos/${u.era}/guardiao_${u.era}__efeitos.png`) : folhaU("efeitos"); }
-function quadroEfeito(e,linha,col,tam){ const img=folhaEfeitos(e); if(!img) return null; const rows=e.eraChefe?3:2; return celulaArte(img,8,rows,col,Math.min(rows-1,linha||0),tam,tam,0.5); }
+export function quadroEfeito(e,linha,col,tam){ const img=folhaEfeitos(e); if(!img) return null; const rows=e.eraChefe?3:2; return celulaArte(img,8,rows,col,Math.min(rows-1,linha||0),tam,tam,0.5); }
 // toca os quadros 5 a 8 (estouro no chão) no ponto do impacto
-function impactoArte(e,x,y,tam){ const linha=e&&e.golpeIdx||0; if(!quadroEfeito(e,linha,4,tam)) return;
+export function impactoArte(e,x,y,tam){ const linha=e&&e.golpeIdx||0; if(!quadroEfeito(e,linha,4,tam)) return;
   J.golpes.push({t:0,atualizar(dt){ this.t+=dt; return this.t<0.4; },frente(ox,oy){ const s=quadroEfeito(e,linha,4+Math.min(3,Math.floor(this.t/0.1)),tam); if(s) lg.drawImage(s,Math.round(x-ox-tam/2),Math.round(y-oy-tam/2)); }}); }
 
 // ================================================================ estrutura do mapa: abismos, lagos, praças, construções, fauna e cena de abertura
 // O mapa continua infinito. Em universos com "estrutura" (dados/fonte_cenario.py), cada zona pode ganhar uma peça grande.
 // Tudo tem forma geométrica conhecida (elipses e faixas), então a arte e a física usam a mesma área.
-function estruturaU(){ const u=UNIV[R.universo]; return u&&u.estrutura||null; }
-function zonaPeca(zx,zy){ const C=J.cena; if(!C.zonas) C.zonas=new Map(); const k=zx+":"+zy; if(C.zonas.has(k)) return C.zonas.get(k);
+export function estruturaU(){ const u=UNIV[R.universo]; return u&&u.estrutura||null; }
+export function zonaPeca(zx,zy){ const C=J.cena; if(!C.zonas) C.zonas=new Map(); const k=zx+":"+zy; if(C.zonas.has(k)) return C.zonas.get(k);
   const E=estruturaU(), Z=E.zona||320, r=semente(R.universo+"z"+k+"#"+R.profundidade);
   /** @type {PecaCenario} */
   let f=null;
@@ -855,28 +864,28 @@ function zonaPeca(zx,zy){ const C=J.cena; if(!C.zonas) C.zonas=new Map(); const 
     else if(f.tipo==="praca"){ f.rx=58; f.ry=44; }
     else if(f.tipo==="construcao"){ f.rx=22; f.ry=10; } }
   C.zonas.set(k,f); return f; }
-function pecasPerto(x,y){ const E=estruturaU(); if(!E||!J.cena) return []; const Z=E.zona||320, zx=Math.floor(x/Z), zy=Math.floor(y/Z), C=J.cena;
+export function pecasPerto(x,y){ const E=estruturaU(); if(!E||!J.cena) return []; const Z=E.zona||320, zx=Math.floor(x/Z), zy=Math.floor(y/Z), C=J.cena;
   // as peças de cada zona nunca mudam: a lista de vizinhas fica guardada por zona
   if(!C.vizinhas) C.vizinhas=new Map(); const k=zx*100003+zy; let out=C.vizinhas.get(k); if(out) return out; out=[];
   for(let j=-1;j<=1;j++) for(let i=-1;i<=1;i++){ const f=zonaPeca(zx+i,zy+j); if(f) out.push(f); } C.vizinhas.set(k,out); return out; }
-const naPonte=(f,x,y)=> f.ponte==="h"? Math.abs(y-f.y)<8 : f.ponte==="v"? Math.abs(x-f.x)<8 : false;
+export const naPonte=(f,x,y)=> f.ponte==="h"? Math.abs(y-f.y)<8 : f.ponte==="v"? Math.abs(x-f.x)<8 : false;
 // o ponto está no vazio? (m = margem: positiva alarga o buraco)
 // borda irregular do abismo (rocha quebrada, não uma elipse perfeita): raio relativo pelo ângulo, entre ~0,8 e ~1,2
-function raioAbismo(f,a){ const s=f.fs||[0,0,0]; return 1+0.1*Math.sin(3*a+s[0])+0.06*Math.sin(5*a+s[1])+0.035*Math.sin(9*a+s[2]); }
-function abismoEm(x,y,m){ m=m||0; for(const f of pecasPerto(x,y)){ if(f.tipo!=="abismo"||Math.abs(x-f.x)>f.rx*1.22+m||Math.abs(y-f.y)>f.ry*1.22+m) continue; const dx=(x-f.x)/(f.rx+m), dy=(y-f.y)/(f.ry+m); if(dx*dx+dy*dy<raioAbismo(f,Math.atan2(dy,dx))**2&&!naPonte(f,x,y)) return f; } return null; }
-function lagoEm(x,y){ for(const f of pecasPerto(x,y)){ if(f.tipo!=="lago"||Math.abs(x-f.x)>f.rx||Math.abs(y-f.y)>f.ry) continue; const dx=(x-f.x)/f.rx, dy=(y-f.y)/f.ry; if(dx*dx+dy*dy<1) return f; } return null; }
+export function raioAbismo(f,a){ const s=f.fs||[0,0,0]; return 1+0.1*Math.sin(3*a+s[0])+0.06*Math.sin(5*a+s[1])+0.035*Math.sin(9*a+s[2]); }
+export function abismoEm(x,y,m){ m=m||0; for(const f of pecasPerto(x,y)){ if(f.tipo!=="abismo"||Math.abs(x-f.x)>f.rx*1.22+m||Math.abs(y-f.y)>f.ry*1.22+m) continue; const dx=(x-f.x)/(f.rx+m), dy=(y-f.y)/(f.ry+m); if(dx*dx+dy*dy<raioAbismo(f,Math.atan2(dy,dx))**2&&!naPonte(f,x,y)) return f; } return null; }
+export function lagoEm(x,y){ for(const f of pecasPerto(x,y)){ if(f.tipo!=="lago"||Math.abs(x-f.x)>f.rx||Math.abs(y-f.y)>f.ry) continue; const dx=(x-f.x)/f.rx, dy=(y-f.y)/f.ry; if(dx*dx+dy*dy<1) return f; } return null; }
 // solo natural: dentro do lago é água (no frio, gelo)
-function soloLago(){ const t=(estruturaU()||{}).lago_solo||"agua"; return t==="agua"&&frio()? "gelo" : t; }
-function soloEstrutura(cx,cy){ if(!estruturaU()||!J.cena) return null; const x=cx*CEL+4, y=cy*CEL+4; if(lagoEm(x,y)) return soloLago(); return null; }
+export function soloLago(){ const t=(estruturaU()||{}).lago_solo||"agua"; return t==="agua"&&frio()? "gelo" : t; }
+export function soloEstrutura(cx,cy){ if(!estruturaU()||!J.cena) return null; const x=cx*CEL+4, y=cy*CEL+4; if(lagoEm(x,y)) return soloLago(); return null; }
 // empurra para fora do abismo: para a borda mais próxima ou para a ponte, o que estiver mais perto
-function sairDoAbismo(o,r){ const f=abismoEm(o.x,o.y,r); if(!f) return false;
+export function sairDoAbismo(o,r){ const f=abismoEm(o.x,o.y,r); if(!f) return false;
   const dx=o.x-f.x, dy=o.y-f.y, a=Math.atan2(dy/(f.ry+r),dx/(f.rx+r)), bx=f.x+Math.cos(a)*(f.rx+r+0.5), by=f.y+Math.sin(a)*(f.ry+r+0.5);
   let tx=bx, ty=by; if(f.ponte){ const px=f.ponte==="h"?o.x:f.x, py=f.ponte==="h"?f.y:o.y; if(Math.hypot(px-o.x,py-o.y)<Math.hypot(bx-o.x,by-o.y)){ tx=f.ponte==="h"?o.x:f.x+Math.sign(o.x-f.x||1)*7; ty=f.ponte==="h"?f.y+Math.sign(o.y-f.y||1)*7:o.y; } }
   o.x=tx; o.y=ty; return true; }
 // quanto o ponto entrou no buraco (0 = borda, 1 = centro)
-function fundoDoAbismo(x,y){ const f=abismoEm(x,y,0); if(!f) return 0; const dx=(x-f.x)/f.rx, dy=(y-f.y)/f.ry; return 1-Math.sqrt(dx*dx+dy*dy)/raioAbismo(f,Math.atan2(dy,dx)); }
-function voa(e){ const d=e.def; return e.chefe||e.mini||!d||d.andar==="voa"||d.andar==="flutua"||d.corpo==="espectro"; }
-function atualizarEstrutura(dt){ const E=estruturaU(), C=J.cena; if(!E||!C) return; const P=J.jogador;
+export function fundoDoAbismo(x,y){ const f=abismoEm(x,y,0); if(!f) return 0; const dx=(x-f.x)/f.rx, dy=(y-f.y)/f.ry; return 1-Math.sqrt(dx*dx+dy*dy)/raioAbismo(f,Math.atan2(dy,dx)); }
+export function voa(e){ const d=e.def; return e.chefe||e.mini||!d||d.andar==="voa"||d.andar==="flutua"||d.corpo==="espectro"; }
+export function atualizarEstrutura(dt){ const E=estruturaU(), C=J.cena; if(!E||!C) return; const P=J.jogador;
   // construções e luzes da praça viram objetos fixos quando a zona chega perto
   for(const f of pecasPerto(P.x,P.y)){ if(f.criado) continue; f.criado=true;
     if(f.tipo==="construcao"&&temArteU("pecas")) criarProp("construcao",f.x,f.y);
@@ -899,16 +908,16 @@ function atualizarEstrutura(dt){ const E=estruturaU(), C=J.cena; if(!E||!C) retu
     for(const o of J.ovosMapa) sairDoAbismo(o,5); for(const o of J.selvagens) sairDoAbismo(o,5); if(J.ovoAnc) sairDoAbismo(J.ovoAnc,6); }
   for(const p of C.lista){ if(p.caindo>0){ p.caindo-=dt; if(p.caindo<=0){ p.morto=true; } } }
   atualizarFauna(dt); }
-function queda(x,y,spr,esc){ J.quedas=J.quedas||[]; J.quedas.push({x,y,spr,esc,t:0}); }
+export function queda(x,y,spr,esc){ J.quedas=J.quedas||[]; J.quedas.push({x,y,spr,esc,t:0}); }
 // ---------------------------------------------------------------- desenho: peças planas, abismo com paralaxe, paredões, ponte
-function fundoAbismo(){ const img=folhaU("fundo"); if(img) return img; const C=J.cena; if(C.fundoProc) return C.fundoProc;
+export function fundoAbismo(){ const img=folhaU("fundo"); if(img) return img; const C=J.cena; if(C.fundoProc) return C.fundoProc;
   const c=document.createElement("canvas"); c.width=c.height=128; const g=c.getContext("2d"); g.fillStyle="#cfdcea"; g.fillRect(0,0,128,128);
   for(let i=0;i<26;i++){ const x=(i*53)%128, y=(i*37)%128, r=10+(i*7)%18; for(const [dx,dy] of [[0,0],[128,0],[-128,0],[0,128],[0,-128]]){ g.globalAlpha=0.55; g.drawImage(bolhaCor(i%3?"#ffffff":"#e8f0f8"),x-r+dx,y-r+dy,r*2,r*2); } }
   C.fundoProc=c; return c; }
 // paredão do abismo: a folha tem 4 rochas (linha 1) e 4 quadros de cachoeira (linha 2), cada uma com margem transparente dos lados.
 // Fatiar a célula inteira fazia uma fileira de blocos com buracos e topos repetidos; aqui cada rocha é recortada pelo desenho
 // (sem as bordas irregulares) e as 4 viram uma faixa contínua, alinhadas pelo topo da grama
-function faixaParedao(img){ if(!img) return null; if(img._faixa) return img._faixa;
+export function faixaParedao(img){ if(!img) return null; if(img._faixa) return img._faixa;
   const cw=img.width/4, ch=img.height/2, t=document.createElement("canvas"); t.width=img.width; t.height=img.height; const tg=t.getContext("2d"); tg.drawImage(img,0,0);
   let d; try{ d=tg.getImageData(0,0,t.width,t.height).data; }catch(e){ return null; }
   const caixa=(c,r)=>{ let x0=1e9,x1=-1,y0=1e9; for(let y=r*ch;y<(r+1)*ch;y++) for(let x=c*cw;x<(c+1)*cw;x++) if(d[(y*t.width+x)*4+3]>40){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; } return x1<0? null : {x0,x1,y0}; };
@@ -920,15 +929,15 @@ function faixaParedao(img){ if(!img) return null; if(img._faixa) return img._fai
   img._faixa={c, w:W, h:H, quedas:qs.length?qs:[{x:0,w:W}]}; return img._faixa; }
 // ponte: recorta a ponte pelo desenho (a célula tem muita margem). De frente (atravessando na horizontal) usa tudo, com os arcos;
 // na vertical usa só o tabuleiro e os parapeitos (as linhas que cobrem a largura toda), girado: antes os arcos ficavam de lado
-function faixaPonte(pec){ if(pec._ponte!==undefined) return pec._ponte; pec._ponte=null; const cw=pec.width/2, ch=pec.height/2, bb=bboxCelula(pec,cw,ch,cw,ch);
+export function faixaPonte(pec){ if(pec._ponte!==undefined) return pec._ponte; pec._ponte=null; const cw=pec.width/2, ch=pec.height/2, bb=bboxCelula(pec,cw,ch,cw,ch);
   const t=document.createElement("canvas"); t.width=Math.max(1,Math.round(bb.w)); t.height=Math.max(1,Math.round(bb.h)); const g=t.getContext("2d"); g.drawImage(pec,bb.x,bb.y,bb.w,bb.h,0,0,t.width,t.height);
   let shDeck=bb.h; try{ const d=g.getImageData(0,0,t.width,t.height).data; let ult=-1; for(let y=0;y<t.height;y++){ let n=0; for(let x=0;x<t.width;x++) if(d[(y*t.width+x)*4+3]>40) n++; if(n>=t.width*0.88) ult=y; } if(ult>t.height*0.3) shDeck=(ult+1)*bb.h/t.height; }catch(e){ relatar("abismo: altura do paredão não pôde ser lida",e); }
   pec._ponte={sx:bb.x, sy:bb.y, sw:bb.w, sh:bb.h, shDeck}; return pec._ponte; }
 // névoa do abismo: degradê vertical (transparente -> cor média do fundo) usado para dissolver a base do paredão
-function nevoaAbismo(fundo){ if(fundo._nev) return fundo._nev; let r=200,g=210,b=225; try{ const c=document.createElement("canvas"); c.width=c.height=8; const gc=c.getContext("2d"); gc.drawImage(fundo,0,0,8,8); const d=gc.getImageData(0,0,8,8).data; r=g=b=0; for(let i=0;i<d.length;i+=4){ r+=d[i]; g+=d[i+1]; b+=d[i+2]; } r/=64; g/=64; b/=64; }catch(e){ relatar("abismo: cor da névoa não pôde ser lida",e); }
+export function nevoaAbismo(fundo){ if(fundo._nev) return fundo._nev; let r=200,g=210,b=225; try{ const c=document.createElement("canvas"); c.width=c.height=8; const gc=c.getContext("2d"); gc.drawImage(fundo,0,0,8,8); const d=gc.getImageData(0,0,8,8).data; r=g=b=0; for(let i=0;i<d.length;i+=4){ r+=d[i]; g+=d[i+1]; b+=d[i+2]; } r/=64; g/=64; b/=64; }catch(e){ relatar("abismo: cor da névoa não pôde ser lida",e); }
   const n=document.createElement("canvas"); n.width=1; n.height=64; const gn=n.getContext("2d"), gr=gn.createLinearGradient(0,0,0,64); gr.addColorStop(0,`rgba(${r|0},${g|0},${b|0},0)`); gr.addColorStop(0.55,`rgba(${r|0},${g|0},${b|0},.75)`); gr.addColorStop(1,`rgba(${r|0},${g|0},${b|0},1)`); gn.fillStyle=gr; gn.fillRect(0,0,1,64);
   fundo._nev=n; return n; }
-function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) return; const pec=folhaU("pecas"), feats=pecasPerto(ox+VW/2,oy+VH/2);
+export function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) return; const pec=folhaU("pecas"), feats=pecasPerto(ox+VW/2,oy+VH/2);
   // praças e lagos (planos, por baixo de tudo)
   for(const f of feats){ if(f.tipo==="praca"){ if(pec){ const w=f.rx*2.6; lg.drawImage(celulaArte(pec,2,2,0,0,Math.round(w),Math.round(w)),Math.round(f.x-ox-w/2),Math.round(f.y-oy-w/2)); }
       else { lg.globalAlpha=0.5; lg.fillStyle="#a8a498"; lg.beginPath(); lg.ellipse(f.x-ox,f.y-oy,f.rx*0.8,f.ry*0.8,0,0,Math.PI*2); lg.fill(); lg.fillStyle="#3a3836"; lg.beginPath(); lg.ellipse(f.x-ox,f.y-oy,f.rx*0.4,f.ry*0.4,0,-Math.PI/2,Math.PI/2); lg.fill(); lg.globalAlpha=1; } }
@@ -999,12 +1008,12 @@ function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) re
         lg.beginPath(); lg.rect(-L/2,y0,L,H); lg.clip(); const suave=lg.imageSmoothingEnabled; lg.imageSmoothingEnabled=true;
         for(let x=-L/2-(PL-(L%PL))/2;x<L/2;x+=PL) lg.drawImage(pec,fp.sx,fp.sy,fp.sw,sh,x,y0,PL+0.5,H); lg.imageSmoothingEnabled=suave; lg.restore(); }
       else { lg.save(); lg.translate(f.x-ox,f.y-oy); if(!hz) lg.rotate(Math.PI/2); for(let x=-L/2;x<L/2;x+=3){ lg.fillStyle=(x/3|0)%2?"#8a5a30":"#a0703c"; lg.fillRect(Math.round(x),-7,2,14); } lg.fillStyle="#c8302a"; lg.fillRect(-L/2,-8,L,1); lg.fillRect(-L/2,7,L,1); lg.restore(); } } } }
-function desenharQuedasAbismo(ox,oy){ if(!J.quedas) return; for(const q of J.quedas) q.t+=1/60; J.quedas=J.quedas.filter(q=>q.t<0.7);
+export function desenharQuedasAbismo(ox,oy){ if(!J.quedas) return; for(const q of J.quedas) q.t+=1/60; J.quedas=J.quedas.filter(q=>q.t<0.7);
   for(const q of J.quedas){ const k=1-q.t/0.7, w=q.spr.width*q.esc*k, h=q.spr.height*q.esc*k; lg.globalAlpha=k; lg.drawImage(silhueta(q.spr,"#2a3040"),Math.round(q.x-ox-w/2),Math.round(q.y-oy-h/2+q.t*14),w,h); } lg.globalAlpha=1; }
 
 // ---------------------------------------------------------------- fauna: bichos de ambiente que reagem a quem passa
-function quadroFauna(row,col,tam){ const img=folhaU("fauna"); return img? celulaArte(img,8,2,col,row,tam,tam,0.5) : null; }
-function atualizarFauna(dt){ const C=J.cena, P=J.jogador; if(!C.fauna) C.fauna=[]; C.tAve=(C.tAve??3)-dt;
+export function quadroFauna(row,col,tam){ const img=folhaU("fauna"); return img? celulaArte(img,8,2,col,row,tam,tam,0.5) : null; }
+export function atualizarFauna(dt){ const C=J.cena, P=J.jogador; if(!C.fauna) C.fauna=[]; C.tAve=(C.tAve??3)-dt;
   const perto=(x,y,r)=>{ if(Math.hypot(P.x-x,P.y-y)<r) return P; for(const e of J.inimigos){ if(Math.abs(e.x-x)<r&&Math.abs(e.y-y)<r) return e; } return null; };
   // aves cruzam a tela a favor do vento, em bando, com sombra no chão
   if(C.tAve<=0){ C.tAve=rnd(7,14); const a=Math.atan2(C.dy,C.dx)+rnd(-.4,.4), n=1+Math.floor(Math.random()*3), lado=rnd(-VH*0.4,VH*0.4);
@@ -1027,7 +1036,7 @@ function atualizarFauna(dt){ const C=J.cena, P=J.jogador; if(!C.fauna) C.fauna=[
   C.fauna=C.fauna.filter(b=>{ if(b.vida<=0) return false;
     if(b.lago){ const longe=Math.abs(b.lago.x-P.x)>VW*1.6||Math.abs(b.lago.y-P.y)>VH*1.6; if(longe) b.lago.povoado=false; return !longe; }
     return Math.abs(b.x-P.x)<VW*1.6&&Math.abs(b.y-P.y)<VH*1.6; }); }
-function desenharFauna(ox,oy,camada){ const C=J.cena; if(!C||!C.fauna) return;
+export function desenharFauna(ox,oy,camada){ const C=J.cena; if(!C||!C.fauna) return;
   for(const b of C.fauna){ const x=Math.round(b.x-ox), y=Math.round(b.y-oy); if(x<-30||y<-60||x>VW+30||y>VH+30) continue; const q=Math.floor(b.f)%4;
     if(camada==="agua"&&b.k==="peixe"){ const s=quadroFauna(1,q,10); if(s){ lg.save(); lg.translate(x,y); lg.rotate(Math.atan2(b.vy,b.vx)); lg.globalAlpha=.85; lg.drawImage(s,-5,-5); lg.restore(); lg.globalAlpha=1; } else { lg.fillStyle="#f08a3a"; lg.fillRect(x-1,y,3,1); lg.fillStyle="#ffffff"; lg.fillRect(x+1,y,1,1); } }
     if(camada==="chao"&&b.k==="bicho"){ const s=quadroFauna(1,4+(b.pulo>0?(b.z>4?2:1):(b.pulo<0?3:0)),9); lg.fillStyle="rgba(0,0,0,.3)"; lg.beginPath(); lg.ellipse(x,y+1.5,2.2,0.8,0,0,Math.PI*2); lg.fill(); if(s) lg.drawImage(s,x-4,y-5-Math.round(b.z)); else { lg.fillStyle="#4f9a3c"; lg.fillRect(x-1,y-1-Math.round(b.z),3,2); } }
@@ -1038,19 +1047,19 @@ function desenharFauna(ox,oy,camada){ const C=J.cena; if(!C||!C.fauna) return;
 // ---------------------------------------------------------------- cena de abertura: a arte-conceito do reino como cena de cinema
 // faixas de cinema, câmera lenta, raios de luz e brasas na cor do elemento, título letra a letra e saída em íris revelando o mapa.
 // O HUD e o aviso do mapa só aparecem quando ela termina. Se a arte ainda está chegando, espera até 2,5 s com a tela escura.
-function iniciarAbertura(){ const u=UNIV[R.universo]; if(!u||SIM.ativo) return; const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`]; if(!img||img.falhou) return;
+export function iniciarAbertura(){ const u=UNIV[R.universo]; if(!u||SIM.ativo) return; const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`]; if(!img||img.falhou) return;
   const r=semente(u.id+"intro"), motes=[]; for(let i=0;i<46;i++) motes.push({x:r(),y:r(),v:0.03+r()*0.08,a:r()*6.28,s:0.6+r()*1.8,b:0.3+r()*0.7});
   J.intro={t:0,dur:4.6,img,u,espera:0,motes,depois:[],cor:COR[u.elemento]||"#ffd890"}; $("hud").style.display="none"; $("hudBase").style.display="none"; }
-function aposAbertura(fn){ if(J&&J.intro) J.intro.depois.push(fn); else fn(); }
-function fimAbertura(){ const I=J.intro; J.intro=null; $("hud").style.display=""; $("hudBase").style.display=""; for(const f of I.depois) f(); }
+export function aposAbertura(fn){ if(J&&J.intro) J.intro.depois.push(fn); else fn(); }
+export function fimAbertura(){ const I=J.intro; J.intro=null; $("hud").style.display=""; $("hudBase").style.display=""; for(const f of I.depois) f(); }
 // chamada no lugar do atualizar enquanto a abertura passa; devolve true se ela ainda está na tela
-function passoAbertura(dt){ const I=J.intro; if(!I) return false;
+export function passoAbertura(dt){ const I=J.intro; if(!I) return false;
   if(!I.img.pronta){ I.espera+=dt; if(I.espera>2.5||I.img.falhou){ fimAbertura(); return false; } return true; }
   I.t+=dt; if(I.t>=I.dur) fimAbertura(); return true; }
-function pularAbertura(){ if(J&&J.intro){ if(!J.intro.img.pronta) J.intro.espera=9; else if(J.intro.t<J.intro.dur-0.8) J.intro.t=J.intro.dur-0.8; } }
-const suaveIO=x=>x<0?0:x>1?1:x*x*(3-2*x), suaveO=x=>1-Math.pow(1-Math.max(0,Math.min(1,x)),3);
-let CV_INTRO=null;
-function desenharAbertura(){ const I=J&&J.intro; if(!I) return; const t=I.t, D0=I.dur, img=I.img, [cr,cg,cb]=hexRgb(I.cor), M=Math.min(W,H);
+export function pularAbertura(){ if(J&&J.intro){ if(!J.intro.img.pronta) J.intro.espera=9; else if(J.intro.t<J.intro.dur-0.8) J.intro.t=J.intro.dur-0.8; } }
+export const suaveIO=x=>x<0?0:x>1?1:x*x*(3-2*x), suaveO=x=>1-Math.pow(1-Math.max(0,Math.min(1,x)),3);
+export let CV_INTRO=null;
+export function desenharAbertura(){ const I=J&&J.intro; if(!I) return; const t=I.t, D0=I.dur, img=I.img, [cr,cg,cb]=hexRgb(I.cor), M=Math.min(W,H);
   ctx.save(); ctx.setTransform(cv.width/W,0,0,cv.height/H,0,0);
   if(!img.pronta){ ctx.fillStyle="#07050b"; ctx.fillRect(0,0,W,H); const p=0.5+0.5*Math.sin(I.espera*5); ctx.fillStyle=`rgba(${cr},${cg},${cb},${0.25+0.4*p})`;
     for(let i=0;i<3;i++){ ctx.beginPath(); ctx.arc(W/2+(i-1)*14,H/2,3,0,Math.PI*2); ctx.fill(); } ctx.restore(); return; }
@@ -1115,3 +1124,6 @@ function desenharAbertura(){ const I=J&&J.intro; if(!I) return; const t=I.t, D0=
   if(sai>0&&sai<1){ const R0=Math.hypot(W,H)*0.6*suaveIO(sai), bord=M*0.12; ctx.globalCompositeOperation="lighter"; const an=ctx.createRadialGradient(W/2,H/2,Math.max(0,R0-bord),W/2,H/2,R0);
     an.addColorStop(0,`rgba(${cr},${cg},${cb},0)`); an.addColorStop(0.7,`rgba(255,240,210,${0.5*(1-sai)})`); an.addColorStop(1,`rgba(${cr},${cg},${cb},0)`); ctx.fillStyle=an; ctx.fillRect(0,0,W,H); ctx.globalCompositeOperation="source-over"; }
   ctx.restore(); }
+
+/** número novo para uma imagem ou recorte (a contagem mora aqui; os outros módulos pedem o próximo) */
+export function novoIdImg(){ return ++ID_IMG; }

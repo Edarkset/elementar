@@ -1,14 +1,24 @@
 // Elementar · inimigos comuns, mini-chefes e chefes
-// Parte 9 de 11 da lógica do jogo: os arquivos de js/jogo/ são carregados em ordem pelo index.html e
-// compartilham o mesmo escopo global (funções e constantes de uma parte valem nas outras).
-"use strict";
+// Parte 9 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
+// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
+import "./08_sistemas.js";   // ordem de carga: os módulos são avaliados de 01 a 11, como antes (cada um puxa o anterior primeiro)
+import { agendar, ativos, branco, COR, ctx, defFonte, dist2, ELS, escolha, FONTE, H, HUD_BAIXO, J, lg, linhagemDe, mistura, R, relatar, rnd, S, SIM,
+  som, spriteLinha, tom, UNIV, VH, VW, W } from "./01_nucleo.js";
+import { anel, danoSimples, DIF, dificuldade, morrer, parar, particulas, raio, sombraContato, spawnInimigo, texto, tremor } from "./02_combate.js";
+import { aplicarElementoNoSolo, CEL, DUR, frio, mudarSolo, soloEm } from "./04_ambiente.js";
+import { fatiarFolha, quadroAnim } from "./05_arte.js";
+import { QUAL } from "./06_loop.js";
+import { brasa, cairRaio, celulaArte, CH, danificarProp, desenharSprite, estruturaU, folhaArte, folhaU, fumaca, gerarPedaco, impactoArte, MAT,
+  novoProp, particulaAr, quadroEfeito, quebrar, sairDoAbismo, silhueta, silhuetaMundo, spriteProp } from "./07_cenario.js";
+import { ameacaDiretor, contornoLeitura, custo, evento, particulasEl, passiva, sombraProjetada, tal } from "./08_sistemas.js";
+import { MULTIDAO } from "./10_desenho.js";
 // ================================================================ criaturas: inimigos comuns, mini-chefes e chefes
 // Cada inimigo vem de dados/fonte_combate.py: corpo, jeito de andar, golpe, derrota, mania e detalhes.
 // Os sprites são pintados pixel a pixel por tipo de corpo, com quadros de caminhada, ataque, dor e piscada.
 // Quando a folha de arte do universo for importada, ela substitui o sprite pintado (mesma ordem de quadros).
 
-const cacheCri=new Map();
-function spriteCriatura(def,tam,cor,q,pose,semente){
+export const cacheCri=new Map();
+export function spriteCriatura(def,tam,cor,q,pose,semente){
   const det=def.detalhes||[], k=def.nome+"|"+tam+"|"+cor+"|"+q+"|"+pose+"|"+(semente||0); if(cacheCri.has(k)) return cacheCri.get(k);
   if(cacheCri.size>1400) cacheCri.clear();
   const W=tam+4, H=tam+4, buf=new Array(W*H).fill(null), s=tam, ox=2, oy=2, tem=d=>det.includes(d), u=Math.max(1,s/16);
@@ -175,7 +185,7 @@ function spriteCriatura(def,tam,cor,q,pose,semente){
   cacheCri.set(k,c); return c; }
 
 // ---------------------------------------------------------------- arte importada (folhas 8x6 de inimigos, 6x4 de mini, 6x5 de chefe, 6x6 de Guardião)
-function arteCriatura(e,pose,q){ const u=UNIV[R.universo]; if(!u) return null;
+export function arteCriatura(e,pose,q){ const u=UNIV[R.universo]; if(!u) return null;
   if(e.chefe||e.mini){ const tam=Math.round(e.tam*1.8), caminho=e.eraChefe? `arte/reinos/${u.era}/guardiao_${u.era}__anim.png` : `arte/reinos/${u.era}/${u.id}__${e.mini?"mini":"chefe"}.png`;
     const img=folhaArte(caminho); if(!img) return null; const rows=e.mini?5:6; let row=0, col=q%4;
     if(pose==="anda"){ row=1; col=q%6; } else if(pose==="atk"){ row=2+Math.min(e.golpeIdx||0,e.eraChefe?2:1); col=Math.min(5,Math.floor((e.tAtk||0)*8)); }
@@ -189,20 +199,20 @@ function arteCriatura(e,pose,q){ const u=UNIV[R.universo]; if(!u) return null;
   else if(pose==="dor"){ row=r0+1; col=0; } else if(pose==="morte"){ row=r0+1; col=1+Math.min(3,q); } else if(pose==="mania"){ row=r0+1; col=5+(q%3); } else col=q%2;
   return celulaArte(img,8,6,col,row,tam,tam,0.85); }   // grade simples: o recorte inteligente trazia pedaços de outras poses nestas folhas (ver docs/ARTES_PARA_REFAZER.md)
 // ---------------------------------------------------------------- nascimento, passo e animação
-function defInimigo(k){ const u=UNIV[R.universo]; return (u.combate&&u.combate.inimigos[k])||{nome:"inimigo"+k,corpo:"humanoide",andar:"caminha",golpe:"contato",morte:"puff",mania:"",detalhes:[]}; }
-function prepararCriatura(e,def,tam){ e.def=def; e.tam=tam; e.passo=Math.random()*4; e.fase=Math.random()*6.28; e.cdG=rnd(1,3); e.surgindo=e.chefe||e.mini?0:0.45; e.tMania=rnd(4,12); e.semente=Math.floor(Math.random()*3)+1;
+export function defInimigo(k){ const u=UNIV[R.universo]; return (u.combate&&u.combate.inimigos[k])||{nome:"inimigo"+k,corpo:"humanoide",andar:"caminha",golpe:"contato",morte:"puff",mania:"",detalhes:[]}; }
+export function prepararCriatura(e,def,tam){ e.def=def; e.tam=tam; e.passo=Math.random()*4; e.fase=Math.random()*6.28; e.cdG=rnd(1,3); e.surgindo=e.chefe||e.mini?0:0.45; e.tMania=rnd(4,12); e.semente=Math.floor(Math.random()*3)+1;
   if(def.mania==="finge_estatua") e.estatua=true;
   if(R.universo.startsWith("reino_")&&e.tipo===2){ const l=escolha(D.linhas); e.eco=l.id; }
   e.spr=spriteCriatura(def,tam,e.cor,0,"anda",e.semente); }
 // dano em % da vida: chefes e mini-chefes contam como no máximo 6 inimigos comuns (senão o próprio fogo os derrete)
-function pctMax(o,p){ return (o.chefe||o.mini)? Math.min(o.max,DIF.hp*dificuldade()*6)*p : o.max*p; }
-function fala(e,txt,cor){ J.falas=J.falas||[]; J.ultFala=J.ultFala||{}; if(J.t-(J.ultFala[txt]??-9)<8||J.t-(J.ultFalaG??-9)<2.5||J.falas.length>=2) return; J.ultFala[txt]=J.t; J.ultFalaG=J.t;   /* menos balões: tela mais limpa */ J.falas.push({e,txt,cor:cor||"#fff8e6",vida:1.6}); }
-const XINGOS=["Rato de porão!","Cabeça de bagre!","Marujo de água doce!","Arrr! #@%!","Perna de pau!","Croc, croc!"];
-const CONSELHOS=["Encoste na bobina!","Fique parado na água!","Raio + água = spa!","Corra até o chefe!","Abrace o barril!","Desligue a esquiva!"];
-function temPequeninoPerto(e){ return ativos().some(s=>linhagemDe(s)==="pequeninos"&&dist2(s,e)<55*55); }
+export function pctMax(o,p){ return (o.chefe||o.mini)? Math.min(o.max,DIF.hp*dificuldade()*6)*p : o.max*p; }
+export function fala(e,txt,cor){ J.falas=J.falas||[]; J.ultFala=J.ultFala||{}; if(J.t-(J.ultFala[txt]??-9)<8||J.t-(J.ultFalaG??-9)<2.5||J.falas.length>=2) return; J.ultFala[txt]=J.t; J.ultFalaG=J.t;   /* menos balões: tela mais limpa */ J.falas.push({e,txt,cor:cor||"#fff8e6",vida:1.6}); }
+export const XINGOS=["Rato de porão!","Cabeça de bagre!","Marujo de água doce!","Arrr! #@%!","Perna de pau!","Croc, croc!"];
+export const CONSELHOS=["Encoste na bobina!","Fique parado na água!","Raio + água = spa!","Corra até o chefe!","Abrace o barril!","Desligue a esquiva!"];
+export function temPequeninoPerto(e){ return ativos().some(s=>linhagemDe(s)==="pequeninos"&&dist2(s,e)<55*55); }
 // retorna {m: multiplicador da velocidade normal, dx, dy: deslocamento extra}
-const PASSO={m:1,dx:0,dy:0};
-function passoCriatura(e,dt,P){ const d=e.def; PASSO.m=1; PASSO.dx=0; PASSO.dy=0; if(!d) return PASSO;
+export const PASSO={m:1,dx:0,dy:0};
+export function passoCriatura(e,dt,P){ const d=e.def; PASSO.m=1; PASSO.dx=0; PASSO.dy=0; if(!d) return PASSO;
   const dist=Math.hypot(P.x-e.x,P.y-e.y);
   if(e.surgindo>0){ e.surgindo-=dt; PASSO.m=0; return PASSO; }
   if(e.chefe||e.mini){ if(e.parado||e.oculto&&!e.mergulho) PASSO.m=0; if(e.dash){ PASSO.m=0; PASSO.dx=e.dash.vx*dt; PASSO.dy=e.dash.vy*dt; } if(e.bebado>0){ PASSO.m=0.35; PASSO.dx=Math.sin(J.t*5)*20*dt; } if(d.mania==="persegue") PASSO.m*=1.6;
@@ -260,7 +270,7 @@ function passoCriatura(e,dt,P){ const d=e.def; PASSO.m=1; PASSO.dx=0; PASSO.dy=0
   }
   if(e.piscaT>0) e.piscaT-=dt;
   return PASSO; }
-function golpeCriatura(e,P,dist){ const d=e.def, g=d.golpe;
+export function golpeCriatura(e,P,dist){ const d=e.def, g=d.golpe;
   if(g==="bote"){ const dx=P.x-e.x, dy=P.y-e.y, dd=Math.hypot(dx,dy)||1; e.dash={vx:dx/dd*150,vy:dy/dd*150,t:0.22}; }
   else if(g==="cuspe"){ let alvo=P, amigo=false;
     if(d.mania==="cospe_aliado"&&Math.random()<0.35){ const o=maisProximoInimigo(e,90); if(o){ alvo=o; amigo=true; fala(e,"Ptui!","#e8e8ff"); } }
@@ -268,18 +278,18 @@ function golpeCriatura(e,P,dist){ const d=e.def, g=d.golpe;
   else if(g==="salto"&&e.alvoPulo){ e.pulo={x0:e.x,y0:e.y,x1:e.alvoPulo.x,y1:e.alvoPulo.y,t:0,dur:0.6}; e.alvoPulo=null; }
   else if(g==="descarga"){ raio(e.x,e.y,e.x+rnd(-20,20),e.y+rnd(-20,20),"#fff3a0"); anel(e.x,e.y,22,"#fff3a0",.3); if(Math.hypot(P.x-e.x,P.y-e.y)<22) feriJogador(e.dano*0.7,"raio");
     for(let i=0;i<4;i++){ const a=i*1.57; aplicarElementoNoSolo(e.x+Math.cos(a)*12,e.y+Math.sin(a)*12,"raio"); } } }
-function maisProximoInimigo(o,alc){ let best=null, bd=alc*alc; for(const e of J.inimigos){ if(e===o||e.hp<=0) continue; const d=dist2(o,e); if(d<bd){ bd=d; best=e; } } return best; }
-function projCuspe(e){ const d=e.def, el=e.el; if(d.detalhes.includes("lanterna")) return "chama"; if(d.corpo==="ave") return "pena"; if(d.corpo==="golem") return d.detalhes.includes("gelo")||d.detalhes.includes("pelo")? "gelo" : "pedra";
+export function maisProximoInimigo(o,alc){ let best=null, bd=alc*alc; for(const e of J.inimigos){ if(e===o||e.hp<=0) continue; const d=dist2(o,e); if(d<bd){ bd=d; best=e; } } return best; }
+export function projCuspe(e){ const d=e.def, el=e.el; if(d.detalhes.includes("lanterna")) return "chama"; if(d.corpo==="ave") return "pena"; if(d.corpo==="golem") return d.detalhes.includes("gelo")||d.detalhes.includes("pelo")? "gelo" : "pedra";
   if(d.detalhes.includes("chapeu")&&d.detalhes.includes("cajado")) return "pocao"; if(d.detalhes.includes("tapa_olho")) return "bala"; if(el==="fogo") return "chama"; if(el==="natureza") return "folha"; if(el==="raio") return "raio"; return "gota"; }
-function estourarCriatura(e){ const P=J.jogador; anel(e.x,e.y,18,"#c8f07a",.4); particulas(e.x,e.y,COR[e.el],14,90); if(J.cena) for(let i=0;i<8;i++) particulaAr("esporos",e.x+rnd(-8,8),e.y+rnd(-8,8),rnd(0,6));
+export function estourarCriatura(e){ const P=J.jogador; anel(e.x,e.y,18,"#c8f07a",.4); particulas(e.x,e.y,COR[e.el],14,90); if(J.cena) for(let i=0;i<8;i++) particulaAr("esporos",e.x+rnd(-8,8),e.y+rnd(-8,8),rnd(0,6));
   if(Math.hypot(P.x-e.x,P.y-e.y)<18) feriJogador(e.dano*1.1,e.el);
-  const f=FONTE; FONTE="ambiente"; for(const o of J.inimigos) if(o!==e&&o.hp>0&&dist2(o,e)<18*18) danoSimples(o,pctMax(o,0.3)); FONTE=f;
+  const f=FONTE; defFonte("ambiente"); for(const o of J.inimigos) if(o!==e&&o.hp>0&&dist2(o,e)<18*18) danoSimples(o,pctMax(o,0.3)); defFonte(f);
   for(let i=0;i<5;i++){ const a=i*1.26; mudarSolo(e.x+Math.cos(a)*8,e.y+Math.sin(a)*8,"vinha",8); } e.hp=0; morrer(e); }
-function petrificar(e){ if(e.hp<=0) return; evento("petrificado"); texto(e.x,e.y-12,"Virou pedra!","#d8d0c0",13); particulas(e.x,e.y,"#a8a090",14,60); const spr=silhuetaMundo(spriteDe(e,"anda",0),"#8a8478");
+export function petrificar(e){ if(e.hp<=0) return; evento("petrificado"); texto(e.x,e.y-12,"Virou pedra!","#d8d0c0",13); particulas(e.x,e.y,"#a8a090",14,60); const spr=silhuetaMundo(spriteDe(e,"anda",0),"#8a8478");
   criarEstatua(e.x,e.y,spr,"rocha"); e.semCadaver=true; e.hp=0; morrer(e); }
-function spriteDe(e,pose,q){ const arte=arteCriatura(e,pose,q); if(arte) return arte; return spriteCriatura(e.def,e.tam,e.cor,q,pose,e.semente); }
+export function spriteDe(e,pose,q){ const arte=arteCriatura(e,pose,q); if(arte) return arte; return spriteCriatura(e.def,e.tam,e.cor,q,pose,e.semente); }
 // ---------------------------------------------------------------- derrota: cada inimigo cai do seu jeito
-function aoMorrerCriatura(e){ const d=e.def; if(!d||e.semCadaver) return; const C=J.cena;
+export function aoMorrerCriatura(e){ const d=e.def; if(!d||e.semCadaver) return; const C=J.cena;
   if(e.roubou){ const n=Math.min(8,Math.ceil(e.roubou)); for(let i=0;i<n;i++){ const a=Math.random()*6.28; J.gemas.push({x:e.x,y:e.y,vx:Math.cos(a)*50,vy:Math.sin(a)*50,v:e.roubou/n*1.5,cor:"#9fe0ff"}); } fala(e,"Ai, ai!","#ffe9a0"); }
   if(d.mania==="remonta"&&!e.remontado&&!e.clone){ const x=e.x, y=e.y, k=e.tipo; agendar(2.4,()=>{ if(!J||J.fim) return; spawnInimigo(k); const o=J.inimigos[J.inimigos.length-1]; o.x=x; o.y=y; o.hp=o.max*0.4; o.remontado=true; o.surgindo=0.6; particulas(x,y,"#e2dac6",8,40); }); }
   if(d.mania==="pururauca"&&Math.random()<0.4){ evento("pururauca"); criarEstatua(e.x,e.y,silhuetaMundo(spriteDe(e,"anda",0),"#8a8478"),"rocha"); return; }
@@ -301,8 +311,8 @@ function aoMorrerCriatura(e){ const d=e.def; if(!d||e.semCadaver) return; const 
     case "sapo": J.sapos=J.sapos||[]; J.sapos.push({x:e.x,y:e.y,vida:3,f:Math.random()*6}); if(C) fumaca(e.x,e.y,5,"#a8e0a0"); break;
     case "desmancha": if(C) for(let i=0;i<10;i++){ const p=particulaAr("poeira",e.x+rnd(-4,4),e.y+rnd(-2,2),rnd(0,8)); p.cor=Math.random()<.5?"#d8c8a0":tom(e.cor,.8); } break;
   } }
-function criarEstatua(x,y,spr,material){ if(!J.cena) return; const p=criarProp(material==="metal"?"metal":"rocha",x,y); if(!p) return; p.spriteFixo=spr; if(material==="metal") p.ouro=true; return p; }
-function atualizarCriaturas(dt){
+export function criarEstatua(x,y,spr,material){ if(!J.cena) return; const p=criarProp(material==="metal"?"metal":"rocha",x,y); if(!p) return; p.spriteFixo=spr; if(material==="metal") p.ouro=true; return p; }
+export function atualizarCriaturas(dt){
   if(J.cadaveres){ for(const c of J.cadaveres) c.t+=dt; J.cadaveres=J.cadaveres.filter(c=>c.t<c.max); }
   if(J.falas){ for(const f of J.falas) f.vida-=dt; J.falas=J.falas.filter(f=>f.vida>0); }
   if(J.sapos){ for(const s of J.sapos){ s.vida-=dt; s.f+=dt; const h=Math.sin(s.f*6); if(h>0){ s.x+=Math.cos(s.f)*18*dt; s.y+=Math.sin(s.f*0.7)*10*dt; } } J.sapos=J.sapos.filter(s=>s.vida>0); }
@@ -314,8 +324,8 @@ function atualizarCriaturas(dt){
       const a=Math.random()*6.28; e.x=J.jogador.x+Math.cos(a)*90; e.y=J.jogador.y+Math.sin(a)*90; fala(e,"Hihihi!","#ffe9a0"); if(J.cena) J.cena.vort.push({x:e.x,y:e.y,r:6,vmax:90,vida:3,fogo:false,f:0,segue:e}); } }
   if(J.cena) for(const w of J.cena.vort) if(w.segue){ if(w.segue.hp>0){ w.x=w.segue.x; w.y=w.segue.y+2; } else w.vida=Math.min(w.vida,0.3); } }
 // ---------------------------------------------------------------- desenho
-function poseDe(e){ if(e.ia&&e.ia.trocaFase>0) return "fase"; if(e.caido>0||(e.flash>0&&J.t-(e.dorT??-9)<0.15)) return "dor"; /* pose de dor no máximo a cada 0,6 s: com golpes seguidos o inimigo ficava sempre agachado */ if(e.atk>0||e.pavio>0||(e.ia&&e.ia.anuncio>0)) return "atk"; if(e.danca>0) return "mania"; if(e.piscaT>0) return "pisca"; return "anda"; }
-function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||x>VW+40||y>VH+40) return;
+export function poseDe(e){ if(e.ia&&e.ia.trocaFase>0) return "fase"; if(e.caido>0||(e.flash>0&&J.t-(e.dorT??-9)<0.15)) return "dor"; /* pose de dor no máximo a cada 0,6 s: com golpes seguidos o inimigo ficava sempre agachado */ if(e.atk>0||e.pavio>0||(e.ia&&e.ia.anuncio>0)) return "atk"; if(e.danca>0) return "mania"; if(e.piscaT>0) return "pisca"; return "anda"; }
+export function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||x>VW+40||y>VH+40) return;
   const d=e.def; if(!d){ return false; }
   if(e.oculto&&!e.mergulho) { if(e.revoada) return; lg.globalAlpha=0.15; }
   const pose=poseDe(e), q=Math.floor(e.passo||0)%4, voa=d.andar==="voa", flut=d.andar==="flutua";
@@ -365,7 +375,7 @@ function desenharInimigo(e,ox,oy,P){ const x=e.x-ox, y=e.y-oy; if(x<-40||y<-50||
   // detalhes que dependem do quadro: escaravelho rolando a bolinha, faísca da bobina
   if(d.mania==="rola"){ const bxx=x+(virar?-1:1)*(w*0.45), r=2; lg.fillStyle="#b8986a"; lg.beginPath(); lg.arc(bxx,y+h*0.25-z,r,0,Math.PI*2); lg.fill(); }
   return true; }
-function desenharCadaveres(ox,oy){ if(!J.cadaveres) return;
+export function desenharCadaveres(ox,oy){ if(!J.cadaveres) return;
   for(const c of J.cadaveres){ const q=c.t/c.max, x=c.x-ox, y=c.y-oy;
     if(c.foto){ const n=c.foto.chefe||c.foto.mini?6:4, s=arteCriatura(c.foto,"morte",Math.min(n-1,Math.floor(q*n))); if(s){ const w=s.width*c.esc, h=s.height*c.esc; lg.save(); lg.translate(Math.round(x),Math.round(y+h*0.35+h*0.15)); if(c.flip) lg.scale(-1,1); lg.globalAlpha=q>0.85?(1-q)/0.15:1; lg.drawImage(s,-w/2,-h,w,h); lg.restore(); lg.globalAlpha=1; continue; } }
     const w=c.spr.width*c.esc, h=c.spr.height*c.esc; lg.save(); lg.translate(Math.round(x),Math.round(y+h*0.35)); if(c.flip) lg.scale(-1,1);
@@ -376,39 +386,39 @@ function desenharCadaveres(ox,oy){ if(!J.cadaveres) return;
     lg.drawImage(c.estilo==="chama"? silhueta(c.spr,"#ff8a3d") : c.estilo==="evapora"? silhueta(c.spr,"#e8e0ff") : c.spr,-w/2*sx,-h*sy,w*sx,h*sy); lg.restore(); }
   lg.globalAlpha=1;
   if(J.sapos) for(const s of J.sapos){ const h=Math.max(0,Math.sin(s.f*6))*3; lg.fillStyle="#4f9a3c"; lg.fillRect(Math.round(s.x-ox)-1,Math.round(s.y-oy-h)-1,3,2); lg.fillStyle="#1a1418"; lg.fillRect(Math.round(s.x-ox),Math.round(s.y-oy-h)-2,1,1); } }
-function desenharFalas(ox,oy){ if(!J.falas) return; ctx.textAlign="center"; ctx.font=`600 13px "Nunito", system-ui, sans-serif`;
+export function desenharFalas(ox,oy){ if(!J.falas) return; ctx.textAlign="center"; ctx.font=`600 13px "Nunito", system-ui, sans-serif`;
   for(const f of J.falas){ const e=f.e, x=(e.x-ox)*S, y=(e.y-oy-(e.tam||10)*1.1-(1.6-f.vida)*6)*S, w=ctx.measureText(f.txt).width+10; ctx.globalAlpha=Math.min(1,f.vida*2);
     ctx.fillStyle="rgba(18,14,26,.82)"; ctx.fillRect(x-w/2,y-13,w,17); ctx.beginPath(); ctx.moveTo(x-3,y+4); ctx.lineTo(x+3,y+4); ctx.lineTo(x,y+8); ctx.fill(); ctx.fillStyle=f.cor; ctx.fillText(f.txt,x,y); }
   ctx.globalAlpha=1; }
 
 // ================================================================ chefes: golpes característicos, perigos anunciados e segunda fase
 // Regra de justiça: tudo o que machuca aparece antes como uma marca no chão (círculo, linha, cone ou anel).
-function angDif(a,b){ let d=(a-b)%(Math.PI*2); if(d>Math.PI) d-=Math.PI*2; if(d<-Math.PI) d+=Math.PI*2; return d; }
-function distSeg(px,py,x1,y1,x2,y2){ const dx=x2-x1, dy=y2-y1, L=dx*dx+dy*dy||1, t=Math.max(0,Math.min(1,((px-x1)*dx+(py-y1)*dy)/L)); return Math.hypot(px-(x1+dx*t),py-(y1+dy*t)); }
-function feriJogador(dano,el){ if(J.invuln>0||J.fim||J.deus) return false; if(J.chefeVivo) J.atingidoNoChefe=true; if(J.escudoGolpes>0){ J.escudoGolpes--; particulasEl(J.jogador.x,J.jogador.y,"luz",6,50); return false; } dano*=(J.reducao>0?0.7:1)*ameacaDiretor()*tal.defesa()*(1-custo("defesa")); if(J.escudo>0){ const a=Math.min(J.escudo,dano); J.escudo-=a; dano-=a; }
+export function angDif(a,b){ let d=(a-b)%(Math.PI*2); if(d>Math.PI) d-=Math.PI*2; if(d<-Math.PI) d+=Math.PI*2; return d; }
+export function distSeg(px,py,x1,y1,x2,y2){ const dx=x2-x1, dy=y2-y1, L=dx*dx+dy*dy||1, t=Math.max(0,Math.min(1,((px-x1)*dx+(py-y1)*dy)/L)); return Math.hypot(px-(x1+dx*t),py-(y1+dy*t)); }
+export function feriJogador(dano,el){ if(J.invuln>0||J.fim||J.deus) return false; if(J.chefeVivo) J.atingidoNoChefe=true; if(J.escudoGolpes>0){ J.escudoGolpes--; particulasEl(J.jogador.x,J.jogador.y,"luz",6,50); return false; } dano*=(J.reducao>0?0.7:1)*ameacaDiretor()*tal.defesa()*(1-custo("defesa")); if(J.escudo>0){ const a=Math.min(J.escudo,dano); J.escudo-=a; dano-=a; }
   J.vida-=dano; J.danoRec=(J.danoRec||0)+dano; R.st.recBala+=dano; tremor(2.5); som("dano"); particulas(J.jogador.x,J.jogador.y,COR[el]||"#ff5a4a",5,60); return true; }
-function bala(dono,x,y,ang,vel,dano,proj,el,extra){ const el2=el==="multi"? escolha(ELS) : el;
+export function bala(dono,x,y,ang,vel,dano,proj,el,extra){ const el2=el==="multi"? escolha(ELS) : el;
   J.balas.push(Object.assign({x,y,vx:Math.cos(ang)*vel,vy:Math.sin(ang)*vel,vida:5,dano,proj:proj||"bola",el:el2,cor:COR[el2]||"#ff5a4a",dono,linhaVfx:dono&&dono.chefe?dono.golpeIdx||0:null},extra||{})); }
-function perigo(o){ o.max=o.t; J.perigos.push(o); return o; }
-function pintarSolo(x,y,r,tipo,dur){ const C0=Math.floor((x-r)/CEL), C1=Math.floor((x+r)/CEL), R0=Math.floor((y-r)/CEL), R1=Math.floor((y+r)/CEL);
+export function perigo(o){ o.max=o.t; J.perigos.push(o); return o; }
+export function pintarSolo(x,y,r,tipo,dur){ const C0=Math.floor((x-r)/CEL), C1=Math.floor((x+r)/CEL), R0=Math.floor((y-r)/CEL), R1=Math.floor((y+r)/CEL);
   for(let cy=R0;cy<=R1;cy++) for(let cx=C0;cx<=C1;cx++){ const px=cx*CEL+4, py=cy*CEL+4; if((px-x)**2+(py-y)**2>r*r) continue;
     let t=tipo; if(t==="caos") t=escolha(["fogo","gelo","lama","sombra","luz","eletrico","vinha","agua"]); if(t==="agua"&&frio()) t="gelo";
     if(t==="eletrico"){ J.solo.set(cx+","+cy,{t:"eletrico",ate:J.t+(dur||6)}); continue; }
     J.solo.set(cx+","+cy,{t,ate:J.t+(dur??DUR[t]??30)}); } }
-function criarProp(tipo,x,y,extra){ const C=J.cena; if(!C||!MAT[tipo]) return null; const cx=Math.floor(x/CH), cy=Math.floor(y/CH); gerarPedaco(cx,cy);
+export function criarProp(tipo,x,y,extra){ const C=J.cena; if(!C||!MAT[tipo]) return null; const cx=Math.floor(x/CH), cy=Math.floor(y/CH); gerarPedaco(cx,cy);
   const p=novoProp(tipo,x,y,Math.random); Object.assign(p,extra||{}); C.props.get(cx+":"+cy).push(p); C.lista.push(p); return p; }
-const corG=(e,g)=> g.el&&g.el!=="multi"? COR[g.el] : COR[e.el]||"#ff5a4a";
-const elG=(e,g)=> g.el==="multi"? escolha(ELS) : (g.el||e.el);
-const D0=e=>e.dano*(e.mini?0.85:1);
-function propsEm(x,y,r,fn){ if(!J.cena) return; for(const p of J.cena.lista){ if(p.morto) continue; if((p.x-x)**2+(p.y-y)**2<(r+p.r)**2) fn(p,Math.hypot(p.x-x,p.y-y)||1); } }
-function empurrarProps(x,y,r,forca){ propsEm(x,y,r,(p,d)=>{ if(p.mat.fixo) return; const dv=Math.min(300,forca/p.m); p.vx+=(p.x-x)/d*dv; p.vy+=(p.y-y)/d*dv; });
+export const corG=(e,g)=> g.el&&g.el!=="multi"? COR[g.el] : COR[e.el]||"#ff5a4a";
+export const elG=(e,g)=> g.el==="multi"? escolha(ELS) : (g.el||e.el);
+export const D0=e=>e.dano*(e.mini?0.85:1);
+export function propsEm(x,y,r,fn){ if(!J.cena) return; for(const p of J.cena.lista){ if(p.morto) continue; if((p.x-x)**2+(p.y-y)**2<(r+p.r)**2) fn(p,Math.hypot(p.x-x,p.y-y)||1); } }
+export function empurrarProps(x,y,r,forca){ propsEm(x,y,r,(p,d)=>{ if(p.mat.fixo) return; const dv=Math.min(300,forca/p.m); p.vx+=(p.x-x)/d*dv; p.vy+=(p.y-y)/d*dv; });
   if(J.cena) for(const g of J.cena.destrocos){ const d=Math.hypot(g.x-x,g.y-y)||1; if(d<r){ g.vx+=(g.x-x)/d*120; g.vy+=(g.y-y)/d*120; g.vz+=60; } } }
 
 // ---------------------------------------------------------------- inteligência do chefe
 // cansaço: depois de 75 s de luta o chefe recebe cada vez mais dano (2x aos 105 s, 3x aos 135 s); evita lutas intermináveis em encontros desfavoráveis
-function fadigaChefe(e){ if(!e.chefe||J.tChefe==null) return 1; return 1+Math.max(0,J.t-J.tChefe-75)/30; }
-function anunciar(e,txt,sub){ J.anuncio={txt,sub:sub||"",vida:sub?3.2:1.8,cor:COR[e.el]||"#ffd34a"}; }
-function iaChefe(e,dt,P){ const def=e.def;
+export function fadigaChefe(e){ if(!e.chefe||J.tChefe==null) return 1; return 1+Math.max(0,J.t-J.tChefe-75)/30; }
+export function anunciar(e,txt,sub){ J.anuncio={txt,sub:sub||"",vida:sub?3.2:1.8,cor:COR[e.el]||"#ffd34a"}; }
+export function iaChefe(e,dt,P){ const def=e.def;
   if(!def||!def.golpes){ return false; }
   const ia=e.ia||(e.ia={cd:2.2, idx:Math.floor(Math.random()*def.golpes.length), ocupado:0, fase:1, usados:{}, anuncio:0});
   if(ia.anuncio>0) ia.anuncio-=dt; e.tAtk=(e.tAtk||0)+dt; if(ia.trocaFase>0) ia.trocaFase-=dt;
@@ -445,7 +455,7 @@ function iaChefe(e,dt,P){ const def=e.def;
   return true; }
 
 // ---------------------------------------------------------------- as primitivas dos golpes
-function executarGolpe(e,g,P){ const cor=corG(e,g), el=elG(e,g), C=J.cena;
+export function executarGolpe(e,g,P){ const cor=corG(e,g), el=elG(e,g), C=J.cena;
   switch(g.tipo){
     case "leque": { const ondas=g.ondas||1, n=g.n||7, arco=g.arco||1;
       for(let w=0;w<ondas;w++) agendar(0.45+w*0.38,()=>{ if(e.hp<=0) return; const P=J.jogador, a0=Math.atan2(P.y-e.y,P.x-e.x);
@@ -585,7 +595,7 @@ function executarGolpe(e,g,P){ const cor=corG(e,g), el=elG(e,g), C=J.cena;
             if(this.neve){ this.r=Math.min(15,this.r+Math.hypot(this.vx,this.vy)*dt*0.012); pintarSolo(this.x,this.y,this.r*0.6,"gelo",20); }
             propsEm(this.x,this.y,this.r,(p,d)=>{ if(p.mat.fixo||this.neve||p.m>100){ const nx=(this.x-p.x)/d, ny=(this.y-p.y)/d, vn=this.vx*nx+this.vy*ny; if(vn<0){ this.vx-=2*vn*nx; this.vy-=2*vn*ny; } } danificarProp(p,p.max*(this.neve?3:0.6),null); if(!p.mat.fixo){ p.vx+=this.vx*0.5; p.vy+=this.vy*0.5; } });
             if(this.hitJ<=0&&Math.hypot(P.x-this.x,P.y-this.y)<this.r+4&&feriJogador(D0(e)*0.8,e.el)){ this.hitJ=0.8; J.pvx+=this.vx*0.5; J.pvy+=this.vy*0.5; }
-            const f=FONTE; FONTE="ambiente"; for(const o of J.inimigos) if(o!==e&&o.hp>0&&!o.chefe&&Math.hypot(o.x-this.x,o.y-this.y)<this.r+o.r){ danoSimples(o,pctMax(o,0.4)*dt*10); o.x+=this.vx*dt; o.y+=this.vy*dt; } FONTE=f;
+            const f=FONTE; defFonte("ambiente"); for(const o of J.inimigos) if(o!==e&&o.hp>0&&!o.chefe&&Math.hypot(o.x-this.x,o.y-this.y)<this.r+o.r){ danoSimples(o,pctMax(o,0.4)*dt*10); o.x+=this.vx*dt; o.y+=this.vy*dt; } defFonte(f);
             if(this.t>(g.dur||9)){ particulas(this.x,this.y,this.neve?"#f4f8ff":"#8a5a30",16,80); return false; } return true; },
           frente(ox,oy){ const x=Math.round(this.x-ox), y=Math.round(this.y-oy); lg.fillStyle="rgba(0,0,0,.3)"; lg.beginPath(); lg.ellipse(x,y+this.r*0.8,this.r,this.r*0.35,0,0,Math.PI*2); lg.fill();
             lg.fillStyle=this.neve?"#f0f6ff":"#6a4024"; lg.beginPath(); lg.arc(x,y,this.r,0,Math.PI*2); lg.fill(); lg.strokeStyle=this.neve?"#c8dcf0":"#2a1810"; lg.beginPath(); lg.arc(x,y,this.r*0.6,this.giro,this.giro+2.2); lg.stroke();
@@ -614,25 +624,25 @@ function executarGolpe(e,g,P){ const cor=corG(e,g), el=elG(e,g), C=J.cena;
   }
   return 0.5; }
 
-function impactoChuva(e,g,x,y,r){ const P=J.jogador, el=elG(e,g), cor=corG(e,g); impactoArte(e,x,y,Math.round(r*2.2));
+export function impactoChuva(e,g,x,y,r){ const P=J.jogador, el=elG(e,g), cor=corG(e,g); impactoArte(e,x,y,Math.round(r*2.2));
   if(Math.hypot(P.x-x,P.y-y)<r) feriJogador(D0(e)*0.9,el);
   propsEm(x,y,r,p=>danificarProp(p,p.max*1.3,el)); empurrarProps(x,y,r+8,1800);
   anel(x,y,r,cor,.35); particulas(x,y,cor,10,80); tremor(2.5);
   if(g.proj==="abobora"){ anel(x,y,r+6,"#ff8a3d",.4); pintarSolo(x,y,r*0.8,"fogo"); if(J.cena) for(let i=0;i<8;i++) brasa(x+rnd(-5,5),y+rnd(-5,5),rnd(2,10)); }
   if(g.deixa&&J.cena){ if(g.deixa==="polvora_acesa"){ const p=criarProp("polvora",x,y); if(p) p.pavio=1.6; } else criarProp(g.deixa,x,y,{subindo:0.15}); }
   if(g.solo) pintarSolo(x,y,r*0.75,g.solo); }
-function impactoSalto(e,g,x,y,r){ const P=J.jogador, el=elG(e,g), cor=corG(e,g); impactoArte(e,x,y,Math.round(r*2.2)); tremor(7); parar(0.04); anel(x,y,r,cor,.5); anel(x,y,r*0.5,"#ffffff",.3); particulas(x,y,"#c8b890",20,110,2);
+export function impactoSalto(e,g,x,y,r){ const P=J.jogador, el=elG(e,g), cor=corG(e,g); impactoArte(e,x,y,Math.round(r*2.2)); tremor(7); parar(0.04); anel(x,y,r,cor,.5); anel(x,y,r*0.5,"#ffffff",.3); particulas(x,y,"#c8b890",20,110,2);
   if(Math.hypot(P.x-x,P.y-y)<r) feriJogador(D0(e)*1.1,el);
   propsEm(x,y,r,p=>danificarProp(p,p.max*1.3,el)); empurrarProps(x,y,r+12,2600);
   if(g.fissura) for(let i=0;i<g.fissura;i++){ const a=Math.random()*6.283; executarFissuraCurta(x,y,a,r*1.6,cor); }
   if(g.deixa) for(let i=0;i<3;i++){ const a=i*2.09+Math.random(); criarProp(g.deixa,x+Math.cos(a)*(r+8),y+Math.sin(a)*(r+8),{subindo:0.3}); }
   if(g.solo==="eletrico"){ pintarSolo(x,y,r,"agua"); agendar(0.4,()=>pintarSolo(x,y,r,"eletrico",6)); } else if(g.solo) pintarSolo(x,y,r*0.8,g.solo); }
-function executarFissuraCurta(x,y,a,L,cor){ const pts=[[x,y]]; let cx=x, cy=y; for(let s=0;s<L;s+=5){ cx+=Math.cos(a+rnd(-.4,.4))*5; cy+=Math.sin(a+rnd(-.4,.4))*5; pts.push([cx,cy]); }
+export function executarFissuraCurta(x,y,a,L,cor){ const pts=[[x,y]]; let cx=x, cy=y; for(let s=0;s<L;s+=5){ cx+=Math.cos(a+rnd(-.4,.4))*5; cy+=Math.sin(a+rnd(-.4,.4))*5; pts.push([cx,cy]); }
   J.golpes.push({t:0,atualizar(dt){ this.t+=dt; return this.t<4; },chao(ox,oy){ lg.globalAlpha=Math.min(1,(4-this.t)); lg.strokeStyle="#140f1c"; lg.lineWidth=1; lg.beginPath(); pts.forEach(([x,y],i)=>i?lg.lineTo(x-ox,y-oy):lg.moveTo(x-ox,y-oy)); lg.stroke(); lg.globalAlpha=1; }}); }
-function transmutarProp(p){ if(p.morto||p.mat.indestrutivel) return; const spr=p.spriteFixo||spriteProp(p); if(!spr) return; p.spriteFixo=silhuetaMundo(spr,"#e0b040"); p.ouro=true; p.mat=MAT.metal; p.hp=Infinity; p.max=Infinity; p.vx=p.vy=0; p.queima=0; p.pavio=0;
+export function transmutarProp(p){ if(p.morto||p.mat.indestrutivel) return; const spr=p.spriteFixo||spriteProp(p); if(!spr) return; p.spriteFixo=silhuetaMundo(spr,"#e0b040"); p.ouro=true; p.mat=MAT.metal; p.hp=Infinity; p.max=Infinity; p.vx=p.vy=0; p.queima=0; p.pavio=0;
   particulas(p.x,p.y,"#ffd34a",8,50); }
 // Jörmungandr: o corpo se enrola em volta e aperta; escape pela fresta ou com a esquiva
-function constricao(e,P,r){ const cx=P.x, cy=P.y, gap=Math.random()*6.283;
+export function constricao(e,P,r){ const cx=P.x, cy=P.y, gap=Math.random()*6.283;
   J.golpes.push({t:0,R:r,hit:0,atualizar(dt){ this.t+=dt; this.hit-=dt; const dur=4, q=Math.min(1,this.t/dur); this.R=r*(1-0.78*q*q); const rot=this.t*0.7, P=J.jogador, d=Math.hypot(P.x-cx,P.y-cy)||1;
       const aP=Math.atan2(P.y-cy,P.x-cx), naFresta=Math.abs(angDif(aP,gap+rot))<0.42;
       if(d>this.R-5&&d<this.R+6&&!naFresta&&J.dashT<=0){ if(this.hit<=0&&feriJogador(D0(e)*0.7,"agua")) this.hit=0.6; const lado=d<this.R?-1:1; P.x=cx+(P.x-cx)/d*(this.R+lado*7); P.y=cy+(P.y-cy)/d*(this.R+lado*7); }
@@ -642,7 +652,7 @@ function constricao(e,P,r){ const cx=P.x, cy=P.y, gap=Math.random()*6.283;
         lg.fillStyle=i%2?tom(e.cor,1.15):e.cor; lg.beginPath(); lg.arc(x,y-3,3.2,0,Math.PI*2); lg.fill(); lg.fillStyle=tom(e.cor,1.5); lg.fillRect(Math.round(x)-1,Math.round(y)-5,1,1); } }}); }
 
 // ---------------------------------------------------------------- segunda fase: o cenário muda
-function faseDois(e,f){ const P=J.jogador, C=J.cena; anunciar(e,f.nome,f.desc); tremor(8); parar(0.1); J.flash={cor:COR[e.el]||"#ffffff",vida:.25}; anel(e.x,e.y,60,COR[e.el],.8);
+export function faseDois(e,f){ const P=J.jogador, C=J.cena; anunciar(e,f.nome,f.desc); tremor(8); parar(0.1); J.flash={cor:COR[e.el]||"#ffffff",vida:.25}; anel(e.x,e.y,60,COR[e.el],.8);
   const cx=(P.x+e.x)/2, cy=(P.y+e.y)/2;
   switch(f.op){
     case "inundar": for(let i=0;i<220;i++){ const a=Math.random()*6.283, r=Math.sqrt(Math.random())*140; if(Math.random()<.2) continue; pintarSolo(cx+Math.cos(a)*r,cy+Math.sin(a)*r,6,"agua",60); }
@@ -677,17 +687,17 @@ function faseDois(e,f){ const P=J.jogador, C=J.cena; anunciar(e,f.nome,f.desc); 
     case "vendaval": if(C){ C.kit.vento*=2; C.kit.rajada=0.9; C.kit.redemoinho=true; C.tVort=0.5; } break;
   } }
 // Koschei: a morte dele mora no ovo dentro do carvalho
-function aoQuebrarProp(p){ if(p.carvalho){ const o=criarProp("ovo",p.x,p.y,{ovoMorte:true,subindo:0.2}); if(o&&estruturaU()) sairDoAbismo(o,6); texto(p.x,p.y-16,"O ovo da morte!","#fff3c4",14); }
+export function aoQuebrarProp(p){ if(p.carvalho){ const o=criarProp("ovo",p.x,p.y,{ovoMorte:true,subindo:0.2}); if(o&&estruturaU()) sairDoAbismo(o,6); texto(p.x,p.y-16,"O ovo da morte!","#fff3c4",14); }
   if(p.ovoMorte){ evento("ovo_morte"); const k=J.chefeVivo; texto(p.x,p.y-14,"A morte foi libertada!","#fff3c4",15); tremor(6); if(k&&k.imortal){ k.imortal=false; if(k.hp<=1) danoSimples(k,10); } } }
 
 // ---------------------------------------------------------------- atualização e desenho do sistema de perigos
-function atualizarPerigos(dt){ if(!J.perigos) return;
+export function atualizarPerigos(dt){ if(!J.perigos) return;
   for(const o of J.perigos){ o.t-=dt; if(o.t<=0&&o.fim){ const f=o.fim; o.fim=null; f(); } } J.perigos=J.perigos.filter(o=>o.t>0);
   J.golpes=J.golpes.filter(g=>{ try{ return g.atualizar(dt)!==false; }catch(err){ return false; } });
   if(J.escuroT>0){ J.escuroT-=dt; if(J.escuroT<=0) J.escuroAlvo=0; }
   const alvo=Math.max(J.escuroFixo||0,J.escuroAlvo||0); J.escuro=(J.escuro||0)+(alvo-(J.escuro||0))*Math.min(1,dt*2);
   if(J.atordoa>0) J.atordoa-=dt; if(J.anuncio){ J.anuncio.vida-=dt; if(J.anuncio.vida<=0) J.anuncio=null; } }
-function desenharPerigos(ox,oy){ if(!J.perigos) return;
+export function desenharPerigos(ox,oy){ if(!J.perigos) return;
   for(const o of J.perigos){ const q=1-o.t/o.max, pul=0.5+0.5*Math.sin(J.t*18); lg.strokeStyle=o.cor; lg.fillStyle=o.cor; lg.lineWidth=1;
     if(o.tipo==="circ"){ lg.globalAlpha=0.12+0.25*q; lg.beginPath(); lg.ellipse(o.x-ox,o.y-oy,o.r*q,o.r*q*0.8,0,0,Math.PI*2); lg.fill(); lg.globalAlpha=0.5+0.4*pul*q; lg.beginPath(); lg.ellipse(o.x-ox,o.y-oy,o.r,o.r*0.8,0,0,Math.PI*2); lg.stroke(); }
     else if(o.tipo==="linha"){ const a=Math.atan2(o.y2-o.y,o.x2-o.x), L=Math.hypot(o.x2-o.x,o.y2-o.y); lg.save(); lg.translate(o.x-ox,o.y-oy); lg.rotate(a); lg.globalAlpha=0.12+0.22*q; lg.fillRect(0,-o.larg/2,L*q,o.larg); lg.globalAlpha=0.5+0.4*pul*q; lg.strokeRect(0,-o.larg/2,L,o.larg);
@@ -695,16 +705,16 @@ function desenharPerigos(ox,oy){ if(!J.perigos) return;
     else if(o.tipo==="cone"){ lg.globalAlpha=0.12+0.22*q; lg.beginPath(); lg.moveTo(o.x-ox,o.y-oy); lg.arc(o.x-ox,o.y-oy,o.r*q,o.a-o.ab/2,o.a+o.ab/2); lg.closePath(); lg.fill(); lg.globalAlpha=0.5+0.4*pul*q; lg.beginPath(); lg.moveTo(o.x-ox,o.y-oy); lg.arc(o.x-ox,o.y-oy,o.r,o.a-o.ab/2,o.a+o.ab/2); lg.closePath(); lg.stroke(); } }
   lg.globalAlpha=1;
   for(const g of J.golpes) if(g.chao) g.chao(ox,oy); }
-const COR_PROJ={pedra:"#8a8478",osso:"#e8e0d0",moeda:"#e0b040",doce:"#f080c0",pocao:"#9a60e0",barril:"#8a5a30",caixote:"#8a5a30",abobora:"#e07a2a",cristal:"#c8f0ff",bala:"#2a2224",engrenagem:"#c8a050"};
-function desenharQuedas(ox,oy){ if(!J.perigos) return;
+export const COR_PROJ={pedra:"#8a8478",osso:"#e8e0d0",moeda:"#e0b040",doce:"#f080c0",pocao:"#9a60e0",barril:"#8a5a30",caixote:"#8a5a30",abobora:"#e07a2a",cristal:"#c8f0ff",bala:"#2a2224",engrenagem:"#c8a050"};
+export function desenharQuedas(ox,oy){ if(!J.perigos) return;
   for(const o of J.perigos){ if(!o.queda) continue; const h=Math.round(o.t/o.max*90), x=Math.round(o.x-ox), y=Math.round(o.y-oy-h), cor=COR_PROJ[o.queda]||o.cor;
     if(o.dono){ const s=quadroEfeito(o.dono,o.linhaVfx,Math.floor(J.t*10)%4,16); if(s){ lg.drawImage(s,x-8,y-8); continue; } }
     lg.fillStyle=cor; if(o.queda==="estrela"){ lg.globalCompositeOperation="lighter"; lg.fillRect(x-1,y-3,2,7); lg.fillRect(x-3,y-1,7,2); lg.globalAlpha=.4; lg.fillRect(x,y-12,1,10); lg.globalAlpha=1; lg.globalCompositeOperation="source-over"; continue; }
     lg.fillRect(x-2,y-2,5,5); lg.fillStyle=tom(cor,1.35); lg.fillRect(x-2,y-2,2,2); if(o.queda==="abobora"){ lg.fillStyle="#ffd34a"; lg.fillRect(x,y,1,1); } }
   for(const g of J.golpes) if(g.frente) g.frente(ox,oy); }
-function desenharGolpesLuz(ox,oy){ if(!J.golpes) return; for(const g of J.golpes) if(g.luz) g.luz(ox,oy); }
+export function desenharGolpesLuz(ox,oy){ if(!J.golpes) return; for(const g of J.golpes) if(g.luz) g.luz(ox,oy); }
 // balas com forma: cada chefe atira coisas que combinam com ele
-function desenharBala(b,ox,oy){ const x=Math.round(b.x-ox), y=Math.round(b.y-oy), a=Math.atan2(b.vy,b.vx), cx=Math.round(Math.cos(a)*2), cy=Math.round(Math.sin(a)*2);
+export function desenharBala(b,ox,oy){ const x=Math.round(b.x-ox), y=Math.round(b.y-oy), a=Math.atan2(b.vy,b.vx), cx=Math.round(Math.cos(a)*2), cy=Math.round(Math.sin(a)*2);
   if(b.spr){ lg.globalCompositeOperation="source-over"; lg.drawImage(b.spr,x-b.spr.width/2,y-b.spr.height/2); lg.globalCompositeOperation="lighter"; return; }
   if(b.linhaVfx!=null){ const s=quadroEfeito(b.dono,b.linhaVfx,Math.floor(J.t*10)%4,12); if(s){ lg.save(); lg.translate(x,y); lg.rotate(Math.atan2(b.vy,b.vx)); lg.drawImage(s,-6,-6); lg.restore(); return; } }
   const c=b.cor, p=b.proj;
@@ -721,15 +731,15 @@ function desenharBala(b,ox,oy){ const x=Math.round(b.x-ox), y=Math.round(b.y-oy)
     case "nota": lg.fillStyle=c; lg.fillRect(x,y-2,1,3); lg.fillRect(x-1,y,2,1); break;
     default: lg.fillStyle=c; lg.globalAlpha=.4; lg.fillRect(x-2,y-2,5,5); lg.globalAlpha=1; lg.fillRect(x-1,y-1,2,2); } }
 // escuridão: só a equipe, o fogo e os objetos em chamas iluminam
-let ESCURO=null;
+export let ESCURO=null;
 // silhueta para o brilho: corta o fundo quase transparente de algumas artes (virava um quadrado aceso em volta do bicho)
-const cacheSilB=new WeakMap();
-function silhuetaBrilho(spr,cor){ let m=cacheSilB.get(spr); if(!m){ m={}; cacheSilB.set(spr,m); } if(m[cor]) return m[cor];
+export const cacheSilB=new WeakMap();
+export function silhuetaBrilho(spr,cor){ let m=cacheSilB.get(spr); if(!m){ m={}; cacheSilB.set(spr,m); } if(m[cor]) return m[cor];
   const c=silhueta(spr,cor), o=document.createElement("canvas"); o.width=c.width; o.height=c.height; const g=o.getContext("2d"); g.drawImage(c,0,0);
   try{ const im=g.getImageData(0,0,o.width,o.height), d=im.data; for(let i=3;i<d.length;i+=4) d[i]=d[i]<70? 0 : Math.min(255,(d[i]-70)*1.4); g.putImageData(im,0,0); }catch(e){ relatar("brilho dos inimigos: imagem não pôde ser lida",e); }
   if(c._suave) o._suave=true; m[cor]=o; return o; }
 // reinos noturnos: inimigos brilham (aura na cor do elemento e contorno claro), por cima da escuridão, para lerem bem e ficarem bonitos
-function desenharBrilhoInimigos(){ if(SIM.ativo||QUAL===0) return; const L=(UNIV[R.universo]||{}).luz; if(!(L&&L.noite)&&!(J.escuro>0.05)) return;
+export function desenharBrilhoInimigos(){ if(SIM.ativo||QUAL===0) return; const L=(UNIV[R.universo]||{}).luz; if(!(L&&L.noite)&&!(J.escuro>0.05)) return;
   const a0=lg.globalCompositeOperation; lg.globalCompositeOperation="lighter"; let n=0;
   for(const e of J.inimigos){ const v=e._vis; if(!v||v.t!==J.t||e.hp<=0||e.oculto) continue; if(++n>90) break;
     const cor=e._corBrilho||(e._corBrilho=mistura(COR[e.el]||"#c8a0ff","#ffffff",0.25)), pul=0.75+0.25*Math.sin(J.t*3+(e.fase||0)), au=e.chefe||e.mini? 1.3 : 1.22;
@@ -738,7 +748,7 @@ function desenharBrilhoInimigos(){ if(SIM.ativo||QUAL===0) return; const L=(UNIV
     lg.globalAlpha=0.2*pul; lg.drawImage(silhuetaBrilho(v.spr,"#ffffff"),-v.w/2,-v.h,v.w,v.h);                         // corpo levemente aceso
     lg.restore(); }
   lg.globalAlpha=1; lg.globalCompositeOperation=a0; }
-function desenharEscuridao(ox,oy){ if(!(J.escuro>0.02)||passiva("imune_escuro")) return; if(!ESCURO||ESCURO.width!==VW||ESCURO.height!==VH){ ESCURO=document.createElement("canvas"); ESCURO.width=VW; ESCURO.height=VH; }
+export function desenharEscuridao(ox,oy){ if(!(J.escuro>0.02)||passiva("imune_escuro")) return; if(!ESCURO||ESCURO.width!==VW||ESCURO.height!==VH){ ESCURO=document.createElement("canvas"); ESCURO.width=VW; ESCURO.height=VH; }
   const g=ESCURO.getContext("2d"); g.globalCompositeOperation="source-over"; g.clearRect(0,0,VW,VH); g.fillStyle=`rgba(6,4,14,${J.escuro})`; g.fillRect(0,0,VW,VH); g.globalCompositeOperation="destination-out";
   const furo=(x,y,r)=>{ const gr=g.createRadialGradient(x-ox,y-oy,0,x-ox,y-oy,r); gr.addColorStop(0,"rgba(0,0,0,1)"); gr.addColorStop(1,"rgba(0,0,0,0)"); g.fillStyle=gr; g.fillRect(x-ox-r,y-oy-r,r*2,r*2); };
   furo(J.jogador.x,J.jogador.y,46); ativos().forEach(s=>s.x!=null&&furo(s.x,s.y,16));
@@ -746,11 +756,11 @@ function desenharEscuridao(ox,oy){ if(!(J.escuro>0.02)||passiva("imune_escuro"))
   lg.drawImage(ESCURO,-1,-1,VW+2,VH+2); }
 // barra do chefe e anúncio do golpe
 // aviso grande no alto da tela (chefe, eventos do mapa); sem chefe, fica um pouco abaixo do HUD
-function desenharAnuncio(y){ if(!J.anuncio) return; if(y==null) y=Math.max(Math.round(H*0.2)+28, HUD_BAIXO+70);
+export function desenharAnuncio(y){ if(!J.anuncio) return; if(y==null) y=Math.max(Math.round(H*0.2)+28, HUD_BAIXO+70);
   if(J.anuncio){ const a=J.anuncio; ctx.globalAlpha=Math.min(1,a.vida*1.5); ctx.textAlign="center"; ctx.font=`800 20px "Cinzel", Georgia, serif`; ctx.lineWidth=4; ctx.lineJoin="round"; ctx.strokeStyle="rgba(18,14,26,.9)"; ctx.strokeText(a.txt,W/2,y+36); ctx.fillStyle=a.cor; ctx.fillText(a.txt,W/2,y+36);
     if(a.sub){ ctx.font=`13px "Nunito", system-ui, sans-serif`; ctx.fillStyle="#f2e7c9"; const pal=a.sub.split(" "), linhas=[]; let l=""; for(const p of pal){ if((l+" "+p).length>44){ linhas.push(l); l=p; } else l=l?l+" "+p:p; } linhas.push(l); linhas.forEach((t,i)=>ctx.fillText(t,W/2,y+56+i*16)); }
     ctx.globalAlpha=1; } }
-function desenharBarraChefe(){ const ch=J.chefeVivo&&J.chefeVivo.hp>0? J.chefeVivo : J.inimigos.find(e=>e.mini&&e.hp>0); if(!ch){ desenharAnuncio(); return; }
+export function desenharBarraChefe(){ const ch=J.chefeVivo&&J.chefeVivo.hp>0? J.chefeVivo : J.inimigos.find(e=>e.mini&&e.hp>0); if(!ch){ desenharAnuncio(); return; }
   const w=Math.min(W*0.84,420), x=(W-w)/2, y=Math.max(Math.round(H*0.2)+28, HUD_BAIXO+70), frac=Math.max(0,ch.hp/ch.max);
   ctx.globalAlpha=0.92; ctx.fillStyle="rgba(18,14,26,.85)"; ctx.fillRect(x-4,y-20,w+8,32); ctx.fillStyle="#3a2a30"; ctx.fillRect(x,y,w,7);
   ctx.fillStyle=ch.imortal? "#c8c8e0" : ch.chefe? "#d6ab4f" : "#e06a5a"; ctx.fillRect(x,y,w*frac,7); if(ch.chefe&&ch.def&&ch.def.fase2){ ctx.fillStyle="#f2e7c9"; ctx.fillRect(x+w*0.5-1,y-2,2,11); }

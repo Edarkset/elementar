@@ -6,6 +6,8 @@
     "checkJs": true,
     "noEmit": true,
     "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     // "strict" liga todas as regras rígidas de uma vez; aqui elas entram uma a uma, cada uma só depois de zerar os erros dela.
     // Já ligadas (zero erros): as seis abaixo. Faltam noImplicitAny (2.122 erros hoje) e strictNullChecks (2.750): etapa 2 do plano.

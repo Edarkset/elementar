@@ -35,7 +35,7 @@ function resumo(txt) { let h = 0x811c9dc5; for (let i = 0; i < txt.length; i++) 
     const ctx = await b.newContext({ viewport: { width: 900, height: 600 } }), p = await ctx.newPage();
     p.on("pageerror", e => erros.push(`semente ${sem}: ${e.message}`));
     await p.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
-    await p.goto(base); await p.waitForFunction(() => typeof novaRun === "function" && typeof MANIFESTO !== "undefined" && MANIFESTO);
+    await p.goto(base + "?teste"); await p.waitForFunction(() => typeof novaRun === "function" && typeof MANIFESTO !== "undefined" && MANIFESTO);
     await p.addScriptTag({ url: base + "testes/bot.js" });
     const r = await p.evaluate(([sem, m]) => { localStorage.clear(); return ElementarBot.rodar({ semente: sem, maxMapas: m, rastro: 6000 }); }, [sem, MAPAS]);
     await ctx.close();

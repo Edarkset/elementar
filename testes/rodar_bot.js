@@ -9,7 +9,7 @@ const N=+arg('n',12), PAR=+arg('paralelo',4), MAPAS=+arg('mapas',12), SAIDA=arg(
     const ctx=await b.newContext({viewport:{width:900,height:600}}); const p=await ctx.newPage();
     p.on('pageerror',e=>console.error('ERRO pagina:',e.message));
     const pronto=()=>p.waitForFunction(()=>typeof novaRun==='function'&&typeof MANIFESTO!=='undefined'&&MANIFESTO);   // com a lista de artes carregada: ela decide o que existe no mapa
-    await p.goto(URL); await pronto(); await p.addScriptTag({url:'testes/bot.js'});
+    await p.goto(URL + (URL.includes("?") ? "&" : "?") + "teste"); await pronto();   // ?teste: publica os nomes do jogo na página para o robô await p.addScriptTag({url:'testes/bot.js'});
     while(prox<N){ const i=prox++; const sem=S0+i;
       await p.evaluate(()=>{ localStorage.clear(); });
       await p.reload(); await pronto(); await p.addScriptTag({url:'testes/bot.js'});

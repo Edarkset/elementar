@@ -49,9 +49,16 @@ function verificarArquivos() {
   const html = fs.readFileSync(path.join(RAIZ, "index.html"), "utf8");
   for (const m of html.matchAll(/(?:src|href)="([^"#:]+)"/g)) if (!fs.existsSync(path.join(RAIZ, m[1]))) nota("arquivos", "index.html", `${m[1]} não existe`);
   // toda parte da lógica (js/jogo/) precisa estar no index.html, em ordem, e na lista do service worker (senão some offline)
-  const partes = fs.readdirSync(path.join(RAIZ, "js/jogo")).filter(f => f.endsWith(".js")).sort(), naPagina = [...html.matchAll(/src="js\/jogo\/([^"]+)"/g)].map(m => m[1]);
-  for (const f of partes) { if (!naPagina.includes(f)) nota("arquivos", "index.html", `js/jogo/${f} não é carregado`); if (!sw.includes(`js/jogo/${f}`)) nota("arquivos", "sw.js", `js/jogo/${f} fora da lista do service worker`); }
-  if (naPagina.join() !== naPagina.slice().sort().join()) nota("arquivos", "index.html", "as partes de js/jogo/ não estão em ordem");
+  // a lógica são módulos: a página carrega só a entrada (principal.js), que puxa a última parte; cada parte puxa a anterior primeiro
+  // (é isso que mantém a ordem 01 → 11). Toda parte precisa estar nessa cadeia e na lista do service worker (senão some offline)
+  const dir = path.join(RAIZ, "js/jogo"), partes = fs.readdirSync(dir).filter(f => /^\d\d_.*\.js$/.test(f)).sort(), ler = f => fs.readFileSync(path.join(dir, f), "utf8");
+  if (!/<script type="module" src="js\/jogo\/principal\.js"><\/script>/.test(html)) nota("arquivos", "index.html", "a entrada js/jogo/principal.js não é carregada como módulo");
+  const primeiroImport = f => (ler(f).match(/^import\s+(?:[^"']*from\s+)?["']\.\/([^"']+)["']/m) || [])[1];
+  if (primeiroImport("principal.js") !== partes[partes.length - 1]) nota("arquivos", "principal.js", `a entrada precisa importar primeiro a última parte (${partes[partes.length - 1]})`);
+  partes.forEach((f, i) => { if (i > 0 && primeiroImport(f) !== partes[i - 1]) nota("arquivos", f, `o primeiro import precisa ser a parte anterior (${partes[i - 1]}), para manter a ordem de carga`);
+    if (!sw.includes(`js/jogo/${f}`)) nota("arquivos", "sw.js", `js/jogo/${f} fora da lista do service worker`); });
+  if (!sw.includes("js/jogo/principal.js")) nota("arquivos", "sw.js", "js/jogo/principal.js fora da lista do service worker");
+  for (const f of fs.readdirSync(dir).filter(f => f.endsWith(".js"))) for (const m of ler(f).matchAll(/(?:from\s+|import\s*\(?\s*)["'](\.[^"']+)["']/g)) if (!fs.existsSync(path.join(dir, m[1]))) nota("arquivos", f, `importa ${m[1]}, que não existe`);
 }
 
 // ---------------------------------------------------------------- 2. telas: tudo cabe na tela, nada cortado, botões tocáveis

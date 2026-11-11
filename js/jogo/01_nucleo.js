@@ -7,9 +7,15 @@ const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.random()*(b-a), escolha=a=>a[Math.floor(Math.random()*a.length)];
 const embaralhar=a=>{a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a;};
 const dist2=(a,b)=>{const dx=a.x-b.x, dy=a.y-b.y; return dx*dx+dy*dy;};
-const LINHA=Object.fromEntries([...D.linhas,...(D.ancestrais||[])].map(l=>[l.id,l])), UNIV=Object.fromEntries(D.universos.map(u=>[u.id,u]));
+// fronteira entre o conteúdo (js/dados.js, ainda sem esquema) e as formas do jogo: os dados entram como "desconhecido" e saem tipados.
+// Na etapa 3 do plano (dados em JSON com esquema) esta conversão vira validação de verdade
+const LINHAS=/** @type {Linha[]} */(/** @type {unknown} */(D.linhas)), ANCESTRAIS=/** @type {Linha[]} */(/** @type {unknown} */(D.ancestrais||[]));
+/** @type {Record<string,Linha>} */
+const LINHA=Object.fromEntries([...LINHAS,...ANCESTRAIS].map(l=>[l.id,l]));
+/** @type {Record<string,Universo>} */
+const UNIV=Object.fromEntries(/** @type {Universo[]} */(/** @type {unknown} */(D.universos)).map(u=>[u.id,u]));
 const REAC={}; D.reacoes.forEach(r=>{REAC[[r.a,r.b].sort().join("|")]=r;});
-const ELS=Object.keys(D.elementos), COR=Object.fromEntries(ELS.map(k=>[k,D.elementos[k].cor])), NOME_EL=k=>D.elementos[k].nome;
+const ELS=/** @type {Elemento[]} */(Object.keys(D.elementos)), COR=Object.fromEntries(ELS.map(k=>[k,D.elementos[k].cor])), NOME_EL=k=>D.elementos[k].nome;
 const NIV=[1,4,9,15];  // protótipo (jogo final: 1, 5, 12, 20)
 const MULT=D.estagios.map(e=>e.mult), TAM=[9,11,13,17];
 // duração do mapa: os 3 primeiros (que quase ninguém perde) são mais curtos, para chegar logo na parte interessante
@@ -59,6 +65,7 @@ function gravar(){try{PLAT.gravarSave(CHAVE, JSON.stringify({meta:META, run:RUN_
 const salvo=lerSave()||{};
 function liberadosIniciais(){ const ini=new Set(D.linhas.filter(l=>D.universos.find(u=>u.id===l.universo).era==="berco"||l.universo==="amazonia").map(l=>l.id));
   ELS.forEach(el=>D.linhas.filter(l=>l.elemento===el).slice(0,3).forEach(l=>ini.add(l.id))); return [...ini]; }
+/** @type {Meta} */
 let META=Object.assign({essencia:0, recorde:0, liberados:liberadosIniciais()}, salvo.meta||{});
 // saves de antes do Bestiário: os filhotes já liberados entram como vistos (sem avisos nem presentes por eles)
 if(!META.dex){ META.dex={}; for(const id of META.liberados) META.dex[id]={f:1,r:["comum"]}; META.dexMarco=Math.floor(META.liberados.length/10); }
@@ -122,7 +129,7 @@ function spriteOvo(el,rar){ const k="ovo|"+el+"|"+rar; if(cacheSpr.has(k)) retur
   c._suave=true; c.mundoW=10; c.mundoH=12; cacheSpr.set(k,c); return c; }
 
 // ================================================================ estado
-const cv=$("tela"), ctx=cv.getContext("2d"), lo=document.createElement("canvas"), lg=lo.getContext("2d");
+const cv=/** @type {HTMLCanvasElement} */($("tela")), ctx=cv.getContext("2d"), lo=document.createElement("canvas"), lg=lo.getContext("2d");
 let W=0,H=0,S=2,VW=0,VH=0,Q=1;
 // S = pixels de tela (CSS) por pixel de mundo. Q = pixels reais da tela interna por pixel de mundo:
 // o mundo é desenhado na resolução do aparelho (as coordenadas continuam as mesmas), então a arte
@@ -149,12 +156,17 @@ addEventListener("resize",redimensionar);
 let HUD_BAIXO=96;
 function medirHud(){ const h=$("hud"); if(!h||!h.offsetHeight) return; HUD_BAIXO=h.offsetTop+h.offsetHeight; $("combo").style.top=(HUD_BAIXO+4)+"px"; }
 if(typeof ResizeObserver==="function") new ResizeObserver(medirHud).observe($("hud"));
-let R=null, J=null, rodando=false, pausado=false;
+/** a run em andamento (null no menu) @type {Run} */
+let R=null;
+/** o mapa em andamento (null fora do jogo) @type {Mapa} */
+let J=null;
+let rodando=false, pausado=false;
 // Ganchos para simulação e testes automatizados (não afetam o jogo normal)
 // semArte: a simulação não pede nem usa imagens. Vários efeitos escolhem entre "com arte" e "sem arte" e gastam sorteios diferentes em
 // cada caso; com a arte chegando em momentos diferentes, a mesma semente dava partidas diferentes. O que existe no mapa (marcos,
 // construções) é decidido pela lista de artes, não pela imagem, então os obstáculos são os mesmos do jogo normal
 const SIM={ativo:false, entrada:null, aoDerrota:null, semEspeciais:false, semArte:false};
+/** @type {FonteDano} */
 let FONTE="basico";  // origem do dano corrente (básico, habilidade, especial, combinado, despertar, reação, ambiente)
 function agendar(seg,fn){ J.agenda.push({t:J.t+seg,fn}); }
 function novoSt(){ return {porFonte:{}, especiais:0, combinados:0, transformacoes:0, dano:0, golpes:0, superEf:0, poucoEf:0, recContato:0, recBala:0, reacoes:{}, ovos:0, chocados:0, capturas:0, trocas:0, itens:0, despertares:0, evolucoes:[0,0,0,0], mapas:[], primeiroAbate:null}; }
@@ -176,15 +188,17 @@ function est(s){ const b=estBase(s); if(J&&J.desp>0){ const e=Math.min(3,b+1); i
 // elemento sem considerar formas temporárias do Despertar (evita recursão entre Selos)
 function elementoBase(o){ return o.mon.ramo!=null&&estBase(o)>=2? L(o).ramos[o.mon.ramo].elemento : L(o).elemento; }
 function ramoObj(s){ const r=ramoAtual(s); return est(s)>=2&&r!=null? L(s).ramos[r] : null; }
+/** @param {Selo} s @returns {Elemento} */
 function elementoDe(s){ const r=ramoObj(s); return r? r.elemento : L(s).elemento; }
 function linhagemDe(s){ const r=ramoObj(s); return r? r.linhagem : L(s).linhagem; }
 function classeExtraDe(s){ const r=ramoObj(s); return r? r.classe_extra : null; }
 function nomeForma(s){ const e=est(s), l=L(s); if(e===0) return l.filhote; if(e===1) return l.jovem; const r=ramoObj(s); return e===2? r.nome : r.supremo; }
 function spriteSelo(s){ const e=est(s); const arte=arteMonstro(s.mon.id,e,ramoAtual(s),s.mon.rar); if(arte) return arte; return gerarSprite(s.mon.id+"#"+e+"#"+(ramoAtual(s)??"-"), TAM[e], COR[elementoDe(s)], {rar:s.mon.rar}); }
 function spriteLinha(id,rar){ const arte=arteMonstro(id,0,null,rar); if(arte) return arte; return gerarSprite(id+"#0#-",TAM[0],COR[LINHA[id].elemento],{rar}); }
-function poolPacto(){ const p=META.liberados.filter(id=>R.pacto.includes(LINHA[id].elemento)); return p.length? p : D.linhas.filter(l=>R.pacto.includes(l.elemento)).map(l=>l.id); }
+function poolPacto(){ const p=META.liberados.filter(id=>R.pacto.includes(LINHA[id].elemento)); return p.length? p : LINHAS.filter(l=>R.pacto.includes(l.elemento)).map(l=>l.id); }
 
 // ================================================================ sinergias e atributos
+/** @type {Sinergia} */
 let SIN={dano:1,vida:1,cad:1,reac:1,chips:[],rm:{}};
 // ================================================================ Santuário: melhorias permanentes compradas com a Essência das runs
 const LOJA=[

@@ -51,7 +51,7 @@ const PRESSAGIOS=[
 function telaPressagio(){ if(!J||SIM.ativo) return; const ops=embaralhar(PRESSAGIOS.slice()).slice(0,3); som("ding");
   mostrarCartas("Presságio", "Os astros mudam as regras desta run. Escolha um.", ops.map(p=>({ titulo:p.nome, raridade:"epico", classe:"pressagio", texto:p.texto,
     acao:()=>{ R.pressagio=p.id; somarMods(p.mods); anunciar({el:"luz"},p.nome,"Presságio desta run"); luzFlash(J.jogador.x,J.jogador.y,p.cor,90,0.6); som("ding"); pausado=false; fechar(); salvarRun(); } })), {revelar:true});
-  $("telaCartas").querySelectorAll(".carta.pressagio").forEach((b,i)=>b.style.setProperty("--rar",ops[i].cor)); }
+  /** @type {NodeListOf<HTMLElement>} */($("telaCartas").querySelectorAll(".carta.pressagio")).forEach((b,i)=>b.style.setProperty("--rar",ops[i].cor)); }
 const MALDICOES=[
   {id:"sangue", nome:"Pacto de Sangue", texto:"<span class='bom'>+35% de dano</span> para sempre nesta run. <span class='custo'>Vida máxima -25%.</span>", mods:{dano:0.35, vida:-0.25}},
   {id:"vidro2", nome:"Coração de Vidro", texto:"<span class='bom'>+15% de chance de crítico.</span> <span class='custo'>Recebe 30% mais dano.</span>", mods:{critico:0.15, danoRec:0.3}},

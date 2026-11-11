@@ -49,7 +49,7 @@ function iniciarCena(u){
     filaExp:[], aviso:null, tRaio:rnd(6,10), tVort:rnd(8,14), tPart:0, nevoa:[], nuvens:[], detalhes:new Map(), sprites:new Map(), tSolo:0, contador:0};
   if(kit.nevoa) for(let i=0;i<8;i++) C.nevoa.push({x:rnd(-1,1)*VW, y:rnd(-1,1)*VH, r:rnd(40,90), a:rnd(.10,.2), f:rnd(0,6)});
   if(kit.nuvens!==false&&!kit.caverna&&!kit.submerso) for(let i=0;i<4;i++) C.nuvens.push({x:rnd(-1.5,1.5)*VW, y:rnd(-1.5,1.5)*VH, r:rnd(70,140), a:kit.nuvensEscuras?rnd(.16,.24):rnd(.07,.12)});
-  if(kit.submerso) C.causticas=gerarCausticas();
+  if(kit.submerso) J.cena.causticas=gerarCausticas();
   if(!SOMBRA_SUAVE) SOMBRA_SUAVE=gerarBolha();
 }
 let SOMBRA_SUAVE=null;
@@ -722,7 +722,8 @@ function versaoHi(c,K){ if(!c||!c._src) return null; K=Math.max(1,Math.min(8,Mat
 // Toda célula de arte importada (tem _src) desenhada no mundo usa a versão em alta resolução no lugar
 // da miniatura. Funciona para qualquer chamada lg.drawImage, então nenhum desenho precisa mudar.
 { const desenhoOriginal=lg.drawImage.bind(lg);
-  lg.drawImage=function(img,a,b,c,d,e,f,g2,h2){
+  // o tipo do navegador descreve as três formas de chamar drawImage; esta função atende as três e troca a imagem pela versão nítida
+  lg.drawImage=/** @type {CanvasRenderingContext2D["drawImage"]} */(/** @type {unknown} */(function(img,a,b,c,d,e,f,g2,h2){
     if(img&&img._suave&&!lg.imageSmoothingEnabled){ lg.imageSmoothingEnabled=true; desenhoOriginal.apply(null,arguments); lg.imageSmoothingEnabled=false; return; }
     if(img&&img._hi&&Q>1){ const hi=img._hi, kx=hi.width/img.width, ky=hi.height/img.height, n=arguments.length, suave=lg.imageSmoothingEnabled; lg.imageSmoothingEnabled=true;
       if(n<=3) desenhoOriginal(hi,a,b,img.width,img.height); else if(n<=5) desenhoOriginal(hi,a,b,c,d); else desenhoOriginal(hi,a*kx,b*ky,c*kx,d*ky,e,f,g2,h2); lg.imageSmoothingEnabled=suave; return; }
@@ -733,7 +734,7 @@ function versaoHi(c,K){ if(!c||!c._src) return null; K=Math.max(1,Math.min(8,Mat
     if(n<=3) desenhoOriginal(hi,a,b,img.width,img.height);
     else if(n<=5) desenhoOriginal(hi,a,b,c,d);
     else desenhoOriginal(hi,a*kx,b*ky,c*kx,d*ky,e,f,g2,h2);
-    lg.imageSmoothingEnabled=suave; }; }
+    lg.imageSmoothingEnabled=suave; })); }
 // área desenhada de uma célula (para encaixar o monstro pelo desenho visível, não pela célula)
 const cacheBB=new Map();
 function bboxCelula(img,sx,sy,sw,sh){ if(!img._id) img._id=++ID_IMG; const k=img._id+"|"+sx+"|"+sy; if(cacheBB.has(k)) return cacheBB.get(k);
@@ -843,7 +844,9 @@ function impactoArte(e,x,y,tam){ const linha=e&&e.golpeIdx||0; if(!quadroEfeito(
 // Tudo tem forma geométrica conhecida (elipses e faixas), então a arte e a física usam a mesma área.
 function estruturaU(){ const u=UNIV[R.universo]; return u&&u.estrutura||null; }
 function zonaPeca(zx,zy){ const C=J.cena; if(!C.zonas) C.zonas=new Map(); const k=zx+":"+zy; if(C.zonas.has(k)) return C.zonas.get(k);
-  const E=estruturaU(), Z=E.zona||320, r=semente(R.universo+"z"+k+"#"+R.profundidade); let f=null;
+  const E=estruturaU(), Z=E.zona||320, r=semente(R.universo+"z"+k+"#"+R.profundidade);
+  /** @type {PecaCenario} */
+  let f=null;
   const x=zx*Z+Z/2+(r()-.5)*Z*0.3, y=zy*Z+Z/2+(r()-.5)*Z*0.3, sorte=r();
   if(Math.abs(x)>130||Math.abs(y)>130){ let acc=0; for(const [tipo,p] of Object.entries(E.pecas)){ acc+=p; if(sorte<acc){ f={tipo,x,y,id:k}; break; } } }
   if(f){ const v=(a,b)=>a+r()*(b-a);

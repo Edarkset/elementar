@@ -116,12 +116,14 @@ const ALFA_SOLO={molhado:0.6, queimado:0.42, rachado:0.6, agua:0.8, lama:0.8, fo
 const cacheSolo=new Map(), SOLO_FOLGA=8;
 // A camada é montada para uma área maior que a tela (folga de 8 células, ancorada numa grade de 8): andar não obriga a refazer.
 // Refaz só quando a âncora muda ou o terreno daquele tipo muda (no máximo ~6 vezes por segundo por tipo).
+// o que o desenho do chão guarda entre um quadro e outro (antes ficava pendurado na própria função desenharSolo)
+const SOLO_DES={/** estado da última montagem */ es:null, /** grade de tipos de solo */ G:null, /** @type {Float32Array} grade de força de cada célula */ F:null};
 function desenharSolo(ox,oy){
   const A=SOLO_FOLGA, c0=Math.floor(Math.floor(ox/CEL)/A)*A-A, r0=Math.floor(Math.floor(oy/CEL)/A)*A-A;
   const W2=2*A+Math.ceil(VW/CEL)+3, H2=2*A+Math.ceil(VH/CEL)+3;   // tamanho fixo: cobre a tela em qualquer ponto da âncora
   // J.solo ganha um contador de versão: sem mudança no terreno e sem sair da âncora, só redesenha o que já está pronto
   const M=J.solo; if(!M.__ver){ const s0=M.set.bind(M), d0=M.delete.bind(M); M.__ver=1; M.set=(k,v)=>{ M.__ver++; return s0(k,v); }; M.delete=k=>{ M.__ver++; return d0(k); }; }
-  const UK=4, Kb=Math.max(1,Math.min(2,Q)), ancora=c0+"|"+r0+"|"+W2+"|"+H2+"|"+Kb, ES=desenharSolo.es||(desenharSolo.es={});
+  const UK=4, Kb=Math.max(1,Math.min(2,Q)), ancora=c0+"|"+r0+"|"+W2+"|"+H2+"|"+Kb, ES=SOLO_DES.es||(SOLO_DES.es={});
   if(ES.ancora!==ancora||ES.J!==J||(ES.ver!==M.__ver&&J.t-ES.t>0.4)||J.t-ES.t>1||J.t<ES.t) montarSolo(c0,r0,W2,H2,UK,Kb,ancora);
   for(const [t,ent] of cacheSolo){ if(!ent.b) continue;
     let a=ALFA_SOLO[t]??0.8; if(t==="fogo") a*=0.85+0.15*Math.sin(J.t*9); else if(t==="eletrico") a*=Math.floor(J.t*14)%3? 1 : 0.6; else if(t==="agua") a*=0.94+0.06*Math.sin(J.t*2.2); else if(t==="queimado") a*=0.9+0.1*Math.sin(J.t*5);
@@ -135,10 +137,10 @@ function desenharSolo(ox,oy){
     lg.imageSmoothingEnabled=suave; lg.imageSmoothingQuality="high"; }
   lg.globalAlpha=1;
 }
-function montarSolo(c0,r0,W2,H2,UK,Kb,ancora){ const ES=desenharSolo.es; ES.ancora=ancora; ES.J=J; ES.ver=J.solo.__ver; ES.t=J.t;
+function montarSolo(c0,r0,W2,H2,UK,Kb,ancora){ const ES=SOLO_DES.es; ES.ancora=ancora; ES.J=J; ES.ver=J.solo.__ver; ES.t=J.t;
   const est=estruturaU()&&J.cena, lagoArte=est&&folhaU("pecas"), pintado=!!(chao&&chao.suave);
-  const n=W2*H2, G=desenharSolo.G&&desenharSolo.G.length>=n? desenharSolo.G : (desenharSolo.G=new Array(n));
-  const F=desenharSolo.F&&desenharSolo.F.length>=n? desenharSolo.F : (desenharSolo.F=new Float32Array(n));
+  const n=W2*H2, G=SOLO_DES.G&&SOLO_DES.G.length>=n? SOLO_DES.G : (SOLO_DES.G=new Array(n));
+  const F=SOLO_DES.F&&SOLO_DES.F.length>=n? SOLO_DES.F : (SOLO_DES.F=new Float32Array(n));
   const tipos=new Map(), caixas=new Map();   // caixas: área ocupada por cada tipo (o desenho só copia essa área)
   for(let j=0;j<H2;j++) for(let i=0;i<W2;i++){ const cx=c0+i, cy=r0+j, idx=j*W2+i; let t=soloEm(cx,cy), f=1;
     if(t!=="chao"){ const din=J.solo.has(cx+","+cy);

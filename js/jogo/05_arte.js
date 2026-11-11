@@ -137,6 +137,7 @@ function folhaRecolorida(anim,base,alvo,celula){ const k=(anim._id||(anim._id=++
 // folhas que a conversão antiga achatou: originais em 3:2 (1536x1024) foram forçados ao tamanho antigo, e o desenho ficou
 // 25% mais baixo (ou 33% mais largo). Reconhecidas pelo caminho E pelo tamanho exato da conversão antiga: uma arte
 // reconvertida com a proporção certa tem outro tamanho e não é esticada. Medido comparando escudos redondos e corpos.
+/** padrão do nome e tamanho do arquivo achatado @type {[RegExp,number,number][]} */
 const ARTE_ACHATADA=[
   [/^arte\/monstros\/.*__anim_\d+\.png$/,384,192], [/^arte\/monstros\/.*__(base|epico|lendario)\.png$/,256,128],
   [/^arte\/lendarios\/.*__anim_\d+\.png$/,384,192], [/^arte\/(lendas|panteao)\/[a-z0-9_]+\.png$/,384,192],

@@ -24,7 +24,7 @@ function menu(){
   { const bd=document.createElement("button"); bd.className="botao sec"; bd.textContent=`Bestiário (${formasVistas()}/${FORMAS_TOTAL()} formas)`; bd.onclick=telaBestiario; box.appendChild(bd); }
   const cq=document.createElement("button"); cq.className="botao sec"; cq.textContent=`Conquistas e Lendas (${Object.keys(META.conq).length}/${D.conquistas.length})`; cq.onclick=telaConquistas; box.appendChild(cq);
   if(MODERADOR_DISPONIVEL&&META.moderador){ const md=document.createElement("button"); md.className="botao sec"; md.textContent="Modo moderador"; md.onclick=telaModerador; box.appendChild(md); }
-  { const IC=[["Continuar","▶"],["Nova run","⚔"],["Santuário","⛩"],["Missões","☀"],["Bestiário","❖"],["Conquistas","♛"],["Modo moderador","⚙"]]; for(const b of box.children){ const ic=IC.find(([t])=>b.textContent.startsWith(t)); b.dataset.icone=ic?ic[1]:"✦"; } }   // ícone de cada botão
+  { const IC=[["Continuar","▶"],["Nova run","⚔"],["Santuário","⛩"],["Missões","☀"],["Bestiário","❖"],["Conquistas","♛"],["Modo moderador","⚙"]]; for(const b of /** @type {HTMLCollectionOf<HTMLElement>} */(box.children)){ const ic=IC.find(([t])=>b.textContent.startsWith(t)); b.dataset.icone=ic?ic[1]:"✦"; } }   // ícone de cada botão
   gravar();
 }
 // ================================================================ modo moderador (testes)
@@ -80,7 +80,7 @@ function telaTesteLenda(){ const todas=[...D.lendas,...D.panteao];
     acao:()=>comecarTeste(l.elementos.slice(0,2),equipeTeste(l.elementos,12),l.id)})), {titulo:"Voltar", texto:"", acao:()=>telaModerador()}],{grade:true}); }
 function telaTesteDragao(){ const anc=D.ancestrais||[];
   mostrarCartas("Testar Dragão Ancestral","Escolha o dragão.",[...anc.map(l=>({titulo:l.filhote||l.id, sprite:spriteLinha(l.id,"lendario"), raridade:"lendario", texto:`${NOME_EL(l.elemento)} · ${l.ovo||""}`,
-    acao:()=>mostrarCartas(l.filhote||l.id,"Em qual forma?",[["Filhote",1],["Jovem",NIV[1]],["Adulto",NIV[2]],["Supremo",NIV[3]]].map(([n,nv])=>({titulo:n, texto:`Nível ${nv}`,
+    acao:()=>mostrarCartas(l.filhote||l.id,"Em qual forma?",/** @type {[string,number][]} */([["Filhote",1],["Jovem",NIV[1]],["Adulto",NIV[2]],["Supremo",NIV[3]]]).map(([n,nv])=>({titulo:n, texto:`Nível ${nv}`,
       acao:()=>{ const outros=equipeTeste([l.elemento],nv).filter(m=>m.id!==l.id).slice(0,2); comecarTeste([l.elemento,ELS.find(e=>e!==l.elemento)],[{id:l.id,nivel:nv,rar:"lendario",ramo:nv>=NIV[2]?0:null,supremo:nv>=NIV[3]},...outros]); } })))})), {titulo:"Voltar", texto:"", acao:()=>telaModerador()}],{grade:true}); }
 // ferramentas dentro da partida (menu de pausa)
 function telaFerramentas(){ const feito=m=>{ toast(m); pausado=false; fechar(); };
@@ -127,7 +127,7 @@ function telaPacto(){
       const box=$("cartas"); box.className="cartas"; box.innerHTML=`<div class="roda-pacto"><img src="${roda.src}" alt="Roda dos elementos"></div><div class="roda-info"></div>`;
       const r=box.querySelector(".roda-pacto");
       for(const el of ELS){ const [x,y]=RODA_PACTO[el], g=document.createElement("button"); g.className="gema"+(sel.has(el)?" sel":"")+(foco===el?" foco":""); g.style.left=x+"%"; g.style.top=y+"%"; g.style.setProperty("--cor",COR[el]);
-        g.setAttribute("aria-label",NOME_EL(el)+(sel.has(el)?" (escolhido)":"")); g.setAttribute("aria-pressed",sel.has(el));
+        g.setAttribute("aria-label",NOME_EL(el)+(sel.has(el)?" (escolhido)":"")); g.setAttribute("aria-pressed",String(sel.has(el)));
         g.onclick=()=>{ foco=el; if(sel.has(el)) sel.delete(el); else if(sel.size<D.pacto.max) sel.add(el); else toast(`No máximo ${D.pacto.max} elementos.`); render(); }; r.appendChild(g); }
       const nomes=[...sel].map(el=>`<span style="color:${COR[el]}">${NOME_EL(el)}</span>`).join(" + ")||"nenhum elemento ainda";
       box.querySelector(".roda-info").innerHTML=`<b>Pacto: ${nomes}</b>${foco?`<small><span style="color:${COR[foco]}">${NOME_EL(foco)}</span>: ${infoElemento(foco)}</small>`:`<small>${D.pacto.bonus[2].texto}.</small>`}`;

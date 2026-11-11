@@ -9,6 +9,7 @@ function gerarChao(u){ if(chaoArte(u)) return; const c=document.createElement("c
   for(let i=0;i<260;i++){ g.fillStyle=r()<.5?tom(base,0.33):tom(base,0.2); g.fillRect(Math.floor(r()*64),Math.floor(r()*64),1+Math.floor(r()*2),1); }
   for(let i=0;i<5;i++){ g.fillStyle=tom(base,0.45); const x=Math.floor(r()*60), y=Math.floor(r()*60); g.fillRect(x,y,3,2); g.fillStyle=tom(base,0.15); g.fillRect(x,y+2,3,1); }
   chao={cv:c,u}; }
+/** valor mínimo do cristal e a cor dele @type {[number,string][]} */
 const CORES_GEMA=[[0,"#6ab0ff"],[3,"#5fe08a"],[8,"#c07cff"],[20,"#ffd34a"]];
 function corGema(v){ let c=CORES_GEMA[0][1]; for(const [m,k] of CORES_GEMA) if(v>=m) c=k; return c; }
 function desenharColunaNivel(ox,oy){ const c=J.colunaNivel; if(!c) return; c.t+=1/60; if(c.t>0.9){ J.colunaNivel=null; return; } const P=J.jogador, x=P.x-ox, y=P.y-oy, a=Math.sin(c.t/0.9*Math.PI), w=10+c.t*16;
@@ -91,7 +92,7 @@ function desenhar(dt){
   const kEf=J.efeitos.length>16? 16/J.efeitos.length : 1;   // muitos anéis juntos: cada um mais fraco (somados viravam um clarão branco)
   for(const f of J.efeitos){ const a=f.vida/f.max*kEf; lg.strokeStyle=f.cor; lg.fillStyle=f.cor;
     if(f.linha){ const n=6, pts=[[f.x-ox,f.y-oy]]; for(let i=1;i<n;i++){ const t=i/n; pts.push([f.x+(f.x2-f.x)*t-ox+rnd(-3.5,3.5), f.y+(f.y2-f.y)*t-oy+rnd(-3.5,3.5)]); } pts.push([f.x2-ox,f.y2-oy]);
-      for(const [lw,al,cor] of [[3.5,0.25,f.cor],[1.3,0.9,f.cor],[0.5,1,"#ffffff"]]){ lg.globalAlpha=a*al; lg.strokeStyle=cor; lg.lineWidth=lw; lg.beginPath(); lg.moveTo(pts[0][0],pts[0][1]); for(const q of pts) lg.lineTo(q[0],q[1]); lg.stroke(); } }
+      for(const [lw,al,cor] of /** @type {[number,number,string][]} */([[3.5,0.25,f.cor],[1.3,0.9,f.cor],[0.5,1,"#ffffff"]])){ lg.globalAlpha=a*al; lg.strokeStyle=cor; lg.lineWidth=lw; lg.beginPath(); lg.moveTo(pts[0][0],pts[0][1]); for(const q of pts) lg.lineTo(q[0],q[1]); lg.stroke(); } }
     else { const q=1-f.vida/f.max, r=f.r*(0.55+0.6*(1-Math.pow(1-q,3)));   /* abre rápido e desacelera */ lg.globalAlpha=a*0.06; lg.beginPath(); lg.arc(f.x-ox,f.y-oy,r,0,Math.PI*2); lg.fill();
       lg.globalAlpha=a*0.2; lg.lineWidth=2.6; lg.stroke(); lg.globalAlpha=a*0.7; lg.lineWidth=0.8; lg.stroke(); } }
   lg.lineWidth=1; lg.lineCap="butt"; lg.lineJoin="miter";
@@ -199,9 +200,10 @@ function quadroHeroi(pernas,bob,pisca,corGema){ const k=pernas+bob+(pisca?1:0)+c
   HEROI.cab.forEach((L,y)=>{ for(let x=0;x<W;x++){ let ch=L[x]; if(ch===".") continue; if(pisca&&(ch==="E"||ch==="w"||ch==="I")) ch= y===7? "E" : "S"; px(x,y+bob,ch); } });
   for(const [x,y,ch] of HEROI.espada) px(x,y+bob,ch); px(17,13+bob,"X");   // gema do elemento no pomo
   HEROI.cache.set(k,c); return c; }
+let LADO_INVOCADOR=1;   // para que lado o herói olhava por último (antes ficava pendurado na própria função)
 function desenharInvocador(x,y){
   const vel=Math.hypot(J.pvx||0,J.pvy||0), anda=vel>6, t=J.t;
-  const lado=(J.dir&&J.dir.x<-0.1)? -1 : (J.dir&&J.dir.x>0.1)? 1 : (desenharInvocador.lado||1); desenharInvocador.lado=lado;
+  const lado=(J.dir&&J.dir.x<-0.1)? -1 : (J.dir&&J.dir.x>0.1)? 1 : LADO_INVOCADOR; LADO_INVOCADOR=lado;
   const a0=ativos()[0], el=a0? elementoDe(a0) : (R.pacto&&R.pacto[0]), cor=COR[el]||"#7fe0ff";
   let pernas="p", bob=0;
   if(anda){ const f=Math.floor(t*9)%4; pernas=["a","p","b","p"][f]; bob=f%2===0? 1 : 0; } else bob=Math.floor(t*1.6)%2;   // passada; parado respira
@@ -236,7 +238,7 @@ let hudQuadro=0;
 function hud(){
   if(SIM.ativo) return;
   if((hudQuadro=(hudQuadro+1)%3)!==0&&!pausado) return;   // 20 vezes por segundo bastam: mexer na página todo quadro custava ~5% da lógica
-  { const ev=R.essenciaRun+Math.floor((R.abatesPeso??R.abates)/15), el=$("essHud"); if(el&&el._v!==ev){ el._v=ev; el.textContent=ev; el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); } }
+  { const ev=R.essenciaRun+Math.floor((R.abatesPeso??R.abates)/15), el=$("essHud"); if(el&&el._v!==ev){ el._v=ev; el.textContent=String(ev); el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); } }
   const rest=Math.max(0,MAPA_SEG-J.t); $("tempo").textContent=J.chefeFeito?"Chefe!":`${Math.floor(rest/60)}:${String(Math.floor(rest%60)).padStart(2,"0")}`;
   $("barVida").style.width=`${Math.max(0,J.vida/J.vidaMax*100)}%`; $("barEscudo").style.width=`${Math.min(100,J.escudo/J.vidaMax*100)}%`;
   $("barXp").style.width=`${J.xp/J.xpProx*100}%`; if(J.pulsoXp>0){ J.pulsoXp-=0.24; $("barXp").parentElement.classList.toggle("pulso",J.pulsoXp>0); } $("ultFill").style.height=`${J.desp>0?J.desp/D.despertar.duracao_seg*100:J.ult}%`; $("btnUlt").classList.toggle("pronto",J.ult>=100&&J.desp<=0); { const b=$("btnBolsa"); if(b){ const u=itemUsavelAgora(); if(b._u!==u){ b._u=u; b.classList.toggle("util",u); } } }

@@ -34,6 +34,7 @@ function lugarDeObjeto(x,y,m){ if(!estruturaU()||!J.cena) return true; if(abismo
   for(const f of pecasPerto(x,y)){ if(f.tipo==="abismo") continue; const dx=(x-f.x)/(f.rx+m), dy=(y-f.y)/(f.ry+m); if(dx*dx+dy*dy<1) return false; } return true; }
 function lugarLivre(x,y){ return !(estruturaU()&&J.cena&&abismoEm(x,y,6)); }
 function eventoHorda(){ evento("onda"); const P=J.jogador, prof=R.profundidade, escala=1+prof*0.15;
+  /** tipo de onda e peso no sorteio @type {[string,number][]} */
   const opcoes=[["cerco",3],["enxame",3],["elites",prof>=1?2:1],["emboscada",2]]; let tot=0; for(const [,p] of opcoes) tot+=p; let s=Math.random()*tot, tipo="cerco"; for(const [t,p] of opcoes){ s-=p; if(s<=0){ tipo=t; break; } }
   if(tipo==="cerco"){ ondaCerco(); avisar("Cerco!","eles fecham o anel: abra caminho"); return; }
   if(tipo==="enxame"){ const a=Math.random()*Math.PI*2, ux=Math.cos(a), uy=Math.sin(a), n=Math.min(40,Math.round(16*escala));
@@ -484,6 +485,7 @@ function eventosVitoria(e){ conferirProvacoes(e); evento("chefe"); if(!J.atingid
   const u=UNIV[R.universo]; if(ativos().filter(s=>elementoDe(s)===u.elemento).length>=2) evento("chefe_mesmo_el"); if(e.eraChefe) evento("guardiao"); }
 // ---------------------------------------------------------------- tela de conquistas e murais
 function telaConquistas(){ metaConq(); $("telaMenu").classList.remove("ativa"); const tot=CONQ().length, feitas=Object.keys(META.conq).length;
+  /** @type {Carta[]} */
   const cartas=[{titulo:`Insígnias: ${feitas}/${tot}`, texto:`Lendas liberadas: ${META.lendas.length}/34 · Talismãs liberados: ${6+META.talismas.length}/12`, manter:true, acao:()=>telaGlobais()}];
   for(const u of D.universos){ const cs=CONQ().filter(c=>c.universo===u.id), n=cs.filter(c=>META.conq[c.id]).length, l=D.lendas.find(x=>x.universo===u.id);
     cartas.push({titulo:u.nome.split(",")[0], raridade:n===6?"lendario":n>=3?"epico":"comum", sprite:muralSprite(u.id,n), manter:true, texto:`Mural ${n}/6 · Lenda: ${n===6?l.nome:"???"}`, acao:()=>telaMural(u.id)}); }
@@ -491,6 +493,7 @@ function telaConquistas(){ metaConq(); $("telaMenu").classList.remove("ativa"); 
   cartas.push({titulo:"Voltar", texto:"", acao:()=>menu()});
   mostrarCartas("Conquistas e Lendas","Cada conquista de mapa dá um Ladrilho. Os 6 Ladrilhos montam o retrato da Lenda do universo.",cartas,{grade:true}); }
 function telaMural(uid){ const u=UNIV[uid], l=D.lendas.find(x=>x.universo===uid);
+  /** @type {Carta[]} */
   const cartas=CONQ().filter(c=>c.universo===uid).map(c=>{ const ok=!!META.conq[c.id]; return {titulo:ok||!c.secreta?c.nome:"???", sprite:insigniaSprite(c,ok), suave:true, raridade:ok?{bronze:"incomum",prata:"raro",ouro:"epico",secreta:"lendario"}[c.insignia]:"comum", manter:true,
     texto:ok? `✓ ${c.texto}` : c.secreta? "Conquista secreta. O Cronista conta uma charada a cada mapa vencido." : c.texto, acao:()=>{}}; });
   const livre=META.lendas.includes(uid);
@@ -498,7 +501,9 @@ function telaMural(uid){ const u=UNIV[uid], l=D.lendas.find(x=>x.universo===uid)
     texto:livre?`${NOME_EL(l.elementos[0])} e ${NOME_EL(l.elementos[1])} · Poder: ${l.poder.nome} · Passiva: ${l.passiva.nome}`:"Complete as 6 conquistas deste mapa para revelar quem é.", acao:()=>{}});
   cartas.push({titulo:"Voltar", texto:"", acao:()=>telaConquistas()});
   mostrarCartas(u.nome, "Mural de Ladrilhos", cartas); }
-function telaGlobais(){ const cartas=CONQ().filter(c=>c.categoria!=="mapa").map(c=>{ const ok=!!META.conq[c.id]; return {titulo:ok||!c.secreta?c.nome:"???", sprite:insigniaSprite(c,ok), suave:true, manter:true, raridade:ok?"epico":"comum",
+function telaGlobais(){
+  /** @type {Carta[]} */
+  const cartas=CONQ().filter(c=>c.categoria!=="mapa").map(c=>{ const ok=!!META.conq[c.id]; return {titulo:ok||!c.secreta?c.nome:"???", sprite:insigniaSprite(c,ok), suave:true, manter:true, raridade:ok?"epico":"comum",
     texto:ok?`✓ ${c.texto}${c.talisma?` · liberou ${D.poderes.talismas[c.talisma].nome}`:""}`:(c.secreta?"Segredo.":c.texto+(c.talisma?` · libera ${D.poderes.talismas[c.talisma].nome}`:"")), acao:()=>{}}; });
   cartas.push({titulo:"Voltar", texto:"", acao:()=>telaConquistas()}); mostrarCartas("Insígnias","Jornada, Grimório e Segredos",cartas,{grade:true}); }
 // mural: o retrato da Lenda (arte/lendas/<id>__retrato.png, cortado em 2x3) com os ladrilhos ainda não conquistados cobertos
@@ -530,7 +535,7 @@ function telaInvocador(pacto,id,esperou){ metaConq(); const livres=[...D.panteao
 function cartaLenda(){ const l=LENDA(); if(!l||(R.lendaNv||1)>=5||Math.random()>0.3) return null;
   return {titulo:`${l.poder.nome} ${R.lendaNv} → ${R.lendaNv+1}`, raridade:"lendario", texto:`Poder da Lenda (${TIPOS_LENDA_TXT[l.poder.tipo]||""}): +25% de dano e −5% de recarga.`, acao:()=>{ R.lendaNv++; proximaEscolha(); }}; }
 const TIPOS_LENDA_TXT={orbita:"gira em volta",projetil:"arremesso",onda:"onda de choque",invocar:"aliados",raio:"raio em cadeia",barril:"explosivo",investida:"avanço",area:"zona no chão",drenar:"rouba vida",dardos:"disparos rápidos"};
-function atualizarLenda(dt){ const l=LENDA(); if(!l||!J||J.fim) return; if(J.lendaPose){ J.lendaPose.t+=dt; if(J.lendaPose.t>=J.lendaPose.dur) J.lendaPose=null; } atualizarDom(dt); const p=l.poder, nv=R.lendaNv||1, P=J.jogador, el=l.elementos[0], el2=l.elementos[1], cor=COR[el];
+function atualizarLenda(dt){ const l=LENDA(); if(!l||!J||J.fim) return; if(J.lendaPose){ J.lendaPose.t+=dt; if(J.lendaPose.t>=J.lendaPose.dur) J.lendaPose=null; } atualizarDom(dt); const p=l.poder, nv=R.lendaNv||1, P=J.jogador, el=/** @type {Elemento} */(l.elementos[0]), el2=/** @type {Elemento} */(l.elementos[1]), cor=COR[el];
   const base=(ativos().reduce((t,s)=>t+atrib(s).dano,0)/Math.max(1,ativos().length))*p.dano*(1+0.25*(nv-1))*(1+custo("dano_dia")*(UNIV[R.universo].luz&&!UNIV[R.universo].luz.noite?1:0))*(SIN.lendaPoder||1);   // afinidade e Terra Natal
   if(p.tipo==="orbita"){ J.lendaAng=(J.lendaAng||0)+dt*3.2; J.lendaHit=(J.lendaHit||0)-dt; if(J.lendaHit<=0){ J.lendaHit=p.cd; FONTE="lenda"; J.lendaGiros=(J.lendaGiros||0)+1; if(J.lendaGiros%8===1&&!J.lendaPose) J.lendaPose={t:0,dur:0.5};
       for(let i=0;i<p.n;i++){ const a=J.lendaAng+i/p.n*Math.PI*2, x=P.x+Math.cos(a)*p.r, y=P.y+Math.sin(a)*p.r*0.8; emArea(x,y,12,e=>ferir(e,base,i%2?el2:el)); } }
@@ -602,6 +607,7 @@ function conferirProvacoes(e){ if(SIM.ativo&&!SIM.conquistas) return; const ds=m
     if(q.sem_cura&&J.curou) continue; if(q.abates&&(R.abates-(J.abates0||0))<q.abates) continue;
     ds.push(g.id); avisoConquista(`Deus liberado: ${g.nome}`,`Provação cumprida: ${pv.texto}`); if(typeof gravar==="function") gravar(); } }
 function telaPanteao(){ const ds=metaDeuses();
+  /** @type {Carta[]} */
   const cartas=D.panteao.map(g=>{ const livre=ds.includes(g.id), aberta=META.lendas.includes(g.provacao.universo);
     return {titulo:livre||aberta?g.nome:"???", raridade:livre?"lendario":aberta?"epico":"comum", manter:true, sprite:folhaArte(`arte/panteao/${g.id}__retrato.png`)&&livre?retratoPequeno(`arte/panteao/${g.id}__retrato.png`):null, suave:true,
       texto: livre? `${NOME_EL(g.elementos[0])} e ${NOME_EL(g.elementos[1])} · ${g.poder.nome} · Dom: ${g.dom.nome} · Fardo: ${g.fardo}`

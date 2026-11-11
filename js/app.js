@@ -6,7 +6,7 @@
 // - bloqueia gestos do celular que atrapalham (zoom com dois dedos, menu de toque longo)
 "use strict";
 (function(){
-  const P = window.Plataforma || {};
+  const P = window.Plataforma || /** @type {Partial<PlataformaJogo>} */({});
   const servido = location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
 
   if("serviceWorker" in navigator && servido && P.nome === "web"){

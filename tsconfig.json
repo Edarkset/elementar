@@ -1,0 +1,14 @@
+{
+  // Verificador de tipos sobre o JavaScript do jogo. Não gera arquivos: o navegador continua carregando o que está no repositório.
+  // Rodar: npm run tipos
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": false,
+    "skipLibCheck": true
+  },
+  "include": ["js/tipos.d.ts", "js/plataforma.js", "js/dados.js", "js/jogo/*.js", "js/app.js"]
+}

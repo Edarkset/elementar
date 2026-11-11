@@ -31,8 +31,8 @@ function mostrarCartas(titulo,sub,cartas,op={}){
   pausado=true; { const tc=$("telaCartas"), f=op.fundo&&UI_ARQ(op.fundo); tc.style.backgroundImage=f? `linear-gradient(180deg,rgba(8,6,16,.35),rgba(8,6,16,.78)), url(${f.src})` : ""; tc.classList.toggle("com-fundo",!!f); }
   $("cartasTitulo").textContent=titulo; $("cartasSub").innerHTML=sub||""; const box=$("cartas"); box.innerHTML=""; box.className="cartas"+(op.grade?" grade":"");
   $("cartasRodape").innerHTML="";
-  { const rl=$("telaCartas").querySelector(".rolagem"); if(rl&&rl.dataset.t!==titulo){ rl.scrollTop=0; rl.dataset.t=titulo; } }   // tela nova começa do topo
-  cartas.forEach((c,ci)=>{ const b=document.createElement("button"); b.className="carta r-"+(c.raridade||"comum"); b.style.setProperty("--i",Math.min(ci,10)); if(c.desab) b.disabled=true;
+  { const rl=/** @type {HTMLElement} */($("telaCartas").querySelector(".rolagem")); if(rl&&rl.dataset.t!==titulo){ rl.scrollTop=0; rl.dataset.t=titulo; } }   // tela nova começa do topo
+  cartas.forEach((c,ci)=>{ const b=document.createElement("button"); b.className="carta r-"+(c.raridade||"comum"); b.style.setProperty("--i",String(Math.min(ci,10))); if(c.desab) b.disabled=true;
     if(c.classe) b.classList.add(c.classe);
     if(c.quadros&&c.quadros.length){ const q0=c.quadros[0], cc=document.createElement("canvas"); cc.width=q0.width; cc.height=q0.height; cc.className=(c.classe==="medio"?"retrato-medio":"retrato-grande")+" anim-retrato"; cc.getContext("2d").drawImage(q0,0,0); cc._quadros=c.quadros; if(c.quadros.geo){ cc._geo=c.quadros.geo; cc.classList.add("nitido"); } b.appendChild(cc); animarRetratos(); }
     else if(c.sprite){ const sp=spriteUI(c.sprite), cc=document.createElement("canvas"); cc.width=sp.width; cc.height=sp.height; cc.getContext("2d").drawImage(sp,0,0); if(c.suave||sp!==c.sprite) cc.style.imageRendering="auto"; if(c.classe==="grande") cc.className="retrato-grande"; b.appendChild(cc); }
@@ -42,12 +42,12 @@ function mostrarCartas(titulo,sub,cartas,op={}){
       box._escolhendo=true; b.classList.add("escolhida"); som("tic");   // a carta escolhida cresce e brilha por um instante
       setTimeout(()=>{ box._escolhendo=false; $("telaCartas").classList.remove("ativa"); c.acao(b); },200); }; box.appendChild(b); });
   box.classList.toggle("revelar",!!op.revelar);
-  $("telaCartas").classList.add("ativa"); box.querySelector("button:not([disabled])")?.focus();
+  $("telaCartas").classList.add("ativa"); /** @type {HTMLElement} */(box.querySelector("button:not([disabled])"))?.focus();
 }
 function fechar(){ $("telaCartas").classList.remove("ativa"); }
 // retratos animados nas cartas (quadros "parado" da folha de animação), enquanto a tela estiver aberta
 let animRet=null;
-function animarRetratos(){ if(animRet) return; const passo=t=>{ const cs=[...document.querySelectorAll("#cartas canvas.anim-retrato")].filter(c=>c._quadros);
+function animarRetratos(){ if(animRet) return; const passo=t=>{ const cs=[.../** @type {NodeListOf<HTMLCanvasElement>} */(document.querySelectorAll("#cartas canvas.anim-retrato"))].filter(c=>c._quadros);
     if(!cs.length||!$("telaCartas").classList.contains("ativa")){ animRet=null; return; }
     const f=Math.floor(t/1000*6); for(const c of cs){ if(c._geo){ desenharRetrato(c,c._geo,f); continue; } const q=c._quadros[f%c._quadros.length], g=c.getContext("2d"); g.clearRect(0,0,c.width,c.height); g.drawImage(q,0,0); }
     animRet=requestAnimationFrame(passo); }; animRet=requestAnimationFrame(passo); }
@@ -101,8 +101,8 @@ function numerosPoder(s,k,lv,prox){ try{ const base=atrib(s).dano*tal.dano();
 // ou vida) que se acumulam. Nas simulações, do nível 40 em diante 9 em cada 10 escolhas eram a mesma carta "+1 nível": a run ficava sem decisão
 // Valores: com +5% / +3% / +6% o robô ia ~1,7 mapa mais fundo (a run ficava bem mais fácil no fim); estes mantêm a escolha sem derrubar a dificuldade
 const ASCENSAO={d:{nome:"Fúria",v:0.03,txt:"de dano"}, c:{nome:"Ímpeto",v:0.02,txt:"de cadência"}, v:{nome:"Vigor",v:0.04,txt:"de vida"}};
-function cartasNivel(){ const eq=ativos(), maxN=Math.max(...eq.map(s=>s.nivel)), cand=[], caminhos=embaralhar(Object.keys(ASCENSAO));
-  for(const s of eq){ const c=D.classes[L(s).classe], lib=[["b","Ataque básico",`${c.basico} +20% de dano e +5% de cadência.`],["h1",c.h1.nome,c.h1.desc],...((est(s)>=1||estBase(s)>=1)?[["h2",c.h2.nome,c.h2.desc]]:[])];
+function cartasNivel(){ const eq=ativos(), maxN=Math.max(...eq.map(s=>s.nivel)), /** @type {CartaNivel[]} */ cand=[], caminhos=/** @type {("d"|"c"|"v")[]} */(embaralhar(Object.keys(ASCENSAO)));
+  for(const s of eq){ const c=D.classes[L(s).classe], lib=/** @type {[ChavePoder,string,string][]} */([["b","Ataque básico",`${c.basico} +20% de dano e +5% de cadência.`],["h1",c.h1.nome,c.h1.desc],...((est(s)>=1||estBase(s)>=1)?[["h2",c.h2.nome,c.h2.desc]]:[])]);
     const peso=1+(maxN-s.nivel)*0.35; let algum=false;
     for(const [k,nome,desc] of lib){ const lv=s.pod[k]; if(lv>=5) continue; algum=true; const prox=lv+1;
       cand.push({peso, s, k, raridade: prox===5?"lendario": prox===3&&k!=="b"?"epico": prox>=2?"raro":"incomum",
@@ -124,6 +124,7 @@ function aplicarCartaNivel(c){ const s=c.s;
 function abrirNivel(){
   if(R.rerolagens==null) R.rerolagens=2+nivelLoja("oraculo");
   const sorteadas=cartasNivel();
+  /** @type {Carta[]} */
   const cartas=sorteadas.map(c=>({ titulo:c.titulo, sprite:spriteSelo(c.s), raridade:c.raridade, texto:c.texto, classe:c.dourada?"dourada":null, acao:()=>aplicarCartaNivel(c) }));
   D.elos.forEach(e=>{ const a=ativos().find(s=>s.mon.id===e.a), b=ativos().find(s=>s.mon.id===e.b);
     if(a&&b&&!R.elos.includes(e.nome)&&(estBase(a)>=2||estBase(b)>=2)) cartas.push({titulo:`Elo: ${e.nome}`, raridade:"epico", texto:`${e.desc} (+20% de dano e cadência para os dois)`,
@@ -132,7 +133,7 @@ function abrirNivel(){
   if(cartas.some(c=>c.raridade==="lendario")) som("ding");
   // ritmo: em nível ímpar sem carta especial, a melhor carta entra sozinha (metade das interrupções; a força da equipe é a mesma)
   const RANK={comum:0,incomum:1,raro:2,epico:3,lendario:4}, especial=false;
-  if(J.nivel%2===1&&!especial&&sorteadas.length&&!(META.escolhaManual)){ const c=cartas.slice(0,sorteadas.length).sort((a,b)=>(b.classe==="dourada")-(a.classe==="dourada")||(RANK[b.raridade]||0)-(RANK[a.raridade]||0))[0];
+  if(J.nivel%2===1&&!especial&&sorteadas.length&&!(META.escolhaManual)){ const c=cartas.slice(0,sorteadas.length).sort((a,b)=>+(b.classe==="dourada")-+(a.classe==="dourada")||(RANK[b.raridade]||0)-(RANK[a.raridade]||0))[0];
     if(!SIM.ativo) texto(J.jogador.x,J.jogador.y-30,`Nível ${J.nivel}: ${c.titulo}`,"#ffe6a6",13); c.acao(); return; }
   { const cp=cartaProibida(); if(cp) cartas.push(cp); }
   mostrarCartas(`Nível ${J.nivel}`, "Escolha uma carta.", cartas, {revelar:true});
@@ -172,7 +173,7 @@ function pegarOvo(o){
   texto(o.x,o.y-10,`Ovo ${RAR_NOME[o.rar]}!`,o.rar==="lendario"?"#ffd34a":"#fff3c4",15); desenharNinho();
 }
 // ================================================================ Ovo Ancestral (Dragões lendários do Covil)
-function surgirOvoAncestral(){ const opts=D.ancestrais.filter(a=>R.pacto.includes(a.elemento)); if(!opts.length) return;
+function surgirOvoAncestral(){ const opts=ANCESTRAIS.filter(a=>R.pacto.includes(a.elemento)); if(!opts.length) return;
   const a=escolha(opts), ang=Math.random()*Math.PI*2, d=rnd(200,260);
   J.ovoAnc={x:J.jogador.x+Math.cos(ang)*d, y:J.jogador.y+Math.sin(ang)*d, id:a.id, el:a.elemento}; R.ancestral={estado:"mapa", id:a.id, el:a.elemento};
   toast(`Um <b>${a.ovo}</b> apareceu no mapa!<br><small>Siga a coluna de luz.</small>`); }
@@ -190,6 +191,7 @@ function chocar(ov){ R.st.chocados++; diaria("chocados"); const mon={id:ov.id, r
 function abrirEquipe(seloIdx){
   if(!J||J.fim) return;
   const s=R.selos[seloIdx];
+  /** @type {Carta[]} */
   const cartas=R.reserva.map((m,i)=>({ titulo:`${LINHA[m.id].filhote} (${RAR_NOME[m.rar]})`, sprite:spriteLinha(m.id,m.rar), raridade:m.rar,
     texto:`${NOME_EL(LINHA[m.id].elemento)} · ${D.classes[LINHA[m.id].classe].nome} · ${D.linhagens[LINHA[m.id].linhagem].nome}<br>No Selo ${seloIdx+1} entra no nível ${s.mon?s.nivel:"novo"}${m.ramo!=null?`, forma ${LINHA[m.id].ramos[m.ramo].nome}`:""}.`,
     desab:s.trocaCd>0, acao:()=>{ trocar(seloIdx,i); proximaEscolha(); } }));
@@ -211,6 +213,7 @@ function trocar(si,ri){
 function abrirBolsa(){
   if(!J||J.fim||pausado) return;
   const ks=Object.keys(D.itens);
+  /** @type {Carta[]} */
   const cartas=ks.map(k=>({ titulo:`${D.itens[k].nome} ×${R.itens[k]}`, texto:D.itens[k].efeito, desab:R.itens[k]<=0, raridade:k==="chamado"?"lendario":k==="incenso"?"raro":"incomum", acao:()=>usarItem(k) }));
   cartas.push({titulo:"Fechar", acao:()=>proximaEscolha()});
   mostrarCartas("Bolsa", "Itens caem de elites, baús de mini-chefe e chefes.", cartas);
@@ -433,7 +436,7 @@ function abrirBau(b){ const premios=sortearPremios(b.tipo);
       if(passou>900){ mostrar(c,{icone:escolha(todos),texto:""}); som("tic"); c.classList.toggle("pisca"); }
       atraso=Math.min(240,atraso*(passou>fim-700?1.18:1.04)); setTimeout(girar,atraso); };
     setTimeout(girar,60); });
-  tela.querySelector(".bau-coletar").onclick=()=>{ if(!tela.classList.contains("pronto")) return; premios.forEach(p=>p.aplicar()); tela.classList.remove("vis"); setTimeout(()=>{ tela.innerHTML=""; },250);
+  /** @type {HTMLElement} */(tela.querySelector(".bau-coletar")).onclick=()=>{ if(!tela.classList.contains("pronto")) return; premios.forEach(p=>p.aplicar()); tela.classList.remove("vis"); setTimeout(()=>{ tela.innerHTML=""; },250);
     pausado=false; som("moeda"); if(filaRamo.length||filaEsp.length||(J&&J.niveisPend>0)) proximaEscolha(); };
 }
 function chuvaMoedas(el,n){ for(let i=0;i<n;i++){ const m=document.createElement("i"); m.className="moeda-voa"; m.style.setProperty("--x",(Math.random()*2-1)*160+"px"); m.style.setProperty("--y",-(80+Math.random()*160)+"px");
@@ -465,14 +468,16 @@ function capaReino(u){ const img=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.
   const c=document.createElement("canvas"); c.width=240; c.height=150; const g=c.getContext("2d"), e=Math.max(c.width/img.width,c.height/img.height); g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
   g.drawImage(img,(c.width-img.width*e)/2,(c.height-img.height*e)/2,img.width*e,img.height*e);
   const vg=g.createRadialGradient(120,75,40,120,75,150); vg.addColorStop(0,"rgba(0,0,0,0)"); vg.addColorStop(1,"rgba(0,0,0,.55)"); g.fillStyle=vg; g.fillRect(0,0,240,150); return c; }
+// a tela de portais pode esperar a arte das capas uma vez; enquanto espera, guarda as opções já sorteadas
+const PORTAIS={ops:null, jaEsperou:false};
 function mostrarPortais(){
-  const era=D.eras_ordem[R.eraIdx], opcoes=mostrarPortais._ops||embaralhar(D.universos.filter(u=>u.era===era&&u.id!==R.universo)).slice(0,3+((SIN.rm&&SIN.rm.portais)||0)+nivelLoja("oraculo"));
+  const era=D.eras_ordem[R.eraIdx], opcoes=PORTAIS.ops||embaralhar(D.universos.filter(u=>u.era===era&&u.id!==R.universo)).slice(0,3+((SIN.rm&&SIN.rm.portais)||0)+nivelLoja("oraculo"));
   // adianta a arte da abertura e o chão de cada portal (o resto vem quando o mapa começa)
   // as capas dos portais são a arte de abertura de cada reino: se ainda não chegaram, espera até 2,5 s (uma vez)
-  if(!SIM.ativo&&!mostrarPortais._jaEsperou&&opcoes.some(u=>{   /* na simulação não espera: a espera em tempo real fazia a mesma semente dar partidas diferentes */ const im=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`]; return im&&!im.pronta&&!im.falhou; })){
-    Promise.race([preCarregar(opcoes.map(u=>`arte/reinos/${u.era}/${u.id}__keyart.png`)),new Promise(ok=>setTimeout(ok,2500))]).then(()=>{ mostrarPortais._jaEsperou=true; mostrarPortais._ops=opcoes; mostrarPortais(); }); return; }
+  if(!SIM.ativo&&!PORTAIS.jaEsperou&&opcoes.some(u=>{   /* na simulação não espera: a espera em tempo real fazia a mesma semente dar partidas diferentes */ const im=ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`]; return im&&!im.pronta&&!im.falhou; })){
+    Promise.race([preCarregar(opcoes.map(u=>`arte/reinos/${u.era}/${u.id}__keyart.png`)),new Promise(ok=>setTimeout(ok,2500))]).then(()=>{ PORTAIS.jaEsperou=true; PORTAIS.ops=opcoes; mostrarPortais(); }); return; }
   opcoes.forEach(u=>preCarregar(artesQue(n=>n.startsWith(`arte/reinos/${u.era}/${u.id}__keyart`)||n.startsWith(`arte/reinos/${u.era}/${u.id}__piso`))));
-  mostrarPortais._ops=null; mostrarPortais._jaEsperou=false; const recs=embaralhar(["Recrutar","Cura total","Relíquia","Ovo Raro","Item"]); while(recs.length<opcoes.length) recs.push(escolha(["Relíquia","Ovo Raro","Item","Recrutar"]));
+  PORTAIS.ops=null; PORTAIS.jaEsperou=false; const recs=embaralhar(["Recrutar","Cura total","Relíquia","Ovo Raro","Item"]); while(recs.length<opcoes.length) recs.push(escolha(["Relíquia","Ovo Raro","Item","Recrutar"]));
   mostrarCartas("Escolha o portal", `Próximo: ${D.eras[era].nome}${R.mapaNaEra===MAPAS_POR_ERA-1?" · o Guardião da Era espera no fim deste mapa":""}. A run fica salva aqui e as trocas são livres.`,
     opcoes.map((u,i)=>{ const rec=recs[i]; return { titulo:u.nome, raridade:"raro", classe:"portal", suave:true, sprite:capaReino(u)||gerarSprite(u.id+"portal",12,COR[u.elemento]),
       texto:`Inimigos de ${NOME_EL(u.elemento)}. ${dicaVantagem(u.elemento)}<br>Recompensa: ${rec}${rec==="Relíquia"?` (${u.reliquia.nome}: ${u.reliquia.efeito})`:""}`,
@@ -494,10 +499,11 @@ function aplicarPortal(u,rec){
 function salvarRun(){ RUN_SALVA=JSON.parse(JSON.stringify({...R, selos:R.selos.map(s=>({nivel:s.nivel,pod:s.pod,mod:s.mod,esp:s.esp??null,asc:s.asc||null,mon:s.mon,trocaCd:0}))})); gravar(); }
 function carregarRun(s){ R=JSON.parse(JSON.stringify(s)); R.st=R.st||novoSt(); }
 // resumo da run na tela de fim: de onde veio o dano, a reação mais usada e o que mais machucou (com uma dica para a próxima)
-function resumoRun(){ const st=R.st||{}, pf=st.porFonte||{}, tot=Object.values(pf).reduce((a,b)=>a+b,0); if(!(tot>0)) return "";
-  const N={basico:["Ataque básico","#c8d0e0"],habilidade:["Habilidades","#7fc8ff"],reacao:["Reações","#ffb040"],especial:["Especiais","#c58cff"],despertar:["Despertar","#ffd34a"],combinado:["Combinado","#ff8ab0"],ambiente:["Ambiente","#9ff07a"]};
-  const linhas=Object.entries(pf).map(([k,v])=>[k,v/tot*100]).filter(([,q])=>q>=2).sort((a,b)=>b[1]-a[1]).slice(0,5)
-    .map(([k,q])=>`<div class="rd-linha"><span>${(N[k]||[k])[0]}</span><i><b style="width:${Math.max(3,Math.round(q))}%;background:${(N[k]||[0,"#c8d0e0"])[1]}"></b></i><em>${Math.round(q)}%</em></div>`).join("");
+function resumoRun(){ const st=R.st||/** @type {Partial<EstatisticasRun>} */({}), pf=st.porFonte||{}, tot=Object.values(pf).reduce((a,b)=>a+b,0); if(!(tot>0)) return "";
+  /** nome e cor de cada fonte de dano @type {Record<string,[string,string]>} */
+  const N={reliquia:["Relíquias","#e8c070"],lenda:["Lenda","#ffe6a6"],basico:["Ataque básico","#c8d0e0"],habilidade:["Habilidades","#7fc8ff"],reacao:["Reações","#ffb040"],especial:["Especiais","#c58cff"],despertar:["Despertar","#ffd34a"],combinado:["Combinado","#ff8ab0"],ambiente:["Ambiente","#9ff07a"]};
+  const linhas=Object.entries(pf).map(([k,v])=>/** @type {[string,number]} */([k,v/tot*100])).filter(([,q])=>q>=2).sort((a,b)=>b[1]-a[1]).slice(0,5)
+    .map(([k,q])=>`<div class="rd-linha"><span>${(N[k]||[k])[0]}</span><i><b style="width:${Math.max(3,Math.round(q))}%;background:${(N[k]||[k,"#c8d0e0"])[1]}"></b></i><em>${Math.round(q)}%</em></div>`).join("");
   const re=Object.entries(st.reacoes||{}).sort((a,b)=>b[1]-a[1])[0], rec=(st.recContato||0)+(st.recBala||0), pc=rec>0? st.recContato/rec : 0;
   const dica= rec<=0? "" : pc>0.65? "A maior parte do dano que você levou veio de <b>encostar na horda</b>: guarde a esquiva para atravessar o cerco." : pc<0.4? "A maior parte do dano que você levou veio de <b>golpes e projéteis</b>: saia das marcas no chão antes do golpe." : "Você levou dano tanto da horda quanto dos golpes: troque de lugar antes de ficar cercado.";
   return `<div class="resumo-dano"><div class="rd-titulo">De onde veio o seu dano</div>${linhas}${re?`<div class="rd-nota">Reação mais usada: <b>${re[0]}</b> (${re[1]}×)</div>`:""}${dica?`<div class="rd-nota">${dica}</div>`:""}</div>`; }

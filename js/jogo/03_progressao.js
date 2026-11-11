@@ -289,13 +289,13 @@ function tentarCaptura(f){ if(f.selando) return; f.selando=true; const chance=f.
     else { f.selando=false; f.vida=14; f.fugaRapida=1; f.imune=1; particulas(x0,y0,"#ffffff",14,80); tremor(2); if(!SIM.ativo) texto(x0,y0-14,"Escapou! Tente de novo","#ff9a7a",13); } }); }
 // ovo chocando: treme cada vez mais, racha, clarão e o monstro aparece (a cena dura ~2,6 s; um toque pula)
 function cenaChoco(mon){ if(SIM.ativo||!J) return; const l=LINHA[mon.id], cor=COR[l.elemento], ovo=spriteOvo(l.elemento,mon.rar==="lendario"?"lendario":mon.rar==="comum"||mon.rar==="incomum"?"comum":"raro");
-  const q=quadrosForma(mon.id,0,null,mon.rar), novo=(q&&q[0])||spriteLinha(mon.id,mon.rar); let urlNovo=""; try{ urlNovo=(novo._src&&!novo._alvo? spriteUI(novo):novo).toDataURL(); }catch(e){}
+  const q=quadrosForma(mon.id,0,null,mon.rar), novo=(q&&q[0])||spriteLinha(mon.id,mon.rar); let urlNovo=""; try{ urlNovo=(novo._src&&!novo._alvo? spriteUI(novo):novo).toDataURL(); }catch(e){ relatar("retrato do monstro novo: imagem não pôde ser lida",e); }
   cenaTocar(`<div class="cine-raios" style="--cor:${cor}"></div><div class="cine-choco" style="--cor:${cor}"><img class="ovo" src="${ovo.toDataURL()}" alt=""><div class="racha"></div><img class="novo" src="${urlNovo}" alt=""></div><div class="cine-clarao choco"></div>
     <div class="cine-texto choco"><small>Chocou!${mon.rar!=="comum"?` · ${RAR_NOME[mon.rar]}`:""}</small><b style="color:${cor}">${l.filhote}</b><i>${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome}</i></div>`, "evolucao choco", 2800); }
 // ================================================================ cenas: evolução e chegada do chefe (o jogo para por um instante)
 // monstro nunca visto: a silhueta escura aparece, acende com um clarão e o nome é revelado
 function cenaDescoberta(mon){ if(SIM.ativo||!J) return; const l=LINHA[mon.id], cor=COR[l.elemento], q=quadrosForma(mon.id,0,null,mon.rar), img=(q&&q[0])||spriteLinha(mon.id,mon.rar);
-  let url=""; try{ url=(img._src&&!img._alvo? spriteUI(img):img).toDataURL(); }catch(e){}
+  let url=""; try{ url=(img._src&&!img._alvo? spriteUI(img):img).toDataURL(); }catch(e){ relatar("retrato do monstro: imagem não pôde ser lida",e); }
   cenaTocar(`<div class="cine-raios" style="--cor:${cor}"></div><div class="cine-descoberta" style="--cor:${cor}"><img src="${url}" alt=""></div><div class="cine-clarao descoberta"></div>
     <div class="cine-texto descoberta"><small>Novo monstro descoberto!</small><b style="color:${cor}">${l.filhote}</b><i>${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome} · ${D.linhagens[l.linhagem].nome}</i><em>Agora ele aparece no Pacto, nos ovos e nos filhotes.</em></div>`, "evolucao descoberta", 3400);
   som("jackpot"); }

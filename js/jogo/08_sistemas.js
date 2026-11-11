@@ -445,7 +445,7 @@ const COMPORTAMENTO={
          h1(){ J.cantoGuerra=4; },
          h2(s,a,el){ const P=J.jogador; for(const g of J.gemas) if(dist2(g,P)<110*110){ g.vx+=(P.x-g.x)*0.8; g.vy+=(P.y-g.y)*0.8; } const p=pontoDenso(s,120); if(p) for(let i=0;i<4;i++) aplicarElementoNoSolo(p.x+rnd(-10,10),p.y+rnd(-10,10),el); } } };
 function aoDisparar(s,k,a,el,cor){ if(k!=="b"&&!SIM.ativo) circuloInvocacao(s.x,s.y+3,el,10+est(s)*2.5,0.6,false);   // habilidade: círculo pequeno sob o monstro
- if(!(s.desp&&s.desp[k])) return; const f=(COMPORTAMENTO[L(s).classe]||{})[k]; if(f) try{ f(s,atribPoder(a,s,k),el,cor); }catch(err){} }
+ if(!(s.desp&&s.desp[k])) return; const f=(COMPORTAMENTO[L(s).classe]||{})[k]; if(f) try{ f(s,atribPoder(a,s,k),el,cor); }catch(err){ relatar("Desperto: o comportamento do poder falhou",err,true); } }
 // efeitos contínuos: Fênix, Fúria Berserker, Canto de Guerra e as Uniões
 function atualizarArvore(dt){ if(!J) return; J.danoRec=Math.max(0,(J.danoRec||0)-(J.danoRec||0)*dt/3); if(J.cantoGuerra>0) J.cantoGuerra-=dt;
   for(const s of ativos()){ if(s.berserk>0) s.berserk-=dt;

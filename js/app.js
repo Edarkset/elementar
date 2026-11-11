@@ -26,7 +26,7 @@
   let trava = null;
   async function manterAcesa(){
     if(!("wakeLock" in navigator) || document.hidden || trava) return;
-    try{ trava = await navigator.wakeLock.request("screen"); trava.addEventListener("release", () => { trava = null; }); }catch(e){}
+    try{ trava = await navigator.wakeLock.request("screen"); trava.addEventListener("release", () => { trava = null; }); }catch(e){ console.debug("Elementar · tela acesa: o navegador não concedeu", e); }
   }
   addEventListener("pointerdown", manterAcesa, { passive: true });
   document.addEventListener("visibilitychange", () => { if(!document.hidden) manterAcesa(); });

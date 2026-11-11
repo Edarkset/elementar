@@ -727,7 +727,7 @@ let ESCURO=null;
 const cacheSilB=new WeakMap();
 function silhuetaBrilho(spr,cor){ let m=cacheSilB.get(spr); if(!m){ m={}; cacheSilB.set(spr,m); } if(m[cor]) return m[cor];
   const c=silhueta(spr,cor), o=document.createElement("canvas"); o.width=c.width; o.height=c.height; const g=o.getContext("2d"); g.drawImage(c,0,0);
-  try{ const im=g.getImageData(0,0,o.width,o.height), d=im.data; for(let i=3;i<d.length;i+=4) d[i]=d[i]<70? 0 : Math.min(255,(d[i]-70)*1.4); g.putImageData(im,0,0); }catch(e){}
+  try{ const im=g.getImageData(0,0,o.width,o.height), d=im.data; for(let i=3;i<d.length;i+=4) d[i]=d[i]<70? 0 : Math.min(255,(d[i]-70)*1.4); g.putImageData(im,0,0); }catch(e){ relatar("brilho dos inimigos: imagem não pôde ser lida",e); }
   if(c._suave) o._suave=true; m[cor]=o; return o; }
 // reinos noturnos: inimigos brilham (aura na cor do elemento e contorno claro), por cima da escuridão, para lerem bem e ficarem bonitos
 function desenharBrilhoInimigos(){ if(SIM.ativo||QUAL===0) return; const L=(UNIV[R.universo]||{}).luz; if(!(L&&L.noite)&&!(J.escuro>0.05)) return;

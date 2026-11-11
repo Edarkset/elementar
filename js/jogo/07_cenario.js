@@ -682,7 +682,7 @@ function faixasFolha(img,rows){ const k="_faixas"+rows; if(img[k]!==undefined) r
     const bandas=[]; let on=false, y0=0; for(let y=0;y<H;y++){ let n=0; for(let x=0;x<W;x+=2) if(d[(y*W+x)*4+3]>40) n++; if(n>1&&!on){ on=true; y0=y; } else if(n<=1&&on){ on=false; if(y-y0>=6) bandas.push([y0,y]); } }
     if(on&&H-y0>=6) bandas.push([y0,H]);
     const ch=H/rows, fora=bandas.filter((b,i)=>Math.abs(b[1]-(i+1)*ch)>ch*0.12).length;
-    if(bandas.length===rows&&fora>0) img[k]=bandas; }catch(e){}
+    if(bandas.length===rows&&fora>0) img[k]=bandas; }catch(e){ relatar("cenário: faixas da folha não puderam ser lidas",e); }
   return img[k]; }
 // pedaço da pose de cima invadindo o topo da célula: se no terço de cima existe uma linha vazia com desenho acima dela,
 // o que está acima é de outra pose e sai
@@ -692,7 +692,7 @@ function limparTopoSolto(c){ try{ const g=c.getContext("2d"), W=c.width, H=c.hei
     viu=false; for(let y=H-1;y>Math.floor(H*0.65);y--){ const t=cheia(y); if(t) viu=true; else if(viu){ let corpo=false; for(let y2=y-1;y2>=0;y2--) if(cheia(y2)){ corpo=true; break; } if(corpo) g.clearRect(0,y,W,H-y); break; } }
     // laterais: fiapo da coluna vizinha separado do corpo por uma coluna vazia, nos 15% de cada lado
     const col=x=>{ for(let y=0;y<H;y++) if(d[(y*W+x)*4+3]>30) return true; return false; }, L=Math.floor(W*0.15);
-    for(const [ini,passo] of [[0,1],[W-1,-1]]){ let v=false; for(let i=0;i<L;i++){ const x=ini+i*passo, t=col(x); if(t) v=true; else if(v){ if(passo>0) g.clearRect(0,0,x,H); else g.clearRect(x+1,0,W-x-1,H); break; } } } }catch(e){} }
+    for(const [ini,passo] of [[0,1],[W-1,-1]]){ let v=false; for(let i=0;i<L;i++){ const x=ini+i*passo, t=col(x); if(t) v=true; else if(v){ if(passo>0) g.clearRect(0,0,x,H); else g.clearRect(x+1,0,W-x-1,H); break; } } } }catch(e){ relatar("cenário: bordas da célula não puderam ser lidas",e); } }
 function celulaArte(img,cols,rows,col,row,w,h,base){ if(!img) return null; if(!img._id) img._id=++ID_IMG; const k=img._id+"|"+cols+"|"+rows+"|"+col+"|"+row+"|"+w+"|"+h;
   if(cacheCel.has(k)) return cacheCel.get(k); if(cacheCel.size>3000) cacheCel.clear();
   const cw=img.width/cols, ch=img.height/rows, c=document.createElement("canvas"); c.width=w; c.height=h; const g=c.getContext("2d"); g.imageSmoothingEnabled=false;
@@ -740,7 +740,7 @@ const cacheBB=new Map();
 function bboxCelula(img,sx,sy,sw,sh){ if(!img._id) img._id=++ID_IMG; const k=img._id+"|"+sx+"|"+sy; if(cacheBB.has(k)) return cacheBB.get(k);
   const c=document.createElement("canvas"); c.width=Math.max(1,Math.round(sw)); c.height=Math.max(1,Math.round(sh)); const g=c.getContext("2d"); g.drawImage(img,sx,sy,sw,sh,0,0,c.width,c.height);
   let x0=c.width, y0=c.height, x1=-1, y1=-1; try{ const d=g.getImageData(0,0,c.width,c.height).data;
-    for(let y=0;y<c.height;y++) for(let x=0;x<c.width;x++) if(d[(y*c.width+x)*4+3]>24){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } }catch(err){}
+    for(let y=0;y<c.height;y++) for(let x=0;x<c.width;x++) if(d[(y*c.width+x)*4+3]>24){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } }catch(err){ relatar("arte: contorno do recorte não pôde ser lido",err); }
   const bb= x1<0? {x:sx,y:sy,w:sw,h:sh} : {x:sx+x0*sw/c.width, y:sy+y0*sh/c.height, w:(x1-x0+1)*sw/c.width, h:(y1-y0+1)*sh/c.height}; cacheBB.set(k,bb); return bb; }
 const ALVO_ARTE=[18,21,24,28];   // altura do monstro com arte, por estágio (pixels de mundo). Antes 24 a 44: os evoluídos ficavam maiores que o herói e cobriam tudo
 function encaixarArte(img,sx,sy,sw,sh,alvo){ const bb=bboxCelula(img,sx,sy,sw,sh), ky=correcaoAltura(img), k=Math.min(alvo/bb.w,alvo/(bb.h*ky)), w=Math.max(1,Math.round(bb.w*k)), h=Math.max(1,Math.round(bb.h*ky*k));
@@ -771,14 +771,14 @@ const TAM_PISO=220;   // o piso de 512 px cobre 220 px de mundo (antes 300: as p
 function nitidez(c,k){ if(SIM.ativo) return c; try{ const g=c.getContext("2d"), w=c.width, h=c.height, im=g.getImageData(0,0,w,h), d=im.data, o=new Uint8ClampedArray(d);
     for(let y=0;y<h;y++){ const ym=((y-1+h)%h)*w, yp=((y+1)%h)*w, y0=y*w; for(let x=0;x<w;x++){ const xm=(x-1+w)%w, xp=(x+1)%w, i=(y0+x)*4;
       for(let ch=0;ch<3;ch++){ const blur=(o[(ym+x)*4+ch]+o[(yp+x)*4+ch]+o[(y0+xm)*4+ch]+o[(y0+xp)*4+ch])*0.25; d[i+ch]=o[i+ch]+(o[i+ch]-blur)*k; } } }
-    g.putImageData(im,0,0); }catch(e){} return c; }
+    g.putImageData(im,0,0); }catch(e){ relatar("piso: emenda não pôde ser suavizada",e); } return c; }
 // piso pintado mais calmo: a arte do chão tem muito contraste e detalhe (flores, trepadeiras, ladrilhos) e competia com
 // monstros e inimigos; tira 20% do contraste, 25% da saturação e escurece um pouco, uma vez só quando o mapa começa
 function acalmarPiso(c){ if(SIM.ativo) return c; try{ const g=c.getContext("2d"), im=g.getImageData(0,0,c.width,c.height), d=im.data;
     let soma=0, n=0; for(let i=0;i<d.length;i+=4*97){ soma+=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114; n++; } const media=soma/n, luz=media<25? 1.45 : media<45? 1.25 : 0.97;   /* piso muito escuro clareia */
     for(let i=0;i<d.length;i+=4){ const r=d[i], gg=d[i+1], b=d[i+2], L=r*0.299+gg*0.587+b*0.114;
       for(let ch=0;ch<3;ch++){ const v=d[i+ch], s=L+(v-L)*0.75; d[i+ch]=(118+(s-118)*0.8)*luz; } }
-    g.putImageData(im,0,0); }catch(e){} return c; }
+    g.putImageData(im,0,0); }catch(e){ relatar("piso: espelhamento não pôde ser suavizado",e); } return c; }
 // piso repetido sem costura. A maioria das artes já emenda sozinha e volta como está. As que não emendam nas bordas
 // (padrões geométricos como o da Pérsia) viram 4 cópias espelhadas, que emendam sem costura nenhuma; cada cópia cobre
 // o mesmo tamanho de mundo, então quem usa dobra o tamanho do piso (c._espelho)
@@ -922,10 +922,10 @@ function faixaParedao(img){ if(!img) return null; if(img._faixa) return img._fai
 // na vertical usa só o tabuleiro e os parapeitos (as linhas que cobrem a largura toda), girado: antes os arcos ficavam de lado
 function faixaPonte(pec){ if(pec._ponte!==undefined) return pec._ponte; pec._ponte=null; const cw=pec.width/2, ch=pec.height/2, bb=bboxCelula(pec,cw,ch,cw,ch);
   const t=document.createElement("canvas"); t.width=Math.max(1,Math.round(bb.w)); t.height=Math.max(1,Math.round(bb.h)); const g=t.getContext("2d"); g.drawImage(pec,bb.x,bb.y,bb.w,bb.h,0,0,t.width,t.height);
-  let shDeck=bb.h; try{ const d=g.getImageData(0,0,t.width,t.height).data; let ult=-1; for(let y=0;y<t.height;y++){ let n=0; for(let x=0;x<t.width;x++) if(d[(y*t.width+x)*4+3]>40) n++; if(n>=t.width*0.88) ult=y; } if(ult>t.height*0.3) shDeck=(ult+1)*bb.h/t.height; }catch(e){}
+  let shDeck=bb.h; try{ const d=g.getImageData(0,0,t.width,t.height).data; let ult=-1; for(let y=0;y<t.height;y++){ let n=0; for(let x=0;x<t.width;x++) if(d[(y*t.width+x)*4+3]>40) n++; if(n>=t.width*0.88) ult=y; } if(ult>t.height*0.3) shDeck=(ult+1)*bb.h/t.height; }catch(e){ relatar("abismo: altura do paredão não pôde ser lida",e); }
   pec._ponte={sx:bb.x, sy:bb.y, sw:bb.w, sh:bb.h, shDeck}; return pec._ponte; }
 // névoa do abismo: degradê vertical (transparente -> cor média do fundo) usado para dissolver a base do paredão
-function nevoaAbismo(fundo){ if(fundo._nev) return fundo._nev; let r=200,g=210,b=225; try{ const c=document.createElement("canvas"); c.width=c.height=8; const gc=c.getContext("2d"); gc.drawImage(fundo,0,0,8,8); const d=gc.getImageData(0,0,8,8).data; r=g=b=0; for(let i=0;i<d.length;i+=4){ r+=d[i]; g+=d[i+1]; b+=d[i+2]; } r/=64; g/=64; b/=64; }catch(e){}
+function nevoaAbismo(fundo){ if(fundo._nev) return fundo._nev; let r=200,g=210,b=225; try{ const c=document.createElement("canvas"); c.width=c.height=8; const gc=c.getContext("2d"); gc.drawImage(fundo,0,0,8,8); const d=gc.getImageData(0,0,8,8).data; r=g=b=0; for(let i=0;i<d.length;i+=4){ r+=d[i]; g+=d[i+1]; b+=d[i+2]; } r/=64; g/=64; b/=64; }catch(e){ relatar("abismo: cor da névoa não pôde ser lida",e); }
   const n=document.createElement("canvas"); n.width=1; n.height=64; const gn=n.getContext("2d"), gr=gn.createLinearGradient(0,0,0,64); gr.addColorStop(0,`rgba(${r|0},${g|0},${b|0},0)`); gr.addColorStop(0.55,`rgba(${r|0},${g|0},${b|0},.75)`); gr.addColorStop(1,`rgba(${r|0},${g|0},${b|0},1)`); gn.fillStyle=gr; gn.fillRect(0,0,1,64);
   fundo._nev=n; return n; }
 function desenharEstrutura(ox,oy){ const E=estruturaU(), C=J.cena; if(!E||!C) return; const pec=folhaU("pecas"), feats=pecasPerto(ox+VW/2,oy+VH/2);

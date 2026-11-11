@@ -25,7 +25,7 @@
     gravarSave(chave, texto){
       try{ nativo.gravarSave(chave, texto); return true; }catch(e){ console.warn("save nativo", e); return web.gravarSave(chave, texto); }
     },
-    conquista(id){ try{ nativo.conquista && nativo.conquista(id); }catch(e){} },
+    conquista(id){ try{ nativo.conquista && nativo.conquista(id); }catch(e){ console.warn("Elementar · conquista da plataforma não registrada", e); } },
     sair: nativo.sair ? () => nativo.sair() : null
   } : web;
 

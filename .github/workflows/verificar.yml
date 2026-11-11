@@ -1,0 +1,50 @@
+# Verificação automática a cada envio: tipos, telas, mecânicas, reinos e a repetição exata das partidas simuladas.
+# Não publica nada: o jogo continua sendo servido pelo GitHub Pages direto dos arquivos do repositório.
+name: Verificar
+
+on:
+  push:              # todo envio, em qualquer ramo (um pull request mostra o resultado do último envio do ramo)
+  workflow_dispatch:  # e à mão, pela aba Actions
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verificar-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Instalar o verificador de tipos (versão fixa)
+        run: npm ci
+      - name: Tipos
+        run: npm run tipos
+      - name: Instalar o navegador de teste
+        # o Playwright fica fora do package.json de propósito: quem roda os testes na própria máquina usa o que já tem instalado
+        run: |
+          npm install --no-save playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Arquivos, telas e mecânicas
+        run: |
+          node testes/verificar.js --so carga
+          node testes/verificar.js --so telas
+          node testes/verificar.js --so mecanicas
+      - name: Os 34 reinos
+        run: node testes/verificar.js --so jogo --seg 20
+      - name: A mesma semente dá a mesma partida
+        run: node testes/reproduzir.js --sementes 2,9 --mapas 3 --paralelo 2
+      - name: Relatório
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio
+          path: testes/relatorio.md
+          if-no-files-found: ignore

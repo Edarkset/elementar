@@ -4,6 +4,12 @@
 "use strict";
 // ================================================================ utilidades
 const $=id=>document.getElementById(id);
+// Nenhum erro some em silêncio: o que era "catch vazio" passa por aqui. Cada lugar avisa uma vez só (senão um erro que se repete a
+// cada quadro enche o console). grave=true é erro de regra do jogo ou de save (aparece como erro e a verificação automática acusa);
+// sem grave é um recurso do navegador que faltou e o jogo segue com o plano B (aparece como aviso)
+const RELATADOS=new Set();
+/** @param {string} onde @param {unknown} erro @param {boolean} [grave] */
+function relatar(onde,erro,grave){ if(RELATADOS.has(onde)) return; RELATADOS.add(onde); (grave? console.error : console.warn)("Elementar · "+onde, erro); }
 const rnd=(a,b)=>a+Math.random()*(b-a), escolha=a=>a[Math.floor(Math.random()*a.length)];
 const embaralhar=a=>{a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a;};
 const dist2=(a,b)=>{const dx=a.x-b.x, dy=a.y-b.y; return dx*dx+dy*dy;};
@@ -31,7 +37,7 @@ function mistura(a,b,t){const x=hexRgb(a), y=hexRgb(b); return hex(x.map((v,i)=>
 // O navegador só libera o som depois do primeiro toque; o volume e o mudo ficam no save (META.som).
 const SOM={ctx:null, mestre:null, ult:{}};
 function somLigar(){ if(SOM.ctx){ if(SOM.ctx.state==="suspended") SOM.ctx.resume(); return; } try{ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
-    SOM.ctx=new AC(); const comp=SOM.ctx.createDynamicsCompressor(); SOM.mestre=SOM.ctx.createGain(); SOM.mestre.gain.value=0.45; SOM.mestre.connect(comp); comp.connect(SOM.ctx.destination); }catch(e){} }
+    SOM.ctx=new AC(); const comp=SOM.ctx.createDynamicsCompressor(); SOM.mestre=SOM.ctx.createGain(); SOM.mestre.gain.value=0.45; SOM.mestre.connect(comp); comp.connect(SOM.ctx.destination); }catch(e){ relatar("som: o navegador não deixou criar o áudio",e); } }
 addEventListener("pointerdown",somLigar,{passive:true}); addEventListener("keydown",somLigar);
 function somNota(f,dur,tipo,vol,atraso,f2){ const c=SOM.ctx, t=c.currentTime+(atraso||0), o=c.createOscillator(), g=c.createGain(); o.type=tipo||"sine"; o.frequency.setValueAtTime(f,t); if(f2) o.frequency.exponentialRampToValueAtTime(f2,t+dur);
   g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+0.008); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.connect(g); g.connect(SOM.mestre); o.start(t); o.stop(t+dur+0.02); }
@@ -59,9 +65,9 @@ function som(nome,x){ if(!SOM.ctx||SIM.ativo||(META.som&&META.som.mudo)) return;
 // ================================================================ save
 const CHAVE="elementar_proto_v2";
 // o save passa pela camada de plataforma (js/plataforma.js): localStorage na web, arquivo no desktop/Steam
-const PLAT=window.Plataforma||{lerSave:k=>{try{return localStorage.getItem(k);}catch(e){return null;}}, gravarSave:(k,t)=>{try{localStorage.setItem(k,t);}catch(e){}}, conquista(){}};
+const PLAT=window.Plataforma||{lerSave:k=>{try{return localStorage.getItem(k);}catch(e){return null;}}, gravarSave:(k,t)=>{try{localStorage.setItem(k,t);}catch(e){ relatar("save: o navegador recusou gravar (modo privado ou sem espaço)",e,true); }}, conquista(){}};
 function lerSave(){try{const s=PLAT.lerSave(CHAVE); return s?JSON.parse(s):null;}catch(e){return null;}}
-function gravar(){try{PLAT.gravarSave(CHAVE, JSON.stringify({meta:META, run:RUN_SALVA}));}catch(e){}}
+function gravar(){try{PLAT.gravarSave(CHAVE, JSON.stringify({meta:META, run:RUN_SALVA}));}catch(e){ relatar("save: não foi possível gravar o progresso",e,true); }}
 const salvo=lerSave()||{};
 function liberadosIniciais(){ const ini=new Set(D.linhas.filter(l=>D.universos.find(u=>u.id===l.universo).era==="berco"||l.universo==="amazonia").map(l=>l.id));
   ELS.forEach(el=>D.linhas.filter(l=>l.elemento===el).slice(0,3).forEach(l=>ini.add(l.id))); return [...ini]; }

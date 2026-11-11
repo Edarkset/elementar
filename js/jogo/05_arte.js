@@ -20,7 +20,7 @@ function limparFundo(nome,img){ const forte=/__(tiles|fauna|inimigos|objetos|pro
   try{ const c=document.createElement("canvas"); c.width=img.width; c.height=img.height; const g=c.getContext("2d"); g.drawImage(img,0,0); const im=g.getImageData(0,0,c.width,c.height), d=im.data;
     if(forte) for(let i=3;i<d.length;i+=4){ const a=d[i]; if(a<56) d[i]=0; else if(a<110) d[i]=Math.round((a-56)/54*110); }
     else for(let i=3;i<d.length;i+=4) if(d[i]<12) d[i]=0;
-    g.putImageData(im,0,0); c.pronta=true; c.complete=true; ARTE_IMG[nome]=c; }catch(e){} }
+    g.putImageData(im,0,0); c.pronta=true; c.complete=true; ARTE_IMG[nome]=c; }catch(e){ relatar("arte: fundo da imagem não pôde ser limpo",e); } }
 function registrarArte(nome,src){ const img=new Image(); img.decoding="async"; ARTE_PEND++; ARTE_IMG[nome]=img;
   img.onload=()=>{ img.pronta=true; ARTE_PEND--; limparFundo(nome,img); novaArte(nome); };
   img.onerror=()=>{ ARTE_PEND--; img.falhou=true; }; img.src=src; }
@@ -81,7 +81,7 @@ const alfaDe=img=>{ const c=document.createElement("canvas"); c.width=img.width;
 function melhorCorte(cont,nom,lo,hi){ let best=nom, bc=1e18; for(let b=Math.max(1,Math.round(lo));b<=Math.min(cont.length-1,Math.round(hi));b++){ const c=(cont[b]>0?1e6+cont[b]*100:0)+Math.abs(b-nom); if(c<bc){ bc=c; best=b; } } return best; }
 function fatiarFolha(img,cols,rows,rigido){ if(!img._id) img._id=++ID_IMG; const k=img._id+"|"+cols+"x"+rows+(rigido?"r":""); if(cacheFatia.has(k)) return cacheFatia.get(k);
   // rigido: colunas na grade; o corte entre linhas só sai da grade para uma linha vazia a até 1/4 de célula
-  const W=img.width, H=img.height, cw=W/cols, ch=H/rows; let d=null; try{ d=alfaDe(img); }catch(e){}
+  const W=img.width, H=img.height, cw=W/cols, ch=H/rows; let d=null; try{ d=alfaDe(img); }catch(e){ relatar("arte: folha não pôde ser lida para o recorte",e); }
   const cheio=(x,y)=>d[(y*W+x)*4+3]>24;
   // cortes das linhas
   const lin=new Int32Array(H); if(d) for(let y=0;y<H;y++){ let n=0; for(let x=0;x<W;x++) if(cheio(x,y)) n++; lin[y]=n; }

@@ -42,19 +42,22 @@ elementar/
 │   ├── tipos.d.ts        # formas centrais do jogo para o verificador de tipos (o navegador não carrega)
 │   ├── plataforma.js     # save e recursos do navegador ou do app de computador
 │   ├── jogo/             # lógica do jogo, em módulos (import/export); o index.html carrega só a entrada
-│   │   ├── principal.js      # entrada: puxa as 11 partes na ordem e, com ?teste, a ponte de teste
+│   │   ├── principal.js      # entrada: puxa todas as partes na ordem dos nomes e, com ?teste, a ponte de teste
 │   │   ├── ponte_teste.js    # publica os nomes do jogo na página para o robô e a verificação (só com ?teste ou ?moderador)
-│   │   ├── 01_nucleo.js      # utilidades, som, save, estado da run, sinergias, Santuário
-│   │   ├── 02_combate.js     # mapa, dificuldade (DIF), Presságio, dano, reações, ataques
-│   │   ├── 03_progressao.js  # níveis, escolhas, ovos, Bestiário, baús, portais, especiais
-│   │   ├── 04_ambiente.js    # o chão reage aos elementos (fogo, água, gelo...)
-│   │   ├── 05_arte.js        # artes importadas: carregamento, recortes, animações
-│   │   ├── 06_loop.js        # entrada (toque e teclado) e laço principal
-│   │   ├── 07_cenario.js     # cenário vivo, piso, abismos, pontes e lagos
-│   │   ├── 08_sistemas.js    # horda, poderes, Talismãs, conquistas, Lendas, Panteão, luz
-│   │   ├── 09_criaturas.js   # inimigos, mini-chefes e chefes
-│   │   ├── 10_desenho.js     # desenho de cada quadro, herói e HUD
-│   │   └── 11_menu.js        # menu, pausa e modo moderador; começa o jogo
+│   │   ├── 01_nucleo.js        # utilidades, som, save, estado da run, sinergias, Santuário
+│   │   ├── 02_combate.js       # mapa, dificuldade (DIF), Presságio, dano, reações, ataques
+│   │   ├── 03_progressao.js    # níveis, escolhas, ovos, Bestiário, baús, portais, especiais
+│   │   ├── 04_ambiente.js      # o chão reage aos elementos (fogo, água, gelo...)
+│   │   ├── 05_arte.js          # artes importadas: carregamento, recortes, animações
+│   │   ├── 06_loop.js          # entrada (toque e teclado) e laço principal
+│   │   ├── 07_cenario.js       # cenário vivo: vento, vegetação, objetos físicos, clima
+│   │   ├── 07b_cenario_desenho.js · 07c_cenario_arte.js · 07d_estrutura.js (abismos, lagos, fauna, abertura)
+│   │   ├── 08_horda.js         # diretor de horda
+│   │   ├── 08b_efeitos.js … 08h_interface.js   # efeitos, eventos, poderes, conquistas, Lendas e Panteão, luz, interface
+│   │   ├── 09_criaturas.js     # inimigos e mini-chefes
+│   │   ├── 09b_chefes.js       # chefes: golpes, perigos anunciados, segunda fase
+│   │   ├── 10_desenho.js       # desenho de cada quadro, herói e HUD
+│   │   └── 11_menu.js          # menu, pausa e modo moderador; começa o jogo
 │   └── app.js            # service worker, tela acesa e save persistente
 ├── testes/
 │   ├── verificar.js      # verificação automática: telas, jogo, mecânicas e imagem

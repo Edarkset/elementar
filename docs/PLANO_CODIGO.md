@@ -73,9 +73,11 @@ Ficou para a etapa 1, de propósito:
 | Ponte de teste | `js/jogo/ponte_teste.js`, carregada só com `?teste` ou `?moderador`: o robô e a verificação continuam usando os mesmos nomes. |
 | Prova | 6 partidas idênticas às gravadas antes; telas, desenho, mecânicas e 34 reinos sem problemas; velocidade da lógica igual (0,83 contra 0,82 ms por passo). |
 | Formatador automático (Prettier 3.10.0 fixo), num commit só de formatação | Feito. `npm run formatar` aplica, `npm run formato` confere (também a cada envio). A lógica passou de 4.964 linhas densas para 22.700 linhas, uma instrução por linha; as 6 partidas continuaram idênticas. O commit está em `.git-blame-ignore-revs`, para o histórico de autoria pular a formatação. |
-| Dividir `07_cenario.js`, `08_sistemas.js` e `09_criaturas.js` por assunto | A fazer. Com módulos, mover uma função de arquivo passou a ser uma mudança local. |
+| Dividir `07_cenario.js`, `08_sistemas.js` e `09_criaturas.js` por assunto | Feito. Viraram 14 módulos (cenário vivo, desenho do cenário, arte de cenário, estrutura do mapa; horda, efeitos, eventos, poderes, conquistas, lendas, luz, interface; criaturas, chefes). São 22 módulos ao todo, nenhum acima de 2.400 linhas. `ferramentas/reimportar.js` refaz os imports de todos pelo que o verificador acusa: mover uma função é recortar, colar e rodar o script. |
 
 Como a conversão foi feita: um programa usou o compilador do TypeScript para resolver cada nome (quem declara, quem lê, quem escreve), em vez de procurar texto. Por isso nenhum import ficou faltando nem sobrando, e nomes iguais em escopos diferentes não se confundiram.
+
+Falta nesta etapa: estado em um lugar. `J` e `R` ainda são variáveis exportadas que qualquer módulo altera por dentro (`J.vida -= dano`); só a troca do objeto inteiro passou a ter nome (`defJ`, `defR`). Fechar isso é mais natural na etapa 2, com os tipos estritos dizendo quem mexe em quê.
 
 Não testado nesta etapa: a versão de computador (`desktop/`, Electron). Ela serve os mesmos arquivos por um protocolo próprio e deve carregar módulos normalmente, mas precisa ser aberta uma vez para confirmar.
 

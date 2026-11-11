@@ -14,18 +14,17 @@ function spriteCriatura(def,tam,cor,q,pose,semente){
   const W=tam+4, H=tam+4, buf=new Array(W*H).fill(null), s=tam, ox=2, oy=2, tem=d=>det.includes(d), u=Math.max(1,s/16);
   const px=(x,y,c)=>{ x=Math.round(x)+ox; y=Math.round(y)+oy; if(x>=0&&y>=0&&x<W&&y<H&&c) buf[y*W+x]=c; };
   const osso=tem("ossos"), band=tem("bandagens");
-  const base= osso? "#e2dac6" : band? "#d8ccaa" : cor, cla=tom(base,1.28), esc=tom(base,.62), cont="#140f1c";
+  const base= osso? "#e2dac6" : band? "#d8ccaa" : cor, esc=tom(base,.62), cont="#140f1c";
   const sombreado=(dx,dy,c)=> (dx+dy<-0.45)? tom(c,1.28) : (dx+dy>0.5)? tom(c,.66) : c;
   const elipse=(cx,cy,rx,ry,c,plano)=>{ for(let y=Math.floor(cy-ry);y<=Math.ceil(cy+ry);y++) for(let x=Math.floor(cx-rx);x<=Math.ceil(cx+rx);x++){ const dx=(x-cx)/Math.max(.5,rx), dy=(y-cy)/Math.max(.5,ry); if(dx*dx+dy*dy<=1.05) px(x,y,plano?c:sombreado(dx,dy,c)); } };
   const ret=(x,y,w,h,c)=>{ for(let j=0;j<h;j++) for(let i=0;i<w;i++) px(x+i,y+j,c); };
   const linha=(x0,y0,x1,y1,c,g)=>{ const n=Math.max(1,Math.ceil(Math.hypot(x1-x0,y1-y0))); for(let i=0;i<=n;i++){ const t=i/n, x=x0+(x1-x0)*t, y=y0+(y1-y0)*t; px(x,y,c); if(g>1) px(x,y+1,c); } };
   const fi=q*Math.PI/2, sw=Math.sin(fi), sw2=Math.cos(fi), atk=pose==="atk", dor=pose==="dor", pisc=pose==="pisca", man=pose==="mania";
-  const r=semente? semente : 1;
   // pontos de referência para os detalhes: cabeça (hx,hy,hr) e corpo (bx,by,br)
-  let hx=s*0.5, hy=s*0.3, hr=s*0.16, bx=s*0.5, by=s*0.58, br=s*0.22, frente=1, boca=null, olhos=[];
+  let hx=s*0.5, hy=s*0.3, hr=s*0.16, bx=s*0.5, by=s*0.58, br=s*0.22, boca=null, olhos=[];
   const dd=dor?1:0;
   switch(def.corpo){
-    case "humanoide": { const hip=s*0.7+dd, umPe=tem("um_pe"), ab=atk?-1:0;
+    case "humanoide": { const hip=s*0.7+dd, umPe=tem("um_pe");
       if(!tem("cauda")||!tem("flutua")){
         if(umPe){ linha(s*0.5,hip,s*0.5+sw*u,s-1,esc,u); px(s*0.5+sw*u+1,s-1,esc); }
         else if(def.andar!=="flutua"){ linha(s*0.43,hip,s*0.4+sw*1.6*u,s-1,esc,1); linha(s*0.57,hip,s*0.6-sw*1.6*u,s-1,esc,1); if(u>1.2){ linha(s*0.43+1,hip,s*0.4+sw*1.6*u+1,s-1,esc); linha(s*0.57-1,hip,s*0.6-sw*1.6*u-1,s-1,esc); } }
@@ -49,7 +48,7 @@ function spriteCriatura(def,tam,cor,q,pose,semente){
       elipse(s*0.48,s*0.58+dd,s*0.3,s*0.16,base); bx=s*0.48; by=s*0.58; br=s*0.2;
       hx=s*0.78+(atk?u*1.5:0); hy=s*0.44+dd+(atk?u:0); hr=s*0.13; elipse(hx,hy,hr,hr*0.9,tom(base,1.08)); elipse(hx+hr*0.9,hy+hr*0.35,hr*0.55,hr*0.4,tom(base,1.0));
       if(!tem("cauda")) linha(s*0.18,s*0.54,s*0.08,s*0.42+sw2*u,esc);
-      olhos=[[hx+hr*0.3,hy-hr*0.2]]; boca=[hx+hr*1.3,hy+hr*0.6]; frente=1; break; }
+      olhos=[[hx+hr*0.3,hy-hr*0.2]]; boca=[hx+hr*1.3,hy+hr*0.6]; break; }
     case "bipede": { const y0=s*0.68+dd;
       linha(s*0.42,y0,s*0.38+sw*2*u,s-1,esc,2); linha(s*0.54,y0,s*0.58-sw*2*u,s-1,tom(base,.8),2);
       for(let i=0;i<8;i++) elipse(s*0.32-i*s*0.035,s*0.58+i*s*0.025+sw2*i*0.15,s*0.08-i*s*0.008,s*0.06-i*s*0.006,tom(base,.92),true);

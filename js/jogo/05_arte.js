@@ -1,12 +1,12 @@
 // Elementar · artes importadas: manifesto, carregamento sob demanda, recortes e animações dos monstros
-// Parte 5 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
-// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
-import "./04_ambiente.js"; // ordem de carga: os módulos são avaliados de 01 a 11, como antes (cada um puxa o anterior primeiro)
+// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
+import "./04_ambiente.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
 import { est, J, L, LINHA, R, ramoAtual, relatar, SIM, UNIV } from "./01_nucleo.js";
 import { maisProximo } from "./02_combate.js";
 import { QUAL } from "./06_loop.js";
-import { ALVO_ARTE, arteCarregou, encaixarArte, novoIdImg } from "./07_cenario.js";
-import { aplicarArteUI, LENDA } from "./08_sistemas.js";
+import { ALVO_ARTE, arteCarregou, encaixarArte, novoIdImg } from "./07c_cenario_arte.js";
+import { LENDA } from "./08f_lendas.js";
+import { aplicarArteUI } from "./08h_interface.js";
 // ================================================================ arte real (folhas do Copilot, via importador): usa no lugar dos sprites procedurais
 // ARTE_IMG[nome] devolve a imagem; se ela está no manifesto e ainda não foi pedida, começa a baixar na hora (sob demanda).
 // Quem usa confere .pronta: enquanto não chega, o jogo segue com o desenho por código.

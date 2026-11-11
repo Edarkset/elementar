@@ -106,7 +106,7 @@ function verificarArquivos() {
   const dir = path.join(RAIZ, "js/jogo"),
     partes = fs
       .readdirSync(dir)
-      .filter(f => /^\d\d_.*\.js$/.test(f))
+      .filter(f => /^\d\d[a-z]?_.*\.js$/.test(f))
       .sort(),
     ler = f => fs.readFileSync(path.join(dir, f), "utf8");
   if (!/<script type="module" src="js\/jogo\/principal\.js"><\/script>/.test(html))

@@ -1,10 +1,10 @@
 // Elementar · física do ambiente: o chão reage aos elementos
-// Parte 4 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
-// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
-import "./03_progressao.js"; // ordem de carga: os módulos são avaliados de 01 a 11, como antes (cada um puxa o anterior primeiro)
+// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
+import "./03_progressao.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
 import { ativos, defFonte, elementoDe, FONTE, hexRgb, J, lg, Q, R, ramoObj, rnd, semente, SIM, tom, UNIV, VH, VW } from "./01_nucleo.js";
 import { curar, danoSimples } from "./02_combate.js";
-import { abismoEm, estruturaU, folhaU, lagoEm, soloEstrutura, soloLago } from "./07_cenario.js";
+import { folhaU } from "./07c_cenario_arte.js";
+import { abismoEm, estruturaU, lagoEm, soloEstrutura, soloLago } from "./07d_estrutura.js";
 import { pctMax } from "./09_criaturas.js";
 import { chao } from "./10_desenho.js";
 // ================================================================ física do ambiente: o chão reage aos elementos

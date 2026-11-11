@@ -1,7 +1,6 @@
 // Elementar · mapa, modificadores da run (Presságio e Cartas Proibidas), impacto, dano, reações, mortes e ataques
-// Parte 2 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
-// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
-import "./01_nucleo.js"; // ordem de carga: os módulos são avaliados de 01 a 11, como antes (cada um puxa o anterior primeiro)
+// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
+import "./01_nucleo.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
 import {
   $,
   agendar,
@@ -69,13 +68,11 @@ import {
 } from "./03_progressao.js";
 import { artesDoMapa, preCarregar, resetAnimSelo } from "./05_arte.js";
 import { QUAL } from "./06_loop.js";
-import { aposAbertura, bolhaCor, danificarProp, iniciarAbertura, iniciarCena, propMaisProximo, rajada } from "./07_cenario.js";
+import { bolhaCor, danificarProp, iniciarCena, propMaisProximo, rajada } from "./07_cenario.js";
+import { aposAbertura, iniciarAbertura } from "./07d_estrutura.js";
+import { fatorXPDiretor } from "./08_horda.js";
 import {
-  aoDisparar,
-  atribPoder,
-  bauDesperto,
   circuloInvocacao,
-  custo,
   efCanto,
   efCortes,
   efCupula,
@@ -90,14 +87,7 @@ import {
   efPuxao,
   efQueda,
   efRastroSalto,
-  evento,
-  fatorXPDiretor,
-  luzFlash,
-  multDanoLenda,
   particulasEl,
-  passiva,
-  tal,
-  textoUnico,
   vEl,
   vfx,
   vfxCorte,
@@ -106,8 +96,14 @@ import {
   vfxReacao,
   vfxSelo,
   vfxX
-} from "./08_sistemas.js";
-import { anunciar, aoMorrerCriatura, defInimigo, fadigaChefe, faseDois, prepararCriatura } from "./09_criaturas.js";
+} from "./08b_efeitos.js";
+import { textoUnico } from "./08c_eventos.js";
+import { aoDisparar, atribPoder, bauDesperto, tal } from "./08d_poderes.js";
+import { evento } from "./08e_conquistas.js";
+import { custo, multDanoLenda, passiva } from "./08f_lendas.js";
+import { luzFlash } from "./08g_luz.js";
+import { aoMorrerCriatura, defInimigo, prepararCriatura } from "./09_criaturas.js";
+import { anunciar, fadigaChefe, faseDois } from "./09b_chefes.js";
 import { desenharEquipe, desenharNinho, gerarChao, toast } from "./10_desenho.js";
 // ================================================================ mapa
 export function iniciarMapa() {

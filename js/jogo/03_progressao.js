@@ -1,7 +1,6 @@
 // Elementar · níveis, telas de escolha, ovos, Ovo Ancestral, missões, Bestiário, captura, cenas, baús, portais e especiais
-// Parte 3 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
-// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
-import "./02_combate.js"; // ordem de carga: os módulos são avaliados de 01 a 11, como antes (cada um puxa o anterior primeiro)
+// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
+import "./02_combate.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
 import {
   $,
   agendar,
@@ -97,24 +96,17 @@ import {
 import { mudarSolo } from "./04_ambiente.js";
 import { ARTE_IMG, arteMonstro, artesQue, correcaoAltura, fatiarFolha, folhaAnimMonstro, preCarregar } from "./05_arte.js";
 import { ganharXp } from "./06_loop.js";
-import { bolhaCor, silhueta, spriteUI } from "./07_cenario.js";
-import {
-  cartaLenda,
-  cartaTalisma,
-  circuloInvocacao,
-  eventosVitoria,
-  luzFlash,
-  nivTal,
-  passiva,
-  PD,
-  tal,
-  UI_ARQ,
-  vfx,
-  vfxCombinado,
-  vfxEspecial,
-  vfxOnda
-} from "./08_sistemas.js";
-import { anunciar, arteCriatura } from "./09_criaturas.js";
+import { bolhaCor } from "./07_cenario.js";
+import { silhueta } from "./07b_cenario_desenho.js";
+import { spriteUI } from "./07c_cenario_arte.js";
+import { circuloInvocacao, vfx, vfxCombinado, vfxEspecial, vfxOnda } from "./08b_efeitos.js";
+import { cartaTalisma, nivTal, PD, tal } from "./08d_poderes.js";
+import { eventosVitoria } from "./08e_conquistas.js";
+import { cartaLenda, passiva } from "./08f_lendas.js";
+import { luzFlash } from "./08g_luz.js";
+import { UI_ARQ } from "./08h_interface.js";
+import { arteCriatura } from "./09_criaturas.js";
+import { anunciar } from "./09b_chefes.js";
 import { desenharEquipe, desenharNinho, toast } from "./10_desenho.js";
 import { menu, telaPacto } from "./11_menu.js";
 // ================================================================ progressão: níveis, poderes, evolução

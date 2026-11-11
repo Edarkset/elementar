@@ -2,17 +2,28 @@
 // Publica na página (window) todos os nomes exportados pelos módulos do jogo, para o robô (testes/bot.js), a verificação
 // automática (testes/verificar.js) e o console do navegador. A leitura é sempre ao vivo; a escrita só existe para as variáveis
 // que têm função de escrita no módulo dono (defJ, defPausado...).
-import * as m01 from "./01_nucleo.js";
-import * as m02 from "./02_combate.js";
-import * as m03 from "./03_progressao.js";
-import * as m04 from "./04_ambiente.js";
-import * as m05 from "./05_arte.js";
-import * as m06 from "./06_loop.js";
-import * as m07 from "./07_cenario.js";
-import * as m08 from "./08_sistemas.js";
-import * as m09 from "./09_criaturas.js";
-import * as m10 from "./10_desenho.js";
-import * as m11 from "./11_menu.js";
+import * as m0 from "./01_nucleo.js";
+import * as m1 from "./02_combate.js";
+import * as m2 from "./03_progressao.js";
+import * as m3 from "./04_ambiente.js";
+import * as m4 from "./05_arte.js";
+import * as m5 from "./06_loop.js";
+import * as m6 from "./07_cenario.js";
+import * as m7 from "./07b_cenario_desenho.js";
+import * as m8 from "./07c_cenario_arte.js";
+import * as m9 from "./07d_estrutura.js";
+import * as m10 from "./08_horda.js";
+import * as m11 from "./08b_efeitos.js";
+import * as m12 from "./08c_eventos.js";
+import * as m13 from "./08d_poderes.js";
+import * as m14 from "./08e_conquistas.js";
+import * as m15 from "./08f_lendas.js";
+import * as m16 from "./08g_luz.js";
+import * as m17 from "./08h_interface.js";
+import * as m18 from "./09_criaturas.js";
+import * as m19 from "./09b_chefes.js";
+import * as m20 from "./10_desenho.js";
+import * as m21 from "./11_menu.js";
 
 /** variável → função de escrita no módulo dono */
 const ESCRITA = {
@@ -28,7 +39,7 @@ const ESCRITA = {
   META: "defMeta"
 };
 const naoPublicados = [];
-for (const m of [m01, m02, m03, m04, m05, m06, m07, m08, m09, m10, m11]) {
+for (const m of [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15, m16, m17, m18, m19, m20, m21]) {
   for (const nome of Object.keys(m)) {
     const escreve = ESCRITA[nome] && m[ESCRITA[nome]];
     try {

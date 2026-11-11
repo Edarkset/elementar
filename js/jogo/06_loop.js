@@ -1,7 +1,6 @@
 // Elementar · entrada (toque, teclado) e laço principal do jogo
-// Parte 6 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
-// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
-import "./05_arte.js"; // ordem de carga: os módulos são avaliados de 01 a 11, como antes (cada um puxa o anterior primeiro)
+// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
+import "./05_arte.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
 import {
   $,
   agendar,
@@ -71,29 +70,17 @@ import {
   usarCombinado
 } from "./03_progressao.js";
 import { aplicarElementoNoSolo, atualizarSolo, CEL, efeitoSoloInimigo, soloEm } from "./04_ambiente.js";
-import { atualizarCena, danificarProp, lascas, passoAbertura, propNoPonto, pularAbertura, rajada } from "./07_cenario.js";
-import {
-  ameacaDiretor,
-  atualizarArvore,
-  atualizarAvisos,
-  atualizarConquistas,
-  atualizarDiretor,
-  atualizarEventos,
-  atualizarLenda,
-  atualizarLuz,
-  atualizarVfx,
-  custo,
-  efCirculo,
-  efExplosao,
-  efPilar,
-  lendaReviver,
-  luzFlash,
-  multDiretor,
-  passiva,
-  tal,
-  textoUnico
-} from "./08_sistemas.js";
-import { atualizarCriaturas, atualizarPerigos, criarProp, feriJogador, iaChefe, passoCriatura, pintarSolo } from "./09_criaturas.js";
+import { atualizarCena, danificarProp, lascas, propNoPonto, rajada } from "./07_cenario.js";
+import { passoAbertura, pularAbertura } from "./07d_estrutura.js";
+import { ameacaDiretor, atualizarAvisos, atualizarDiretor, multDiretor } from "./08_horda.js";
+import { atualizarVfx, efCirculo, efExplosao, efPilar } from "./08b_efeitos.js";
+import { atualizarEventos, textoUnico } from "./08c_eventos.js";
+import { atualizarArvore, tal } from "./08d_poderes.js";
+import { atualizarConquistas } from "./08e_conquistas.js";
+import { atualizarLenda, custo, lendaReviver, passiva } from "./08f_lendas.js";
+import { atualizarLuz, luzFlash } from "./08g_luz.js";
+import { atualizarCriaturas, passoCriatura } from "./09_criaturas.js";
+import { atualizarPerigos, criarProp, feriJogador, iaChefe, pintarSolo } from "./09b_chefes.js";
 import { chao, desenhar, desenharEquipe, desenharNinho, hud, quadroHeroi, toast } from "./10_desenho.js";
 import { pausar } from "./11_menu.js";
 // ================================================================ entrada

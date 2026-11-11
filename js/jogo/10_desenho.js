@@ -1,7 +1,6 @@
 // Elementar · desenho de cada quadro, herói e HUD
-// Parte 10 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
-// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
-import "./09_criaturas.js"; // ordem de carga: os módulos são avaliados de 01 a 11, como antes (cada um puxa o anterior primeiro)
+// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
+import "./09b_chefes.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
 import {
   $,
   ativos,
@@ -39,57 +38,43 @@ import { abrirEquipe, desenharMoedasBaus, setaFora, tipoCombinado } from "./03_p
 import { desenharSolo } from "./04_ambiente.js";
 import { artesQue, MANIFESTO, movSelo, preCarregar, quadroAnimSelo } from "./05_arte.js";
 import { QUAL, toque } from "./06_loop.js";
+import { bolhaCor } from "./07_cenario.js";
 import {
-  ALVO_ARTE,
-  bolhaCor,
-  chaoArte,
-  desenharAbertura,
-  desenharCamadaArte,
   desenharCenaAr,
   desenharCenaBrilho,
   desenharCenaChao,
   desenharCenaLuz,
   desenharCenaObjetos,
   desenharDetalhesChao,
-  desenharEstrutura,
-  desenharFauna,
   desenharNuvens,
-  desenharQuedasAbismo,
-  desenharSprite,
-  silhueta,
-  spriteUI
-} from "./07_cenario.js";
+  silhueta
+} from "./07b_cenario_desenho.js";
+import { ALVO_ARTE, chaoArte, desenharCamadaArte, desenharSprite, spriteUI } from "./07c_cenario_arte.js";
+import { desenharAbertura, desenharEstrutura, desenharFauna, desenharQuedasAbismo } from "./07d_estrutura.js";
+import { desenharAvisos } from "./08_horda.js";
 import {
-  desenharAltar,
   desenharArmadilha,
-  desenharAvisos,
-  desenharConquista,
   desenharCria,
   desenharEspirito,
-  desenharLenda,
-  desenharLuzAmbiente,
-  desenharMapaLuz,
   desenharParticula,
   desenharProjetil,
   desenharVfx,
-  desenharZona,
-  LENDA,
-  luzFlash,
-  nivelEscuro,
-  sombraProjetada
-} from "./08_sistemas.js";
+  desenharZona
+} from "./08b_efeitos.js";
+import { desenharAltar } from "./08c_eventos.js";
+import { desenharConquista } from "./08e_conquistas.js";
+import { desenharLenda, LENDA } from "./08f_lendas.js";
+import { desenharLuzAmbiente, desenharMapaLuz, luzFlash, nivelEscuro, sombraProjetada } from "./08g_luz.js";
+import { desenharCadaveres, desenharFalas, desenharInimigo } from "./09_criaturas.js";
 import {
   desenharBala,
   desenharBarraChefe,
   desenharBrilhoInimigos,
-  desenharCadaveres,
   desenharEscuridao,
-  desenharFalas,
   desenharGolpesLuz,
-  desenharInimigo,
   desenharPerigos,
   desenharQuedas
-} from "./09_criaturas.js";
+} from "./09b_chefes.js";
 // ================================================================ desenho
 export let chao = null;
 export function gerarChao(u) {

@@ -1,12 +1,11 @@
 // Elementar · utilidades, som, save, sprites procedurais, estado da run, sinergias e Santuário
-// Parte 1 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
-// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
+// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import { anel, DIF, emArea, ferir, MOD, particulas, PRESSAGIOS, texto, tremor } from "./02_combate.js";
 import { ASCENSAO, mostrarCartas, ramosElegiveis, registrarDex } from "./03_progressao.js";
 import { arteMonstro } from "./05_arte.js";
 import { QUAL } from "./06_loop.js";
-import { versaoHi } from "./07_cenario.js";
-import { custo, LENDA, passiva } from "./08_sistemas.js";
+import { versaoHi } from "./07c_cenario_arte.js";
+import { custo, LENDA, passiva } from "./08f_lendas.js";
 import { toast } from "./10_desenho.js";
 import { menu } from "./11_menu.js";
 // ================================================================ utilidades

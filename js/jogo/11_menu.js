@@ -1,7 +1,6 @@
 // Elementar · menu, Pacto, pausa e modo moderador; começa o jogo
-// Parte 11 de 11 da lógica do jogo. Cada parte é um módulo: importa o que usa das outras e exporta o que oferece.
-// A entrada é js/jogo/principal.js; as partes são avaliadas na ordem 01 → 11.
-import "./10_desenho.js"; // ordem de carga: os módulos são avaliados de 01 a 11, como antes (cada um puxa o anterior primeiro)
+// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
+import "./10_desenho.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
 import {
   $,
   ativos,
@@ -59,7 +58,9 @@ import {
 } from "./03_progressao.js";
 import { ARTE_IMG, MANIFESTO, preCarregar } from "./05_arte.js";
 import { passo } from "./06_loop.js";
-import { aplicarArteUI, checarGlobais, metaConq, metaDeuses, telaConquistas, telaInvocador, UI_ARQ } from "./08_sistemas.js";
+import { checarGlobais, metaConq, telaConquistas } from "./08e_conquistas.js";
+import { metaDeuses, telaInvocador } from "./08f_lendas.js";
+import { aplicarArteUI, UI_ARQ } from "./08h_interface.js";
 import { desenharEquipe, toast } from "./10_desenho.js";
 // ================================================================ menu, Pacto, pausa
 export function pausar() {

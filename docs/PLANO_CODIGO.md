@@ -38,18 +38,30 @@ Arquivo `.ts` precisa ser compilado, e hoje o Pages serve os arquivos como estã
 
 Cada etapa só é aceita se passar em três provas, que já existem no repositório:
 
-- **mesmo comportamento:** o robô com sementes fixas dá resultados idênticos antes e depois. Hoje isso vale só em parte: depois de duas correções feitas em 11/11 a mesma semente repete de 2 a 4 mapas idênticos e depois diverge. Tornar a partida simulada totalmente reproduzível é a primeira tarefa da etapa 0, porque transforma "parece igual" em prova;
+- **mesmo comportamento:** o robô com sementes fixas dá partidas idênticas antes e depois (`node testes/reproduzir.js --gravar` e `--conferir`). Vale desde 11/11/2026: a mesma semente repete a partida inteira;
 - **`testes/verificar.js`** com zero problemas (telas, 34 reinos, mecânicas);
 - **performance:** custo da lógica por quadro e cópias de imagem por quadro iguais ou menores.
 
-### Etapa 0. Rede de segurança (não muda o que roda)
+### Etapa 0. Rede de segurança (não muda o que roda) — feita em 11/11/2026
 
-- `tsconfig.json` com `checkJs`, TypeScript fixado em versão exata, `package-lock.json`.
-- `tipos.d.ts` com as formas centrais: `Run`, `Mapa`, `Selo`, `Inimigo`, `Projetil`, `Zona` (uma união por `tipo`: círculo, rastro, chuva, portal, espírito), `Cria`, `Armadilha`, `Efeito`.
-- Zerar os 152 erros do modo frouxo. As propriedades penduradas (`_src`, `_hi`, `_id`) viram um `WeakMap` ou um tipo próprio.
-- Robô reproduzível: fechar o que ainda escapa da semente. Causa conhecida: marcos e construções do cenário só são criados depois que a arte carrega (`sortearMarcos` e `atualizarEstrutura` em `07_cenario.js`), então o mapa muda com a velocidade de carga. O cenário deve ser decidido pelos dados, e a arte só desenhar.
-- GitHub Actions rodando verificador de tipos, `verificar.js` e uma bateria curta do robô a cada envio.
-- Os 18 `catch` vazios passam a registrar o erro.
+| Item | Situação |
+|---|---|
+| Verificador de tipos (`npm run tipos`), TypeScript fixo em 5.9.3, `package-lock.json` | Feito. O navegador carrega o mesmo JavaScript de antes. |
+| `js/tipos.d.ts` com as formas centrais | Feito: `Run`, `Mapa` (139 campos), `Selo`, `Monstro`, `Meta`, `Sinergia`, `Inimigo`, `Projetil`, `Zona` (união por `tipo`), `Cria`, `Armadilha`, `Totem`, `Gema`, `Carta`, `CartaNivel`, `PecaCenario`, `Linha`, `Universo`. |
+| 152 erros do modo frouxo | Zerados, sem `any`. O que ainda não tem forma descrita usa o tipo `AindaSemTipo`, que é contável: 52 usos hoje (`grep -o AindaSemTipo js/tipos.d.ts \| wc -l`). |
+| Partida simulada reproduzível | Feito. A mesma semente dá a mesma partida, até a contagem de sorteios. Causas fechadas: o laço normal do jogo rodava junto com o robô; a tela de portais esperava a arte em tempo real; marcos e construções só existiam com a arte carregada (agora quem decide é a lista de artes); efeitos gastavam sorteios diferentes com e sem arte (o robô simula sem estado de arte). |
+| Prova de "mesmo comportamento" | `testes/reproduzir.js`, com `--gravar` antes de uma mudança e `--conferir` depois. As correções de tipo desta etapa passaram: 6 partidas idênticas às gravadas antes. |
+| Verificação a cada envio | `.github/workflows/verificar.yml`: tipos, arquivos, telas, mecânicas, 34 reinos e repetição de partidas. |
+| 18 `catch` vazios | Todos passam por `relatar()`: erro de regra ou de save aparece como erro, recurso do navegador que faltou aparece como aviso, uma vez por lugar. |
+
+No modo estrito, que é a meta da etapa 2, a contagem caiu de 6.488 para 4.751 erros (2.412 de "pode ser nulo", 1.665 de parâmetro sem tipo).
+
+O que a tipagem já achou: duas fontes de dano que existiam no código e não estavam em lista nenhuma (`"reliquia"` e `"lenda"`); no resumo de fim de run elas apareciam com o nome interno.
+
+Ficou para a etapa 1, de propósito:
+- As marcas penduradas em imagens (`_src`, `_hi`, `_id`...) estão descritas num lugar só (`MarcasDeArte`), mas ainda são propriedades soltas. Virar um tipo `Sprite` próprio pede mexer em todo o desenho, e isso é mais seguro com módulos.
+- `Inimigo`, `Selo` e `Carta` aceitam campos não listados (os de criatura e de animação são dezenas). Fechar essas formas é a maior parte dos 52 usos de `AindaSemTipo`.
+- O conteúdo (`js/dados.js`) entra tipado numa fronteira única (`LINHAS`, `ANCESTRAIS`, `UNIV`), sem validação. A validação é a etapa 3.
 
 ### Etapa 1. Módulos (ainda JavaScript, ainda sem compilação)
 

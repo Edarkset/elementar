@@ -39,6 +39,7 @@ elementar/
 │   ├── dados.js          # conteúdo do jogo: elementos, reações, classes, linhagens,
 │   │                     # 51 monstros, 8 ancestrais, 34 universos, poderes,
 │   │                     # conquistas, 34 Lendas e Panteão (13 deuses)
+│   ├── tipos.d.ts        # formas centrais do jogo para o verificador de tipos (o navegador não carrega)
 │   ├── plataforma.js     # save e recursos do navegador ou do app de computador
 │   ├── jogo/             # lógica do jogo, em partes carregadas em ordem pelo index.html
 │   │   ├── 01_nucleo.js      # utilidades, som, save, estado da run, sinergias, Santuário
@@ -56,6 +57,7 @@ elementar/
 ├── testes/
 │   ├── verificar.js      # verificação automática: telas, jogo, mecânicas e imagem
 │   ├── bot.js            # robô que joga sozinho (usado pelos testes e pelo equilíbrio)
+│   ├── reproduzir.js     # prova de "mesmo comportamento": a mesma semente dá a mesma partida
 │   └── rodar_bot.js      # várias partidas do robô em paralelo, com estatísticas
 └── arte/
     ├── manifesto.json    # lista de artes: nome usado no código → arquivo
@@ -92,6 +94,18 @@ Com o Node e o Playwright instalados:
 node testes/verificar.js            # tudo (uns 20 minutos)
 node testes/verificar.js --so telas # só uma parte: carga, telas, jogo, tela, mecanicas, visual
 ```
+
+Tipos e prova de que uma mudança de estrutura não alterou o jogo:
+
+```bash
+npm ci                                              # uma vez: instala o verificador de tipos (só ferramenta, o jogo não usa)
+npm run tipos                                       # confere o JavaScript contra js/tipos.d.ts, sem gerar arquivos
+node testes/reproduzir.js                           # cada semente roda duas vezes e tem de dar a mesma partida
+node testes/reproduzir.js --gravar antes.json       # antes de reorganizar código
+node testes/reproduzir.js --conferir antes.json     # depois: tudo igual = o jogo se comporta igual
+```
+
+A cada envio o GitHub roda tipos, telas, mecânicas, os 34 reinos e a repetição de partidas (`.github/workflows/verificar.yml`). O caminho para TypeScript está em [docs/PLANO_CODIGO.md](docs/PLANO_CODIGO.md).
 
 O resultado fica em `testes/relatorio.md` (com `--fotos`, as fotos ficam em `testes/fotos/`). O código usa o escopo global: uma parte de `js/jogo/` pode usar funções das outras, desde que o uso aconteça durante o jogo e não no carregamento da página.
 

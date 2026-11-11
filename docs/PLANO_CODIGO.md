@@ -54,7 +54,7 @@ Cada etapa só é aceita se passar em três provas, que já existem no repositó
 | Verificação a cada envio | `.github/workflows/verificar.yml`: tipos, arquivos, telas, mecânicas, 34 reinos e repetição de partidas. |
 | 18 `catch` vazios | Todos passam por `relatar()`: erro de regra ou de save aparece como erro, recurso do navegador que faltou aparece como aviso, uma vez por lugar. |
 
-No modo estrito, que é a meta da etapa 2, a contagem caiu de 6.488 para 4.751 erros (2.412 de "pode ser nulo", 1.665 de parâmetro sem tipo).
+No modo estrito, que é a meta da etapa 2, a contagem caiu de 6.488 para 4.751 erros (2.412 de "pode ser nulo", 1.665 de parâmetro sem tipo). Cinco regras rígidas que já davam zero erros ficaram ligadas desde já no `tsconfig.json` (`noImplicitThis`, `strictFunctionTypes`, `alwaysStrict`, `useUnknownInCatchVariables`, `noFallthroughCasesInSwitch`), para o código não regredir nelas.
 
 O que a tipagem já achou: duas fontes de dano que existiam no código e não estavam em lista nenhuma (`"reliquia"` e `"lenda"`); no resumo de fim de run elas apareciam com o nome interno.
 

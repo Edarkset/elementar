@@ -69,9 +69,14 @@ export function efeitoTalismaTxt(t, lv: number) {
     sinal = t.efeito === "defesa" || t.efeito === "recarga" ? "−" : "+";
   return lv ? `${sinal}${v < 10 && Math.abs(v - Math.round(v)) > 0.04 ? v.toFixed(1).replace(".", ",") : Math.round(v)}%` : "0%";
 } // valores pequenos (0,2% por nível) apareciam como "0% → 0%"
+/** true quando nenhum monstro da equipe tem poder para subir (todos no 5; a habilidade 2 só conta depois da primeira evolução):
+ * daí em diante as escolhas de nível seriam quase só Ascensão */
+export function equipeSemPoder() {
+  return ativos().every(s => (["b", "h1", "h2"] as ChavePoder[]).every(k => s.pod[k] >= 5 || (k === "h2" && est(s) < 1 && estBase(s) < 1)));
+}
 export function cartaTalisma() {
-  if (SIM.semTalismas || Math.random() >= PD().chance_carta + passiva("carta_extra") * 0.35 + ((SIN.rm && SIN.rm.talisma) || 0))
-    return null;
+  const chance = equipeSemPoder() ? PD().chance_carta_sem_poder : PD().chance_carta;
+  if (SIM.semTalismas || Math.random() >= chance + passiva("carta_extra") * 0.35 + ((SIN.rm && SIN.rm.talisma) || 0)) return null;
   const tem = Object.keys(R.talismas || {}),
     cheio = tem.length >= PD().encaixes;
   const ops = talismasLiberados().filter(id => (cheio ? tem.includes(id) && nivTal(id) < 5 : nivTal(id) < 5));

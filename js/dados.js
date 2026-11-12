@@ -12063,6 +12063,7 @@ const D = {
  "poderes": {
   "encaixes": 4,
   "chance_carta": 0.35,
+  "chance_carta_sem_poder": 0.35,
   "forca_desperto": 1.4,
   "forca_uniao": 1.15,
   "talismas": {

@@ -1,5 +1,7 @@
 // Roda o bot em várias páginas ao mesmo tempo e grava os resultados em JSON.
 // node testes/rodar_bot.js --n 24 --paralelo 4 --mapas 12 --saida testes/res.json [--dif '{"vida":1.6}'] [--url http://localhost:8765/]
+// --classe cacador: toda partida começa com um monstro dessa classe (escolhido pela semente entre os liberados no começo) e um
+// Pacto com o elemento dele e mais um ou dois, também pela semente. Serve para comparar classes com o resto igual.
 const { chromium } = require("playwright");
 const arg = (k, d) => {
   const i = process.argv.indexOf("--" + k);
@@ -12,7 +14,9 @@ const N = +arg("n", 12),
   URL = arg("url", "http://localhost:8765/"),
   DIF = arg("dif", null),
   S0 = +arg("semente0", 1),
-  LOJA = arg("loja", null); // --loja max: Santuário todo comprado
+  LOJA = arg("loja", null), // --loja max: Santuário todo comprado
+  CLASSE = arg("classe", null),
+  PODERES = arg("poderes", null); // --poderes '{"chance_carta_sem_poder":0.8}': muda D.poderes só nesta bateria
 (async () => {
   const b = await chromium.launch();
   const res = [];
@@ -35,14 +39,26 @@ const N = +arg("n", 12),
       await p.addScriptTag({ url: "testes/bot.js" });
       const t0 = Date.now();
       const r = await p.evaluate(
-        ([sem, m, dif, loja]) => {
+        ([sem, m, dif, loja, classe, poderes]) => {
+          if (poderes) Object.assign(D.poderes, JSON.parse(poderes));
           if (loja === "max") {
             META.loja = {};
             LOJA.forEach(it => (META.loja[it.id] = it.max));
           }
-          return ElementarBot.rodar({ semente: sem, maxMapas: m, dif: dif ? JSON.parse(dif) : null });
+          const cfg = { semente: sem, maxMapas: m, dif: dif ? JSON.parse(dif) : null };
+          if (classe) {
+            const pool = META.liberados.map(id => LINHA[id]).filter(l => l && l.classe === classe);
+            if (!pool.length) throw new Error("nenhum monstro liberado da classe " + classe);
+            const l = pool[sem % pool.length],
+              outros = ELS.filter(e => e !== l.elemento);
+            cfg.inicial = l.id;
+            cfg.pacto = [l.elemento, outros[sem % outros.length], ...(sem % 2 ? [outros[(sem * 3 + 1) % outros.length]] : [])].filter(
+              (e, i, a) => a.indexOf(e) === i
+            );
+          }
+          return ElementarBot.rodar(cfg);
         },
-        [sem, MAPAS, DIF, LOJA]
+        [sem, MAPAS, DIF, LOJA, CLASSE, PODERES]
       );
       res.push(r);
       require("fs").writeFileSync(SAIDA, JSON.stringify(res, null, 1)); // grava a cada partida: uma bateria interrompida não se perde

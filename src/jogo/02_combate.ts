@@ -1175,7 +1175,7 @@ export function curar(v: number) {
 }
 // item na hora certa: cada item ganha peso pelo quanto serve agora (Pedra perto de virar Adulto, Mel perto de evoluir,
 // Incenso com Selo vazio, Pena com reserva e troca em recarga); o que não serviria para nada quase não cai
-export function utilItem(k: string) {
+export function utilItem(k: ItemBolsa) {
   const at = ativos();
   if (!R || !at.length) return 1;
   switch (k) {
@@ -1214,7 +1214,7 @@ export function itemUsavelAgora() {
     (I.pena > 0 && R.reserva.length && R.selos.some(s => s.trocaCd > 3))
   );
 }
-export function darItem(k: string, e: Ponto) {
+export function darItem(k: ItemBolsa, e: Ponto) {
   R.itens[k]++;
   const lend = k === "chamado";
   texto(e.x, e.y - 16, D.itens[k].nome, lend ? "#ffd34a" : "#9fd6d0", lend ? 16 : 13);
@@ -1649,7 +1649,7 @@ export const HAB = {
 // Os efeitos (corte, onda, raio, selo) usam isso para ficar maiores, mais grossos e com mais partículas: um Supremo
 // lendário com poder 5 parece outra criatura perto de um filhote comum
 export let VFX_K = 1;
-export function forcaVisual(s: Selo, k: string) {
+export function forcaVisual(s: Selo, k: ChavePoder) {
   const rar = { comum: 0, incomum: 0.05, raro: 0.12, epico: 0.2, lendario: 0.32 }[s.mon.rar] || 0;
   return 1 + est(s) * 0.28 + ((s.pod[k] || 1) - 1) * 0.09 + rar;
 }
@@ -1680,7 +1680,7 @@ export function agirSelo(s: Selo, dt: number) {
     aoDisparar(s, "b", a, el, cor);
     if (J.t - (s.atkT ?? -9) > 0.5) s.atkT = J.t;
   }
-  for (const k of ["h1", "h2"]) {
+  for (const k of ["h1", "h2"] as ChavePoder[]) {
     const lv = s.pod[k];
     if (!lv) continue;
     if (k === "h2" && est(s) < 1) continue;

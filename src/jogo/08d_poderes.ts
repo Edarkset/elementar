@@ -104,16 +104,16 @@ export function cartaTalisma() {
     }
   };
 }
-export function despertoDe(s: Selo, k: string) {
+export function despertoDe(s: Selo, k: ChavePoder) {
   return PD().despertos.find(d => d.classe === L(s).classe && d.poder === k);
 }
-export function podeDespertar(s: Selo, k: string) {
+export function podeDespertar(s: Selo, k: ChavePoder) {
   const d = despertoDe(s, k);
   return !!d && !(s.desp && s.desp[k]) && s.pod[k] >= 5 && nivTal(d.talisma) > 0 && estBase(s) >= 2;
 }
 export function bauDesperto(x: number, y: number) {
   const cand = [];
-  for (const s of ativos()) for (const k of ["b", "h1", "h2"]) if (podeDespertar(s, k)) cand.push([s, k]);
+  for (const s of ativos()) for (const k of ["b", "h1", "h2"] as ChavePoder[]) if (podeDespertar(s, k)) cand.push([s, k]);
   if (!cand.length) return false;
   const [s, k] = escolha(cand),
     d = despertoDe(s, k);
@@ -131,7 +131,7 @@ export function bauDesperto(x: number, y: number) {
 export function despertosAtivos() {
   const n = new Set();
   for (const s of ativos())
-    for (const k of ["b", "h1", "h2"])
+    for (const k of ["b", "h1", "h2"] as ChavePoder[])
       if (s.desp && s.desp[k]) {
         const d = despertoDe(s, k);
         if (d) n.add(d.nome);
@@ -153,7 +153,7 @@ export function checarUnioes() {
     }
 }
 // força de um poder: Desperto e União multiplicam o dano daquele poder (o Desperto substitui o poder, não soma)
-export function fatorPoder(s: Selo, k: string) {
+export function fatorPoder(s: Selo, k: ChavePoder) {
   if (!(s.desp && s.desp[k])) return 1;
   let f = PD().forca_desperto;
   const d = despertoDe(s, k);
@@ -173,7 +173,7 @@ export function fatorSozinho(s: Selo) {
   const c = L(s).classe;
   return c === "mistico" || c === "guardiao" ? 2 : 1.4;
 }
-export function atribPoder(a: Atributos, s: Selo, k: string) {
+export function atribPoder(a: Atributos, s: Selo, k: ChavePoder) {
   const f = fatorPoder(s, k) * tal.dano() * fatorSozinho(s);
   return f === 1 ? a : Object.assign({}, a, { dano: a.dano * f });
 }
@@ -396,7 +396,7 @@ export const COMPORTAMENTO = {
     }
   }
 };
-export function aoDisparar(s: Selo, k: string, a: Atributos, el: Elemento, cor: string) {
+export function aoDisparar(s: Selo, k: ChavePoder, a: Atributos, el: Elemento, cor: string) {
   if (k !== "b" && !SIM.ativo) circuloInvocacao(s.x, s.y + 3, el, 10 + est(s) * 2.5, 0.6, false); // habilidade: círculo pequeno sob o monstro
   if (!(s.desp && s.desp[k])) return;
   const f = (COMPORTAMENTO[L(s).classe] || {})[k];

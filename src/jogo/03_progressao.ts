@@ -437,7 +437,7 @@ export function pipsPoder(lv: number, prox: number) {
   for (let i = 1; i <= 5; i++) h += `<i class='${i <= lv ? "tem" : i <= prox ? "novo" : ""}'></i>`;
   return h + "</span>";
 }
-export function numerosPoder(s: Selo, k: string, lv: number, prox: number) {
+export function numerosPoder(s: Selo, k: ChavePoder, lv: number, prox: number) {
   try {
     const base = atrib(s).dano * tal.dano();
     if (k === "b") {
@@ -622,7 +622,7 @@ export function abrirNivel() {
     $("cartasRodape").appendChild(b);
   }
 }
-export function escolherMod(s: Selo, k: string) {
+export function escolherMod(s: Selo, k: ChavePoder) {
   const c = D.classes[L(s).classe][k];
   mostrarCartas(
     `${c.nome}: modificador`,
@@ -852,7 +852,7 @@ export function trocar(si: number, ri: number) {
 }
 export function abrirBolsa() {
   if (!J || J.fim || pausado) return;
-  const ks = Object.keys(D.itens);
+  const ks = Object.keys(D.itens) as ItemBolsa[];
   const cartas: Carta[] = ks.map(k => ({
     titulo: `${D.itens[k].nome} ×${R.itens[k]}`,
     texto: D.itens[k].efeito,
@@ -863,7 +863,7 @@ export function abrirBolsa() {
   cartas.push({ titulo: "Fechar", acao: () => proximaEscolha() });
   mostrarCartas("Bolsa", "Itens caem de elites, baús de mini-chefe e chefes.", cartas);
 }
-export function usarItem(k: string) {
+export function usarItem(k: ItemBolsa) {
   R.itens[k]--;
   R.st.itens++;
   if (k === "incenso") {
@@ -1600,7 +1600,7 @@ export function sortearPremios(tipo: string) {
 }
 export function premioNivel(s: Selo) {
   if (!s || !s.mon) return;
-  const lib = ["b", "h1", ...(est(s) >= 1 || estBase(s) >= 1 ? ["h2"] : [])].filter(k => s.pod[k] < 5);
+  const lib = (["b", "h1", ...(est(s) >= 1 || estBase(s) >= 1 ? ["h2"] : [])] as ChavePoder[]).filter(k => s.pod[k] < 5);
   if (lib.length) {
     const k = lib.sort((a, b) => s.pod[a] - s.pod[b])[0];
     s.pod[k]++;

@@ -64,6 +64,7 @@ interface MarcasDeArte {
   pronta?: boolean;
   falhou?: boolean;
   valida?: boolean;
+  /** faixas de desenho já calculadas por número de linhas (faixasFolha) */ [faixas: `_faixas${number}`]: number[][] | null;
   _quadros?: AindaSemTipo;
   _geo?: AindaSemTipo;
   /** piso espelhado: quem usa dobra o tamanho */ _espelho?: boolean;
@@ -75,6 +76,8 @@ interface HTMLCanvasElement extends MarcasDeArte {
 }
 interface HTMLImageElement extends MarcasDeArte {}
 type Imagem = HTMLCanvasElement | HTMLImageElement;
+/** arte do manifesto: imagem carregada ou, quando o fundo foi limpo, um canvas (que não tem src) */
+type ArteCarregada = Imagem & { src?: string };
 /** valores que a interface guarda no próprio elemento para só mexer na página quando mudam */
 interface HTMLElement {
   _v?: number;

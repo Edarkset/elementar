@@ -11,7 +11,7 @@ import { aplicarArteUI } from "./08h_interface.js";
 // ARTE_IMG[nome] devolve a imagem; se ela está no manifesto e ainda não foi pedida, começa a baixar na hora (sob demanda).
 // Quem usa confere .pronta: enquanto não chega, o jogo segue com o desenho por código.
 export let MANIFESTO = null;
-export const ARTE_IMG = new Proxy(
+export const ARTE_IMG: Record<string, ArteCarregada> = new Proxy(
     {},
     {
       get(t, k) {
@@ -107,7 +107,7 @@ export function preCarregar(nomes: string[]) {
       .filter(n => MANIFESTO && MANIFESTO[n])
       .map(
         n =>
-          new Promise<void>(ok => {
+          new Promise<void | Event>(ok => {
             const img = ARTE_IMG[n];
             if (!img || img.pronta || img.falhou || img.complete) return ok();
             img.addEventListener("load", ok, { once: true });

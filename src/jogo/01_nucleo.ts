@@ -40,7 +40,7 @@ export const LINHAS = D.linhas as unknown as Linha[],
   ANCESTRAIS = (D.ancestrais || []) as unknown as Linha[];
 export const LINHA: Record<string, Linha> = Object.fromEntries([...LINHAS, ...ANCESTRAIS].map(l => [l.id, l]));
 export const UNIV: Record<string, Universo> = Object.fromEntries((D.universos as unknown as Universo[]).map(u => [u.id, u]));
-export const REAC = {};
+export const REAC: Record<string, Dados["reacoes"][number]> = {};
 D.reacoes.forEach(r => {
   REAC[[r.a, r.b].sort().join("|")] = r;
 });
@@ -82,7 +82,7 @@ export function mistura(a: string, b: string, t: number) {
 
 // ================================================================ som: efeitos sintetizados na hora (sem arquivos de áudio)
 // O navegador só libera o som depois do primeiro toque; o volume e o mudo ficam no save (META.som).
-export const SOM = { ctx: null, mestre: null, ult: {} };
+export const SOM = { ctx: null, mestre: null, ult: {} as Record<string, number> };
 export function somLigar() {
   if (SOM.ctx) {
     if (SOM.ctx.state === "suspended") SOM.ctx.resume();

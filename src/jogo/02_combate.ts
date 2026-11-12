@@ -482,8 +482,8 @@ export const DIF = {
   cacadorPerfura: 1,
   totemArea: 0,
   // Místico: multiplicador do Raio Vital e quantos inimigos próximos o raio alcança depois do primeiro (com 60% do dano)
-  misticoMult: 1,
-  misticoSaltos: 0,
+  misticoMult: 1.4,
+  misticoSaltos: 2,
   hordaVida: 0.9,
   hordaDano: 1.4,
   hordaXp: 0.8,

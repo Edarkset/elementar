@@ -31,6 +31,15 @@ Doze partidas por classe, até o mapa 8, todas com as mesmas sementes. Cada part
 
 **Místico:** o achado desta medição. Começando com ele, o chefe do mapa 1 leva 98,6 s (mediana; as outras classes, de 6 a 24 s), o dano por segundo é 102 (as outras, de 280 a 470) e a equipe sobe só 11,7 níveis no mapa 1 (as outras, de 15 a 21). O Raio Vital fere um inimigo só, com 6 de dano.
 
+| Místico inicial (12 partidas, mesmas sementes) | Chefe do mapa 1 | Dano por segundo | Níveis no mapa 1 | Profundidade |
+|---|---|---|---|---|
+| hoje | 98,6 s | 102 | 11,7 | 5,00 |
+| A: dano ×1,6 | 67,3 s | 135 | 13,2 | 5,50 |
+| B: o raio salta para 2 inimigos próximos (60% do dano) | 84,3 s | 109 | 13,6 | 5,83 |
+| **C (adotada): ×1,4 e 2 saltos** | **44,7 s** | **149** | **15,9** | 5,67 |
+
+A C corta o primeiro chefe para menos da metade e aproxima os níveis do mapa 1 das outras classes. Ela não foi além porque o Místico já é a classe que mais aparece nas equipes que vão mais fundo (7,2 mapas com ele na equipe): um reforço maior criaria uma classe dominante no fim da run.
+
 ## Rodada de 10/11/2026: intensidade da horda, efeitos e performance
 
 Mais de 200 partidas simuladas nesta rodada. Tudo abaixo foi medido com o bot; onde o bot não serve de régua, está dito.

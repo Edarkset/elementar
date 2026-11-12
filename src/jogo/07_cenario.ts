@@ -170,7 +170,8 @@ export function gerarBolha() {
 export function bolhaCor(cor: string | CanvasGradient | CanvasPattern) {
   const C = J.cena,
     k = "bolha" + cor;
-  if (C.sprites.has(k)) return C.sprites.get(k);
+  const ja = C.sprites.get(k);
+  if (ja) return ja;
   const c = document.createElement("canvas");
   c.width = c.height = 64;
   const g = c.getContext("2d")!;

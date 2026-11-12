@@ -4,10 +4,13 @@
 import "./04_ambiente.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
 import { est, J, L, LINHA, R, ramoAtual, relatar, SIM, UNIV } from "./01_nucleo.js";
 import { maisProximo } from "./02_combate.js";
+import { cacheSolo } from "./04_ambiente.js";
 import { QUAL } from "./06_loop.js";
-import { ALVO_ARTE, arteCarregou, encaixarArte, novoIdImg } from "./07c_cenario_arte.js";
+import { ALVO_ARTE, arteCarregou, cacheBB, cacheCel, encaixarArte, novoIdImg } from "./07c_cenario_arte.js";
 import { LENDA } from "./08f_lendas.js";
 import { aplicarArteUI } from "./08h_interface.js";
+import { cacheCri } from "./09_criaturas.js";
+import { HEROI } from "./10_desenho.js";
 // ================================================================ arte real (folhas do Copilot, via importador): usa no lugar dos sprites procedurais
 // ARTE_IMG[nome] devolve a imagem; se ela está no manifesto e ainda não foi pedida, começa a baixar na hora (sob demanda).
 // Quem usa confere .pronta: enquanto não chega, o jogo segue com o desenho por código.
@@ -119,6 +122,25 @@ export function preCarregar(nomes) {
 }
 export const artesQue = f => (MANIFESTO ? Object.keys(MANIFESTO).filter(f) : []);
 // artes de um mapa: o reino (arte da abertura primeiro), o Guardião da era, a equipe, a Lenda/deus, chão dos elementos e efeitos
+// memória: cada mapa carrega dezenas de folhas grandes e recortes. O Safari do iPhone tem um teto de memória para imagens e,
+// quando ele estoura, descarta as telas (o jogo fica preto). Ao trocar de mapa, solta as artes de outros reinos e os recortes
+// guardados (eles são refeitos sob demanda, a partir do cache do aparelho, sem baixar de novo). Medido: ~40 MB presos por mapa
+// antes (183 MB no 4º mapa); depois, estável em ~80 MB.
+export function liberarMemoria(u) {
+  if (SIM.ativo) return;
+  const manter = new Set(artesDoMapa(u)),
+    eraAtual = `arte/reinos/${u.era}/`;
+  for (const k of Object.keys(MANIFESTO || {})) {
+    if (!k.startsWith("arte/reinos/") || manter.has(k)) continue;
+    if (k.startsWith(eraAtual) && k.includes("guardiao_")) continue;
+    if (!(k in ARTE_IMG)) continue; // "in" não dispara o carregamento
+    const im = ARTE_IMG[k];
+    if (im.pronta || im.falhou) delete ARTE_IMG[k];
+  }
+  for (const c of [cacheCel, cacheBB, cacheCri, cacheRecor, cacheArte]) c.clear();
+  HEROI.cache.clear();
+  cacheSolo.clear();
+}
 export function artesDoMapa(u) {
   if (!u) return [];
   const pre = `arte/reinos/${u.era}/`,

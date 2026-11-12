@@ -67,7 +67,7 @@ import {
   soltarMoedas,
   vencerChefe
 } from "./03_progressao.js";
-import { artesDoMapa, preCarregar, resetAnimSelo } from "./05_arte.js";
+import { artesDoMapa, liberarMemoria, preCarregar, resetAnimSelo } from "./05_arte.js";
 import { QUAL } from "./06_loop.js";
 import { bolhaCor, danificarProp, iniciarCena, propMaisProximo, rajada } from "./07_cenario.js";
 import { aposAbertura, iniciarAbertura } from "./07d_estrutura.js";
@@ -111,7 +111,10 @@ export function iniciarMapa() {
   defMapaSeg(R.profundidade < 3 ? 110 : 150);
   defMiniSeg(Math.round(MAPA_SEG / 2));
   const u = UNIV[R.universo];
-  if (!SIM.ativo) preCarregar(artesDoMapa(u));
+  if (!SIM.ativo) {
+    liberarMemoria(u);
+    preCarregar(artesDoMapa(u));
+  }
   defJ({
     t: 0,
     inimigos: [],

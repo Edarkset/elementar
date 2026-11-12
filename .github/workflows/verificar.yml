@@ -52,8 +52,10 @@ jobs:
           node testes/verificar.js --so mecanicas
       - name: Os 34 reinos
         run: node testes/verificar.js --so jogo --seg 20
-      - name: A mesma semente dá a mesma partida
-        run: node testes/reproduzir.js --sementes 2,9 --mapas 3 --paralelo 2
+      - name: Regressão do jogo (as partidas de referência continuam iguais)
+        # testes/assinatura.json: mudança de equilíbrio de propósito regrava no mesmo commit (npm run regressao:gravar);
+        # qualquer outra diferença é regressão. O navegador é fixo (Playwright acima), então a conta é a mesma em todo envio.
+        run: npm run regressao
       - name: Relatório
         if: always()
         uses: actions/upload-artifact@v4

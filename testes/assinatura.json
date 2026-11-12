@@ -1,0 +1,43 @@
+{
+ "nota": "Assinatura de referência do jogo: o robô joga estas sementes e cada partida vira um resumo. A verificação do GitHub confere a cada envio (npm run regressao). Mudou o jogo de propósito? npm run regressao:gravar no mesmo commit.",
+ "navegador": "chromium 153.0.8010.12",
+ "mapas": 4,
+ "partidas": [
+  {
+   "semente": 2,
+   "mapas": "5/23 11.2/30 7.6/36 7.4/45",
+   "fim": "vivo",
+   "abates": 17363,
+   "sorteios": 2283580,
+   "segundos": 568,
+   "estado": "f82e45ca"
+  },
+  {
+   "semente": 3,
+   "mapas": "16.5/22 8.8/30 34.7/38 16.7/43",
+   "fim": "vivo",
+   "abates": 15169,
+   "sorteios": 2292689,
+   "segundos": 606,
+   "estado": "27da0d5b"
+  },
+  {
+   "semente": 9,
+   "mapas": "5.6/19 6.9/25 6.5/37 10.6/49",
+   "fim": "vivo",
+   "abates": 18000,
+   "sorteios": 2119281,
+   "segundos": 571,
+   "estado": "c49c26a3"
+  },
+  {
+   "semente": 13,
+   "mapas": "2.4/19 9.4/28 6/35 5.9/43",
+   "fim": "vivo",
+   "abates": 19127,
+   "sorteios": 2507620,
+   "segundos": 568,
+   "estado": "aafe0bd5"
+  }
+ ]
+}

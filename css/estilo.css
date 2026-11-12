@@ -461,3 +461,5 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 .resumo-dano .rd-linha em{font-style:normal;font-weight:800;color:#f2e7c9;text-align:right}
 .resumo-dano .rd-nota{margin-top:7px;color:#bdb4d4;text-align:center}
 .resumo-dano .rd-nota b{color:#f2e7c9}
+/* combo menor e mais discreto: nas capturas ele tomava o meio de cima da tela em todo combate */
+.combo{font-size:20px} .combo small{font-size:10.5px; opacity:.85}

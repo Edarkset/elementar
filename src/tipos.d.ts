@@ -57,6 +57,8 @@ interface MarcasDeArte {
   hi?: HTMLCanvasElement;
   hiK?: number;
   _suave?: boolean;
+  /** recorte de folha que tira pedaços da pose vizinha também na versão grande */
+  _limpar?: boolean;
   _ky?: number;
   /** fração da altura onde fica o pé do desenho */ base?: number;
   _pe?: number;

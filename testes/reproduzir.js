@@ -5,6 +5,7 @@
 //   node testes/reproduzir.js --gravar arquivo.json   guarda as assinaturas (antes de mexer no código)
 //   node testes/reproduzir.js --conferir arquivo.json compara com as guardadas (depois de mexer): tudo igual = nada mudou no jogo
 //   --sementes 2,3,4,9   --mapas 4
+//   npm run regressao / npm run regressao:gravar   a assinatura de referência do repositório (testes/assinatura.json)
 //
 // Qualquer mudança de regra, de equilíbrio ou de ordem dos sorteios muda a assinatura; por isso ela serve para reorganizar
 // código (tipos, módulos, formatação) com a certeza de que o jogo ficou igual. A assinatura vale na mesma máquina e no mesmo
@@ -18,8 +19,8 @@ const arg = (k, d) => {
   const i = process.argv.indexOf("--" + k);
   return i > 0 ? process.argv[i + 1] : d;
 };
+let MAPAS = +arg("mapas", 4); // com --conferir, vale o número de mapas gravado junto da assinatura
 const SEMENTES = arg("sementes", "2,3,4,9").split(",").map(Number),
-  MAPAS = +arg("mapas", 4),
   GRAVAR = arg("gravar", null),
   CONFERIR = arg("conferir", null),
   PARALELO = +arg("paralelo", 4);
@@ -113,9 +114,19 @@ function resumo(txt) {
   }
 
   let falhas = 0;
+  const navegador = "chromium " + b.version();
   if (CONFERIR) {
-    const antes = JSON.parse(fs.readFileSync(CONFERIR, "utf8")),
-      agora = await emLote(antes.map(a => () => jogar(a.semente)));
+    // formato atual: { navegador, mapas, partidas }; o antigo era só a lista de partidas
+    const arq = JSON.parse(fs.readFileSync(CONFERIR, "utf8")),
+      antes = Array.isArray(arq) ? arq : arq.partidas;
+    if (!Array.isArray(arq)) {
+      MAPAS = arq.mapas;
+      if (arq.navegador !== navegador)
+        console.warn(
+          `Aviso: a assinatura foi gravada no ${arq.navegador} e este é o ${navegador}. Navegador diferente pode arredondar contas de outro jeito; a comparação só vale com o mesmo (a verificação do GitHub usa o Playwright fixo).`
+        );
+    }
+    const agora = await emLote(antes.map(a => () => jogar(a.semente)));
     antes.forEach((a, i) => {
       const igual = JSON.stringify(a) === JSON.stringify(agora[i]);
       if (!igual) falhas++;
@@ -125,7 +136,10 @@ function resumo(txt) {
     });
     console.log(
       falhas
-        ? `${falhas} de ${antes.length} partidas mudaram: o comportamento do jogo não é mais o mesmo.`
+        ? `${falhas} de ${antes.length} partidas mudaram: o comportamento do jogo não é mais o mesmo.\n` +
+            "Se a mudança de jogo foi de propósito (equilíbrio, regra nova), grave a assinatura nova no mesmo commit e explique o porquê:\n" +
+            "  npm run regressao:gravar\n" +
+            "Se não foi de propósito, é uma regressão: alguma mudança de código alterou o jogo."
         : `As ${antes.length} partidas são idênticas às guardadas: o jogo se comporta igual.`
     );
   } else {
@@ -139,7 +153,9 @@ function resumo(txt) {
       return x;
     });
     if (GRAVAR && !falhas) {
-      fs.writeFileSync(GRAVAR, JSON.stringify(unicas, null, 1));
+      const nota =
+        "Assinatura de referência do jogo: o robô joga estas sementes e cada partida vira um resumo. A verificação do GitHub confere a cada envio (npm run regressao). Mudou o jogo de propósito? npm run regressao:gravar no mesmo commit.";
+      fs.writeFileSync(GRAVAR, JSON.stringify({ nota, navegador, mapas: MAPAS, partidas: unicas }, null, 1) + "\n");
       console.log(`Assinaturas gravadas em ${GRAVAR}.`);
     }
     console.log(

@@ -12,7 +12,10 @@
     "verificar": "node testes/verificar.js",
     "save": "node testes/save.js",
     "reproduzir": "node testes/reproduzir.js",
-    "catraca": "node ferramentas/catraca.js"
+    "regressao": "node testes/reproduzir.js --conferir testes/assinatura.json",
+    "regressao:gravar": "node testes/reproduzir.js --sementes 2,3,9,13 --mapas 4 --gravar testes/assinatura.json",
+    "catraca": "node ferramentas/catraca.js",
+    "testar": "npm run tipos_dados -- --conferir && npm run dados && npm run tipos && npm run catraca && npm run formato && npm run compilar -- --conferir && npm run save && npm run regressao"
   },
   "devDependencies": {
     "prettier": "3.10.0",

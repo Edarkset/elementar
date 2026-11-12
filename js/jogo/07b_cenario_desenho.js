@@ -440,7 +440,7 @@ export function desenharUmProp(p, ox, oy) {
     lg.globalAlpha = 1;
   }
   if (p.congela > 0) {
-    lg.globalAlpha = 0.55;
+    lg.globalAlpha = p.mat.fixo || h > 30 ? 0.2 : 0.4; // gelo leve: em estátuas e marcos grandes o branco a 55% virava uma figura chapada
     lg.drawImage(silhueta(spr, "#dff4ff"), x, y, w, h);
     lg.globalAlpha = 1;
   }
@@ -460,16 +460,41 @@ export function silhuetaMundo(spr, cor) {
     cacheSilM.set(spr, m);
   }
   if (m[cor]) return m[cor];
-  const c = document.createElement("canvas");
-  c.width = spr.width;
-  c.height = spr.height;
-  const g = c.getContext("2d");
-  g.drawImage(spr, 0, 0);
-  g.globalCompositeOperation = "source-in";
-  g.fillStyle = cor;
-  g.fillRect(0, 0, c.width, c.height);
-  const hi = silhueta(spr, cor);
-  if (hi.width !== c.width) c._hi = hi;
+  // estátua, ouro, carvão: material com o desenho por baixo (antes era uma silhueta chapada, uma mancha sem detalhe).
+  // Tira a cor do desenho (luminância), multiplica pela cor do material e devolve o recorte do personagem
+  const pedra = b => {
+    const c = document.createElement("canvas");
+    c.width = b.width;
+    c.height = b.height;
+    const g = c.getContext("2d");
+    g.drawImage(b, 0, 0);
+    try {
+      const im = g.getImageData(0, 0, c.width, c.height),
+        d = im.data,
+        [r, gg, bb] = hexRgb(cor);
+      for (let i = 0; i < d.length; i += 4) {
+        if (!d[i + 3]) continue;
+        const L = (d[i] * 0.3 + d[i + 1] * 0.59 + d[i + 2] * 0.11) / 255,
+          k = 0.45 + L * 0.95;
+        d[i] = Math.min(255, r * k);
+        d[i + 1] = Math.min(255, gg * k);
+        d[i + 2] = Math.min(255, bb * k);
+      }
+      g.putImageData(im, 0, 0);
+    } catch (e) {
+      // canvas "sujo" (arte de outra origem): volta à silhueta chapada
+      g.globalCompositeOperation = "source-in";
+      g.fillStyle = cor;
+      g.fillRect(0, 0, c.width, c.height);
+    }
+    return c;
+  };
+  const c = pedra(spr),
+    hi = spr._src ? pedra(baseHi(spr)) : null;
+  if (hi && hi.width !== c.width) {
+    hi._suave = true;
+    c._hi = hi;
+  }
   c.base = spr.base;
   c._pe = spr._pe;
   c._alvo = spr._alvo;

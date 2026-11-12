@@ -14,6 +14,7 @@ import {
   J,
   lg,
   META,
+  mistura,
   NOME_EL,
   novaRun,
   R,
@@ -27,11 +28,14 @@ import {
 import { curar, emArea, ferir, iniciarMapa, maisProximo, morrer, parar, particulas, pontoDenso, texto, tremor } from "./02_combate.js";
 import { mostrarCartas, proximaEscolha, salvarRun } from "./03_progressao.js";
 import { ARTE_IMG, fatiarFolha, preCarregar, quadroAnim } from "./05_arte.js";
+import { QUAL } from "./06_loop.js";
+import { bolhaCor } from "./07_cenario.js";
+import { silhueta } from "./07b_cenario_desenho.js";
 import { desenharSprite, folhaArte } from "./07c_cenario_arte.js";
 import { avisar } from "./08_horda.js";
 import { particulasEl, vfx, VFX_EL, vfxCorte, vfxFeixe, vfxOnda, vfxSelo } from "./08b_efeitos.js";
 import { avisoConquista, metaConq, telaConquistas } from "./08e_conquistas.js";
-import { luzFlash } from "./08g_luz.js";
+import { luzFlash, nivelEscuro } from "./08g_luz.js";
 import { perigo, pintarSolo } from "./09b_chefes.js";
 import { quadroHeroi } from "./10_desenho.js";
 // ================================================================ Lendas jogáveis: poder próprio (até o nível 5) e passiva
@@ -386,8 +390,9 @@ export function desenharLenda(ox, oy) {
   if (!l || !J) return false;
   const P = J.jogador,
     x = Math.round(P.x - ox),
-    y = Math.round(P.y - oy + 6),
-    img = folhaArte(l.dom ? `arte/panteao/${l.id}.png` : `arte/lendas/${l.id}.png`);
+    y = Math.round(P.y - oy + 6);
+  luzPesHeroi(x, y + 1, COR[l.elementos[0]]);
+  const img = folhaArte(l.dom ? `arte/panteao/${l.id}.png` : `arte/lendas/${l.id}.png`);
   const andando = Math.hypot(J.pvx || 0, J.pvy || 0) > 5,
     pose = J.lendaPose,
     lancando = !!pose,
@@ -398,19 +403,46 @@ export function desenharLenda(ox, oy) {
     if (f.linhas[lin].qs.length < 1) lin = 0;
     const n = f.linhas[lin].qs.length;
     const q = lin === 2 ? Math.min(n - 1, Math.floor((pose.t / pose.dur) * n)) : Math.floor(J.t * (lin === 1 ? 10 : 6)) % n,
-      s = quadroAnim(img, lin, q, 34);
+      s = quadroAnim(img, lin, q, 38); // um pouco maior que antes (34): o herói é o centro da tela
     if (s) {
       const resp = lin === 0 ? 1 + 0.012 * Math.sin(J.t * 2.4) : 1;
       lg.save();
       lg.translate(x, y + 1);
       lg.rotate(Math.max(-0.08, Math.min(0.08, (J.pvx || 0) / 400)));
       lg.scale(esq ? -1 : 1, resp);
+      contornoHeroi(s, -s.width / 2, -s._pe, s.width, s.height, COR[l.elementos[0]]);
       desenharSprite(s, -s.width / 2, -s._pe, s.width, s.height);
       lg.restore();
       return true;
     }
   }
   return false; // sem a arte da Lenda: o Invocador entra no lugar
+}
+// herói (Lenda ou Invocador) sempre legível: brilho no chão e contorno de luz em volta do corpo, como os monstros da equipe;
+// sem isso, Lendas de roupa escura (Drácula, Barba Negra, Nemo...) sumiam em chão escuro. Mais forte à noite.
+export function luzPesHeroi(x, y, cor) {
+  if (SIM.ativo || QUAL === 0) return;
+  const a0 = lg.globalAlpha;
+  lg.globalCompositeOperation = "lighter";
+  lg.globalAlpha = a0 * (0.18 + 0.5 * nivelEscuro());
+  lg.drawImage(bolhaCor(cor), x - 18, y - 7, 36, 14);
+  lg.globalAlpha = a0;
+  lg.globalCompositeOperation = "source-over";
+}
+export function contornoHeroi(spr, x, y, w, h, cor) {
+  if (SIM.ativo || QUAL === 0) return;
+  const sil = silhueta(spr, mistura(cor, "#ffffff", 0.55)),
+    a0 = lg.globalAlpha,
+    d = 0.8;
+  lg.globalAlpha = a0 * Math.min(0.95, 0.55 + 0.9 * nivelEscuro());
+  for (const [dx, dy] of [
+    [-d, 0],
+    [d, 0],
+    [0, -d],
+    [0, d]
+  ])
+    lg.drawImage(sil, x + dx, y + dy, w, h);
+  lg.globalAlpha = a0;
 }
 // ================================================================ Panteão: deuses jogáveis (Dom Divino, Fardo e Provação)
 export const DEUS = () => (R && R.lenda ? D.panteao.find(p => p.id === R.lenda) : null);

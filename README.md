@@ -119,10 +119,29 @@ npm run catraca                                     # pendências das regras rí
 npm run tipos_dados                                 # depois de mexer em js/dados.js: refaz o tipo do conteúdo (src/dados.d.ts)
 npm run dados                                       # confere as referências do conteúdo (classe, universo, elemento... existem)
 npm run save                                        # testes do save (saves antigos abrem; save estragado é corrigido)
+npm run regressao                                   # as partidas de referência continuam iguais (testes/assinatura.json)
 node ferramentas/reimportar.js                      # depois de mover uma função de arquivo: refaz os imports de todos os módulos
 ```
 
 Grave o `.ts` e o `.js` gerado juntos. A verificação do GitHub recompila e falha se os dois não baterem.
+
+### Rede de testes (rode antes de cada envio)
+
+```bash
+npm run testar                                      # tudo que não precisa de tela: conteúdo, tipos, catraca, formato, .ts = .js, save e regressão
+node testes/verificar.js                            # no navegador: telas, saves estragados, 34 reinos, mecânicas e imagem (~15 min)
+```
+
+| O que pode quebrar | O que pega |
+|---|---|
+| Regra ou equilíbrio mudou sem querer | `npm run regressao`: 4 partidas do robô comparadas com `testes/assinatura.json` (abates, sorteios, tempo de chefe e nível por mapa, estado segundo a segundo). Uma mudança de 0,75% na vida dos inimigos já falha |
+| Mudança de equilíbrio de propósito | `npm run regressao:gravar` no mesmo commit: a assinatura nova fica no histórico, junto com o porquê |
+| Save velho ou estragado | `npm run save` (saves reais de cada versão em `testes/saves/`) e `verificar.js --so save` no navegador |
+| Conteúdo citando o que não existe | `npm run dados` |
+| Tipo errado, nulo novo | `npm run tipos` e `npm run catraca` |
+| Tela quebrada, erro no console, pedido a servidor de fora | `verificar.js` (telas, jogo, imagem) |
+
+A verificação do GitHub roda tudo isso a cada envio. O robô não escolhe Presságio nem joga com Lenda: mudança só nesses caminhos aparece nas mecânicas e telas, não na assinatura.
 
 Prova de que uma mudança de estrutura não alterou o jogo:
 
@@ -132,7 +151,7 @@ node testes/reproduzir.js --gravar antes.json       # antes de reorganizar códi
 node testes/reproduzir.js --conferir antes.json     # depois: tudo igual = o jogo se comporta igual
 ```
 
-A cada envio o GitHub roda as referências do conteúdo, tipos, a catraca, formato, a correspondência entre dados e tipo e entre `.ts` e `.js`, os testes do save, telas, saves estragados no navegador, mecânicas, os 34 reinos e a repetição de partidas (`.github/workflows/verificar.yml`). O plano do código está em [docs/PLANO_CODIGO.md](docs/PLANO_CODIGO.md).
+A cada envio o GitHub roda as referências do conteúdo, tipos, a catraca, formato, a correspondência entre dados e tipo e entre `.ts` e `.js`, os testes do save, telas, saves estragados no navegador, mecânicas, os 34 reinos e a regressão do jogo contra as partidas de referência (`.github/workflows/verificar.yml`). O plano do código está em [docs/PLANO_CODIGO.md](docs/PLANO_CODIGO.md).
 
 O resultado da verificação fica em `testes/relatorio.md` (com `--fotos`, as fotos ficam em `testes/fotos/`). A lógica são módulos: cada parte importa o que usa das outras e exporta o que oferece, e nada do jogo fica no escopo global. Para o robô, a verificação e o console do navegador enxergarem os nomes do jogo (`J`, `R`, `novaRun`...), abra com `?teste` ou `?moderador` no endereço.
 

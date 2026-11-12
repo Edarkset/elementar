@@ -168,6 +168,7 @@ export function celulaArte(img, cols, rows, col, row, w, h, base) {
   g.drawImage(img, Math.round(col * cw), Math.round(syR), Math.round(cw), Math.round(ch), dx, dy, dw, dh);
   c.base = b;
   limparTopoSolto(c);
+  c._limpar = true;
   c._src = {
     img,
     sx: Math.round(col * cw),
@@ -215,6 +216,7 @@ export function versaoHi(c, K) {
     gt.drawImage(s.img, s.sx, s.sy, s.sw, s.sh, 0, 0, t.width, t.height);
     g.drawImage(t, dx, dy, dw, dh);
   } else g.drawImage(s.img, s.sx, s.sy, s.sw, s.sh, dx, dy, dw, dh);
+  if (c._limpar) limparTopoSolto(h); // a versão grande também sem pedaços da pose vizinha
   c.hi = h;
   c.hiK = K;
   return h;
@@ -425,7 +427,16 @@ export function acalmarPiso(c) {
       n++;
     }
     const media = soma / n,
-      luz = media < 25 ? 1.45 : media < 45 ? 1.25 : 0.97; /* piso muito escuro clareia */
+      luz =
+        media < 25
+          ? 1.45
+          : media < 45
+            ? 1.25
+            : media > 150
+              ? 0.86
+              : media > 125
+                ? 0.92
+                : 0.97; /* piso muito escuro clareia; muito claro (Luz, Ar, Grécia, Shangri-lá) escurece um pouco: efeitos brancos sumiam */
     for (let i = 0; i < d.length; i += 4) {
       const r = d[i],
         gg = d[i + 1],

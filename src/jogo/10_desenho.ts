@@ -63,7 +63,7 @@ import {
 } from "./08b_efeitos.js";
 import { desenharAltar } from "./08c_eventos.js";
 import { desenharConquista } from "./08e_conquistas.js";
-import { desenharLenda, LENDA } from "./08f_lendas.js";
+import { contornoHeroi, desenharLenda, LENDA, luzPesHeroi } from "./08f_lendas.js";
 import { desenharLuzAmbiente, desenharMapaLuz, luzFlash, nivelEscuro, sombraProjetada } from "./08g_luz.js";
 import { desenharCadaveres, desenharFalas, desenharInimigo } from "./09_criaturas.js";
 import {
@@ -934,9 +934,11 @@ export function desenharInvocador(x: number, y: number) {
     spr = quadroHeroi(pernas, bob, pisca, cor);
   const suave = lg.imageSmoothingEnabled;
   lg.imageSmoothingEnabled = false;
+  luzPesHeroi(Math.round(x), Math.round(y) + 8, cor);
   lg.save();
   lg.translate(Math.round(x), Math.round(y) + 7);
   lg.scale(lado, 1);
+  contornoHeroi(spr, -10, -spr.height, spr.width, spr.height, cor);
   lg.drawImage(spr, -10, -spr.height);
   lg.restore();
   lg.imageSmoothingEnabled = suave;

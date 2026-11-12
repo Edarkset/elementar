@@ -466,15 +466,16 @@ export const DIF = {
   // que falta, por segundo) mais uma reposição constante (hordaRepor). hordaVida, hordaDano e hordaXp valem só para inimigos comuns
   // e entram aos poucos até hordaRampa mapas (mais inimigos, cada um mais fraco). Valores escolhidos por simulação
   // (docs/EQUILIBRIO_SIMULACOES.md)
-  hordaIni: 5,
-  hordaIniProf: 1.5,
-  hordaPico: 38,
-  hordaPicoProf: 9,
-  hordaMax: 130,
+  hordaIni: 6,
+  hordaIniProf: 1.2,
+  hordaPico: 40,
+  hordaPicoProf: 6,
+  hordaMax: 110,
   hordaCurva: 1.3,
   hordaSobe: 0.85,
-  hordaEnche: 1,
+  hordaEnche: 0.8,
   hordaRepor: 0.4,
+  hordaChegando: 2,
   hordaVida: 0.62,
   hordaDano: 0.8,
   hordaXp: 0.62,

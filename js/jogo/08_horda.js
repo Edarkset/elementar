@@ -42,11 +42,12 @@ export function fatorXPDiretor() {
   const d = J.diretor;
   return d && d.ajuste > 1 ? 1 / Math.sqrt(d.ajuste) : 1;
 }
-/** inimigos que nascem por segundo agora: completa o que falta para o alvo e repõe os que morrem; nada durante o respiro */
+/** inimigos que nascem por segundo agora: completa o que falta na tela para o alvo e repõe os que morrem; nada durante o
+ * respiro, nem quando já há muitos chegando (logo além da borda) para não transbordar quando eles entrarem */
 export function taxaSurgimento() {
   const d = J.diretor;
-  if (!d || d.respiro > 0) return 0;
-  return DIF.hordaRepor + DIF.hordaEnche * Math.max(0, d.alvo - d.perto);
+  if (!d || d.respiro > 0 || d.perto > d.alvo * DIF.hordaChegando) return 0;
+  return DIF.hordaRepor + DIF.hordaEnche * Math.max(0, d.alvo - d.n);
 }
 export function contarTela() {
   const P = J.jogador;

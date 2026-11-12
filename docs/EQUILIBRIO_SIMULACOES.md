@@ -23,6 +23,10 @@ Comparações sempre com 28 a 32 partidas por versão, até o mapa 10. O robô a
 **Resultado:** a tela cresce aos poucos em todo mapa (mapa 8: 12,0 · 16,4 · 24,1 · 40,8 · 44,5) e não há mais o salto dos 15-30 s. Os picos antes do chefe caíram de 140-322 para 122-199, a tela vazia ficou em 4-9% e o ritmo de níveis por mapa ficou o mesmo (mapa 2: 10,4; antes 10,1). A dificuldade também ficou a mesma: profundidade mediana de 5 mapas, com as mortes espalhadas do mapa 3 ao 10.
 
 
+### 2. Classes (com a horda gradual)
+
+Doze partidas por classe, até o mapa 8, todas com as mesmas sementes. Cada partida começa com um monstro da classe (`--classe`); o resto da equipe vem pelo jogo. Profundidade média: Invocador 6,75 · Guerreiro 6,08 · Guardião 5,67 · Mago 5,42 · Caçador 5,0 · Assassino 5,0 · Místico 5,0 · Xamã 4,58. Com 12 partidas, diferenças menores que cerca de 1 mapa são ruído; Invocador contra Xamã (2,2 mapas) não é.
+
 ## Rodada de 10/11/2026: intensidade da horda, efeitos e performance
 
 Mais de 200 partidas simuladas nesta rodada. Tudo abaixo foi medido com o bot; onde o bot não serve de régua, está dito.

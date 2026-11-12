@@ -2,6 +2,7 @@
 js/dados.js
 # gerados (js/jogo/ sai de src/jogo/ por npm run compilar, já formatado; a verificação confere que bate) e de terceiros
 js/jogo/
+src/dados.d.ts
 node_modules/
 desktop/jogo/
 desktop/dist/

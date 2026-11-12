@@ -83,6 +83,15 @@ interface HTMLElement {
 }
 
 // ---------------------------------------------------------------- conteúdo (js/dados.js). O esquema completo dos dados é a etapa 3 do plano
+/** o herói da run: uma Lenda (D.lendas) ou um deus do Panteão (D.panteao). O código trata os dois juntos; os campos que só
+ *  um dos dois tem (universo nas Lendas; dom, fardo e provação nos deuses) ficam opcionais */
+type Heroi = Partial<Dados["lendas"][number]> &
+  Partial<Dados["panteao"][number]> & {
+    id: string;
+    nome: string;
+    elementos: string[];
+    poder: Partial<Dados["lendas"][number]["poder"]> & Partial<Dados["panteao"][number]["poder"]> & { nome: string; tipo: string };
+  };
 /** uma linha evolutiva de monstro (D.linhas e D.ancestrais) */
 interface Linha {
   id: string;

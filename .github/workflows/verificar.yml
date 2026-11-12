@@ -25,6 +25,8 @@ jobs:
           cache: npm
       - name: Instalar o verificador de tipos e o formatador (versões fixas)
         run: npm ci
+      - name: O tipo do conteúdo corresponde aos dados
+        run: npm run tipos_dados -- --conferir
       - name: Tipos
         run: npm run tipos
       - name: Formato

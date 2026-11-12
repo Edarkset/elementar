@@ -20,5 +20,6 @@
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true
   },
-  "include": ["src/tipos.d.ts", "src/jogo/*.ts", "js/plataforma.js", "js/dados.js", "js/app.js"]
+  // o conteúdo (js/dados.js) entra pelo tipo gerado src/dados.d.ts (node ferramentas/tipos_dados.js)
+  "include": ["src/tipos.d.ts", "src/dados.d.ts", "src/jogo/*.ts", "js/plataforma.js", "js/app.js"]
 }

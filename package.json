@@ -3,6 +3,7 @@
   "private": true,
   "description": "Ferramentas de desenvolvimento do Elementar. O jogo não tem dependências: o navegador carrega os arquivos como estão.",
   "scripts": {
+    "tipos_dados": "node ferramentas/tipos_dados.js",
     "compilar": "node ferramentas/compilar.js",
     "tipos": "tsc -p tsconfig.json",
     "formatar": "prettier --write src js testes \"ferramentas/*.js\"",

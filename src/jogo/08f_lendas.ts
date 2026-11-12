@@ -34,7 +34,8 @@ import { luzFlash } from "./08g_luz.js";
 import { perigo, pintarSolo } from "./09b_chefes.js";
 import { quadroHeroi } from "./10_desenho.js";
 // ================================================================ Lendas jogáveis: poder próprio (até o nível 5) e passiva
-export const LENDA = () => (R && R.lenda ? D.lendas.find(l => l.id === R.lenda) || D.panteao.find(p => p.id === R.lenda) : null);
+export const LENDA = (): Heroi | null =>
+  R && R.lenda ? D.lendas.find(l => l.id === R.lenda) || D.panteao.find(p => p.id === R.lenda) : null;
 export function passiva(ef: string) {
   const l = LENDA();
   return l && l.passiva.efeito === ef ? l.passiva.valor : 0;
@@ -52,7 +53,10 @@ export function arteHeroiLenda(l) {
 }
 export function telaInvocador(pacto: Elemento[], id: string, esperou?: boolean) {
   metaConq();
-  const livres = [...D.panteao.filter(g => (META.deuses || []).includes(g.id)), ...D.lendas.filter(l => META.lendas.includes(l.universo))];
+  const livres: Heroi[] = [
+    ...D.panteao.filter(g => (META.deuses || []).includes(g.id)),
+    ...D.lendas.filter(l => META.lendas.includes(l.universo))
+  ];
   if (!livres.length) {
     novaRun(pacto, id);
     salvarRun();

@@ -388,7 +388,7 @@ export function comecarTeste(pacto: string[], equipe: Monstro[], lenda?: string)
   iniciarMapa();
 }
 export function telaTesteLenda() {
-  const todas = [...D.lendas, ...D.panteao];
+  const todas: Heroi[] = [...D.lendas, ...D.panteao];
   mostrarCartas(
     "Testar Lenda ou deus",
     "A partida de teste não conta para o recorde.",

@@ -40,6 +40,21 @@ Doze partidas por classe, até o mapa 8, todas com as mesmas sementes. Cada part
 
 A C corta o primeiro chefe para menos da metade e aproxima os níveis do mapa 1 das outras classes. Ela não foi além porque o Místico já é a classe que mais aparece nas equipes que vão mais fundo (7,2 mapas com ele na equipe): um reforço maior criaria uma classe dominante no fim da run.
 
+### 3. Progressão: os poderes acabam cedo
+
+**O achado:** a primeira Ascensão aparece no mapa 1 ou 2 (mediana: mapa 2). Do mapa 3 em diante, 84% a 100% das escolhas de nível são Ascensão (+3% num atributo): os monstros já têm todos os poderes no 5 e quase não há decisão. Os Talismãs (que abrem Despertos e Uniões) apareciam em só 35% das subidas de nível, mesmo sem mais nada para subir.
+
+**O que mudou:** quando nenhum monstro da equipe tem poder para subir, a carta de Talismã aparece em 85% das subidas de nível (`chance_carta_sem_poder` em `D.poderes`).
+
+| 28 partidas, mesmas sementes | Ascensão nas escolhas (mapas 3 · 4 · 6) | Níveis de Talismã | Despertos | Profundidade (média · mediana) |
+|---|---|---|---|---|
+| antes (35%) | 84% · 89% · 93% | 6,1 | 2,57 | 5,68 · 5 |
+| **85% quando não há poder para subir** | 73% · 78% · 85% | 9,3 | 3,04 | 6,21 · 6,5 |
+
+O robô escolhe uma carta ao acaso, então pega o Talismã só 1 vez em 3 mesmo quando ele aparece. Para quem joga, o que conta é a oferta: depois que os poderes acabam, há uma escolha de verdade em 85% das subidas de nível, contra 35% antes. O jogo ficou um pouco mais fácil (+0,5 mapa, perto do ruído).
+
+**O que ainda falta (decisão de design):** mesmo assim a Ascensão segue maioria, porque cada poder vai só até o nível 5 e a equipe chega lá em dois mapas. As saídas são mais níveis de poder (até 8, com ganho menor por nível), poderes novos no meio da run, ou subir de nível mais devagar.
+
 ## Rodada de 10/11/2026: intensidade da horda, efeitos e performance
 
 Mais de 200 partidas simuladas nesta rodada. Tudo abaixo foi medido com o bot; onde o bot não serve de régua, está dito.

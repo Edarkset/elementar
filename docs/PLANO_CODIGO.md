@@ -32,7 +32,7 @@ Três conclusões saem daí:
 Arquivo `.ts` precisa ser compilado, e hoje o Pages serve os arquivos como estão. Há dois caminhos, e o plano usa os dois em sequência:
 
 - **Etapas 0 e 1: sem compilação.** O verificador do TypeScript roda sobre o JavaScript (tipos em comentários JSDoc e um arquivo `tipos.d.ts`). O navegador continua carregando exatamente o que está no repositório. Nada muda no Pages.
-- **Etapa 2 em diante: compilação pelo GitHub Actions.** A cada envio, o GitHub compila e publica. Exige uma mudança única em *Settings → Pages → Source: GitHub Actions*. O endereço do jogo não muda.
+- **Etapa 2 em diante: compilação local, saída gravada.** `npm run compilar` gera o JavaScript e ele é gravado junto com o TypeScript; o Pages continua servindo os arquivos como estão. (A ideia inicial era publicar pelo Actions, o que exigiria trocar uma opção em Settings → Pages; gravar a saída evita isso e mantém o código do jogo visível no GitHub.)
 
 ## Etapas
 
@@ -81,11 +81,19 @@ Falta nesta etapa: estado em um lugar. `J` e `R` ainda são variáveis exportada
 
 Não testado nesta etapa: a versão de computador (`desktop/`, Electron). Ela serve os mesmos arquivos por um protocolo próprio e deve carregar módulos normalmente, mas precisa ser aberta uma vez para confirmar.
 
-### Etapa 2. TypeScript de verdade
+### Etapa 2. TypeScript de verdade — em andamento
 
-- Arquivos renomeados para `.ts`, um módulo por vez, começando pelos que têm menos dependências (`01_nucleo`, `04_ambiente`, `05_arte`).
-- Regras ligadas uma a uma, cada uma num commit que zera os erros daquela regra: `noImplicitAny` (3.629 pontos), depois `strictNullChecks` (2.248 pontos). Sem `any` para calar erro.
-- Compilação com esbuild (uma dependência, rápida, saída em arquivos estáticos comuns) e publicação pelo Actions.
+| Item | Situação |
+|---|---|
+| Fonte em `.ts` | Feito em 12/11/2026, os 24 arquivos de uma vez (com a prova de repetição não havia razão para ir um por um). A fonte fica em `src/jogo/`; `src/tipos.d.ts` descreve as formas. |
+| Como a conversão foi feita | Pelo compilador, não à mão. As 54 anotações JSDoc viraram sintaxe TypeScript (24 casts, 20 tipos de variável, 14 de parâmetro, 1 de retorno). Renomear sem mais nada dava 497 erros: 351 chamadas que não preenchem todos os parâmetros (o JavaScript completa com `undefined`; o TypeScript exige declarar), resolvidas marcando 45 parâmetros como opcionais; e 44 de formas não descritas, resolvidas descrevendo as formas (`Simulacao`, `PropCena`, `ParticulaAr`, `OpcoesCartas`), não com `any`. |
+| Publicação | **Mudou o plano**: em vez de publicar pelo Actions (que exigiria trocar uma opção em Settings → Pages), o JavaScript gerado fica gravado em `js/jogo/`. O GitHub Pages serve o mesmo de antes, sem mudar configuração, e o código do jogo continua visível no GitHub. A verificação recompila e falha se `js/jogo/` não corresponder a `src/jogo/`. Se um dia valer publicar pelo Actions, basta parar de gravar `js/jogo/` e trocar a opção. |
+| Compilação | `ferramentas/compilar.js` com o próprio TypeScript (`transpileModule`): só tira os tipos, arquivo por arquivo; mesmas funções, mesma ordem, mesmos comentários. Sem esbuild: uma dependência a menos, e não há junção de arquivos a fazer. |
+| Prova | As 6 partidas idênticas às gravadas antes; zero erros de tipo; telas, mecânicas e 34 reinos sem problemas. |
+| `noImplicitAny` | A fazer: 1.934 erros, 1.665 deles de parâmetro sem tipo. |
+| `strictNullChecks` | A fazer: 3.112 erros, a maioria de `R` e `J` poderem ser nulos (no menu não há run nem mapa). |
+
+O caminho para as duas regras: começar pelos parâmetros das funções mais chamadas (que espalham tipo para o resto pela inferência) e, para os nulos, separar o código que só roda durante o jogo (onde `J` sempre existe) do que roda no menu, em vez de encher o código de `J!`.
 
 ### Etapa 3. Dados e save
 

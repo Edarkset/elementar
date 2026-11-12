@@ -1,6 +1,5 @@
 // Elementar · estrutura do mapa: abismos, pontes, lagos, praças, construções, fauna e cena de abertura
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./07c_cenario_arte.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./07c_cenario_arte.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { $, COR, ctx, cv, H, hexRgb, J, lg, mistura, R, relatar, rnd, semente, SIM, UNIV, VH, VW, W } from "./01_nucleo.js";
 import { morrer, texto } from "./02_combate.js";
 import { CEL, frio, hash2, soloEm } from "./04_ambiente.js";
@@ -19,8 +18,7 @@ export function estruturaU() {
   const u = UNIV[R.universo];
   return (u && u.estrutura) || null;
 }
-export function zonaPeca(zx, zy) {
-  const C = J.cena;
+export function zonaPeca(C: Cena, zx, zy) {
   if (!C.zonas) C.zonas = new Map();
   const k = zx + ":" + zy;
   if (C.zonas.has(k)) return C.zonas.get(k);
@@ -77,7 +75,7 @@ export function pecasPerto(x: number, y: number) {
   out = [];
   for (let j = -1; j <= 1; j++)
     for (let i = -1; i <= 1; i++) {
-      const f = zonaPeca(zx + i, zy + j);
+      const f = zonaPeca(C, zx + i, zy + j);
       if (f) out.push(f);
     }
   C.vizinhas.set(k, out);
@@ -244,7 +242,7 @@ export function atualizarEstrutura(dt: number) {
       }
     }
   }
-  atualizarFauna(dt);
+  atualizarFauna(C, dt);
 }
 export function queda(x: number, y: number, spr: HTMLCanvasElement, esc: number) {
   J.quedas = J.quedas || [];
@@ -273,7 +271,7 @@ export function fundoAbismo() {
       [0, -128]
     ] as [number, number][]) {
       g.globalAlpha = 0.55;
-      g.drawImage(bolhaCor(i % 3 ? "#ffffff" : "#e8f0f8"), x - r + dx, y - r + dy, r * 2, r * 2);
+      g.drawImage(bolhaCor(C, i % 3 ? "#ffffff" : "#e8f0f8"), x - r + dx, y - r + dy, r * 2, r * 2);
     }
   }
   C.fundoProc = c;
@@ -336,7 +334,7 @@ export function faixaParedao(img) {
     g.drawImage(img, b.sx, b.sy, b.sw, H, x, 0, b.sw, H);
     x += b.sw;
   }
-  const qs = [];
+  const qs: { x: number; w: number }[] = [];
   x = 0;
   for (const b of quedas) {
     g.drawImage(img, b.sx, b.sy, b.sw, H, x, H, b.sw, H);
@@ -469,7 +467,7 @@ export function desenharEstrutura(ox: number, oy: number) {
     };
     // borda de cima (para o paredão): y mais alto de cada x, dos pontos da metade de cima
     const topo = (wx: number) => {
-      let best = null;
+      let best: number | null = null;
       for (let i = 0; i < NP; i++) {
         const [ax, ay] = f.pts[i],
           [bx, by] = f.pts[(i + 1) % NP];
@@ -552,7 +550,7 @@ export function desenharEstrutura(ox: number, oy: number) {
         mx = ex + Math.sin(i * 2.3 + C.t * 0.2) * f.rx * 0.5,
         my = ey + f.ry * 0.6 - q * f.ry * 1.2;
       lg.globalAlpha = 0.07 * Math.sin(q * Math.PI);
-      lg.drawImage(bolhaCor("#c8d4f0"), mx - f.rx * 0.45, my - f.ry * 0.22, f.rx * 0.9, f.ry * 0.44);
+      lg.drawImage(bolhaCor(C, "#c8d4f0"), mx - f.rx * 0.45, my - f.ry * 0.22, f.rx * 0.9, f.ry * 0.44);
     }
     lg.globalCompositeOperation = "source-over";
     lg.globalAlpha = 1;
@@ -765,9 +763,8 @@ export function quadroFauna(row: number, col: number, tam: number) {
   const img = folhaU("fauna");
   return img ? celulaArte(img, 8, 2, col, row, tam, tam, 0.5) : null;
 }
-export function atualizarFauna(dt: number) {
-  const C = J.cena,
-    P = J.jogador;
+export function atualizarFauna(C: Cena, dt: number) {
+  const P = J.jogador;
   if (!C.fauna) C.fauna = [];
   C.tAve = (C.tAve ?? 3) - dt;
   const perto = (x: number, y: number, r: number) => {
@@ -1008,7 +1005,7 @@ export function iniciarAbertura() {
   const img = ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`];
   if (!img || img.falhou) return;
   const r = semente(u.id + "intro"),
-    motes = [];
+    motes: { x: number; y: number; v: number; a: number; s: number; b: number }[] = [];
   for (let i = 0; i < 46; i++) motes.push({ x: r(), y: r(), v: 0.03 + r() * 0.08, a: r() * 6.28, s: 0.6 + r() * 1.8, b: 0.3 + r() * 0.7 });
   J.intro = { t: 0, dur: 4.6, img, u, espera: 0, motes, depois: [], cor: COR[u.elemento] || "#ffd890" };
   $("hud").style.display = "none";
@@ -1049,7 +1046,7 @@ export function pularAbertura() {
 }
 export const suaveIO = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x)),
   suaveO = (x: number) => 1 - Math.pow(1 - Math.max(0, Math.min(1, x)), 3);
-export let CV_INTRO = null;
+export let CV_INTRO: HTMLCanvasElement | null = null;
 export function desenharAbertura() {
   const I = J && J.intro;
   if (!I) return;

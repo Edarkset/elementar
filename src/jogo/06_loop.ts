@@ -1,15 +1,16 @@
 // Elementar · entrada (toque, teclado) e laço principal do jogo
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./05_arte.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./05_arte.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   $,
   agendar,
   ativos,
   atrib,
   atualizarReliquias,
+  AUTOR,
   calcularSinergia,
   COR,
   cv,
+  defAutor,
   defFonte,
   dist2,
   elementoDe,
@@ -39,9 +40,7 @@ import {
   dificuldade,
   emArea,
   ferir,
-  hordaF,
   maisProximo,
-  MOD,
   parar,
   particulas,
   raio,
@@ -72,7 +71,7 @@ import {
 import { aplicarElementoNoSolo, atualizarSolo, CEL, efeitoSoloInimigo, soloEm } from "./04_ambiente.js";
 import { atualizarCena, danificarProp, lascas, propNoPonto, rajada } from "./07_cenario.js";
 import { passoAbertura, pularAbertura } from "./07d_estrutura.js";
-import { ameacaDiretor, atualizarAvisos, atualizarDiretor, multDiretor } from "./08_horda.js";
+import { ameacaDiretor, atualizarAvisos, atualizarDiretor, taxaSurgimento } from "./08_horda.js";
 import { atualizarVfx, efCirculo, efExplosao, efPilar } from "./08b_efeitos.js";
 import { atualizarEventos, textoUnico } from "./08c_eventos.js";
 import { atualizarArvore, tal } from "./08d_poderes.js";
@@ -85,7 +84,7 @@ import { chao, desenhar, desenharEquipe, desenharNinho, hud, quadroHeroi, toast 
 import { pausar } from "./11_menu.js";
 // ================================================================ entrada
 export const teclas = new Set();
-export let toque = null,
+export let toque: { ox: number; oy: number; x: number; y: number; id: number } | null = null,
   ultimoToque = 0;
 addEventListener("pointerdown", () => pularAbertura());
 addEventListener("keydown", e => {
@@ -221,13 +220,32 @@ export function tick(dt: number) {
 export function atualizar(dt: number) {
   if (J.intro && passoAbertura(dt)) return;
   J.t += dt;
+  defAutor(null);
   const P = J.jogador,
     rm = SIN.rm;
+  if (!passoRelogios(dt)) return;
+  passoMovimento(dt, P, rm);
+  passoFormacao(dt, P, rm);
+  passoSurgimentos(dt);
+  if (!passoInimigos(dt, P)) return;
+  passoProjeteis(dt);
+  defAutor(null);
+  passoCriasZonas(dt, P);
+  defAutor(null);
+  passoOvosSelvagens(dt, P);
+  passoCristais(dt, P, rm);
+  passoParticulas(dt);
+  if (!passoVidaZerada(dt, P)) return;
+  hud();
+}
+// ---------------------------------------------------------------- os passos de atualizar, na ordem
+/** agenda (golpes e efeitos marcados para depois) e relógios do quadro: recargas, combo, Despertar, trocas. Devolve false se o mapa acabou no meio do quadro. */
+function passoRelogios(dt: number): boolean {
   if (J.agenda.length) {
     const vence = J.agenda.filter(a => a.t <= J.t);
     J.agenda = J.agenda.filter(a => a.t > J.t);
     vence.forEach(a => a.fn());
-    if (!J) return;
+    if (!J) return false;
   }
   ["dashCd", "invuln", "buffCad", "canto", "fervor", "reducao", "regen", "grito", "totemAnc"].forEach(k => {
     if (J[k] > 0) J[k] -= dt;
@@ -249,7 +267,10 @@ export function atualizar(dt: number) {
   R.selos.forEach(s => {
     if (s.trocaCd > 0) s.trocaCd -= dt;
   });
-  // movimento e esquiva
+  return true;
+}
+/** movimento do herói e esquiva. */
+function passoMovimento(dt: number, P: Ponto, rm: Sinergia["rm"]) {
   let mx = 0,
     my = 0;
   if (teclas.has("w") || teclas.has("arrowup")) my--;
@@ -299,8 +320,9 @@ export function atualizar(dt: number) {
     P.y += J.pvy * dt;
   }
   atualizarSolo(dt);
-  // formação: a equipe segue ATRÁS do herói, em leque e espaçada (antes ficava a 13 px, colada em cima dele). O "atrás" gira
-  // devagar para o lado oposto ao movimento, então ninguém fica pulando de um lado para o outro
+}
+/** formação: a equipe segue ATRÁS do herói, em leque e espaçada (antes ficava a 13 px, colada em cima dele). O "atrás" gira devagar para o lado oposto ao movimento, então ninguém fica pulando de um lado para o outro. */
+function passoFormacao(dt: number, P: Ponto, rm: Sinergia["rm"]) {
   {
     const alvo = Math.hypot(J.pvx || 0, J.pvy || 0) > 6 && J.dir ? { x: -J.dir.x, y: -J.dir.y } : null;
     J.costas = J.costas || { x: 0, y: -1 };
@@ -326,15 +348,18 @@ export function atualizar(dt: number) {
     else if (dxF > 1) s.esq = false;
     s.x += dxF * Math.min(1, dt * 5);
     s.y += (P.y + form[i][1] - s.y) * Math.min(1, dt * 5);
+    defAutor(s.mon ? s.mon.id : null);
     agirSelo(s, dt);
+    defAutor(null);
   });
   if (rm.regen) curar(J.vidaMax * rm.regen * dt);
   if (J.regen > 0) curar(J.vidaMax * J.regenV * dt);
-  // spawns: inimigos, ovos e filhotes
+}
+/** inimigos, ovos e filhotes que surgem com o tempo. spawns: inimigos, ovos e filhotes. */
+function passoSurgimentos(dt: number) {
   if (!J.fim) {
     if (J.t < MAPA_SEG) {
-      J.spawn +=
-        dt * (DIF.base + J.t * DIF.cresc) * (1 + R.profundidade * DIF.spawn) * hordaF("horda") * multDiretor() * (1 + MOD("horda"));
+      J.spawn += dt * taxaSurgimento(); // a horda segue a curva do mapa (alvoHorda, 08_horda.js)
       while (J.spawn > 1 && J.inimigos.length < DIF.max) {
         J.spawn--;
         spawnInimigo();
@@ -367,7 +392,9 @@ export function atualizar(dt: number) {
       mostrarPortais();
     }
   }
-  // inimigos
+}
+/** inimigos: movimento, golpes, status e mortes. Devolve false se o mapa acabou no meio do quadro. */
+function passoInimigos(dt: number, P: Ponto): boolean {
   const temGuarda = J.crias.length > 0 && J.crias.some(c => c.guarda); // só procura o servo-escudo se existir algum (era uma busca por inimigo, todo quadro)
   for (const e of J.inimigos) {
     if (e.escAlvo && e.esc !== e.escAlvo) {
@@ -456,7 +483,7 @@ export function atualizar(dt: number) {
     e => e.hp > 0 && ((Math.abs(e.x - P.x) < VW * 1.6 && Math.abs(e.y - P.y) < VH * 1.6) || e.chefe || e.mini)
   );
   atualizarCena(dt);
-  if (!J) return;
+  if (!J) return false;
   if (J.imparavel > 0) J.imparavel -= dt;
   atualizarReliquias(dt);
   atualizarPerigos(dt);
@@ -505,14 +532,18 @@ export function atualizar(dt: number) {
       if (b.deixaLascas && J.cena) {
         b.deixaLascas.x = b.x;
         b.deixaLascas.y = b.y;
-        lascas(b.deixaLascas, 8, true);
+        lascas(J.cena, b.deixaLascas, 8, true);
       }
     }
   }
   J.balas = J.balas.filter(b => b.vida > 0);
-  // projéteis
+  return true;
+}
+/** projéteis da equipe e dos inimigos. */
+function passoProjeteis(dt: number) {
   for (const p of J.proj) {
     defFonte(p.fonte || "basico");
+    defAutor(p.autor);
     if (p.alvo) {
       if (p.alvo.hp <= 0) p.alvo = maisProximo(p, 130);
       if (p.alvo) {
@@ -584,11 +615,14 @@ export function atualizar(dt: number) {
     }
   }
   J.proj = J.proj.filter(p => p.vida > 0);
-  // crias, totens, armadilhas e zonas
+}
+/** crias, totens, armadilhas e zonas. crias, totens, armadilhas e zonas. */
+function passoCriasZonas(dt: number, P: Ponto) {
   for (const c of J.crias) {
     c.vida -= dt;
     c.cd -= dt;
     defFonte(c.fonte || "basico");
+    defAutor(c.autor);
     if (c.guarda) {
       const a = J.t * 3 + J.crias.indexOf(c);
       c.x += (P.x + Math.cos(a) * 16 - c.x) * Math.min(1, dt * 5);
@@ -635,6 +669,7 @@ export function atualizar(dt: number) {
     t.vida -= dt;
     t.cd -= dt;
     defFonte("basico");
+    defAutor(t.dono && t.dono.mon ? t.dono.mon.id : null);
     if (t.cd <= 0) {
       const e = maisProximo(t, 80);
       if (e) {
@@ -643,6 +678,7 @@ export function atualizar(dt: number) {
           d = Math.hypot(dx, dy) || 1;
         J.proj.push({
           fonte: FONTE,
+          autor: AUTOR,
           alvoProp: e.ehProp ? e : null,
           x: t.x,
           y: t.y - 4,
@@ -653,7 +689,8 @@ export function atualizar(dt: number) {
           cor: t.cor,
           vida: 1,
           perf: 1,
-          r: 2
+          r: 2,
+          explode: DIF.totemArea || undefined
         });
       }
       t.cd = 0.8;
@@ -663,6 +700,7 @@ export function atualizar(dt: number) {
   for (const a of J.armadilhas) {
     a.vida -= dt;
     defFonte(a.fonte || "habilidade");
+    defAutor(a.autor);
     const e = maisProximo(a, 8);
     if (e) {
       a.vida = 0;
@@ -680,6 +718,7 @@ export function atualizar(dt: number) {
   for (const z of J.zonas) {
     z.vida -= dt;
     defFonte(z.fonte || "habilidade");
+    defAutor(z.autor);
     if (z.tipo === "circulo" && z.puxa)
       emArea(z.x, z.y, z.r, e => {
         e.x += (z.x - e.x) * dt * 1.5;
@@ -721,7 +760,7 @@ export function atualizar(dt: number) {
       z.cd -= dt;
       if (z.cd <= 0) {
         z.cd = 0.6;
-        J.crias.push({ fonte: FONTE, x: z.x, y: z.y, dano: z.dano, el: z.el, cor: z.cor, vida: 4, cd: 0 });
+        J.crias.push({ fonte: FONTE, autor: AUTOR, x: z.x, y: z.y, dano: z.dano, el: z.el, cor: z.cor, vida: 4, cd: 0 });
         particulas(z.x, z.y, z.cor, 4, 40);
       }
     }
@@ -747,7 +786,9 @@ export function atualizar(dt: number) {
     }
   }
   J.zonas = J.zonas.filter(z => z.vida > 0);
-  // ovos e filhotes selvagens
+}
+/** ovos e filhotes selvagens no mapa. ovos e filhotes selvagens. */
+function passoOvosSelvagens(dt: number, P: Ponto) {
   for (const o of J.ovosMapa) {
     o.vida -= dt;
     if (J.fim) {
@@ -803,7 +844,9 @@ export function atualizar(dt: number) {
     if (d < 8 && !(f.imune > 0)) tentarCaptura(f);
   }
   J.selvagens = J.selvagens.filter(f => f.vida > 0);
-  // cristais
+}
+/** cristais de experiência e o ímã. */
+function passoCristais(dt: number, P: Ponto, rm: Sinergia["rm"]) {
   const ima = 22 * rm.ima * tal.coleta();
   for (const g of J.gemas) {
     g.x += g.vx * dt;
@@ -829,7 +872,9 @@ export function atualizar(dt: number) {
   }
   J.gemas = J.gemas.filter(g => !g.pega);
   atualizarMoedasBaus(dt, ima);
-  // partículas e textos
+}
+/** partículas, números de dano e textos. */
+function passoParticulas(dt: number) {
   for (const p of J.parts) {
     p.x += p.vx * dt;
     p.y += p.vy * dt;
@@ -855,6 +900,9 @@ export function atualizar(dt: number) {
   J.efeitos = J.efeitos.filter(f => f.vida > 0);
   J.fantasmas.forEach(f => (f.vida -= dt));
   J.fantasmas = J.fantasmas.filter(f => f.vida > 0);
+}
+/** vida zerada: Ovo de Koschei, Lenda, Ankh e Segunda Chance levantam a equipe; sem nenhum, a run acaba. Devolve false se o mapa acabou no meio do quadro. */
+function passoVidaZerada(dt: number, P: Ponto): boolean {
   if (J.vida <= 0 && temRel("Ovo de Koschei") && !J.koschei) {
     J.koschei = true;
     J.vida = 1;
@@ -891,9 +939,12 @@ export function atualizar(dt: number) {
       anel(P.x, P.y, 60, "#ffd34a", 0.8);
       tremor(8);
       toast("Segunda Chance: a equipe se levanta!");
-    } else return derrota();
+    } else {
+      derrota();
+      return false;
+    }
   }
-  hud();
+  return true;
 }
 // subida de nível: câmera lenta curta, onda dourada, coluna de luz e faíscas; o "NÍVEL X" grande aparece no HUD
 export function efeitoNivel() {

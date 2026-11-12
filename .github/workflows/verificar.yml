@@ -44,6 +44,8 @@ jobs:
         run: |
           npm install --no-save playwright@1.63.0
           npx playwright install chromium   # sem --with-deps: a máquina do GitHub já tem as bibliotecas, e instalar pacotes do sistema falha quando o servidor do Ubuntu oscila
+      - name: Artes (grade, recorte, transparência e manifesto; avisos no relatório)
+        run: npm run artes
       - name: Arquivos, telas e mecânicas
         run: |
           node testes/verificar.js --so carga
@@ -61,5 +63,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: relatorio
-          path: testes/relatorio.md
+          path: |
+            testes/relatorio.md
+            testes/artes_relatorio.md
           if-no-files-found: ignore

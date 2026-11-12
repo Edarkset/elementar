@@ -1,7 +1,6 @@
 // GERADO por "npm run compilar" a partir de src/jogo/09_criaturas.ts. Edite o .ts, não este arquivo.
 // Elementar · criaturas: inimigos comuns e mini-chefes (corpo, passo, golpe, derrota e desenho)
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./08h_interface.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./08h_interface.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   agendar,
   ativos,
@@ -1493,7 +1492,7 @@ export function aoMorrerCriatura(e) {
         }
       break;
     case "puff":
-      if (C) for (let i = 0; i < 4; i++) fumaca(e.x + rnd(-3, 3), e.y + rnd(-3, 1), 4, "#d8d0e0");
+      if (C) for (let i = 0; i < 4; i++) fumaca(C, e.x + rnd(-3, 3), e.y + rnd(-3, 1), 4, "#d8d0e0");
       break;
     case "penas":
       if (C)
@@ -1519,7 +1518,7 @@ export function aoMorrerCriatura(e) {
     case "sapo":
       J.sapos = J.sapos || [];
       J.sapos.push({ x: e.x, y: e.y, vida: 3, f: Math.random() * 6 });
-      if (C) fumaca(e.x, e.y, 5, "#a8e0a0");
+      if (C) fumaca(C, e.x, e.y, 5, "#a8e0a0");
       break;
     case "desmancha":
       if (C)

@@ -454,8 +454,10 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 /* resumo da run na tela de fim: barras de dano por fonte */
 .resumo-dano{margin:12px auto 2px;max-width:340px;text-align:left;font-size:13px;line-height:1.35}
 .resumo-dano .rd-titulo{font-family:"Cinzel",Georgia,serif;font-weight:600;color:#ffd98a;text-align:center;margin-bottom:6px;letter-spacing:.3px}
-.resumo-dano .rd-linha{display:grid;grid-template-columns:104px 1fr 38px;align-items:center;gap:8px;margin:3px 0}
-.resumo-dano .rd-linha span{color:#d8d0ea;white-space:nowrap}
+.resumo-dano .rd-linha{display:grid;grid-template-columns:128px 1fr 38px;align-items:center;gap:8px;margin:3px 0}
+.resumo-dano .rd-linha span{color:#d8d0ea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* segundo bloco do resumo ("Quem carregou a run"): respiro em relação à dica de cima */
+.resumo-dano .rd-titulo ~ .rd-titulo{margin-top:12px}
 .resumo-dano .rd-linha i{display:block;height:8px;border-radius:4px;background:rgba(255,255,255,.09);overflow:hidden}
 .resumo-dano .rd-linha i b{display:block;height:100%;border-radius:4px}
 .resumo-dano .rd-linha em{font-style:normal;font-weight:800;color:#f2e7c9;text-align:right}

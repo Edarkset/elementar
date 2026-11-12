@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galeria das artes</title>
+<!--
+  Galeria das artes do Elementar: cada folha com a grade que o jogo usa, cada linha animada como no jogo e os avisos da conferência.
+  Abra pelo servidor local (ferramentas/servidor.ps1, ou python3 -m http.server na raiz) em /ferramentas/galeria.html.
+  Os avisos vêm de testes/artes_relatorio.json (rode antes: npm run artes). A tabela de tipos é a mesma da conferência
+  (ferramentas/artes_tipos.js).
+-->
+<style>
+  :root { --fundo: #14111c; --painel: #1f1a2b; --texto: #ece6f6; --suave: #a69cba; --erro: #ff6b6b; --aviso: #ffc861; --ok: #7fe0a0; --grade: rgba(255, 210, 120, .55); }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fundo); color: var(--texto); font: 14px/1.4 system-ui, sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; background: var(--painel); padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; border-bottom: 1px solid #2c2540; }
+  h1 { font-size: 17px; margin: 0 12px 0 0; }
+  input, select { background: var(--painel); color: var(--texto); border: 1px solid #3a3150; border-radius: 6px; padding: 6px 8px; font: inherit; }
+  label { color: var(--suave); display: flex; gap: 6px; align-items: center; }
+  #resumo { color: var(--suave); margin-left: auto; }
+  main { padding: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 14px; }
+  .arte { background: var(--painel); border-radius: 10px; padding: 12px; border: 1px solid #2c2540; }
+  .arte.erro { border-color: var(--erro); }
+  .arte.aviso { border-color: #6b5a2a; }
+  .nome { font-family: ui-monospace, monospace; font-size: 12px; word-break: break-all; }
+  .tipo { color: var(--suave); font-size: 12px; margin: 2px 0 8px; }
+  .folha { width: 100%; max-height: 380px; object-fit: contain; image-rendering: pixelated; background: repeating-conic-gradient(#2a2438 0 25%, #221d2e 0 50%) 0 0 / 16px 16px; border-radius: 4px; }
+  .anims { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .anims canvas { width: 72px; height: 72px; image-rendering: pixelated; background: #2a2438; border-radius: 4px; }
+  ul.msgs { margin: 8px 0 0; padding-left: 18px; font-size: 12px; }
+  li.erro { color: var(--erro); } li.aviso { color: var(--aviso); }
+  .sem { color: var(--ok); font-size: 12px; margin-top: 6px; }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --fundo: #f4f1f8; --painel: #fff; --texto: #1f1a2b; --suave: #6a6080; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Galeria das artes</h1>
+  <input id="busca" type="search" placeholder="filtrar por caminho (ex.: lendas, dracula)" size="28">
+  <select id="tipo"><option value="">todos os tipos</option></select>
+  <label><input id="soAvisos" type="checkbox"> só com erro ou aviso</label>
+  <label><input id="grade" type="checkbox" checked> grade</label>
+  <span id="resumo"></span>
+</header>
+<main id="lista"></main>
+<script src="artes_tipos.js"></script>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const POR_PAGINA = 60;
+let MAN = {}, RELATO = {}, itens = [];
+const tipoDe = k => TIPOS_ARTE.find(t => t.re.test(k));
+// a mesma escolha de grade da conferência: quadrada e certa primeiro; senão a primeira, como o jogo recorta
+function gradeDe(tipo, w, h) {
+  if (!tipo || !tipo.grades) return null;
+  for (const op of tipo.grades) {
+    const [C, L0] = op.g, cw = w / C, L = L0 || h / cw;
+    if (Number.isInteger(cw) && Number.isInteger(L) && L >= 1 && Math.abs(cw - h / L) < 0.5) return [C, L];
+    if (tipo.linhasExtras && Number.isInteger(cw) && Number.isInteger(h / cw) && h / cw > L0) return [C, h / cw];
+  }
+  const [C, L0] = tipo.grades[0].g;
+  return [C, L0 || Math.max(1, Math.round(h / (w / C)))];
+}
+function quadrosDaLinha(img, C, L, r) {
+  // pula células vazias (o jogo também só anima o que tem desenho)
+  const cw = img.naturalWidth / C, ch = img.naturalHeight / L, c = document.createElement("canvas");
+  c.width = Math.round(cw); c.height = Math.round(ch);
+  const g = c.getContext("2d", { willReadFrequently: true }), qs = [];
+  for (let k = 0; k < C; k++) {
+    g.clearRect(0, 0, c.width, c.height);
+    g.drawImage(img, k * cw, r * ch, cw, ch, 0, 0, c.width, c.height);
+    const d = g.getImageData(0, 0, c.width, c.height).data;
+    let n = 0;
+    for (let i = 3; i < d.length; i += 16) if (d[i] > 40) n++;
+    if (n > 4) qs.push(k);
+  }
+  return { cw, ch, qs };
+}
+const animacoes = [];
+function cartao(k) {
+  const tipo = tipoDe(k), msgs = RELATO[k] || [], div = document.createElement("div");
+  const nivel = msgs.some(m => m.startsWith("erro")) ? "erro" : msgs.length ? "aviso" : "";
+  div.className = "arte " + nivel;
+  div.innerHTML = `<div class="nome">${k}</div><div class="tipo">${tipo ? tipo.nome : "tipo desconhecido"} · <span class="dim"></span></div>`;
+  const cv = document.createElement("canvas");
+  cv.className = "folha";
+  div.appendChild(cv);
+  const an = document.createElement("div");
+  an.className = "anims";
+  div.appendChild(an);
+  if (msgs.length) {
+    const ul = document.createElement("ul");
+    ul.className = "msgs";
+    for (const m of msgs) {
+      const li = document.createElement("li");
+      li.className = m.startsWith("erro") ? "erro" : "aviso";
+      li.textContent = m.replace(/^(erro|aviso): /, "");
+      ul.appendChild(li);
+    }
+    div.appendChild(ul);
+  } else div.insertAdjacentHTML("beforeend", `<div class="sem">sem avisos</div>`);
+  const img = new Image();
+  img.onload = () => {
+    const w = img.naturalWidth, h = img.naturalHeight, gr = gradeDe(tipo, w, h);
+    div.querySelector(".dim").textContent = `${w}×${h}` + (gr ? ` · grade ${gr[0]}×${gr[1]}, célula ${+(w / gr[0]).toFixed(1)}×${+(h / gr[1]).toFixed(1)}` : "");
+    cv.width = w; cv.height = h;
+    const g = cv.getContext("2d");
+    g.drawImage(img, 0, 0);
+    if (gr && $("grade").checked) {
+      g.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--grade");
+      g.lineWidth = Math.max(1, w / 400);
+      for (let k = 1; k < gr[0]; k++) { g.beginPath(); g.moveTo((k * w) / gr[0], 0); g.lineTo((k * w) / gr[0], h); g.stroke(); }
+      for (let r = 1; r < gr[1]; r++) { g.beginPath(); g.moveTo(0, (r * h) / gr[1]); g.lineTo(w, (r * h) / gr[1]); g.stroke(); }
+    }
+    if (gr && tipo.personagem)
+      for (let r = 0; r < gr[1]; r++) {
+        const { cw, ch, qs } = quadrosDaLinha(img, gr[0], gr[1], r);
+        if (qs.length < 2) continue;
+        const c = document.createElement("canvas");
+        c.width = Math.round(cw); c.height = Math.round(ch);
+        c.title = `linha ${r + 1}`;
+        an.appendChild(c);
+        animacoes.push({ c, img, cw, ch, r, qs });
+      }
+  };
+  img.src = "../" + MAN[k];
+  return div;
+}
+function mostrar() {
+  const busca = $("busca").value.trim().toLowerCase(), t = $("tipo").value, so = $("soAvisos").checked;
+  itens = Object.keys(MAN).filter(k => (!busca || k.toLowerCase().includes(busca)) && (!t || (tipoDe(k) || {}).nome === t) && (!so || RELATO[k]));
+  animacoes.length = 0;
+  $("lista").innerHTML = "";
+  for (const k of itens.slice(0, POR_PAGINA)) $("lista").appendChild(cartao(k));
+  const ne = itens.filter(k => (RELATO[k] || []).some(m => m.startsWith("erro"))).length, na = itens.filter(k => RELATO[k]).length - ne;
+  $("resumo").textContent = `${itens.length} arte(s)${itens.length > POR_PAGINA ? ` (mostrando ${POR_PAGINA}; filtre para ver outras)` : ""} · ${ne} com erro · ${na} com aviso`;
+}
+// as linhas animadas a 8 quadros por segundo, como o jogo anda
+let q = 0;
+setInterval(() => {
+  q++;
+  for (const a of animacoes) {
+    const g = a.c.getContext("2d"), k = a.qs[q % a.qs.length];
+    g.clearRect(0, 0, a.c.width, a.c.height);
+    g.drawImage(a.img, k * a.cw, a.r * a.ch, a.cw, a.ch, 0, 0, a.c.width, a.c.height);
+  }
+}, 125);
+(async () => {
+  MAN = await (await fetch("../arte/manifesto.json")).json();
+  try { RELATO = await (await fetch("../testes/artes_relatorio.json")).json(); } catch (e) { RELATO = {}; $("resumo").textContent = "sem relatório: rode npm run artes para ver os avisos"; }
+  for (const t of TIPOS_ARTE) $("tipo").insertAdjacentHTML("beforeend", `<option>${t.nome}</option>`);
+  for (const id of ["busca", "tipo", "soAvisos", "grade"]) $(id).addEventListener("input", mostrar);
+  mostrar();
+})();
+</script>
+</body>
+</html>

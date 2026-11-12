@@ -1,5 +1,81 @@
 # Equilíbrio: testes por simulação
 
+## Rodada de 12/11/2026: horda gradual e as outras mecânicas
+
+Comparações sempre com 28 a 32 partidas por versão, até o mapa 10. O robô agora mede a horda ao longo do mapa (inimigos na tela de 0 a 15 s, 15 a 30, 30 a 60, 60 a 90 e 90 em diante) e o momento do pico. Também dá para fixar a classe (`--classe`) e mudar dados de poderes (`--poderes`) por bateria.
+
+### 1. Horda gradual
+
+**O que estava errado:** a taxa de nascimento crescia sozinha com o tempo, sem limite, e o diretor só corrigia devagar. Resultado medido (31 partidas): a tela triplicava entre 15 e 30 s (mapa 3: de 11,3 para 35,6 inimigos) e havia picos de até 140 inimigos já no mapa 1.
+
+**O que mudou:** cada mapa tem uma curva de inimigos na tela. Ela começa com poucos e cresce aos poucos até o pico perto do chefe (`alvoHorda` em `08_horda.ts`), e os nascimentos completam o que falta na tela para a curva. O diretor continua decidindo quanto (até +30% para quem domina, -20% e respiro para quem está mal). As ondas especiais passam a ser proporcionais à horda do momento e nunca aparecem nos primeiros 30 s.
+
+| Versão | Mapa 3 na tela (0-15 · 15-30 · 30-60 · 60-90 s) | Tela vazia | Profundidade mediana | O que ensinou |
+|---|---|---|---|---|
+| antes | 11,3 · 35,6 · 42,8 · 60,6 | 6-10% | 5 | o salto do começo |
+| 1 | 3,2 · 5,7 · 11,7 · 22,0 | 14-22% | 6 | contar os que estavam chegando esvaziava a tela (o robô foge, eles ficam fora dela) |
+| 2 | 4,6 · 7,7 · 14,9 · 28,5 | 13-17% | 7,5 | a equipe forte mata mais rápido do que a reposição |
+| 3 | 7,7 · 12,1 · 21,9 · 40,7 | 3-9% | 6 | forma certa; picos de até 240 depois das ondas |
+| 4 | 6,7 · 10,7 · 19,2 · 35,7 | 5-9% | 7 | picos menores (118 a 192); ficou fácil |
+| 5 | 6,6 · 10,8 · 19,8 · 35,0 | 5-9% | 7 | vida maior dos comuns não muda quem morre: 66% do dano recebido é de contato |
+| **6 (adotada)** | 6,8 · 10,8 · 19,5 · 34,2 | 4-9% | **5** | dano dos comuns 1,4 (era 0,8), vida 0,9 (era 0,62), XP 0,8 (era 0,62): mesma dificuldade de antes |
+
+**Resultado:** a tela cresce aos poucos em todo mapa (mapa 8: 12,0 · 16,4 · 24,1 · 40,8 · 44,5) e não há mais o salto dos 15-30 s. Os picos antes do chefe caíram de 140-322 para 122-199, a tela vazia ficou em 4-9% e o ritmo de níveis por mapa ficou o mesmo (mapa 2: 10,4; antes 10,1). A dificuldade também ficou a mesma: profundidade mediana de 5 mapas, com as mortes espalhadas do mapa 3 ao 10.
+
+
+### 2. Classes (com a horda gradual)
+
+Doze partidas por classe, até o mapa 8, todas com as mesmas sementes. Cada partida começa com um monstro da classe (`--classe`); o resto da equipe vem pelo jogo. Profundidade média: Invocador 6,75 · Guerreiro 6,08 · Guardião 5,67 · Mago 5,42 · Caçador 5,0 · Assassino 5,0 · Místico 5,0 · Xamã 4,58. Com 12 partidas, diferenças menores que cerca de 1 mapa são ruído; Invocador contra Xamã (2,2 mapas) não é.
+
+**Caçador e Xamã:** testados com as mesmas sementes, o tiro do Caçador atravessando 2 inimigos (`cacadorPerfura`) e uma explosão de 14 px no tiro do totem (`totemArea`). O efeito ficou dentro do ruído: Caçador de 5,00 para 5,17 mapas (melhorou em 6 sementes e piorou em 4) e Xamã de 4,58 para 4,75 (melhorou em 5 e piorou em 4). **Não adotados.** Os dois têm dano por segundo parecido com o das outras classes no mapa 1 (cerca de 300) e morrem em mapas espalhados; o que os separa do Invocador é pequeno e não está no ataque básico. Os parâmetros ficam no código (com o valor de hoje) para uma próxima rodada.
+
+**Místico:** o achado desta medição. Começando com ele, o chefe do mapa 1 leva 98,6 s (mediana; as outras classes, de 6 a 24 s), o dano por segundo é 102 (as outras, de 280 a 470) e a equipe sobe só 11,7 níveis no mapa 1 (as outras, de 15 a 21). O Raio Vital fere um inimigo só, com 6 de dano.
+
+| Místico inicial (12 partidas, mesmas sementes) | Chefe do mapa 1 | Dano por segundo | Níveis no mapa 1 | Profundidade |
+|---|---|---|---|---|
+| hoje | 98,6 s | 102 | 11,7 | 5,00 |
+| A: dano ×1,6 | 67,3 s | 135 | 13,2 | 5,50 |
+| B: o raio salta para 2 inimigos próximos (60% do dano) | 84,3 s | 109 | 13,6 | 5,83 |
+| **C (adotada): ×1,4 e 2 saltos** | **44,7 s** | **149** | **15,9** | 5,67 |
+
+A C corta o primeiro chefe para menos da metade e aproxima os níveis do mapa 1 das outras classes. Ela não foi além porque o Místico já é a classe que mais aparece nas equipes que vão mais fundo (7,2 mapas com ele na equipe): um reforço maior criaria uma classe dominante no fim da run.
+
+### 3. Progressão: os poderes acabam cedo
+
+**O achado:** a primeira Ascensão aparece no mapa 1 ou 2 (mediana: mapa 2). Do mapa 3 em diante, 84% a 100% das escolhas de nível são Ascensão (+3% num atributo): os monstros já têm todos os poderes no 5 e quase não há decisão. Os Talismãs (que abrem Despertos e Uniões) apareciam em só 35% das subidas de nível, mesmo sem mais nada para subir.
+
+**O que mudou:** quando nenhum monstro da equipe tem poder para subir, a carta de Talismã aparece em 85% das subidas de nível (`chance_carta_sem_poder` em `D.poderes`).
+
+| 28 partidas, mesmas sementes | Ascensão nas escolhas (mapas 3 · 4 · 6) | Níveis de Talismã | Despertos | Profundidade (média · mediana) |
+|---|---|---|---|---|
+| antes (35%) | 84% · 89% · 93% | 6,1 | 2,57 | 5,68 · 5 |
+| **85% quando não há poder para subir** | 73% · 78% · 85% | 9,3 | 3,04 | 6,21 · 6,5 |
+
+O robô escolhe uma carta ao acaso, então pega o Talismã só 1 vez em 3 mesmo quando ele aparece. Para quem joga, o que conta é a oferta: depois que os poderes acabam, há uma escolha de verdade em 85% das subidas de nível, contra 35% antes. O jogo ficou um pouco mais fácil (+0,5 mapa, perto do ruído).
+
+**Poderes até o nível 8:** cada poder sobe até 8 (`DIF.poderMax`), e cada nível além do 5 vale metade (`nivelEf`, para a recarga não sumir). O Desperto continua abrindo no 5, e a carta do 5 avisa isso. Como a equipe fica mais forte, os inimigos ganham um pouco mais de vida por mapa (`DIF.vida` de 1,33 para 1,36: +14% de vida no mapa 6).
+
+| 28 partidas, mesmas sementes | Ascensão (mapas 2 · 3 · 4 · 5) | Profundidade (média · mediana) |
+|---|---|---|
+| antes de hoje (poderes até 5, Talismã 35%) | 67% · 84% · 89% · 87% | 5,68 · 5 |
+| poderes até 8, sem compensação | 10% · 58% · 71% · 75% | 6,68 · 6,5 |
+| **poderes até 8 e vida 1,36 (adotada)** | 14% · 58% · 67% · 76% | 6,00 · 6 |
+
+As escolhas de verdade duram cerca de dois mapas a mais, com a dificuldade praticamente igual (+0,3 mapa na média, dentro do ruído). Do mapa 6 em diante a Ascensão ainda passa de 90%. O próximo passo, se quiser ir além, seriam poderes novos no meio da run.
+
+### 4. Chefe dos Andes (falso alarme)
+
+A primeira análise (92 partidas) deu ao chefe dos Andes 77 s para vencer, contra 15 a 30 s dos outros, e a suspeita era a Muralha Encaixada e os Terraços prendendo o jogador entre pedras. Medido de novo:
+
+- **isolado no mapa 1** (`--universo`, 12 partidas por reino): Andes 23,5 s, Grécia 21,7 s e Xibalba 11,7 s. Todos têm uma luta lenta de vez em quando (Grécia 89 s, Xibalba 76 s, Andes 149 s);
+- **todas as lutas do dia** contra os chefes da mesma era: Andes 32 s (n=49), Polinésia 28 s (n=92), Tenochtitlán 28 s (n=68), Xibalba 24 s (n=63) e Amazônia 22 s (n=71). As lutas acima de 60 s acontecem na mesma proporção: Andes 18%, os outros de 14% a 22%.
+
+Os 77 s vinham de só 9 lutas. O chefe dos Andes é um pouco mais lento que os da mesma era, mas não fora da curva. **Nada foi mudado.**
+
+### 5. Quem carregou a run
+
+A tela de fim agora mostra os três monstros que mais causaram dano (básico, habilidades, especiais e as reações que dispararam), com uma frase: carregou a run sozinho, dano bem dividido, ou quem mais causou. Cada golpe sabe qual monstro o causou (`AUTOR` em `01_nucleo.ts`). Só contabilidade: as partidas de referência ficaram idênticas.
+
 ## Rodada de 10/11/2026: intensidade da horda, efeitos e performance
 
 Mais de 200 partidas simuladas nesta rodada. Tudo abaixo foi medido com o bot; onde o bot não serve de régua, está dito.

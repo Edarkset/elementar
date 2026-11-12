@@ -1,4 +1,4 @@
-// Save: versão, migração e conferência na leitura.
+// Elementar · save: versão, migração e conferência na leitura. Mapa dos módulos: docs/ARQUITETURA.md
 //
 // O texto do save vem do localStorage (navegador) ou de um arquivo (computador/Steam) e pode estar velho, cortado ou mexido à mão.
 // Antes, ele entrava direto em META e na run salva: um campo com tipo errado ou um monstro que não existe mais travava o menu

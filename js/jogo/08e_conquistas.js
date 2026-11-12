@@ -1,7 +1,6 @@
 // GERADO por "npm run compilar" a partir de src/jogo/08e_conquistas.ts. Edite o .ts, não este arquivo.
 // Elementar · conquistas: eventos, Insígnias, murais e telas
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./08d_poderes.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./08d_poderes.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { $, ativos, COR, ctx, elementoDe, gravar, H, J, META, NOME_EL, PLAT, R, SIM, UNIV, W } from "./01_nucleo.js";
 import { mostrarCartas } from "./03_progressao.js";
 import { folhaArte } from "./07c_cenario_arte.js";

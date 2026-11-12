@@ -1,11 +1,11 @@
 // GERADO por "npm run compilar" a partir de src/jogo/08f_lendas.ts. Edite o .ts, não este arquivo.
 // Elementar · Lendas jogáveis e Panteão (deuses jogáveis)
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./08e_conquistas.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./08e_conquistas.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   agendar,
   ativos,
   atrib,
+  AUTOR,
   COR,
   defFonte,
   elementoDe,
@@ -97,8 +97,8 @@ export function telaInvocador(pacto, id, esperou) {
         texto:
           `<span style="color:${COR[l.elementos[0]]}">${NOME_EL(l.elementos[0])}</span> e <span style="color:${COR[l.elementos[1]]}">${NOME_EL(l.elementos[1])}</span> · ${l.poder.nome} · ${l.dom ? `Dom: ${l.dom.nome} · Fardo: ${l.fardo}` : l.passiva.nome}<br>` +
           (n
-            ? `<span class='bom'>Combina com o seu Pacto</span>: cada monstro de ${l.elementos.map(NOME_EL).join(" ou ")} na equipe dá ★ (mais dano e poder).`
-            : `Sem elemento em comum com o Pacto: pouca afinidade.`) +
+            ? `<span class='bom'>Combina com a sua Aliança</span>: cada monstro de ${l.elementos.map(NOME_EL).join(" ou ")} na equipe dá ★ (mais dano e poder).`
+            : `Sem elemento em comum com a Aliança: pouca afinidade.`) +
           (l.universo ? ` Terra Natal: ${UNIV[l.universo] ? UNIV[l.universo].nome : ""}.` : ""),
         acao: () => ir(l.id),
         _n: n
@@ -219,6 +219,7 @@ export function atualizarLenda(dt) {
         const a = Math.atan2(e.y - P.y, e.x - P.x) + (i - (p.n - 1) / 2) * 0.2;
         const pr = {
           fonte: FONTE,
+          autor: AUTOR,
           x: P.x,
           y: P.y,
           vx: Math.cos(a) * 170,
@@ -246,6 +247,7 @@ export function atualizarLenda(dt) {
         const a = Math.atan2(e.y - P.y, e.x - P.x);
         J.proj.push({
           fonte: FONTE,
+          autor: AUTOR,
           x: P.x,
           y: P.y,
           vx: Math.cos(a) * 220,
@@ -278,6 +280,7 @@ export function atualizarLenda(dt) {
       for (let i = 0; i < p.n; i++)
         J.crias.push({
           fonte: FONTE,
+          autor: AUTOR,
           x: P.x + rnd(-12, 12),
           y: P.y + rnd(-12, 12),
           dano: base,
@@ -425,7 +428,7 @@ export function luzPesHeroi(x, y, cor) {
   const a0 = lg.globalAlpha;
   lg.globalCompositeOperation = "lighter";
   lg.globalAlpha = a0 * (0.18 + 0.5 * nivelEscuro());
-  lg.drawImage(bolhaCor(cor), x - 18, y - 7, 36, 14);
+  lg.drawImage(bolhaCor(J.cena, cor), x - 18, y - 7, 36, 14);
   lg.globalAlpha = a0;
   lg.globalCompositeOperation = "source-over";
 }
@@ -527,6 +530,7 @@ export function atualizarDom(dt) {
       for (let i = 0; i < d.n; i++)
         J.crias.push({
           fonte: FONTE,
+          autor: AUTOR,
           x: P.x + rnd(-50, 50),
           y: P.y + rnd(-50, 50),
           dano: base * d.dano,
@@ -591,7 +595,7 @@ export function atualizarDom(dt) {
       for (const e of tela) {
         if (e.chefe || e.mini || n >= d.n || Math.hypot(e.x - P.x, e.y - P.y) > d.r) continue;
         n++;
-        J.crias.push({ fonte: FONTE, x: e.x, y: e.y, dano: base, el: "luz", cor: COR.luz, vida: 10, cd: 0 });
+        J.crias.push({ fonte: FONTE, autor: AUTOR, x: e.x, y: e.y, dano: base, el: "luz", cor: COR.luz, vida: 10, cd: 0 });
         e.hp = 0;
         e.semCadaver = true;
         morrer(e);

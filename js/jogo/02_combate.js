@@ -1,12 +1,12 @@
 // GERADO por "npm run compilar" a partir de src/jogo/02_combate.ts. Edite o .ts, não este arquivo.
 // Elementar · mapa, modificadores da run (Presságio e Cartas Proibidas), impacto, dano, reações, mortes e ataques
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./01_nucleo.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./01_nucleo.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   $,
   agendar,
   ativos,
   atrib,
+  AUTOR,
   calcularSinergia,
   COR,
   defFonte,
@@ -71,7 +71,7 @@ import { artesDoMapa, liberarMemoria, preCarregar, resetAnimSelo } from "./05_ar
 import { QUAL } from "./06_loop.js";
 import { bolhaCor, danificarProp, iniciarCena, propMaisProximo, rajada } from "./07_cenario.js";
 import { aposAbertura, iniciarAbertura } from "./07d_estrutura.js";
-import { fatorXPDiretor } from "./08_horda.js";
+import { escalaOnda, fatorXPDiretor } from "./08_horda.js";
 import {
   circuloInvocacao,
   efCanto,
@@ -375,7 +375,7 @@ export function telaPressagio() {
 export const MALDICOES = [
   {
     id: "sangue",
-    nome: "Pacto de Sangue",
+    nome: "Preço de Sangue",
     texto: "<span class='bom'>+35% de dano</span> para sempre nesta run. <span class='custo'>Vida máxima -25%.</span>",
     mods: { dano: 0.35, vida: -0.25 }
   },
@@ -438,13 +438,10 @@ export function dicaVantagem(el) {
 }
 // Curva de dificuldade (calibrada com o bot: testes/bot.js + testes/rodar_bot.js; ver docs/ANALISE_EQUILIBRIO.md)
 export const DIF = {
-  vida: 1.33,
+  vida: 1.36,
   dano: 1.48,
   danoBase: 11,
   hp: 38,
-  spawn: 0.15,
-  base: 1.6,
-  cresc: 0.1,
   onda: 22,
   ondaN: 20,
   max: 280,
@@ -465,22 +462,36 @@ export const DIF = {
   chefeQueda: 0.12,
   rampa: 2.0,
   rampaK: 2.2,
-  // horda: quantos inimigos o diretor quer na tela = (hordaBase + mapa*hordaProf + segundos*(hordaT + mapa*hordaTProf)) * horda, até hordaMax.
-  // horda é a intensidade geral (também multiplica os nascimentos); hordaVida, hordaDano e hordaXp valem só para inimigos comuns
-  // Valores escolhidos por simulação (docs/EQUILIBRIO_SIMULACOES.md): 1,6x mais inimigos, cada um com 62% da vida, 80% do dano e 62% das
-  // recompensas. A "massa" da horda e o ritmo de níveis ficam iguais, os abates por minuto dobram e a tela fica menos tempo vazia.
-  // Acima disso (2,4x) os abates não sobem mais e aparecem mortes no primeiro mapa.
-  // hordaRampa: a intensidade entra aos poucos (mapa 1 sem mudança, cheia depois de hordaRampa mapas). Com a horda densa desde o começo,
-  // quem começa com ataque de alvo único (Caçador, Xamã) não limpava a tela, não subia de nível e caía no primeiro mapa
-  horda: 1.6,
-  hordaBase: 7,
-  hordaProf: 7,
-  hordaT: 0.3,
-  hordaTProf: 0.04,
-  hordaMax: 190,
-  hordaVida: 0.62,
-  hordaDano: 0.8,
-  hordaXp: 0.62,
+  // horda: quantos inimigos o jogo quer na tela, como no Vampire Survivors: poucos no começo de cada mapa e crescendo aos poucos
+  // até o pico perto do chefe. alvo = ini + (pico - ini) * u^hordaCurva, com u indo de 0 a 1 em hordaSobe do tempo do mapa;
+  // ini e pico crescem a cada mapa (pico até hordaMax). Os nascimentos completam o que falta para o alvo (hordaEnche por inimigo
+  // que falta, por segundo) mais uma reposição constante (hordaRepor). hordaVida, hordaDano e hordaXp valem só para inimigos comuns
+  // e entram aos poucos até hordaRampa mapas. Com a horda gradual há menos inimigos na tela, então cada comum bate mais forte
+  // (hordaDano 1,4: 60% do dano recebido é de contato) e dá um pouco mais de XP. Valores escolhidos por simulação
+  // (docs/EQUILIBRIO_SIMULACOES.md, rodada de 12/11/2026): mesma dificuldade de antes, com a tela crescendo aos poucos
+  hordaIni: 6,
+  hordaIniProf: 1.2,
+  hordaPico: 40,
+  hordaPicoProf: 6,
+  hordaMax: 110,
+  hordaCurva: 1.3,
+  hordaSobe: 0.85,
+  hordaEnche: 2.5,
+  hordaRepor: 0.4,
+  hordaChegando: 1.4,
+  // classes de alvo único contra a multidão: quantos inimigos o tiro do Caçador atravessa e o raio da explosão do tiro do totem
+  // do Xamã (0 = sem área). Escolhidos por simulação (docs/EQUILIBRIO_SIMULACOES.md)
+  cacadorPerfura: 1,
+  totemArea: 0,
+  // Místico: multiplicador do Raio Vital e quantos inimigos próximos o raio alcança depois do primeiro (com 60% do dano)
+  misticoMult: 1.4,
+  misticoSaltos: 2,
+  // poderes: até que nível cada um sobe (o Desperto continua abrindo no 5) e quanto vale cada nível além do 5 (0,5 = metade)
+  poderMax: 8,
+  poderAlem: 0.5,
+  hordaVida: 0.9,
+  hordaDano: 1.4,
+  hordaXp: 0.8,
   hordaRampa: 2
 };
 // intensidade da horda neste mapa: cada fator vai de 1 (primeiro mapa) até o valor de DIF
@@ -559,7 +570,7 @@ export function spawnInimigo(kForcado) {
 }
 // Onda de cerco: um anel de inimigos fecha em volta do jogador (use a esquiva para atravessar)
 export function ondaCerco() {
-  const n = Math.min(Math.round(DIF.ondaN * (1 + R.profundidade * 0.15)), Math.max(8, DIF.max + 20 - J.inimigos.length)),
+  const n = Math.min(Math.round(DIF.ondaN * escalaOnda()), Math.max(8, DIF.max + 20 - J.inimigos.length)),
     P = J.jogador,
     r = Math.min(VW, VH) * 0.42;
   for (let i = 0; i < n; i++) {
@@ -827,7 +838,7 @@ export function faiscaImpacto(e, el, crit, sup) {
       lg.lineCap = "round";
       lg.globalAlpha = k * 0.9;
       lg.drawImage(
-        bolhaCor(crit ? "#fff3a0" : v.c1),
+        bolhaCor(J.cena, crit ? "#fff3a0" : v.c1),
         x - 6 * tam * (0.6 + q),
         y - 6 * tam * (0.6 + q),
         12 * tam * (0.6 + q),
@@ -875,6 +886,7 @@ export function ferir(e, dano, el, o = {}) {
     dano * ef * (crit ? 1.8 : 1) * (e.vulner > 0 ? 1.2 : 1) * (e.bebado > 0 ? 1.5 : 1) * fadigaChefe(e) * multDanoLenda(e) * relDano(e);
   for (const z of J.zonas) if (z.tipo === "circulo" && dist2(z, e) < z.r * z.r) d *= z.amp;
   R.st.porFonte[FONTE] = (R.st.porFonte[FONTE] || 0) + Math.min(d, Math.max(0, e.hp));
+  contarAutor(Math.min(d, Math.max(0, e.hp)));
   e.hp -= d;
   e.flash = 0.08;
   e.golpeT = J.t;
@@ -921,6 +933,14 @@ export function ferir(e, dano, el, o = {}) {
   e.status = { el, t: J.t };
   if (e.hp <= 0) morrer(e);
 }
+/** dano por monstro, para o resumo de fim de run: só o que um monstro causou (básico, habilidade, especial e as reações que ele disparou) */
+const FONTES_DE_MONSTRO = new Set(["basico", "habilidade", "especial", "reacao"]);
+export function contarAutor(d) {
+  const st = R.st;
+  if (!AUTOR || !st || !FONTES_DE_MONSTRO.has(FONTE)) return;
+  const pm = (st.porMonstro = st.porMonstro || {});
+  pm[AUTOR] = (pm[AUTOR] || 0) + d;
+}
 export function danoSimples(e, d) {
   if (e.ehProp === true) {
     danificarProp(e, d, null);
@@ -928,6 +948,7 @@ export function danoSimples(e, d) {
   }
   if (e.hp <= 0 || e.oculto) return;
   R.st.porFonte[FONTE] = (R.st.porFonte[FONTE] || 0) + Math.min(d, Math.max(0, e.hp));
+  contarAutor(Math.min(d, Math.max(0, e.hp)));
   e.hp -= d;
   e.flash = 0.06;
   if (e.hp <= 0) morrer(e);
@@ -1265,6 +1286,7 @@ export function ataqueBasico(s, a, el, cor) {
         const ang = Math.atan2(e.y - s.y, e.x - s.x) + (i - (n - 1) / 2) * 0.18;
         J.proj.push({
           fonte: FONTE,
+          autor: AUTOR,
           alvoProp: e.ehProp ? e : null,
           x: s.x,
           y: s.y,
@@ -1274,7 +1296,7 @@ export function ataqueBasico(s, a, el, cor) {
           el,
           cor,
           vida: 1.2,
-          perf: SIN.cacadores >= 3 ? 3 : 1,
+          perf: SIN.cacadores >= 3 ? Math.max(3, DIF.cacadorPerfura) : DIF.cacadorPerfura,
           r: 2
         });
       }
@@ -1285,6 +1307,7 @@ export function ataqueBasico(s, a, el, cor) {
       if (!e) return 0.2;
       J.proj.push({
         fonte: FONTE,
+        autor: AUTOR,
         x: s.x,
         y: s.y,
         vx: 0,
@@ -1305,14 +1328,34 @@ export function ataqueBasico(s, a, el, cor) {
       vfxSelo(s.x, s.y, el, 9);
       const n = 2 + (SIN.invocadores >= 2 ? 1 : 0) + tal.projeteis();
       for (let i = 0; i < n; i++)
-        J.crias.push({ fonte: FONTE, x: s.x + rnd(-6, 6), y: s.y + rnd(-6, 6), dano: a.dano * 0.6, el, cor, vida: 6, cd: 0 });
+        J.crias.push({ fonte: FONTE, autor: AUTOR, x: s.x + rnd(-6, 6), y: s.y + rnd(-6, 6), dano: a.dano * 0.6, el, cor, vida: 6, cd: 0 });
       return 2.5;
     }
     case "mistico": {
       const e = maisProximo(s, 110);
       if (e) {
-        ferir(e, a.dano, el);
+        ferir(e, a.dano * DIF.misticoMult, el);
         vfxFeixe(s, e, el);
+        // o raio salta para inimigos próximos (com menos dano): sem isso o Místico sozinho no começo não dava conta da horda
+        let de = e;
+        const ja = new Set([e]);
+        for (let i = 0; i < DIF.misticoSaltos; i++) {
+          let prox = null,
+            dMin = 50 * 50;
+          for (const o of J.inimigos) {
+            if (o.hp <= 0 || ja.has(o)) continue;
+            const d2 = (o.x - de.x) ** 2 + (o.y - de.y) ** 2;
+            if (d2 < dMin) {
+              dMin = d2;
+              prox = o;
+            }
+          }
+          if (!prox) break;
+          ferir(prox, a.dano * DIF.misticoMult * 0.6, el);
+          vfxFeixe(de, prox, el);
+          ja.add(prox);
+          de = prox;
+        }
       }
       if (Math.random() < 0.5) particulasEl(J.jogador.x + rnd(-4, 4), J.jogador.y, "natureza", 2, 20);
       curar((a.cura / a.cad) * 3);
@@ -1388,7 +1431,18 @@ export const HAB = {
         efImpactoChao(e.x, e.y, r, el);
         efExplosao(e.x, e.y, r * 0.8, el, mod === 1);
         if (mod === 0)
-          J.zonas.push({ fonte: FONTE, tipo: "rastro", x: (x0 + e.x) / 2, y: (y0 + e.y) / 2, r: 22, el, cor, dano: a.dano * 0.8, vida: 3 });
+          J.zonas.push({
+            fonte: FONTE,
+            autor: AUTOR,
+            tipo: "rastro",
+            x: (x0 + e.x) / 2,
+            y: (y0 + e.y) / 2,
+            r: 22,
+            el,
+            cor,
+            dano: a.dano * 0.8,
+            vida: 3
+          });
       }
     },
     h2: {
@@ -1455,6 +1509,7 @@ export const HAB = {
           const ang = base + (i - 2) * 0.2;
           J.proj.push({
             fonte: FONTE,
+            autor: AUTOR,
             x: s.x,
             y: s.y,
             vx: Math.cos(ang) * 190,
@@ -1477,6 +1532,7 @@ export const HAB = {
         for (let i = 0; i < 3; i++)
           J.armadilhas.push({
             fonte: FONTE,
+            autor: AUTOR,
             x: s.x + rnd(-30, 30),
             y: s.y + rnd(-30, 30),
             dano: a.dano * (mod === 1 ? 6 : 4.5) * fNivel(lv),
@@ -1520,6 +1576,7 @@ export const HAB = {
       f(s, a, el, cor, lv, mod) {
         J.zonas.push({
           fonte: FONTE,
+          autor: AUTOR,
           tipo: "circulo",
           el,
           x: J.jogador.x,
@@ -1540,6 +1597,7 @@ export const HAB = {
         for (let i = 0; i < 4; i++)
           J.crias.push({
             fonte: FONTE,
+            autor: AUTOR,
             x: s.x + rnd(-8, 8),
             y: s.y + rnd(-8, 8),
             dano: a.dano * 0.7 * fNivel(lv),
@@ -1559,7 +1617,18 @@ export const HAB = {
         const pos = [{ x: s.x + 20, y: s.y }];
         if (mod === 0) pos.push({ x: s.x - 20, y: s.y });
         if (mod === 1) {
-          J.crias.push({ fonte: FONTE, x: s.x, y: s.y, dano: a.dano * 4 * fNivel(lv), el, cor, vida: 9, cd: 0, gigante: true });
+          J.crias.push({
+            fonte: FONTE,
+            autor: AUTOR,
+            x: s.x,
+            y: s.y,
+            dano: a.dano * 4 * fNivel(lv),
+            el,
+            cor,
+            vida: 9,
+            cd: 0,
+            gigante: true
+          });
           anel(s.x, s.y, 20, cor, 0.5);
           circuloInvocacao(s.x, s.y + 3, el, 22, 0.9, true);
           efPilar(s.x, s.y + 4, el, 0.6, 7);
@@ -1572,6 +1641,7 @@ export const HAB = {
         pos.forEach(p =>
           J.zonas.push({
             fonte: FONTE,
+            autor: AUTOR,
             tipo: "portal",
             x: p.x,
             y: p.y,
@@ -1628,6 +1698,7 @@ export const HAB = {
       f(s, a, el, cor, lv, mod) {
         J.zonas.push({
           fonte: FONTE,
+          autor: AUTOR,
           tipo: "espirito",
           x: J.jogador.x,
           y: J.jogador.y,

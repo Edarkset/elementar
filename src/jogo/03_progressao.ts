@@ -1,12 +1,12 @@
 // Elementar · níveis, telas de escolha, ovos, Ovo Ancestral, missões, Bestiário, captura, cenas, baús, portais e especiais
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./02_combate.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./02_combate.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   $,
   agendar,
   ANCESTRAIS,
   ativos,
   atrib,
+  AUTOR,
   bonusLoja,
   calcularSinergia,
   classeExtraDe,
@@ -41,6 +41,7 @@ import {
   MAPAS_POR_ERA,
   META,
   NIV,
+  nivelEf,
   nivelLoja,
   NOME_EL,
   nomeForma,
@@ -246,7 +247,7 @@ export function fechar() {
   $("telaCartas").classList.remove("ativa");
 }
 // retratos animados nas cartas (quadros "parado" da folha de animação), enquanto a tela estiver aberta
-export let animRet = null;
+export let animRet: number | null = null;
 export function animarRetratos() {
   if (animRet) return;
   const passo = (t: number) => {
@@ -434,15 +435,15 @@ export function resumoPoderes(s: Selo) {
 // a carta mostra o que muda de verdade: dano por golpe antes -> depois e a recarga, e bolinhas do nível do poder
 export function pipsPoder(lv: number, prox: number) {
   let h = "<span class='pips'>";
-  for (let i = 1; i <= 5; i++) h += `<i class='${i <= lv ? "tem" : i <= prox ? "novo" : ""}'></i>`;
+  for (let i = 1; i <= DIF.poderMax; i++) h += `<i class='${i <= lv ? "tem" : i <= prox ? "novo" : ""}'></i>`;
   return h + "</span>";
 }
 export function numerosPoder(s: Selo, k: ChavePoder, lv: number, prox: number) {
   try {
     const base = atrib(s).dano * tal.dano();
     if (k === "b") {
-      const f0 = 1 + 0.2 * (Math.max(1, lv) - 1),
-        f1 = 1 + 0.2 * (prox - 1);
+      const f0 = 1 + 0.2 * (nivelEf(Math.max(1, lv)) - 1),
+        f1 = 1 + 0.2 * (nivelEf(prox) - 1);
       return ` <span class='bom'>Dano ${Math.round(base)} → ${Math.round((base * f1) / f0)}</span>`;
     }
     const d0 = lv ? Math.round(base * fNivel(lv)) : 0,
@@ -477,16 +478,16 @@ export function cartasNivel() {
     let algum = false;
     for (const [k, nome, desc] of lib) {
       const lv = s.pod[k];
-      if (lv >= 5) continue;
+      if (lv >= DIF.poderMax) continue;
       algum = true;
       const prox = lv + 1;
       cand.push({
         peso,
         s,
         k,
-        raridade: prox === 5 ? "lendario" : prox === 3 && k !== "b" ? "epico" : prox >= 2 ? "raro" : "incomum",
+        raridade: prox === DIF.poderMax ? "lendario" : (prox === 3 && k !== "b") || prox === 5 ? "epico" : prox >= 2 ? "raro" : "incomum",
         titulo: `${nome} ${lv ? `${lv} → ${prox}` : "(novo)"}`,
-        texto: `${pipsPoder(lv, prox)}<b style="color:${COR[elementoDe(s)]}">${nomeForma(s)}</b> · nível ${s.nivel}. ${desc}${numerosPoder(s, k, lv, prox)}${k !== "b" && prox === 3 ? " Libera um modificador." : ""}${prox === 5 ? " Nível máximo!" : ""}`
+        texto: `${pipsPoder(lv, prox)}<b style="color:${COR[elementoDe(s)]}">${nomeForma(s)}</b> · nível ${s.nivel}. ${desc}${numerosPoder(s, k, lv, prox)}${k !== "b" && prox === 3 ? " Libera um modificador." : ""}${prox === DIF.poderMax ? " · <b>Nível máximo!</b>" : prox === 5 ? " · Abre o Desperto (com o Talismã da classe)." : ""}`
       });
     }
     if (!algum) {
@@ -503,7 +504,7 @@ export function cartasNivel() {
       });
     }
   }
-  const sorteio = [],
+  const sorteio: CartaNivel[] = [],
     pool = cand.slice();
   while (sorteio.length < 3 && pool.length) {
     const tot = pool.reduce((t, c) => t + c.peso, 0);
@@ -926,7 +927,7 @@ export function diarias() {
   if (!D2 || D2.dia !== hoje) {
     const r = semente("diaria" + hoje),
       tipos = Object.keys(TIPOS_DIARIA),
-      lista = [];
+      lista: { t: string; alvo: number; prog: number; feito: boolean }[] = [];
     while (lista.length < 3) {
       const t = tipos[Math.floor(r() * tipos.length)];
       if (lista.some(x => x.t === t)) continue;
@@ -1131,7 +1132,7 @@ export function tentarCaptura(f) {
       lg.rotate(bal);
       lg.globalCompositeOperation = "lighter";
       lg.globalAlpha = 0.5 + 0.3 * Math.sin(t * 20);
-      lg.drawImage(bolhaCor(cor), -10, -10, 20, 20);
+      lg.drawImage(bolhaCor(J.cena, cor), -10, -10, 20, 20);
       lg.globalCompositeOperation = "source-over";
       lg.globalAlpha = 1;
       // sigilo: disco dourado com runa do elemento
@@ -1221,17 +1222,27 @@ export function cenaDescoberta(mon: Monstro) {
   }
   cenaTocar(
     `<div class="cine-raios" style="--cor:${cor}"></div><div class="cine-descoberta" style="--cor:${cor}"><img src="${url}" alt=""></div><div class="cine-clarao descoberta"></div>
-    <div class="cine-texto descoberta"><small>Novo monstro descoberto!</small><b style="color:${cor}">${l.filhote}</b><i>${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome} · ${D.linhagens[l.linhagem].nome}</i><em>Agora ele aparece no Pacto, nos ovos e nos filhotes.</em></div>`,
+    <div class="cine-texto descoberta"><small>Novo monstro descoberto!</small><b style="color:${cor}">${l.filhote}</b><i>${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome} · ${D.linhagens[l.linhagem].nome}</i><em>Agora ele aparece na Aliança, nos ovos e nos filhotes.</em></div>`,
     "evolucao descoberta",
     3400
   );
   som("jackpot");
 }
-export const CINE = { ativa: false, fila: [] };
+export const CINE = { ativa: false, fila: [] as { html: string; classe: string; dur: number; aoFim: (() => void) | undefined }[] };
 export function cenaTocar(html: string, classe: string, dur: number, aoFim?: () => void) {
   if (SIM.ativo) return;
   CINE.fila.push({ html, classe, dur, aoFim });
   if (!CINE.ativa) cenaProxima();
+}
+/** descarta as cenas que ainda estavam na fila (ao voltar ao menu): senão tocariam por cima do menu ou da próxima run */
+export function limparCenas() {
+  CINE.fila.length = 0;
+  CINE.ativa = false;
+  const el = $("cine");
+  if (el) {
+    el.className = "cine";
+    el.innerHTML = "";
+  }
 }
 export function cenaProxima() {
   const c = CINE.fila.shift();
@@ -1394,7 +1405,7 @@ export function desenharBauMapa(b: BauMapa, x: number, y: number) {
   lg.fillStyle = gr;
   lg.fillRect(x - 5, y - 60, 10, 60);
   lg.globalAlpha = 0.5 + 0.3 * pul;
-  lg.drawImage(bolhaCor(ouro ? "#ffd34a" : "#bfe6ff"), x - 14, y - 14, 28, 28);
+  lg.drawImage(bolhaCor(J.cena, ouro ? "#ffd34a" : "#bfe6ff"), x - 14, y - 14, 28, 28);
   lg.globalAlpha = 1;
   lg.globalCompositeOperation = "source-over";
   lg.fillStyle = "rgba(0,0,0,.35)";
@@ -1451,7 +1462,7 @@ export function desenharMoedasBaus(ox: number, oy: number) {
     lg.fill();
     lg.globalCompositeOperation = "lighter";
     lg.globalAlpha = 0.45;
-    lg.drawImage(bolhaCor("#ffcc40"), x - 6, y - 6, 12, 12);
+    lg.drawImage(bolhaCor(J.cena, "#ffcc40"), x - 6, y - 6, 12, 12);
     lg.globalAlpha = 1;
     lg.globalCompositeOperation = "source-over";
     lg.fillStyle = "#b8860b";
@@ -1470,7 +1481,7 @@ export function desenharMoedasBaus(ox: number, oy: number) {
 }
 // ---- prêmios
 export const ICONE_HUD = { estrela: 7, gema: 6, coracao: 8, ampulheta: 4, bolsa: 0, trofeu: 10, fogo: 5, livro: 11, mapa: 3 };
-export let ICONES_URL = null;
+export let ICONES_URL: {} | null = null;
 export function iconeHud(nome: string) {
   const img = UI_ARQ("ui__hud_icones");
   if (!img) return null;
@@ -1600,7 +1611,7 @@ export function sortearPremios(tipo: string) {
 }
 export function premioNivel(s: Selo) {
   if (!s || !s.mon) return;
-  const lib = (["b", "h1", ...(est(s) >= 1 || estBase(s) >= 1 ? ["h2"] : [])] as ChavePoder[]).filter(k => s.pod[k] < 5);
+  const lib = (["b", "h1", ...(est(s) >= 1 || estBase(s) >= 1 ? ["h2"] : [])] as ChavePoder[]).filter(k => s.pod[k] < DIF.poderMax);
   if (lib.length) {
     const k = lib.sort((a, b) => s.pod[a] - s.pod[b])[0];
     s.pod[k]++;
@@ -1948,7 +1959,7 @@ export function aplicarPortal(u: Universo, rec: string) {
   const pool = embaralhar(poolPacto()).slice(0, 3);
   mostrarCartas(
     "Recrutar",
-    "Escolha um monstro Raro do seu Pacto.",
+    "Escolha um monstro Raro da sua Aliança.",
     pool.map(id => {
       const l = LINHA[id];
       return {
@@ -2031,7 +2042,36 @@ export function resumoRun() {
         : pc < 0.4
           ? "A maior parte do dano que você levou veio de <b>golpes e projéteis</b>: saia das marcas no chão antes do golpe."
           : "Você levou dano tanto da horda quanto dos golpes: troque de lugar antes de ficar cercado.";
-  return `<div class="resumo-dano"><div class="rd-titulo">De onde veio o seu dano</div>${linhas}${re ? `<div class="rd-nota">Reação mais usada: <b>${re[0]}</b> (${re[1]}×)</div>` : ""}${dica ? `<div class="rd-nota">${dica}</div>` : ""}</div>`;
+  return `<div class="resumo-dano"><div class="rd-titulo">De onde veio o seu dano</div>${linhas}${re ? `<div class="rd-nota">Reação mais usada: <b>${re[0]}</b> (${re[1]}×)</div>` : ""}${dica ? `<div class="rd-nota">${dica}</div>` : ""}${quemCarregou(st)}</div>`;
+}
+// quem carregou a run: os três monstros que mais causaram dano (básico, habilidades, especiais e as reações que dispararam),
+// com o nome da forma em que terminaram a run. Monstro que saiu da equipe aparece pelo nome da linha
+export function quemCarregou(st: Partial<EstatisticasRun>) {
+  const pm = st.porMonstro || {},
+    tot = Object.values(pm).reduce((a, b) => a + b, 0);
+  if (!(tot > 0)) return "";
+  const nome = (id: string) => {
+    const s = R.selos.find(x => x.mon && x.mon.id === id);
+    return s ? nomeForma(s) : LINHA[id] ? LINHA[id].filhote : id;
+  };
+  const top = Object.entries(pm)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+  const barras = top
+    .map(([id, v]) => {
+      const q = (v / tot) * 100,
+        cor = LINHA[id] ? COR[LINHA[id].elemento] : "#c8d0e0";
+      return `<div class="rd-linha"><span>${nome(id)}</span><i><b style="width:${Math.max(3, Math.round(q))}%;background:${cor}"></b></i><em>${Math.round(q)}%</em></div>`;
+    })
+    .join("");
+  const [lider, vLider] = top[0];
+  const nota =
+    vLider / tot >= 0.5
+      ? `<b>${nome(lider)}</b> carregou a run sozinho: mais da metade do dano da equipe.`
+      : top.length > 1 && vLider / tot < 0.4
+        ? "Dano bem dividido: a equipe inteira trabalhou."
+        : `<b>${nome(lider)}</b> foi quem mais causou dano.`;
+  return `<div class="rd-titulo">Quem carregou a run</div>${barras}<div class="rd-nota">${nota}</div>`;
 }
 export function derrota() {
   defRodando(false);
@@ -2072,7 +2112,7 @@ export function derrota() {
             }
           ]
         : []),
-      { titulo: "Nova run", raridade: podem.length ? "comum" : "raro", texto: "Fechar um novo Pacto agora.", acao: () => telaPacto() },
+      { titulo: "Nova run", raridade: podem.length ? "comum" : "raro", texto: "Formar uma nova Aliança agora.", acao: () => telaPacto() },
       { titulo: "Voltar ao Nexo", texto: "Ir para o menu.", acao: () => menu() }
     ],
     { fundo: recorde ? "ui__vitoria" : "ui__derrota" }
@@ -2174,7 +2214,7 @@ export function dispararEspecial(s, a: Atributos, el, cor) {
       });
       break;
     case "cacador0":
-      J.zonas.push({ fonte: FONTE, tipo: "chuva", x: alvo.x, y: alvo.y, r: 60, cor, el, dano: d * 1.2, vida: 4, cd: 0 });
+      J.zonas.push({ fonte: FONTE, autor: AUTOR, tipo: "chuva", x: alvo.x, y: alvo.y, r: 60, cor, el, dano: d * 1.2, vida: 4, cd: 0 });
       break;
     case "cacador1": {
       const ang = Math.atan2(alvo.y - s.y, alvo.x - s.x),
@@ -2208,10 +2248,10 @@ export function dispararEspecial(s, a: Atributos, el, cor) {
       break;
     case "invocador0":
       for (let i = 0; i < 10; i++)
-        J.crias.push({ fonte: FONTE, x: s.x + rnd(-12, 12), y: s.y + rnd(-12, 12), dano: d * 0.8, el, cor, vida: 6, cd: 0 });
+        J.crias.push({ fonte: FONTE, autor: AUTOR, x: s.x + rnd(-12, 12), y: s.y + rnd(-12, 12), dano: d * 0.8, el, cor, vida: 6, cd: 0 });
       break;
     case "invocador1":
-      J.crias.push({ fonte: FONTE, x: s.x, y: s.y, dano: d * 6, el, cor, vida: 10, cd: 0, gigante: true });
+      J.crias.push({ fonte: FONTE, autor: AUTOR, x: s.x, y: s.y, dano: d * 6, el, cor, vida: 10, cd: 0, gigante: true });
       anel(s.x, s.y, 24, cor, 0.6);
       break;
     case "mistico0":
@@ -2224,7 +2264,20 @@ export function dispararEspecial(s, a: Atributos, el, cor) {
       J.flash = { vida: 0.25, cor: "#fff3c4" };
       break;
     case "xama0":
-      J.zonas.push({ fonte: FONTE, tipo: "chuva", x: P.x, y: P.y, r: 75, cor, el, dano: d * 1.5, vida: 5, cd: 0, segue: true });
+      J.zonas.push({
+        fonte: FONTE,
+        autor: AUTOR,
+        tipo: "chuva",
+        x: P.x,
+        y: P.y,
+        r: 75,
+        cor,
+        el,
+        dano: d * 1.5,
+        vida: 5,
+        cd: 0,
+        segue: true
+      });
       break;
     case "xama1":
       J.totemAnc = 12;
@@ -2313,6 +2366,7 @@ export function usarCombinado() {
           for (let i = 0; i < 8; i++)
             J.crias.push({
               fonte: FONTE,
+              autor: AUTOR,
               x: P.x + rnd(-30, 30),
               y: P.y + rnd(-30, 30),
               dano: total * 0.02,
@@ -2326,7 +2380,7 @@ export function usarCombinado() {
         gigantes: () => naTela(e => (e.congela = 2.5)),
         pequeninos: () => {
           for (let i = 0; i < 12; i++)
-            J.crias.push({ fonte: FONTE, x: P.x, y: P.y, dano: total * 0.015, el: els[0], cor: "#ffd34a", vida: 8, cd: 0 });
+            J.crias.push({ fonte: FONTE, autor: AUTOR, x: P.x, y: P.y, dano: total * 0.015, el: els[0], cor: "#ffd34a", vida: 8, cd: 0 });
         },
         marinhos: () => {
           naTela(e => {

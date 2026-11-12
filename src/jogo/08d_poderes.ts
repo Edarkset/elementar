@@ -1,10 +1,10 @@
 // Elementar · árvore de poderes: Talismãs, Poderes Despertos e Uniões
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./08c_eventos.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./08c_eventos.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   agendar,
   ativos,
   atrib,
+  AUTOR,
   COR,
   dist2,
   elementoDe,
@@ -21,7 +21,7 @@ import {
   SIM,
   SIN
 } from "./01_nucleo.js";
-import { curar, emArea, ferir, maisProximo, MOD, pontoDenso, texto, tremor } from "./02_combate.js";
+import { curar, DIF, emArea, ferir, maisProximo, MOD, pontoDenso, texto, tremor } from "./02_combate.js";
 import { proximaEscolha } from "./03_progressao.js";
 import { aplicarElementoNoSolo } from "./04_ambiente.js";
 import { circuloInvocacao, vfxFeixe, vfxOnda, vfxSelo, vfxX } from "./08b_efeitos.js";
@@ -70,9 +70,16 @@ export function efeitoTalismaTxt(t, lv: number) {
     sinal = t.efeito === "defesa" || t.efeito === "recarga" ? "−" : "+";
   return lv ? `${sinal}${v < 10 && Math.abs(v - Math.round(v)) > 0.04 ? v.toFixed(1).replace(".", ",") : Math.round(v)}%` : "0%";
 } // valores pequenos (0,2% por nível) apareciam como "0% → 0%"
+/** true quando nenhum monstro da equipe tem poder para subir (todos no 5; a habilidade 2 só conta depois da primeira evolução):
+ * daí em diante as escolhas de nível seriam quase só Ascensão */
+export function equipeSemPoder() {
+  return ativos().every(s =>
+    (["b", "h1", "h2"] as ChavePoder[]).every(k => s.pod[k] >= DIF.poderMax || (k === "h2" && est(s) < 1 && estBase(s) < 1))
+  );
+}
 export function cartaTalisma() {
-  if (SIM.semTalismas || Math.random() >= PD().chance_carta + passiva("carta_extra") * 0.35 + ((SIN.rm && SIN.rm.talisma) || 0))
-    return null;
+  const chance = equipeSemPoder() ? PD().chance_carta_sem_poder : PD().chance_carta;
+  if (SIM.semTalismas || Math.random() >= chance + passiva("carta_extra") * 0.35 + ((SIN.rm && SIN.rm.talisma) || 0)) return null;
   const tem = Object.keys(R.talismas || {}),
     cheio = tem.length >= PD().encaixes;
   const ops = talismasLiberados().filter(id => (cheio ? tem.includes(id) && nivTal(id) < 5 : nivTal(id) < 5));
@@ -112,7 +119,7 @@ export function podeDespertar(s: Selo, k: ChavePoder) {
   return !!d && !(s.desp && s.desp[k]) && s.pod[k] >= 5 && nivTal(d.talisma) > 0 && estBase(s) >= 2;
 }
 export function bauDesperto(x: number, y: number) {
-  const cand = [];
+  const cand: [Selo, ChavePoder][] = [];
   for (const s of ativos()) for (const k of ["b", "h1", "h2"] as ChavePoder[]) if (podeDespertar(s, k)) cand.push([s, k]);
   if (!cand.length) return false;
   const [s, k] = escolha(cand),
@@ -181,7 +188,7 @@ export function atribPoder(a: Atributos, s: Selo, k: ChavePoder) {
 // Uniões a meio caminho: a equipe tem um Desperto do par e um monstro da classe do outro Desperto (devolve o Talismã que falta)
 export function paresPendentes() {
   const tem = despertosAtivos(),
-    out = [];
+    out: { talisma: string; uniao: string }[] = [];
   for (const u of PD().unioes)
     for (const [x, y] of [
       [u.a, u.b],
@@ -196,7 +203,7 @@ export function paresPendentes() {
 
 // ---------------------------------------------------------------- comportamentos dos Despertos (rodam junto com o poder, quando ele dispara)
 export const _P = (s: Selo, a: Atributos, el: Elemento, cor: string, dano: number, extra) =>
-  Object.assign({ fonte: FONTE, x: s.x, y: s.y, dano, el, cor, vida: 1.3, perf: 1, r: 2 }, extra);
+  Object.assign({ fonte: FONTE, autor: AUTOR, x: s.x, y: s.y, dano, el, cor, vida: 1.3, perf: 1, r: 2 }, extra);
 export function puxar(cx: number, cy: number, r: number, forca: number) {
   for (const e of J.inimigos) {
     if (e.hp <= 0 || e.chefe) continue;
@@ -305,7 +312,17 @@ export const COMPORTAMENTO = {
       }
     },
     h2(s: Selo, a: Atributos, el: Elemento, cor: string) {
-      J.armadilhas.push({ fonte: FONTE, x: s.x + rnd(-30, 30), y: s.y + rnd(-30, 30), dano: a.dano * 3, el, cor, raiz: false, vida: 12 });
+      J.armadilhas.push({
+        fonte: FONTE,
+        autor: AUTOR,
+        x: s.x + rnd(-30, 30),
+        y: s.y + rnd(-30, 30),
+        dano: a.dano * 3,
+        el,
+        cor,
+        raiz: false,
+        vida: 12
+      });
     }
   },
   mago: {
@@ -345,12 +362,22 @@ export const COMPORTAMENTO = {
       }
     },
     h1(s: Selo, a: Atributos, el: Elemento, cor: string) {
-      J.crias.push({ fonte: FONTE, x: s.x + rnd(-6, 6), y: s.y + rnd(-6, 6), dano: a.dano * 0.7, el, cor, vida: 7, cd: 0 });
+      J.crias.push({ fonte: FONTE, autor: AUTOR, x: s.x + rnd(-6, 6), y: s.y + rnd(-6, 6), dano: a.dano * 0.7, el, cor, vida: 7, cd: 0 });
     },
     h2(s: Selo, a: Atributos, el: Elemento, cor: string) {
       const p = pontoDenso(s, 150) || s;
       for (let i = 0; i < 2; i++)
-        J.crias.push({ fonte: FONTE, x: p.x + rnd(-10, 10), y: p.y + rnd(-10, 10), dano: a.dano * 0.6, el, cor, vida: 8, cd: 0 });
+        J.crias.push({
+          fonte: FONTE,
+          autor: AUTOR,
+          x: p.x + rnd(-10, 10),
+          y: p.y + rnd(-10, 10),
+          dano: a.dano * 0.6,
+          el,
+          cor,
+          vida: 8,
+          cd: 0
+        });
     }
   },
   mistico: {

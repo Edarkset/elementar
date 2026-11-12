@@ -134,6 +134,7 @@
     const pool = META.liberados.filter(id => pac.includes(LINHA[id].elemento));
     const ini = cfg.inicial || pool[Math.floor(r() * pool.length)];
     novaRun(pac, ini);
+    if (cfg.universo) R.universo = cfg.universo; // --universo: o primeiro mapa é este reino (para medir um chefe isolado)
     iniciarMapa();
     rodando = false; // o laço de desenho fica parado; o bot avança o tempo
     let tSim = 0;
@@ -154,7 +155,10 @@
       vazia: 0,
       abates0: R.abates,
       nivel0: J ? J.nivel : 1,
-      rec0: R.st.recContato + R.st.recBala
+      rec0: R.st.recContato + R.st.recBala,
+      // curva dentro do mapa: inimigos na tela por faixa de tempo (0-15 s, 15-30, 30-60, 60-90, 90 até o chefe)
+      curvaSoma: [0, 0, 0, 0, 0],
+      curvaN: [0, 0, 0, 0, 0]
     });
     const fechaAm = () => {
       if (!am || !am.n) return;
@@ -162,12 +166,14 @@
         mapa: am.mapa,
         tela: +(am.somaTela / am.n).toFixed(1),
         picoTela: am.picoTela,
+        tPico: am.tPico,
         picoTotal: am.picoTotal,
         abates: R.abates - am.abates0,
         niveis: (J ? J.nivel : am.nivel0) - am.nivel0,
         vidaBaixa: +(am.baixa / am.n).toFixed(3),
         telaVazia: +(am.vazia / am.n).toFixed(3),
-        seg: Math.round(am.n * 0.5)
+        seg: Math.round(am.n * 0.5),
+        curva: am.curvaSoma.map((v, i) => (am.curvaN[i] ? +(v / am.curvaN[i]).toFixed(1) : null))
       });
     };
     am = novaAm();
@@ -243,6 +249,12 @@
           }
           am.n++;
           am.somaTela += n;
+          const faixa = J.t < 15 ? 0 : J.t < 30 ? 1 : J.t < 60 ? 2 : J.t < 90 ? 3 : 4;
+          am.curvaSoma[faixa] += n;
+          am.curvaN[faixa]++;
+          if (n > am.picoTela)
+            am.tPico =
+              Math.round(J.t) + (J.chefeVivo ? " chefe" : "") + (J.diretor && J.diretor.eventos ? " ondas" + J.diretor.eventos : "");
           am.picoTela = Math.max(am.picoTela, n);
           am.picoTotal = Math.max(am.picoTotal, J.inimigos.length);
           if (J.vida / J.vidaMax < 0.35) am.baixa++;
@@ -301,7 +313,11 @@
       escolhas: log.slice(-400),
       vidaFinal: J ? +(J.vida / J.vidaMax).toFixed(2) : 0,
       mapaMorte: morreu ? R.profundidade + 1 : null,
-      tNoMapaMorte: morreu && J ? Math.round(J.t) : null
+      tNoMapaMorte: morreu && J ? Math.round(J.t) : null,
+      // árvore de poderes: níveis de Talismã somados, Despertos e Uniões conquistados na run
+      talismas: Object.values(R.talismas || {}).reduce((a, b) => a + b, 0),
+      despertos: R.st.despertos || 0,
+      unioes: R.st.unioes || 0
     };
   }
   window.ElementarBot = { rodar };

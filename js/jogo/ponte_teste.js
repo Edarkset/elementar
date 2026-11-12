@@ -24,8 +24,9 @@ import * as m17 from "./08g_luz.js";
 import * as m18 from "./08h_interface.js";
 import * as m19 from "./09_criaturas.js";
 import * as m20 from "./09b_chefes.js";
-import * as m21 from "./10_desenho.js";
-import * as m22 from "./11_menu.js";
+import * as m21 from "./09c_golpes.js";
+import * as m22 from "./10_desenho.js";
+import * as m23 from "./11_menu.js";
 /** variável → função de escrita no módulo dono */
 const ESCRITA = {
   FONTE: "defFonte",
@@ -40,7 +41,7 @@ const ESCRITA = {
   META: "defMeta"
 };
 const naoPublicados = [];
-for (const m of [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15, m16, m17, m18, m19, m20, m21, m22]) {
+for (const m of [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15, m16, m17, m18, m19, m20, m21, m22, m23]) {
   for (const nome of Object.keys(m)) {
     const escreve = ESCRITA[nome] && m[ESCRITA[nome]];
     try {

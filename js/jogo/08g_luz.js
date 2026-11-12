@@ -1,7 +1,6 @@
 // GERADO por "npm run compilar" a partir de src/jogo/08g_luz.ts. Edite o .ts, não este arquivo.
 // Elementar · luz: tom de cada universo, crepúsculo, escuridão com poças de luz e sombras
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./08f_lendas.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./08f_lendas.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { ativos, COR, elementoDe, J, lg, MAPA_SEG, mistura, R, SIM, tom, UNIV, VH, VW } from "./01_nucleo.js";
 import { CEL } from "./04_ambiente.js";
 import { QUAL } from "./06_loop.js";
@@ -184,7 +183,7 @@ export function desenharLuzAmbiente(ox, oy) {
       Y = y - oy;
     if (X < -r || Y < -r || X > VW + r || Y > VH + r) return;
     lg.globalAlpha = Math.min(1, a * k);
-    lg.drawImage(bolhaCor(cor), X - r, Y - r, r * 2, r * 2);
+    lg.drawImage(bolhaCor(J.cena, cor), X - r, Y - r, r * 2, r * 2);
   };
   const P = J.jogador;
   if (L.noite) luz(P.x, P.y, 46, "#ffe0b0", 0.22);

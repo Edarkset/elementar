@@ -26,5 +26,7 @@ for arq in sys.argv[1:]:
     for m in sorted(H):
         L=H[m]; seg=sum(h['seg'] for h in L) or 1
         print(f"   horda mapa {m}: {st.mean(h['tela'] for h in L):5.1f} na tela (pico {max(h['picoTela'] for h in L)}, total {max(h['picoTotal'] for h in L)}) · {sum(h['abates'] for h in L)/seg*60:5.0f} abates/min · {st.mean(h['niveis'] for h in L):4.1f} níveis · vida baixa {st.mean(h['vidaBaixa'] for h in L)*100:3.0f}% · tela vazia {st.mean(h['telaVazia'] for h in L)*100:3.0f}%")
+        cs = [h.get('curva') for h in L if h.get('curva')]
+        if cs: print("      na tela ao longo do mapa (0-15 s · 15-30 · 30-60 · 60-90 · 90+):", " · ".join(f"{st.mean(v):4.1f}" if (v := [c[k] for c in cs if c[k] is not None]) else "  - " for k in range(5)))
     rc=sum(r.get('recContato',0) for r in R); rb=sum(r.get('recBala',0) for r in R)
     if rc+rb: print(f"   dano recebido: contato {rc/(rc+rb)*100:.0f}% · golpes e projéteis {rb/(rc+rb)*100:.0f}%")

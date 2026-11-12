@@ -1,7 +1,6 @@
 // GERADO por "npm run compilar" a partir de src/jogo/07d_estrutura.ts. Edite o .ts, não este arquivo.
 // Elementar · estrutura do mapa: abismos, pontes, lagos, praças, construções, fauna e cena de abertura
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./07c_cenario_arte.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./07c_cenario_arte.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { $, COR, ctx, cv, H, hexRgb, J, lg, mistura, R, relatar, rnd, semente, SIM, UNIV, VH, VW, W } from "./01_nucleo.js";
 import { morrer, texto } from "./02_combate.js";
 import { CEL, frio, hash2, soloEm } from "./04_ambiente.js";
@@ -20,8 +19,7 @@ export function estruturaU() {
   const u = UNIV[R.universo];
   return (u && u.estrutura) || null;
 }
-export function zonaPeca(zx, zy) {
-  const C = J.cena;
+export function zonaPeca(C, zx, zy) {
   if (!C.zonas) C.zonas = new Map();
   const k = zx + ":" + zy;
   if (C.zonas.has(k)) return C.zonas.get(k);
@@ -78,7 +76,7 @@ export function pecasPerto(x, y) {
   out = [];
   for (let j = -1; j <= 1; j++)
     for (let i = -1; i <= 1; i++) {
-      const f = zonaPeca(zx + i, zy + j);
+      const f = zonaPeca(C, zx + i, zy + j);
       if (f) out.push(f);
     }
   C.vizinhas.set(k, out);
@@ -244,7 +242,7 @@ export function atualizarEstrutura(dt) {
       }
     }
   }
-  atualizarFauna(dt);
+  atualizarFauna(C, dt);
 }
 export function queda(x, y, spr, esc) {
   J.quedas = J.quedas || [];
@@ -273,7 +271,7 @@ export function fundoAbismo() {
       [0, -128]
     ]) {
       g.globalAlpha = 0.55;
-      g.drawImage(bolhaCor(i % 3 ? "#ffffff" : "#e8f0f8"), x - r + dx, y - r + dy, r * 2, r * 2);
+      g.drawImage(bolhaCor(C, i % 3 ? "#ffffff" : "#e8f0f8"), x - r + dx, y - r + dy, r * 2, r * 2);
     }
   }
   C.fundoProc = c;
@@ -552,7 +550,7 @@ export function desenharEstrutura(ox, oy) {
         mx = ex + Math.sin(i * 2.3 + C.t * 0.2) * f.rx * 0.5,
         my = ey + f.ry * 0.6 - q * f.ry * 1.2;
       lg.globalAlpha = 0.07 * Math.sin(q * Math.PI);
-      lg.drawImage(bolhaCor("#c8d4f0"), mx - f.rx * 0.45, my - f.ry * 0.22, f.rx * 0.9, f.ry * 0.44);
+      lg.drawImage(bolhaCor(C, "#c8d4f0"), mx - f.rx * 0.45, my - f.ry * 0.22, f.rx * 0.9, f.ry * 0.44);
     }
     lg.globalCompositeOperation = "source-over";
     lg.globalAlpha = 1;
@@ -764,9 +762,8 @@ export function quadroFauna(row, col, tam) {
   const img = folhaU("fauna");
   return img ? celulaArte(img, 8, 2, col, row, tam, tam, 0.5) : null;
 }
-export function atualizarFauna(dt) {
-  const C = J.cena,
-    P = J.jogador;
+export function atualizarFauna(C, dt) {
+  const P = J.jogador;
   if (!C.fauna) C.fauna = [];
   C.tAve = (C.tAve ?? 3) - dt;
   const perto = (x, y, r) => {

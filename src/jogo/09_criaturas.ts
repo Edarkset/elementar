@@ -1,6 +1,5 @@
 // Elementar · criaturas: inimigos comuns e mini-chefes (corpo, passo, golpe, derrota e desenho)
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./08h_interface.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./08h_interface.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   agendar,
   ativos,
@@ -101,7 +100,7 @@ export function spriteCriatura(def, tam: number, cor: string, q: number, pose: s
     bx = s * 0.5,
     by = s * 0.58,
     br = s * 0.22,
-    boca = null,
+    boca: number[] | null = null,
     olhos = [];
   const dd = dor ? 1 : 0;
   switch (def.corpo) {
@@ -1208,7 +1207,7 @@ export function passoCriatura(e: Inimigo, dt: number, P: Ponto) {
         PASSO.m = -1.5;
         break;
       }
-      let g = null,
+      let g: Gema | null = null,
         bd = 90 * 90;
       for (const x of J.gemas) {
         const dd2 = dist2(x, e);
@@ -1356,7 +1355,7 @@ export function golpeCriatura(e: Inimigo, P: Ponto, dist: number) {
   }
 }
 export function maisProximoInimigo(o: Ponto | Selo, alc: number) {
-  let best = null,
+  let best: Inimigo | null = null,
     bd = alc * alc;
   for (const e of J.inimigos) {
     if (e === o || e.hp <= 0) continue;
@@ -1494,7 +1493,7 @@ export function aoMorrerCriatura(e: Inimigo) {
         }
       break;
     case "puff":
-      if (C) for (let i = 0; i < 4; i++) fumaca(e.x + rnd(-3, 3), e.y + rnd(-3, 1), 4, "#d8d0e0");
+      if (C) for (let i = 0; i < 4; i++) fumaca(C, e.x + rnd(-3, 3), e.y + rnd(-3, 1), 4, "#d8d0e0");
       break;
     case "penas":
       if (C)
@@ -1520,7 +1519,7 @@ export function aoMorrerCriatura(e: Inimigo) {
     case "sapo":
       J.sapos = J.sapos || [];
       J.sapos.push({ x: e.x, y: e.y, vida: 3, f: Math.random() * 6 });
-      if (C) fumaca(e.x, e.y, 5, "#a8e0a0");
+      if (C) fumaca(C, e.x, e.y, 5, "#a8e0a0");
       break;
     case "desmancha":
       if (C)

@@ -591,6 +591,7 @@ interface Dados {
   poderes: {
     encaixes: number;
     chance_carta: number;
+    chance_carta_sem_poder: number;
     forca_desperto: number;
     forca_uniao: number;
     talismas: Record<string, {

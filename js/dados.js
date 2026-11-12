@@ -806,14 +806,14 @@ const D = {
   "bonus": {
    "2": {
     "dano": 1.15,
-    "texto": "Pacto Duplo: +15% de dano (menos opções, mais força)"
+    "texto": "Aliança Dupla: +15% de dano (menos opções, mais força)"
    },
    "3": {
     "dano": 1.0,
-    "texto": "Pacto Triplo: mais variedade de monstros e reações"
+    "texto": "Aliança Tripla: mais variedade de monstros e reações"
    }
   },
-  "excecoes": "Ovos de chefe e itens Lendários ignoram o Pacto."
+  "excecoes": "Ovos de chefe e itens Lendários ignoram a Aliança."
  },
  "selos": {
   "quantidade": 3,
@@ -845,17 +845,17 @@ const D = {
   "intervalo_ovo_seg": 45,
   "intervalo_filhote_seg": 70,
   "filhote_selvagem": "Filhotes fogem da equipe; encoste neles para capturar. Vão direto para a reserva.",
-  "ovo_chefe": "Chefes de mapa deixam um ovo Raro de um monstro do universo (de preferência do Pacto). Guardiões da Era deixam um ovo Lendário que ignora o Pacto."
+  "ovo_chefe": "Chefes de mapa deixam um ovo Raro de um monstro do universo (de preferência da Aliança). Guardiões da Era deixam um ovo Lendário que ignora a Aliança."
  },
  "itens": {
   "incenso": {
    "nome": "Incenso de Invocação",
-   "efeito": "Invoca na hora um monstro Raro do Pacto.",
+   "efeito": "Invoca na hora um monstro Raro da Aliança.",
    "fonte": "elites e baús"
   },
   "chamado": {
    "nome": "Chifre do Chamado Lendário",
-   "efeito": "Invoca um monstro Lendário do Pacto.",
+   "efeito": "Invoca um monstro Lendário da Aliança.",
    "fonte": "Guardiões da Era (garantido) e chefes (10%)"
   },
   "doce": {
@@ -4778,7 +4778,7 @@ const D = {
   "garantido_no_mapa": 4,
   "chocar_seg": 240,
   "por_abate_seg": 0.25,
-  "nota": "Um ovo por run, só dos elementos do Pacto. Choca com o tempo de jogo e mais rápido com abates. O dragão entra como Lendário, com ramo único."
+  "nota": "Um ovo por run, só dos elementos da Aliança. Choca com o tempo de jogo e mais rápido com abates. O dragão entra como Lendário, com ramo único."
  },
  "eras": {
   "berco": {
@@ -12063,6 +12063,7 @@ const D = {
  "poderes": {
   "encaixes": 4,
   "chance_carta": 0.35,
+  "chance_carta_sem_poder": 0.85,
   "forca_desperto": 1.4,
   "forca_uniao": 1.15,
   "talismas": {
@@ -15225,7 +15226,7 @@ const D = {
    "evento": "chefe",
    "n": 1,
    "insignia": "bronze",
-   "nome": "Primeiro Pacto",
+   "nome": "Primeira Aliança",
    "texto": "Vencer o primeiro chefe",
    "secreta": false,
    "essencia": 20,

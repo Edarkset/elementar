@@ -5,39 +5,39 @@
  "partidas": [
   {
    "semente": 2,
-   "mapas": "5/23 11.2/30 7.6/36 7.4/45",
+   "mapas": "10.5/22 14.3/30 34.7/38 25.7/46",
    "fim": "vivo",
-   "abates": 17363,
-   "sorteios": 2283580,
-   "segundos": 568,
-   "estado": "f82e45ca"
+   "abates": 7626,
+   "sorteios": 1734397,
+   "segundos": 605,
+   "estado": "60b32d84"
   },
   {
    "semente": 3,
-   "mapas": "16.5/22 8.8/30 34.7/38 16.7/43",
+   "mapas": "6.9/22 7.4/32 17/41 5.7/47",
    "fim": "vivo",
-   "abates": 15169,
-   "sorteios": 2292689,
-   "segundos": 606,
-   "estado": "27da0d5b"
+   "abates": 10668,
+   "sorteios": 1715625,
+   "segundos": 559,
+   "estado": "74990913"
   },
   {
    "semente": 9,
-   "mapas": "5.6/19 6.9/25 6.5/37 10.6/49",
+   "mapas": "33.6/25 8.3/31 11.4/37 16.8/45",
    "fim": "vivo",
-   "abates": 18000,
-   "sorteios": 2119281,
-   "segundos": 571,
-   "estado": "c49c26a3"
+   "abates": 9774,
+   "sorteios": 1871675,
+   "segundos": 597,
+   "estado": "87f9bdb9"
   },
   {
    "semente": 13,
-   "mapas": "2.4/19 9.4/28 6/35 5.9/43",
+   "mapas": "4.6/22 5.1/36 7.8/44 3.3/55",
    "fim": "vivo",
-   "abates": 19127,
-   "sorteios": 2507620,
-   "segundos": 568,
-   "estado": "aafe0bd5"
+   "abates": 13764,
+   "sorteios": 2188459,
+   "segundos": 555,
+   "estado": "d6b5fffb"
   }
  ]
 }

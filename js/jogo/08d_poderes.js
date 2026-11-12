@@ -1,11 +1,11 @@
 // GERADO por "npm run compilar" a partir de src/jogo/08d_poderes.ts. Edite o .ts, não este arquivo.
 // Elementar · árvore de poderes: Talismãs, Poderes Despertos e Uniões
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./08c_eventos.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./08c_eventos.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   agendar,
   ativos,
   atrib,
+  AUTOR,
   COR,
   dist2,
   elementoDe,
@@ -22,7 +22,7 @@ import {
   SIM,
   SIN
 } from "./01_nucleo.js";
-import { curar, emArea, ferir, maisProximo, MOD, pontoDenso, texto, tremor } from "./02_combate.js";
+import { curar, DIF, emArea, ferir, maisProximo, MOD, pontoDenso, texto, tremor } from "./02_combate.js";
 import { proximaEscolha } from "./03_progressao.js";
 import { aplicarElementoNoSolo } from "./04_ambiente.js";
 import { circuloInvocacao, vfxFeixe, vfxOnda, vfxSelo, vfxX } from "./08b_efeitos.js";
@@ -71,9 +71,14 @@ export function efeitoTalismaTxt(t, lv) {
     sinal = t.efeito === "defesa" || t.efeito === "recarga" ? "−" : "+";
   return lv ? `${sinal}${v < 10 && Math.abs(v - Math.round(v)) > 0.04 ? v.toFixed(1).replace(".", ",") : Math.round(v)}%` : "0%";
 } // valores pequenos (0,2% por nível) apareciam como "0% → 0%"
+/** true quando nenhum monstro da equipe tem poder para subir (todos no 5; a habilidade 2 só conta depois da primeira evolução):
+ * daí em diante as escolhas de nível seriam quase só Ascensão */
+export function equipeSemPoder() {
+  return ativos().every(s => ["b", "h1", "h2"].every(k => s.pod[k] >= DIF.poderMax || (k === "h2" && est(s) < 1 && estBase(s) < 1)));
+}
 export function cartaTalisma() {
-  if (SIM.semTalismas || Math.random() >= PD().chance_carta + passiva("carta_extra") * 0.35 + ((SIN.rm && SIN.rm.talisma) || 0))
-    return null;
+  const chance = equipeSemPoder() ? PD().chance_carta_sem_poder : PD().chance_carta;
+  if (SIM.semTalismas || Math.random() >= chance + passiva("carta_extra") * 0.35 + ((SIN.rm && SIN.rm.talisma) || 0)) return null;
   const tem = Object.keys(R.talismas || {}),
     cheio = tem.length >= PD().encaixes;
   const ops = talismasLiberados().filter(id => (cheio ? tem.includes(id) && nivTal(id) < 5 : nivTal(id) < 5));
@@ -195,7 +200,7 @@ export function paresPendentes() {
 }
 // ---------------------------------------------------------------- comportamentos dos Despertos (rodam junto com o poder, quando ele dispara)
 export const _P = (s, a, el, cor, dano, extra) =>
-  Object.assign({ fonte: FONTE, x: s.x, y: s.y, dano, el, cor, vida: 1.3, perf: 1, r: 2 }, extra);
+  Object.assign({ fonte: FONTE, autor: AUTOR, x: s.x, y: s.y, dano, el, cor, vida: 1.3, perf: 1, r: 2 }, extra);
 export function puxar(cx, cy, r, forca) {
   for (const e of J.inimigos) {
     if (e.hp <= 0 || e.chefe) continue;
@@ -304,7 +309,17 @@ export const COMPORTAMENTO = {
       }
     },
     h2(s, a, el, cor) {
-      J.armadilhas.push({ fonte: FONTE, x: s.x + rnd(-30, 30), y: s.y + rnd(-30, 30), dano: a.dano * 3, el, cor, raiz: false, vida: 12 });
+      J.armadilhas.push({
+        fonte: FONTE,
+        autor: AUTOR,
+        x: s.x + rnd(-30, 30),
+        y: s.y + rnd(-30, 30),
+        dano: a.dano * 3,
+        el,
+        cor,
+        raiz: false,
+        vida: 12
+      });
     }
   },
   mago: {
@@ -344,12 +359,22 @@ export const COMPORTAMENTO = {
       }
     },
     h1(s, a, el, cor) {
-      J.crias.push({ fonte: FONTE, x: s.x + rnd(-6, 6), y: s.y + rnd(-6, 6), dano: a.dano * 0.7, el, cor, vida: 7, cd: 0 });
+      J.crias.push({ fonte: FONTE, autor: AUTOR, x: s.x + rnd(-6, 6), y: s.y + rnd(-6, 6), dano: a.dano * 0.7, el, cor, vida: 7, cd: 0 });
     },
     h2(s, a, el, cor) {
       const p = pontoDenso(s, 150) || s;
       for (let i = 0; i < 2; i++)
-        J.crias.push({ fonte: FONTE, x: p.x + rnd(-10, 10), y: p.y + rnd(-10, 10), dano: a.dano * 0.6, el, cor, vida: 8, cd: 0 });
+        J.crias.push({
+          fonte: FONTE,
+          autor: AUTOR,
+          x: p.x + rnd(-10, 10),
+          y: p.y + rnd(-10, 10),
+          dano: a.dano * 0.6,
+          el,
+          cor,
+          vida: 8,
+          cd: 0
+        });
     }
   },
   mistico: {

@@ -1,6 +1,6 @@
 // Elementar · utilidades, som, save, sprites procedurais, estado da run, sinergias e Santuário
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./00_save.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+// Mapa dos módulos, do laço principal e de onde mora cada estado: docs/ARQUITETURA.md
+import "./00_save.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { catalogoDe, juntarRecuperacao, lerTextoSave, textoSave } from "./00_save.js";
 import { anel, DIF, emArea, ferir, MOD, particulas, PRESSAGIOS, texto, tremor } from "./02_combate.js";
 import { ASCENSAO, mostrarCartas, ramosElegiveis, registrarDex } from "./03_progressao.js";
@@ -84,7 +84,7 @@ export function mistura(a: string, b: string, t: number) {
 
 // ================================================================ som: efeitos sintetizados na hora (sem arquivos de áudio)
 // O navegador só libera o som depois do primeiro toque; o volume e o mudo ficam no save (META.som).
-export const SOM = { ctx: null, mestre: null, ult: {} as Record<string, number> };
+export const SOM = { ctx: null as AudioContext | null, mestre: null, ult: {} as Record<string, number> };
 export function somLigar() {
   if (SOM.ctx) {
     if (SOM.ctx.state === "suspended") SOM.ctx.resume();
@@ -105,7 +105,7 @@ export function somLigar() {
 }
 addEventListener("pointerdown", somLigar, { passive: true });
 addEventListener("keydown", somLigar);
-export function somNota(f: number, dur: number, tipo: string, vol: number, atraso?: number, f2?: number) {
+export function somNota(f: number, dur: number, tipo: OscillatorType, vol: number, atraso?: number, f2?: number) {
   const c = SOM.ctx,
     t = c.currentTime + (atraso || 0),
     o = c.createOscillator(),
@@ -645,6 +645,9 @@ export let rodando = false,
 // construções) é decidido pela lista de artes, não pela imagem, então os obstáculos são os mesmos do jogo normal
 export const SIM: Simulacao = { ativo: false, entrada: null, aoDerrota: null, semEspeciais: false, semArte: false };
 export let FONTE: FonteDano = "basico"; // origem do dano corrente (básico, habilidade, especial, combinado, despertar, reação, ambiente)
+// monstro que está causando o dano agora (id da linha); null para dano da equipe toda (Lenda, Despertar, combinado) ou do ambiente.
+// Projéteis, crias, armadilhas e zonas guardam o autor de quando nasceram. Serve só para o resumo de fim de run ("quem carregou")
+export let AUTOR: string | null = null;
 export function agendar(seg: number, fn) {
   J.agenda.push({ t: J.t + seg, fn });
 }
@@ -704,7 +707,7 @@ export function novaRun(pacto, inicial) {
   if (typeof registrarDex === "function") registrarDex(inicial, 0, null, "comum");
   for (let i = 0; i < nivelLoja("heranca"); i++) {
     R.selos[0].nivel++;
-    R.selos[0].pod.b = Math.min(5, R.selos[0].pod.b + 1);
+    R.selos[0].pod.b = Math.min(DIF.poderMax, R.selos[0].pod.b + 1);
   } // Herança do Santuário
   R.reviverMeta = nivelLoja("chance");
   R.recordeAntes = META.recorde;
@@ -869,7 +872,7 @@ export function relMods() {
     reac: 1,
     regen: 0,
     reviver: 0,
-    nucleo: [],
+    nucleo: [] as string[],
     curaTroca: false,
     danoRec: 1,
     ess: 1,
@@ -1018,7 +1021,7 @@ export function afinidadeLenda(eq: Selo[]) {
 export function calcularSinergia() {
   const rg = D.regras,
     eq = ativos(),
-    chips = [];
+    chips: string[] = [];
   let dano = 1,
     vida = 1,
     reac = 1;
@@ -1086,7 +1089,7 @@ export function calcularSinergia() {
   const pb = D.pacto.bonus[R.pacto.length];
   if (pb && pb.dano > 1) {
     dano *= pb.dano;
-    chips.push("Pacto Duplo");
+    chips.push("Aliança Dupla");
   }
   R.elos.forEach(e => chips.push(e));
   const af = afinidadeLenda(eq);
@@ -1155,7 +1158,7 @@ export function atrib(s: Selo): Atributos {
       fd *
       rar *
       ad *
-      (1 + 0.2 * (s.pod.b - 1)) *
+      (1 + 0.2 * (nivelEf(s.pod.b) - 1)) *
       SIN.dano *
       elo *
       (desp ? D.despertar.dano : 1) *
@@ -1166,7 +1169,7 @@ export function atrib(s: Selo): Atributos {
     cad:
       b.cadencia *
       ac *
-      (1 + 0.05 * (s.pod.b - 1)) *
+      (1 + 0.05 * (nivelEf(s.pod.b) - 1)) *
       SIN.cad *
       elo *
       (desp ? D.despertar.cadencia : 1) *
@@ -1178,14 +1181,19 @@ export function atrib(s: Selo): Atributos {
     cura: (b.cura || 0) * md * rar
   };
 }
-export const fNivel = (lv: number) => 1 + 0.25 * Math.max(0, lv - 1),
-  fRecarga = (lv: number) => 1 - 0.06 * Math.max(0, lv - 1);
+// nível efetivo de um poder: até o 5 é o próprio nível; além dele cada nível vale DIF.poderAlem (ganho menor, e a recarga não some)
+export const nivelEf = (lv: number) => (lv <= 5 ? lv : 5 + (lv - 5) * DIF.poderAlem);
+export const fNivel = (lv: number) => 1 + 0.25 * Math.max(0, nivelEf(lv) - 1),
+  fRecarga = (lv: number) => 1 - 0.06 * Math.max(0, nivelEf(lv) - 1);
 
 // ================================================================ escrita vinda de outros módulos
 // Um módulo lê as variáveis de outro direto (J.vida, R.selos...), mas só o módulo dono pode atribuir nelas. Quem precisa trocar o
 // valor inteiro (começar um mapa, pausar, marcar a fonte do dano) chama uma destas funções: toda troca tem um nome e um lugar só.
 export function defFonte(v: FonteDano) {
   return (FONTE = v);
+}
+export function defAutor(v: string | null | undefined) {
+  return (AUTOR = v ?? null);
 }
 export function defPausado(v: boolean) {
   return (pausado = v);

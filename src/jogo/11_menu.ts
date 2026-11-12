@@ -1,6 +1,5 @@
-// Elementar · menu, Pacto, pausa e modo moderador; começa o jogo
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./10_desenho.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+// Elementar · menu, Aliança (no código: pacto), pausa e modo moderador; começa o jogo
+import "./10_desenho.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { textoSave } from "./00_save.js";
 import {
   $,
@@ -53,6 +52,7 @@ import {
   fechar,
   FORMAS_TOTAL,
   formasVistas,
+  limparCenas,
   mostrarCartas,
   mostrarPortais,
   quadrosRetrato,
@@ -70,7 +70,7 @@ import { desenharEquipe, toast } from "./10_desenho.js";
 export function pausar() {
   if (!J) return;
   defPausado(true);
-  mostrarCartas("Pausado", `Profundidade ${R.profundidade} · Pacto: ${R.pacto.map(NOME_EL).join(", ")}`, [
+  mostrarCartas("Pausado", `Profundidade ${R.profundidade} · Aliança: ${R.pacto.map(NOME_EL).join(", ")}`, [
     {
       titulo: "Continuar",
       texto: "Voltar ao mapa.",
@@ -131,6 +131,7 @@ export function pausar() {
 export function menu() {
   defRodando(false);
   fechar();
+  limparCenas();
   $("telaMenu").classList.add("ativa");
   $("hud").style.display = "none";
   $("hudBase").style.display = "none";
@@ -164,7 +165,7 @@ export function menu() {
   }
   const n = document.createElement("button");
   n.className = "botao" + (RUN_SALVA ? " sec" : "");
-  n.textContent = "Nova run: fechar Pacto";
+  n.textContent = "Nova run: formar Aliança";
   n.onclick = telaPacto;
   box.appendChild(n);
   {
@@ -263,7 +264,7 @@ export function telaModerador() {
   mostrarCartas("Modo moderador", "Ferramentas de teste. O save de antes da primeira mudança fica guardado e pode ser restaurado aqui.", [
     {
       titulo: `Liberar todos os monstros (${META.liberados.length}/${D.linhas.length})`,
-      texto: "Todas as linhas evolutivas aparecem no Pacto, nos ovos e nos filhotes.",
+      texto: "Todas as linhas evolutivas aparecem na Aliança, nos ovos e nos filhotes.",
       raridade: "raro",
       manter: true,
       acao: () => {
@@ -676,13 +677,13 @@ export const RODA_PACTO = {
 export function telaPacto() {
   $("telaMenu").classList.remove("ativa");
   const sel = new Set<Elemento>();
-  let foco = null;
+  let foco: Elemento | null = null;
   const roda = UI_ARQ("ui__pacto");
   const render = () => {
     if (!roda) {
       // sem a arte: grade de emblemas
       mostrarCartas(
-        "Pacto Elemental",
+        "Aliança Elemental",
         `Escolha ${D.pacto.min} ou ${D.pacto.max} elementos. Só ovos e filhotes deles vão aparecer. ${D.pacto.bonus[2].texto}.`,
         ELS.map(el => ({
           titulo: NOME_EL(el),
@@ -701,7 +702,7 @@ export function telaPacto() {
       );
     } else {
       mostrarCartas(
-        "Pacto Elemental",
+        "Aliança Elemental",
         `Toque em ${D.pacto.min} ou ${D.pacto.max} gemas. Só ovos e filhotes desses elementos vão aparecer.`,
         []
       );
@@ -729,12 +730,12 @@ export function telaPacto() {
       }
       const nomes = [...sel].map(el => `<span style="color:${COR[el]}">${NOME_EL(el)}</span>`).join(" + ") || "nenhum elemento ainda";
       box.querySelector(".roda-info").innerHTML =
-        `<b>Pacto: ${nomes}</b>${foco ? `<small><span style="color:${COR[foco]}">${NOME_EL(foco)}</span>: ${infoElemento(foco)}</small>` : `<small>${D.pacto.bonus[2].texto}.</small>`}`;
+        `<b>Aliança: ${nomes}</b>${foco ? `<small><span style="color:${COR[foco]}">${NOME_EL(foco)}</span>: ${infoElemento(foco)}</small>` : `<small>${D.pacto.bonus[2].texto}.</small>`}`;
     }
     const b = document.createElement("button");
     b.className = "botao";
     b.textContent =
-      sel.size >= D.pacto.min ? `Fechar Pacto (${[...sel].map(NOME_EL).join(", ")})` : `Escolha ${D.pacto.min - sel.size} elemento(s)`;
+      sel.size >= D.pacto.min ? `Formar Aliança (${[...sel].map(NOME_EL).join(", ")})` : `Escolha ${D.pacto.min - sel.size} elemento(s)`;
     b.disabled = sel.size < D.pacto.min;
     b.onclick = () => escolherInicial([...sel]);
     $("cartasRodape").appendChild(b);

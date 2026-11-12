@@ -11,6 +11,7 @@
     "formato": "prettier --check src js testes \"ferramentas/*.js\"",
     "verificar": "node testes/verificar.js",
     "save": "node testes/save.js",
+    "artes": "node testes/artes.js",
     "reproduzir": "node testes/reproduzir.js",
     "regressao": "node testes/reproduzir.js --conferir testes/assinatura.json",
     "regressao:gravar": "node testes/reproduzir.js --sementes 2,3,9,13 --mapas 4 --gravar testes/assinatura.json",

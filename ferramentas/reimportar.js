@@ -84,8 +84,7 @@ for (const f of ordem) {
   const i = ordem.indexOf(f);
   let imp = "";
   const js = f => f.replace(/\.ts$/, ".js");
-  if (i > 0)
-    imp += `import "./${js(ordem[i - 1])}"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos\n`;
+  if (i > 0) imp += `import "./${js(ordem[i - 1])}"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)\n`;
   for (const d of Object.keys(falta).sort()) {
     imp += `import { ${[...falta[d]].sort((a, b) => a.localeCompare(b)).join(", ")} } from "./${js(d)}";\n`;
     total += falta[d].size;

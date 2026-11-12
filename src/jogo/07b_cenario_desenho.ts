@@ -1,6 +1,5 @@
 // Elementar · desenho do cenário
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./07_cenario.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./07_cenario.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   baseHi,
   branco,
@@ -32,12 +31,12 @@ import { crepusculo, nivelEscuro, sombraProjetada } from "./08g_luz.js";
 import { chao } from "./10_desenho.js";
 // ================================================================ desenho do cenário
 export function spriteCena(
+  C: Cena,
   chave: string,
   w: number,
   h: number,
   fn: (g: CanvasRenderingContext2D, px: (x: number, y: number, cor: string) => void) => void
 ) {
-  const C = J.cena;
   if (C.sprites.has(chave)) return C.sprites.get(chave);
   const c = document.createElement("canvas");
   c.width = w;
@@ -50,9 +49,8 @@ export function spriteCena(
   C.sprites.set(chave, c);
   return c;
 }
-export function spriteProp(p: PropCena) {
-  const C = J.cena,
-    k = C.kit,
+export function spriteProp(C: Cena, p: PropCena) {
+  const k = C.kit,
     t = p.tipo;
   if (t === "marco" || t === "luz" || t === "frente") return spriteMarco(p);
   const arte = spriteObjetoArte(p);
@@ -61,7 +59,7 @@ export function spriteProp(p: PropCena) {
     case "vaso": {
       const [cor, faixa] = k.vaso || ["#b8683a", "#2a3a5a"],
         v = p.var;
-      return spriteCena("vaso" + v, 9, 12, (g, px) => {
+      return spriteCena(C, "vaso" + v, 9, 12, (g, px) => {
         const cla = tom(cor, 1.25),
           esc = tom(cor, 0.66);
         for (let x = 2; x <= 6; x++) px(x, 0, esc);
@@ -85,7 +83,7 @@ export function spriteProp(p: PropCena) {
       });
     }
     case "caixote":
-      return spriteCena("caixote", 10, 10, (g, px) => {
+      return spriteCena(C, "caixote", 10, 10, (g, px) => {
         const b = "#8a5a30",
           c = "#b07a44",
           e = "#5a3a20";
@@ -108,7 +106,7 @@ export function spriteProp(p: PropCena) {
       const fr = Math.floor(((p.rolou / 2.2) % 4) + 4) % 4,
         ver = p.eixo === "v";
       if (p.saque)
-        return spriteCena("saque" + (ver ? "v" : "h") + fr, ver ? 8 : 12, ver ? 12 : 8, (g, px) => {
+        return spriteCena(C, "saque" + (ver ? "v" : "h") + fr, ver ? 8 : 12, ver ? 12 : 8, (g, px) => {
           for (let i = 0; i < 12; i++)
             for (let j = 0; j < 8; j++) {
               if ((i === 0 || i === 11) && (j === 0 || j === 7)) continue;
@@ -118,7 +116,7 @@ export function spriteProp(p: PropCena) {
               ver ? px(j, i, c) : px(i, j, c);
             }
         });
-      return spriteCena(t + (ver ? "v" : "h") + fr, ver ? 8 : 12, ver ? 12 : 8, (g, px) => {
+      return spriteCena(C, t + (ver ? "v" : "h") + fr, ver ? 8 : 12, ver ? 12 : 8, (g, px) => {
         const pol = t === "polvora",
           b = pol ? "#6a2a20" : "#8a5a30",
           c = pol ? "#8a3a2a" : "#b07a44",
@@ -138,7 +136,7 @@ export function spriteProp(p: PropCena) {
       });
     }
     case "feno":
-      return spriteCena("feno", 11, 8, (g, px) => {
+      return spriteCena(C, "feno", 11, 8, (g, px) => {
         for (let x = 0; x < 11; x++)
           for (let y = 0; y < 8; y++) {
             if ((x === 0 || x === 10) && (y === 0 || y === 7)) continue;
@@ -150,7 +148,7 @@ export function spriteProp(p: PropCena) {
       });
     case "fruta":
       if (k.fruta === "abobora")
-        return spriteCena("abobora", 8, 7, (g, px) => {
+        return spriteCena(C, "abobora", 8, 7, (g, px) => {
           for (let x = 0; x < 8; x++)
             for (let y = 1; y < 7; y++) {
               const dx = (x - 3.5) / 4,
@@ -163,7 +161,7 @@ export function spriteProp(p: PropCena) {
           px(3, 0, "#4a7a2a");
           px(4, 1, "#4a7a2a");
         });
-      return spriteCena("coco", 6, 6, (g, px) => {
+      return spriteCena(C, "coco", 6, 6, (g, px) => {
         for (let x = 0; x < 6; x++)
           for (let y = 0; y < 6; y++) {
             const dx = (x - 2.5) / 3,
@@ -176,7 +174,7 @@ export function spriteProp(p: PropCena) {
     case "rocha": {
       const st = k.rocha || "normal",
         v = p.var;
-      return spriteCena("rocha" + v + st, 14, 10, (g, px) => {
+      return spriteCena(C, "rocha" + v + st, 14, 10, (g, px) => {
         const base = st === "obsidiana" ? "#2a2030" : st === "areia" ? "#a08a68" : st === "coral" ? "#c87a7a" : "#7a7680",
           cla = st === "obsidiana" ? "#5a4a70" : tom(base, 1.3),
           esc = tom(base, 0.65);
@@ -200,7 +198,7 @@ export function spriteProp(p: PropCena) {
       });
     }
     case "gelo":
-      return spriteCena("gelo", 12, 11, (g, px) => {
+      return spriteCena(C, "gelo", 12, 11, (g, px) => {
         g.globalAlpha = 0.88;
         for (let x = 0; x < 12; x++) {
           for (let y = 0; y < 3; y++) px(x, y, "#e0f6ff");
@@ -216,7 +214,7 @@ export function spriteProp(p: PropCena) {
       });
     case "cristal": {
       const c = k.cristal || "#c8f0ff";
-      return spriteCena("cristal" + c, 10, 14, (g, px) => {
+      return spriteCena(C, "cristal" + c, 10, 14, (g, px) => {
         const cla = tom(c, 1.35),
           esc = tom(c, 0.62);
         const prisma = (x0: number, w: number, y0: number) => {
@@ -245,7 +243,7 @@ export function spriteProp(p: PropCena) {
                 ? "#2a5a3a"
                 : "#3a7a34",
         grande = p.carvalho;
-      return spriteCena("arvore" + cop + (grande ? "g" : "") + p.var, grande ? 20 : 14, grande ? 26 : 20, (g, px) => {
+      return spriteCena(C, "arvore" + cop + (grande ? "g" : "") + p.var, grande ? 20 : 14, grande ? 26 : 20, (g, px) => {
         const W = grande ? 20 : 14,
           H = grande ? 26 : 20,
           tr = Math.round(W / 2) - 1;
@@ -269,19 +267,25 @@ export function spriteProp(p: PropCena) {
     }
     case "tronco": {
       const ver = p.eixo === "v";
-      return spriteCena("tronco" + (ver ? "v" : "h") + (Math.floor(((p.rolou / 2) % 3) + 3) % 3), ver ? 7 : 13, ver ? 13 : 7, (g, px) => {
-        const fr = Math.floor(((p.rolou / 2) % 3) + 3) % 3;
-        for (let i = 0; i < 13; i++)
-          for (let j = 0; j < 7; j++) {
-            let c = j < 2 ? "#9a6a3a" : j > 4 ? "#4a2a14" : "#7a5030";
-            if ((j + fr) % 3 === 0) c = tom(c, 0.85);
-            if (i === 0 || i === 12) c = j % 2 ? "#c8a070" : "#e0c090";
-            ver ? px(j, i, c) : px(i, j, c);
-          }
-      });
+      return spriteCena(
+        C,
+        "tronco" + (ver ? "v" : "h") + (Math.floor(((p.rolou / 2) % 3) + 3) % 3),
+        ver ? 7 : 13,
+        ver ? 13 : 7,
+        (g, px) => {
+          const fr = Math.floor(((p.rolou / 2) % 3) + 3) % 3;
+          for (let i = 0; i < 13; i++)
+            for (let j = 0; j < 7; j++) {
+              let c = j < 2 ? "#9a6a3a" : j > 4 ? "#4a2a14" : "#7a5030";
+              if ((j + fr) % 3 === 0) c = tom(c, 0.85);
+              if (i === 0 || i === 12) c = j % 2 ? "#c8a070" : "#e0c090";
+              ver ? px(j, i, c) : px(i, j, c);
+            }
+        }
+      );
     }
     case "ovo":
-      return spriteCena("ovo", 6, 7, (g, px) => {
+      return spriteCena(C, "ovo", 6, 7, (g, px) => {
         for (let x = 0; x < 6; x++)
           for (let y = 0; y < 7; y++) {
             const dx = (x - 2.5) / 3,
@@ -295,7 +299,7 @@ export function spriteProp(p: PropCena) {
     case "metal": {
       const v = k.metal || "aco";
       if (v === "estatua")
-        return spriteCena("m_estatua", 8, 14, (g, px) => {
+        return spriteCena(C, "m_estatua", 8, 14, (g, px) => {
           for (let x = 0; x < 8; x++) for (let y = 11; y < 14; y++) px(x, y, y === 11 ? "#d8d0c0" : "#a8a090");
           const b = "#b07a3a",
             vd = "#5ab0a0";
@@ -309,7 +313,7 @@ export function spriteProp(p: PropCena) {
           px(6, 2, b);
         });
       if (v === "sino")
-        return spriteCena("m_sino", 9, 11, (g, px) => {
+        return spriteCena(C, "m_sino", 9, 11, (g, px) => {
           px(4, 0, "#6a4a2a");
           px(3, 1, "#6a4a2a");
           px(5, 1, "#6a4a2a");
@@ -320,7 +324,7 @@ export function spriteProp(p: PropCena) {
           }
         });
       if (v === "bobina")
-        return spriteCena("m_bobina", 8, 14, (g, px) => {
+        return spriteCena(C, "m_bobina", 8, 14, (g, px) => {
           for (let x = 1; x < 7; x++) for (let y = 11; y < 14; y++) px(x, y, "#3a3640");
           for (let y = 4; y < 11; y++) for (let x = 2; x < 6; x++) px(x, y, y % 2 ? "#c87a3a" : "#e09a5a");
           for (let x = 1; x < 7; x++)
@@ -331,7 +335,7 @@ export function spriteProp(p: PropCena) {
             }
         });
       const cor = v === "oricalco" ? "#c8603a" : v === "braseiro" ? "#4a4048" : "#8a9ab0";
-      return spriteCena("m_pilar" + v, 8, 14, (g, px) => {
+      return spriteCena(C, "m_pilar" + v, 8, 14, (g, px) => {
         for (let x = 0; x < 8; x++) for (let y = 12; y < 14; y++) px(x, y, tom(cor, 0.6));
         for (let y = 2; y < 12; y++) for (let x = 2; x < 6; x++) px(x, y, x === 2 ? tom(cor, 1.3) : x === 5 ? tom(cor, 0.7) : cor);
         for (let x = 1; x < 7; x++) {
@@ -348,8 +352,7 @@ export function spriteProp(p: PropCena) {
   return null;
 }
 // marcos e objetos entram na fila de profundidade (ordenada pelo pé): quem está mais embaixo na tela fica na frente
-export function desenharProps(ox: number, oy: number, fila) {
-  const C = J.cena;
+export function desenharProps(C: Cena, ox: number, oy: number, fila) {
   for (const p of C.lista) {
     if (p.tipo === "frente") fila.push({ y: p.y, f: () => desenharFrente(p, ox, oy) });
     else fila.push({ y: p.y + p.r * 0.6, f: () => desenharUmProp(p, ox, oy) });
@@ -384,7 +387,7 @@ export function desenharFrente(p: PropCena, ox: number, oy: number) {
   lg.globalAlpha = 1;
 }
 export function desenharUmProp(p: PropCena, ox: number, oy: number) {
-  const spr = p.spriteFixo || spriteProp(p);
+  const spr = p.spriteFixo || spriteProp(J.cena, p);
   if (!spr) return;
   const kq = p.caindo > 0 ? p.caindo / 0.7 : 1,
     w = Math.round(spr.width * p.esc * kq),
@@ -527,9 +530,8 @@ export function silhueta(spr: HTMLCanvasElement, cor: string) {
   return c;
 }
 // detalhes do chão desenhados uma vez por pedaço (pedrinhas, rachaduras, flores, lajotas...)
-export function detalhePedaco(cx: number, cy: number) {
-  const C = J.cena,
-    k = cx + ":" + cy;
+export function detalhePedaco(C: Cena, cx: number, cy: number) {
+  const k = cx + ":" + cy;
   if (C.detalhes.has(k)) return C.detalhes.get(k);
   if (C.detalhes.size > 48) {
     const pk = C.detalhes.keys().next().value;
@@ -687,7 +689,7 @@ export function desenharDetalhesChao(ox: number, oy: number) {
     r0 = Math.floor(oy / CH);
   for (let cy = r0; cy <= r0 + Math.ceil(VH / CH) + 1; cy++)
     for (let cx = c0; cx <= c0 + Math.ceil(VW / CH) + 1; cx++) {
-      const d = detalhePedaco(cx, cy);
+      const d = detalhePedaco(J.cena, cx, cy);
       // arte importada: cada enfeite vai direto da folha original em alta resolução (antes saía de um canvas pequeno e ficava borrado)
       if (Array.isArray(d)) {
         for (const e of d) {
@@ -709,9 +711,8 @@ export function balde(cor: string, lw?: number) {
   }
   return b;
 }
-export function desenharTufos(ox: number, oy: number) {
-  const C = J.cena,
-    V = VEG[C.veg];
+export function desenharTufos(C: Cena, ox: number, oy: number) {
+  const V = VEG[C.veg];
   if (!V) return;
   for (const b of BALDES.values()) {
     b.v.length = 0;
@@ -729,7 +730,7 @@ export function desenharTufos(ox: number, oy: number) {
     for (let i = 0; i < nc; i++) {
       const cx = c0 + i,
         cy = r0 + j,
-        t = tufoInfo(cx, cy);
+        t = tufoInfo(C, cx, cy);
       if (!t) continue;
       if (QUAL < 2 && hash2(cx, cy, 91) > (QUAL === 1 ? 0.6 : 0.35)) continue;
       // sobre piso pintado, menos tufos soltos no chão comum (o piso já tem detalhe próprio)
@@ -871,7 +872,7 @@ export function desenharCenaChao(ox: number, oy: number) {
     lg.stroke();
   }
   lg.globalAlpha = 1;
-  desenharTufos(ox, oy);
+  desenharTufos(C, ox, oy);
   for (const g of C.destrocos) {
     if (g.z >= 1) continue;
     const x = Math.round(g.x - ox),
@@ -888,10 +889,10 @@ export function desenharCenaChao(ox: number, oy: number) {
   }
   lg.globalAlpha = 1;
 }
-export function desenharCenaObjetos(ox: number, oy: number, fila: Selo[]) {
+export function desenharCenaObjetos(ox: number, oy: number, fila: { y: number; f: () => unknown }[]) {
   const C = J.cena;
   if (!C) return;
-  desenharProps(ox, oy, fila);
+  desenharProps(C, ox, oy, fila);
   for (const g of C.destrocos) {
     if (g.z < 1) continue;
     const x = Math.round(g.x - ox),
@@ -920,14 +921,14 @@ export function desenharCenaAr(ox: number, oy: number) {
   for (const f of C.fumaca) {
     const a = Math.min(1, (f.vida / f.max) * 1.4) * 0.32;
     lg.globalAlpha = a;
-    lg.drawImage(bolhaCor(f.cor), f.x - ox - f.r, f.y - f.z - oy - f.r, f.r * 2, f.r * 2);
+    lg.drawImage(bolhaCor(C, f.cor), f.x - ox - f.r, f.y - f.z - oy - f.r, f.r * 2, f.r * 2);
   }
   lg.globalAlpha = 1;
   // redemoinhos: coluna translúcida que gira
   for (const w of C.vort) {
     const a = Math.min(1, w.vida / 1.5);
     lg.globalAlpha = 0.16 * a;
-    lg.drawImage(bolhaCor(w.fogo ? "#ff8a3d" : "#d8c090"), w.x - ox - w.r * 1.6, w.y - oy - w.r * 3.2, w.r * 3.2, w.r * 3.6);
+    lg.drawImage(bolhaCor(C, w.fogo ? "#ff8a3d" : "#d8c090"), w.x - ox - w.r * 1.6, w.y - oy - w.r * 3.2, w.r * 3.2, w.r * 3.6);
     lg.globalAlpha = 0.5 * a;
     lg.strokeStyle = w.fogo ? "#ffb060" : "#e8d8b0";
     for (let i = 0; i < 4; i++) {
@@ -1015,11 +1016,11 @@ export function desenharCenaAr(ox: number, oy: number) {
   // névoa e sombras das nuvens
   for (const n of C.nevoa) {
     lg.globalAlpha = n.a * (0.8 + 0.2 * Math.sin(J.t * 0.4 + n.f));
-    lg.drawImage(bolhaCor(C.kit.nevoa), n.x - ox - n.r, n.y - oy - n.r * 0.6, n.r * 2, n.r * 1.2);
+    lg.drawImage(bolhaCor(C, C.kit.nevoa), n.x - ox - n.r, n.y - oy - n.r * 0.6, n.r * 2, n.r * 1.2);
   }
   for (const n of C.nuvens) {
     lg.globalAlpha = n.a;
-    lg.drawImage(bolhaCor("#0a0814"), n.x - ox - n.r, n.y - oy - n.r * 0.7, n.r * 2, n.r * 1.4);
+    lg.drawImage(bolhaCor(C, "#0a0814"), n.x - ox - n.r, n.y - oy - n.r * 0.7, n.r * 2, n.r * 1.4);
   }
   lg.globalAlpha = 1;
   // aviso do relâmpago

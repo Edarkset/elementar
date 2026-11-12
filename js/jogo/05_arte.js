@@ -1,7 +1,6 @@
 // GERADO por "npm run compilar" a partir de src/jogo/05_arte.ts. Edite o .ts, não este arquivo.
 // Elementar · artes importadas: manifesto, carregamento sob demanda, recortes e animações dos monstros
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./04_ambiente.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./04_ambiente.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { est, J, L, LINHA, R, ramoAtual, relatar, SIM, UNIV } from "./01_nucleo.js";
 import { maisProximo } from "./02_combate.js";
 import { cacheSolo } from "./04_ambiente.js";

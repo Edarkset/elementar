@@ -179,6 +179,8 @@ interface OvoNinho {
 }
 interface EstatisticasRun {
   porFonte: Partial<Record<FonteDano, number>>;
+  /** dano por monstro (id da linha): o que cada um causou com básico, habilidade, especial e reações */
+  porMonstro?: Record<string, number>;
   especiais: number;
   combinados: number;
   transformacoes: number;
@@ -284,6 +286,14 @@ interface SaveLido {
   /** true quando o texto não era um save (nada foi aproveitado) */
   ilegivel: boolean;
 }
+/** golpe de chefe ou mini-chefe (D.eras[...].combate.golpes, kits dos mapas e golpes montados no código). Cada tipo usa campos
+ * próprios (n, ondas, arco, vel, proj, dur, deixa...): o conjunto completo ainda não está descrito, por isso o índice aberto. */
+interface Golpe {
+  tipo: string;
+  nome?: string;
+  el?: Elemento | "multi";
+  [campo: string]: AindaSemTipo;
+}
 /** atributos de um monstro na hora (atrib e atribPoder): dano por golpe, golpes por segundo, vida e cura */
 interface Atributos {
   dano: number;
@@ -353,6 +363,8 @@ interface Projetil extends Ponto {
   perf: number;
   r: number;
   fonte?: FonteDano;
+  /** monstro que criou (resumo de fim de run) */
+  autor?: string | null;
   alvo?: Inimigo | null;
   vel?: number;
   explode?: number;
@@ -367,6 +379,8 @@ interface ZonaBase extends Ponto {
   cor: string;
   vida: number;
   fonte?: FonteDano;
+  /** monstro que criou (resumo de fim de run) */
+  autor?: string | null;
   el?: Elemento;
   dano?: number;
   cd?: number;
@@ -384,6 +398,8 @@ interface Cria extends Ponto {
   vida: number;
   cd: number;
   fonte?: FonteDano;
+  /** monstro que criou (resumo de fim de run) */
+  autor?: string | null;
   kami?: boolean;
   guarda?: boolean;
   gigante?: boolean;
@@ -397,6 +413,8 @@ interface Armadilha extends Ponto {
   raiz: boolean;
   vida: number;
   fonte?: FonteDano;
+  /** monstro que criou (resumo de fim de run) */
+  autor?: string | null;
 }
 interface Totem extends Ponto {
   dono: Selo;
@@ -475,12 +493,17 @@ interface CartaNivel {
   dourada?: boolean;
 }
 interface DiretorHorda {
-  mult: number;
+  /** ajuste do diretor sobre a curva do mapa (0,8 a 1,4) */
+  ajuste: number;
   tick: number;
   respiro: number;
   tEvento: number;
+  /** inimigos que a horda quer na tela agora (curva do mapa vezes o ajuste) */
   alvo: number;
+  /** inimigos na tela */
   n: number;
+  /** inimigos na tela e chegando (logo além da borda, onde nascem) */
+  perto: number;
   vida: number;
   eventos: number;
   ameaca: number;

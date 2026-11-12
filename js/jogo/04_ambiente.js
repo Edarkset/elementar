@@ -1,7 +1,6 @@
 // GERADO por "npm run compilar" a partir de src/jogo/04_ambiente.ts. Edite o .ts, não este arquivo.
 // Elementar · física do ambiente: o chão reage aos elementos
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./03_progressao.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./03_progressao.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { ativos, defFonte, elementoDe, FONTE, hexRgb, J, lg, Q, R, ramoObj, rnd, semente, SIM, tom, UNIV, VH, VW } from "./01_nucleo.js";
 import { curar, danoSimples } from "./02_combate.js";
 import { folhaU } from "./07c_cenario_arte.js";

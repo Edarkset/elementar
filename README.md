@@ -97,6 +97,21 @@ Abra http://localhost:8001 e espere aparecer "Pronto". O navegador reduz cada or
 
 O que precisa ser reconvertido ou gerado de novo está em [docs/ARTES_PARA_REFAZER.md](docs/ARTES_PARA_REFAZER.md).
 
+### Conferir as artes novas antes de enviar
+
+```bash
+npm run artes -- --novas                            # só as artes novas ou alteradas: grade, recorte, transparência, manifesto
+npm run artes                                       # todas (a verificação do GitHub roda esta)
+```
+
+Depois, com o servidor local aberto, veja em http://localhost:8000/ferramentas/galeria.html cada folha com a grade que o jogo usa, cada linha animada como no jogo e os avisos ao lado (filtre por caminho, por tipo ou só as que têm aviso).
+
+- **Erro** (a verificação falha): arquivo fora do manifesto, manifesto apontando para arquivo que não existe, imagem que não abre, personagem sem transparência. O caso mais comum com gerador de imagem é o xadrez cinza e branco pintado no lugar da transparência.
+- **Aviso** (o jogo usa, mas aparece com defeito): desenho encostando na borda da célula, que aparece como pedaço na pose vizinha; o pé mudando de altura entre os quadros de parado ou andando, e o personagem "pula"; células não quadradas; moldura.
+- **Formato novo** (inimigos 8×9, folhas de ações, herói, ovos): o aviso diz o que o código ainda precisa ler. Esse ajuste é feito quando as folhas chegarem.
+
+As especificações de cada folha estão em [docs/PEDIDO_SPRITES.md](docs/PEDIDO_SPRITES.md), e a tabela que a conferência e a galeria usam está em `ferramentas/artes_tipos.js`.
+
 ## Testes
 
 Com o Node e o Playwright instalados:
@@ -138,6 +153,7 @@ node testes/verificar.js                            # no navegador: telas, saves
 | Mudança de equilíbrio de propósito | `npm run regressao:gravar` no mesmo commit: a assinatura nova fica no histórico, junto com o porquê |
 | Save velho ou estragado | `npm run save` (saves reais de cada versão em `testes/saves/`) e `verificar.js --so save` no navegador |
 | Conteúdo citando o que não existe | `npm run dados` |
+| Arte nova com grade errada, fundo pintado ou fora do manifesto | `npm run artes` (e a galeria, `ferramentas/galeria.html`) |
 | Tipo errado, nulo novo | `npm run tipos` e `npm run catraca` |
 | Tela quebrada, erro no console, pedido a servidor de fora | `verificar.js` (telas, jogo, imagem) |
 

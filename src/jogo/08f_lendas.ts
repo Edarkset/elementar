@@ -78,7 +78,7 @@ export function telaInvocador(pacto: Elemento[], id: string, esperou?: boolean) 
     iniciarMapa();
   };
   const total = D.lendas.length + D.panteao.length,
-    estrelas = l => pacto.filter((el: Elemento) => l.elementos.includes(el)).length;
+    estrelas = l => pacto.filter(el => l.elementos.includes(el)).length;
   const cartas = livres
     .map(l => {
       const n = estrelas(l),

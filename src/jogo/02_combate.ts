@@ -646,12 +646,7 @@ export function maisProximo(o, alc: number, f?) {
   if (!best && !f && J.cena) {
     // Koschei imortal: a equipe mira no carvalho (e depois no ovo) em vez de bater num chefe que não morre
     const ch = J.chefeVivo,
-      k =
-        ch && ch.imortal
-          ? ch.carvalho && !ch.carvalho.morto
-            ? ch.carvalho
-            : J.cena.lista.find((p: PropCena) => p.ovoMorte && !p.morto)
-          : null;
+      k = ch && ch.imortal ? (ch.carvalho && !ch.carvalho.morto ? ch.carvalho : J.cena.lista.find(p => p.ovoMorte && !p.morto)) : null;
     best = k && dist2(o, k) < alc * alc ? k : propMaisProximo(o, Math.min(alc, 55));
   }
   return best;

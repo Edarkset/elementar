@@ -187,7 +187,7 @@ export function mostrarCartas(titulo: string, sub: string, cartas: Carta[], op: 
       rl.dataset.t = titulo;
     }
   } // tela nova começa do topo
-  cartas.forEach((c: Carta, ci: number) => {
+  cartas.forEach((c, ci) => {
     const b = document.createElement("button");
     b.className = "carta r-" + (c.raridade || "comum");
     b.style.setProperty("--i", String(Math.min(ci, 10)));
@@ -627,7 +627,7 @@ export function escolherMod(s: Selo, k: string) {
   mostrarCartas(
     `${c.nome}: modificador`,
     "Escolha como esta habilidade vai funcionar daqui pra frente.",
-    c.mods.map((m: string, i: number) => ({
+    c.mods.map((m, i) => ({
       titulo: m.split(":")[0],
       texto: m.split(":").slice(1).join(":").trim(),
       raridade: "epico",
@@ -702,7 +702,7 @@ export function setaFora(x: number, y: number, cor: string | CanvasGradient | Ca
   lg.lineTo(ax + Math.cos(ang - 2.5) * 5 * p, ay + Math.sin(ang - 2.5) * 5 * p);
   lg.fill();
 }
-export function spawnOvo(rar?: string, id?, x?: number, y?: number) {
+export function spawnOvo(rar?: Raridade, id?: string, x?: number, y?: number) {
   const pool = poolPacto();
   id = id || escolha(pool);
   rar = rar || sortearRaridade();
@@ -1383,7 +1383,7 @@ export function atualizarMoedasBaus(dt: number, ima: number) {
   }
 }
 // baú desenhado em vetor (prata ou ouro), com feixe de luz e brilhos
-export function desenharBauMapa(b: Bala, x: number, y: number) {
+export function desenharBauMapa(b: BauMapa, x: number, y: number) {
   const ouro = b.tipo === "ouro",
     bob = Math.sin(J.t * 3 + b.x) * 1,
     pul = 0.5 + 0.5 * Math.sin(J.t * 5);

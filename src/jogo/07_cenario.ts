@@ -543,7 +543,7 @@ export function atualizarProps(dt: number) {
       }
     }
   }
-  C.lista = L0.filter((p: PropCena) => !p.morto);
+  C.lista = L0.filter(p => !p.morto);
   // explosões em cadeia: a pólvora vizinha não explode no mesmo instante
   for (const x of C.filaExp) x.t -= dt;
   const prontas = C.filaExp.filter(x => x.t <= 0);
@@ -1122,7 +1122,7 @@ export function atualizarPegadas(dt: number) {
   const apaga = 1 + C.Wm / 45;
   const corAreia = C.corAreia || (C.corAreia = tom(COR_SOLO.areia[0], 0.75)); // antes a cor era recalculada para cada pegada, a cada quadro
   for (const p of C.pegadas) p.vida -= dt * (p.cor === corAreia ? apaga : 1);
-  C.pegadas = C.pegadas.filter((p: Particula) => p.vida > 0);
+  C.pegadas = C.pegadas.filter(p => p.vida > 0);
   for (const o of C.ondas) {
     o.vida -= dt;
     o.r += dt * 14;
@@ -1288,7 +1288,7 @@ export function atualizarAr(dt: number, ox: number, oy: number) {
     q = QUAL === 0 ? 0.4 : QUAL === 1 ? 0.7 : 1;
   for (const tipo of k.part) {
     let n = taxa[tipo] * dt * (1 - ocupado) * q;
-    if (tipo === "vagalumes" && C.ar.filter((p: PropCena) => p.k === "vagalumes").length > 14) n = 0;
+    if (tipo === "vagalumes" && C.ar.filter(p => p.k === "vagalumes").length > 14) n = 0;
     while (n > 0) {
       if (Math.random() >= n) {
         break;
@@ -1448,7 +1448,7 @@ export function atualizarAr(dt: number, ox: number, oy: number) {
     p.y += p.vy * dt;
     if (p.x < ox - 80 || p.x > ox + VW + 80 || p.y < oy - 80 || p.y > oy + VH + 120) p.vida = 0;
   }
-  C.ar = C.ar.filter((p: Particula) => p.vida > 0);
+  C.ar = C.ar.filter(p => p.vida > 0);
   for (const f of C.fumaca) {
     f.vida -= dt;
     const w = vento(f.x, f.y);
@@ -1490,7 +1490,7 @@ export function atualizarAr(dt: number, ox: number, oy: number) {
   }
   if (C.luzes) {
     for (const l of C.luzes) l.vida -= dt;
-    C.luzes = C.luzes.filter((l: Linha) => l.vida > 0);
+    C.luzes = C.luzes.filter(l => l.vida > 0);
   }
 }
 export function envolver(n, ox: number, oy: number, r: number) {

@@ -1076,12 +1076,12 @@ export function desenharCenaLuz(ox: number, oy: number) {
     lg.strokeStyle = "#ffffff";
     lg.lineWidth = 1;
     lg.beginPath();
-    r.pts.forEach(([x, y], i: number) => (i ? lg.lineTo(x - ox, y - oy) : lg.moveTo(x - ox, y - oy)));
+    r.pts.forEach(([x, y], i) => (i ? lg.lineTo(x - ox, y - oy) : lg.moveTo(x - ox, y - oy)));
     lg.stroke();
     lg.strokeStyle = "#9fc0ff";
     lg.globalAlpha *= 0.5;
     lg.beginPath();
-    r.pts.forEach(([x, y], i: number) => (i ? lg.lineTo(x - ox + 1, y - oy) : lg.moveTo(x - ox + 1, y - oy)));
+    r.pts.forEach(([x, y], i) => (i ? lg.lineTo(x - ox + 1, y - oy) : lg.moveTo(x - ox + 1, y - oy)));
     lg.stroke();
   }
   lg.globalAlpha = 1;

@@ -188,7 +188,7 @@ export function atualizarEstrutura(dt: number) {
       }
   // inimigos andando: empurrados para a borda; se um golpe os jogou fundo no buraco, caem
   // sem abismo nas zonas vizinhas não há o que conferir; com abismo, confere metade dos inimigos por quadro
-  const temAbismo = pecasPerto(P.x, P.y).some((f: PecaCenario) => f.tipo === "abismo"),
+  const temAbismo = pecasPerto(P.x, P.y).some(f => f.tipo === "abismo"),
     parA = (C.quadroA = (C.quadroA || 0) + 1) & 1,
     LI = J.inimigos;
   if (temAbismo)
@@ -464,7 +464,7 @@ export function desenharEstrutura(ox: number, oy: number) {
     }
     const buraco = () => {
       lg.beginPath();
-      f.pts.forEach(([px, py], i: number) => lg[i ? "lineTo" : "moveTo"](ex + px, ey + py));
+      f.pts.forEach(([px, py], i) => lg[i ? "lineTo" : "moveTo"](ex + px, ey + py));
       lg.closePath();
     };
     // borda de cima (para o paredão): y mais alto de cada x, dos pontos da metade de cima
@@ -564,8 +564,8 @@ export function desenharEstrutura(ox: number, oy: number) {
       hf = hash2(Math.round(f.x), Math.round(f.y), 61),
       var0 = Math.floor(hf * 4);
     const cach0 = hf < 0.55 ? (hash2(Math.round(f.x), 3, 7) - 0.5) * f.rx * 1.2 : null;
-    const xMin = Math.min(...f.pts.map((p: Particula) => p[0])),
-      xMax = Math.max(...f.pts.map((p: Particula) => p[0]));
+    const xMin = Math.min(...f.pts.map(p => p[0])),
+      xMax = Math.max(...f.pts.map(p => p[0]));
     for (let wx = xMin; wx < xMax; wx += passo) {
       const tp = topo(wx + passo / 2);
       if (tp == null) continue;
@@ -796,7 +796,7 @@ export function atualizarFauna(dt: number) {
       });
   }
   // borboletas perto do jogador, sobre a grama
-  if (C.fauna.filter((b: Bala) => b.k === "borboleta").length < 5 && Math.random() < dt * 0.8) {
+  if (C.fauna.filter(b => b.k === "borboleta").length < 5 && Math.random() < dt * 0.8) {
     const x = P.x + rnd(-VW / 2, VW / 2),
       y = P.y + rnd(-VH / 2, VH / 2);
     const t = soloEm(Math.floor(x / CEL), Math.floor(y / CEL));
@@ -866,7 +866,7 @@ export function atualizarFauna(dt: number) {
       b.z = 6 + Math.sin(J.t * 3 + b.f) * 3;
     } else if (b.k === "peixe") {
       const L = b.lago,
-        q = perto(b.x, b.y, 22) || J.cena.ondas.find((o: Ponto) => Math.hypot(o.x - b.x, o.y - b.y) < 12);
+        q = perto(b.x, b.y, 22) || J.cena.ondas.find(o => Math.hypot(o.x - b.x, o.y - b.y) < 12);
       if (q) {
         if (!b.assustado) {
           b.assustado = true;
@@ -919,7 +919,7 @@ export function atualizarFauna(dt: number) {
       }
     }
   }
-  C.fauna = C.fauna.filter((b: Bala) => {
+  C.fauna = C.fauna.filter(b => {
     if (b.vida <= 0) return false;
     if (b.lago) {
       const longe = Math.abs(b.lago.x - P.x) > VW * 1.6 || Math.abs(b.lago.y - P.y) > VH * 1.6;

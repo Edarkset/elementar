@@ -421,6 +421,8 @@ interface PecaCenario extends Ponto {
   /** fases da borda irregular do abismo */ fs?: number[];
   ponte?: "h" | "v";
   criado?: boolean;
+  /** contorno do abismo, calculado na primeira vez que aparece */ pts?: number[][];
+  /** lago já recebeu peixes e sapos */ povoado?: boolean;
 }
 /** carta de nível antes de virar botão (cartasNivel) */
 interface CartaNivel {
@@ -446,6 +448,245 @@ interface DiretorHorda {
   tCheia: number;
 }
 
+// ---------------------------------------------------------------- itens das listas do mapa (levantados dos pontos onde entram na lista)
+/** número de dano que sobe da criatura */
+interface NumeroDano extends Ponto {
+  v: number;
+  cor: string;
+  tam: number;
+  vida: number;
+  max: number;
+  vx: number;
+  vy: number;
+  alvo: Ponto | null;
+  pop?: number;
+}
+/** texto curto que sobe e some */
+interface TextoFlutuante extends Ponto {
+  t: string;
+  cor: string;
+  tam: number;
+  vida: number;
+}
+/** ovo no chão do mapa */
+interface OvoMapa extends Ponto {
+  id: string;
+  rar: Raridade;
+  vida: number;
+}
+/** filhote selvagem para capturar */
+interface Selvagem extends Ponto {
+  id: string;
+  rar: Raridade;
+  vida: number;
+  selando?: boolean;
+  fugaRapida?: number;
+  imune?: number;
+}
+/** rastro do corpo de quem passou rápido (esquiva, salto) */
+interface Fantasma extends Ponto {
+  spr: Imagem;
+  vida: number;
+}
+/** inimigo derrotado caindo do seu jeito */
+interface Cadaver extends Ponto {
+  spr: HTMLCanvasElement | null;
+  estilo: string;
+  t: number;
+  max: number;
+  flip: boolean;
+  esc: number;
+  cor: string;
+  el: Elemento;
+  /** quando há arte de derrota: o que é preciso para escolher o quadro */ foto: {
+    chefe: boolean;
+    mini: boolean;
+    eraChefe: boolean;
+    tipo: number;
+    tam: number;
+    especial: boolean;
+    clone: boolean;
+  } | null;
+}
+/** balão de fala de uma criatura */
+interface Fala {
+  e: Inimigo;
+  txt: string;
+  cor: string;
+  vida: number;
+}
+/** clarão de luz num ponto */
+interface Clarao extends Ponto {
+  cor: string;
+  r: number;
+  t: number;
+  max: number;
+}
+/** moeda de Essência pulando no chão */
+interface Moeda extends Ponto {
+  z: number;
+  vx: number;
+  vy: number;
+  vz: number;
+  f: number;
+  v: number;
+  t: number;
+  pega?: boolean;
+}
+/** baú no chão */
+interface BauMapa extends Ponto {
+  tipo: string;
+  t: number;
+  aberto?: boolean;
+}
+/** inimigo ou objeto caindo no abismo */
+interface Queda extends Ponto {
+  spr: HTMLCanvasElement;
+  esc: number;
+  t: number;
+}
+/** sapo do pântano */
+interface Sapo extends Ponto {
+  vida: number;
+  f: number;
+}
+/** golpe de chefe em andamento: atualizar devolve false quando acabou; o estado de cada golpe fica no próprio objeto */
+interface GolpeChefe {
+  t?: number;
+  atualizar(dt: number): boolean;
+  frente?(ox: number, oy: number): void;
+  luz?(ox: number, oy: number): void;
+  chao?(ox: number, oy: number): void;
+  [estado: string]: AindaSemTipo;
+}
+/** marca no chão que avisa um golpe (círculo, linha, cone, anel) e o que acontece quando o tempo acaba */
+interface Perigo {
+  tipo: string;
+  t: number;
+  max?: number;
+  x?: number;
+  y?: number;
+  r?: number;
+  cor?: string;
+  fim?: () => void;
+  [forma: string]: AindaSemTipo;
+}
+
+// ---------------------------------------------------------------- o cenário vivo do mapa (J.cena, montado por iniciarCena)
+interface Destroco extends Ponto {
+  z: number;
+  vx: number;
+  vy: number;
+  vz: number;
+  cor: string;
+  tam: number;
+  vida: number;
+  leve?: boolean;
+  brilho?: boolean;
+  img?: HTMLCanvasElement | null;
+}
+interface Pegada extends Ponto {
+  cor: string;
+  vida: number;
+  max: number;
+  tam: number;
+}
+interface Fumaca extends Ponto {
+  z: number;
+  r: number;
+  r1: number;
+  vida: number;
+  max: number;
+  cor: string;
+  vz: number;
+}
+interface RastroAr extends Ponto {
+  vida: number;
+  max: number;
+  len: number;
+  f: number;
+}
+interface Vortice extends Ponto {
+  r: number;
+  vmax: number;
+  vida: number;
+  fogo: boolean;
+  f: number;
+  segue?: Inimigo;
+  /** relógio das faíscas */ tf?: number;
+}
+interface Relampago {
+  pts: number[][];
+  vida: number;
+  max: number;
+}
+interface Fauna extends Ponto {
+  k: string;
+  vx: number;
+  vy: number;
+  z?: number;
+  vz?: number;
+  f: number;
+  vida: number;
+  susto?: number;
+  pulo?: number;
+  lago?: PecaCenario;
+  assustado?: boolean;
+}
+interface LuzCena extends Ponto {
+  r: number;
+  cor: string;
+  vida: number;
+  max: number;
+}
+interface Cena {
+  u: Universo;
+  /** kit visual do reino (dados) */ kit: AindaSemTipo;
+  veg: string;
+  t: number;
+  ang0: number;
+  dx: number;
+  dy: number;
+  vBase: number;
+  Wx: number;
+  Wy: number;
+  Wm: number;
+  /** objetos por pedaço do mapa */ props: Map<string, PropCena[]>;
+  /** objetos perto da tela */ lista: PropCena[];
+  tufos: Map<string, { bx: number; by: number; vx: number; vy: number }>;
+  marcas: Map<string, number>;
+  pegadas: Pegada[];
+  ondas: { x: number; y: number; r: number; vida: number }[];
+  destrocos: Destroco[];
+  ar: ParticulaAr[];
+  fumaca: Fumaca[];
+  rastros: RastroAr[];
+  vort: Vortice[];
+  raios: Relampago[];
+  filaExp: { x: number; y: number; R: number; t: number }[];
+  aviso: AindaSemTipo;
+  tRaio: number;
+  tVort: number;
+  tPart: number;
+  nevoa: { x: number; y: number; r: number; a: number; f: number }[];
+  nuvens: { x: number; y: number; r: number; a: number }[];
+  detalhes: Map<string, AindaSemTipo>;
+  sprites: Map<string, HTMLCanvasElement>;
+  tSolo: number;
+  contador: number;
+  fauna?: Fauna[];
+  luzes?: LuzCena[];
+  causticas?: HTMLCanvasElement[];
+  /** peças grandes por zona do mapa e a lista de vizinhas de cada zona (07d_estrutura) */ zonas?: Map<string, PecaCenario>;
+  vizinhas?: Map<number, PecaCenario[]>;
+  /** contadores de quadro: metade do trabalho em cada quadro */ quadro?: number;
+  quadroA?: number;
+  tAve?: number;
+  fundoProc?: HTMLCanvasElement;
+  raioRapido?: boolean;
+  corAreia?: string;
+}
+
 /** J: o mapa em andamento (recriado a cada mapa por iniciarMapa) */
 interface Mapa {
   t: number;
@@ -466,25 +707,25 @@ interface Mapa {
   gemas: Gema[];
   armadilhas: Armadilha[];
   zonas: Zona[];
-  nums: AindaSemTipo[];
-  textos: AindaSemTipo[];
+  nums: NumeroDano[];
+  textos: TextoFlutuante[];
   efeitos: Efeito[];
   parts: Particula[];
-  ovosMapa: AindaSemTipo[];
-  selvagens: AindaSemTipo[];
-  fantasmas: AindaSemTipo[];
-  perigos: AindaSemTipo[];
-  golpes: AindaSemTipo[];
-  cadaveres: AindaSemTipo[];
-  falas: AindaSemTipo[];
+  ovosMapa: OvoMapa[];
+  selvagens: Selvagem[];
+  fantasmas: Fantasma[];
+  perigos: Perigo[];
+  golpes: GolpeChefe[];
+  cadaveres: Cadaver[];
+  falas: Fala[];
   agenda: { t: number; fn: () => void }[];
   vfx?: Vfx[];
-  flashes?: AindaSemTipo[];
-  moedas?: AindaSemTipo[];
-  baus?: AindaSemTipo[];
-  quedas?: AindaSemTipo[];
+  flashes?: Clarao[];
+  moedas?: Moeda[];
+  baus?: BauMapa[];
+  quedas?: Queda[];
   setas?: { ang: number; vida: number }[];
-  sapos?: AindaSemTipo[];
+  sapos?: Sapo[];
   hidro?: number[];
   janelaAbates?: number[];
   // equipe
@@ -562,7 +803,7 @@ interface Mapa {
   tSolo: number;
   tFogo: number;
   soloJog: string;
-  cena?: AindaSemTipo;
+  cena?: Cena;
   intro?: AindaSemTipo;
   // tela
   shake: number;

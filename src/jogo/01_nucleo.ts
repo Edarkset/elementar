@@ -65,7 +65,7 @@ export function hexRgb(h: string) {
 export const hex = c =>
   "#" +
   c
-    .map((v: number) =>
+    .map(v =>
       Math.max(0, Math.min(255, Math.round(v)))
         .toString(16)
         .padStart(2, "0")

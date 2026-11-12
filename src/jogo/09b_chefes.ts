@@ -280,8 +280,8 @@ export function iaChefe(e: Inimigo, dt: number, P: Ponto) {
     return true;
   }
   // o Orochi persegue os barris de saquê quando existem
-  if (J.cena && J.cena.lista.some((p: PropCena) => p.saque && !p.morto) && Math.random() < dt * 0.4) {
-    const b = J.cena.lista.find((p: PropCena) => p.saque && !p.morto);
+  if (J.cena && J.cena.lista.some(p => p.saque && !p.morto) && Math.random() < dt * 0.4) {
+    const b = J.cena.lista.find(p => p.saque && !p.morto);
     const a = Math.atan2(b.y - e.y, b.x - e.x);
     e.dash = { vx: Math.cos(a) * 130, vy: Math.sin(a) * 130, t: Math.hypot(b.x - e.x, b.y - e.y) / 130 + 0.1, g: {} };
   }
@@ -533,7 +533,7 @@ export function executarGolpe(e: Inimigo, g, P) {
           cy = e.y;
         tremor(3);
         if (g.cospe && e.engolidos && e.engolidos.length) {
-          e.engolidos.forEach((tipo, i: number) => {
+          e.engolidos.forEach((tipo, i) => {
             const a = (i / e.engolidos.length) * 6.283 + Math.random() * 0.3;
             bala(e, cx, cy, a, 110, D0(e) * 0.7, MAT[tipo]?.frag === "pedra" ? "pedra" : "barril", e.el, { quebra: true, deixa: tipo });
           });
@@ -1040,7 +1040,7 @@ export function executarGolpe(e: Inimigo, g, P) {
       if (g.metal) {
         const metais = C ? C.lista.filter(p => !p.morto && p.mat.condutor && dist2(p, e) < 170 * 170) : [];
         if (!metais.length) return -1;
-        metais.forEach((p: PropCena, i: number) =>
+        metais.forEach((p, i) =>
           agendar(i * 0.2, () => {
             if (p.morto) return;
             raio(p.x, p.y - p.r, e.x, e.y, "#9fe0ff");
@@ -1267,7 +1267,7 @@ export function executarGolpe(e: Inimigo, g, P) {
           const p = criarProp("rocha", e.x + Math.cos(a) * 24, e.y + Math.sin(a) * 24, { subindo: 0.3 });
           if (p) alvos.push(p);
         }
-      alvos.forEach((p, i: number) => {
+      alvos.forEach((p, i) => {
         p.levita = true;
         const P = J.jogador;
         perigo({
@@ -1622,7 +1622,7 @@ export function faseDois(e: Inimigo, f) {
       if (C)
         C.lista
           .filter(p => !p.morto && !p.mat.indestrutivel)
-          .forEach((p, i: number) =>
+          .forEach((p, i) =>
             agendar(i * 0.06, () => {
               if (!p.morto) danificarProp(p, p.max * 6, null);
             })
@@ -1646,7 +1646,7 @@ export function faseDois(e: Inimigo, f) {
           });
       break;
     case "transmutar":
-      if (C) C.lista.forEach((p: Projetil, i: number) => agendar(i * 0.04, () => transmutarProp(p)));
+      if (C) C.lista.forEach((p, i) => agendar(i * 0.04, () => transmutarProp(p)));
       anel(e.x, e.y, 200, "#ffd34a", 1);
       break;
     case "tempestade":

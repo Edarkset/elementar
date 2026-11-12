@@ -471,7 +471,7 @@ export function desenhar(dt) {
   for (const n of J.nums) {
     if (cheio && n.tam <= 13) continue;
     const idade = (n.max || 0.8) - n.vida,
-      v = n.v >= 1000 ? (n.v / 1000).toFixed(n.v >= 10000 ? 0 : 1).replace(".", ",") + "k" : n.v;
+      v = n.v >= 1000 ? (n.v / 1000).toFixed(n.v >= 10000 ? 0 : 1).replace(".", ",") + "k" : String(n.v);
     const pulo = idade < 0.18 ? 1 + Math.sin((idade / 0.18) * Math.PI) * 0.55 * (1 - idade / 0.18) + 0.25 * (1 - idade / 0.18) : 1,
       some = n.vida < 0.22 ? 0.6 + (n.vida / 0.22) * 0.4 : 1,
       esc = pulo * some * (1 + (n.pop || 0) * 0.3);

@@ -482,6 +482,9 @@ export const DIF = {
   // do Xamã (0 = sem área). Escolhidos por simulação (docs/EQUILIBRIO_SIMULACOES.md)
   cacadorPerfura: 1,
   totemArea: 0,
+  // Místico: multiplicador do Raio Vital e quantos inimigos próximos o raio alcança depois do primeiro (com 60% do dano)
+  misticoMult: 1,
+  misticoSaltos: 0,
   hordaVida: 0.9,
   hordaDano: 1.4,
   hordaXp: 0.8,
@@ -1315,8 +1318,28 @@ export function ataqueBasico(s, a, el, cor) {
     case "mistico": {
       const e = maisProximo(s, 110);
       if (e) {
-        ferir(e, a.dano, el);
+        ferir(e, a.dano * DIF.misticoMult, el);
         vfxFeixe(s, e, el);
+        // o raio salta para inimigos próximos (com menos dano): sem isso o Místico sozinho no começo não dava conta da horda
+        let de = e;
+        const ja = new Set([e]);
+        for (let i = 0; i < DIF.misticoSaltos; i++) {
+          let prox = null,
+            dMin = 50 * 50;
+          for (const o of J.inimigos) {
+            if (o.hp <= 0 || ja.has(o)) continue;
+            const d2 = (o.x - de.x) ** 2 + (o.y - de.y) ** 2;
+            if (d2 < dMin) {
+              dMin = d2;
+              prox = o;
+            }
+          }
+          if (!prox) break;
+          ferir(prox, a.dano * DIF.misticoMult * 0.6, el);
+          vfxFeixe(de, prox, el);
+          ja.add(prox);
+          de = prox;
+        }
       }
       if (Math.random() < 0.5) particulasEl(J.jogador.x + rnd(-4, 4), J.jogador.y, "natureza", 2, 20);
       curar((a.cura / a.cad) * 3);

@@ -111,6 +111,8 @@ npm ci                                              # uma vez: instala TypeScrip
 npm run tipos                                       # confere os tipos (não gera arquivos)
 npm run compilar                                    # gera js/jogo/*.js a partir de src/jogo/*.ts
 npm run formatar                                    # formata o código (npm run formato só confere)
+npm run catraca                                     # pendências das regras rígidas: só podem diminuir (--gravar depois de reduzir)
+npm run tipos_dados                                 # depois de mexer em js/dados.js: refaz o tipo do conteúdo (src/dados.d.ts)
 node ferramentas/reimportar.js                      # depois de mover uma função de arquivo: refaz os imports de todos os módulos
 ```
 
@@ -124,7 +126,7 @@ node testes/reproduzir.js --gravar antes.json       # antes de reorganizar códi
 node testes/reproduzir.js --conferir antes.json     # depois: tudo igual = o jogo se comporta igual
 ```
 
-A cada envio o GitHub roda tipos, formato, a correspondência entre `.ts` e `.js`, telas, mecânicas, os 34 reinos e a repetição de partidas (`.github/workflows/verificar.yml`). O plano do código está em [docs/PLANO_CODIGO.md](docs/PLANO_CODIGO.md).
+A cada envio o GitHub roda tipos, a catraca, formato, a correspondência entre dados e tipo e entre `.ts` e `.js`, telas, mecânicas, os 34 reinos e a repetição de partidas (`.github/workflows/verificar.yml`). O plano do código está em [docs/PLANO_CODIGO.md](docs/PLANO_CODIGO.md).
 
 O resultado da verificação fica em `testes/relatorio.md` (com `--fotos`, as fotos ficam em `testes/fotos/`). A lógica são módulos: cada parte importa o que usa das outras e exporta o que oferece, e nada do jogo fica no escopo global. Para o robô, a verificação e o console do navegador enxergarem os nomes do jogo (`J`, `R`, `novaRun`...), abra com `?teste` ou `?moderador` no endereço.
 

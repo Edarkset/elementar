@@ -247,7 +247,7 @@ export const RITMO_CLASSE = {
 export function progressoAtaque(k: number) {
   return k < 0.3 ? k * 0.5 : k < 0.7 ? 0.15 + ((k - 0.3) / 0.4) * 0.75 : 0.9 + ((k - 0.7) / 0.3) * 0.1;
 }
-export const alfaDe = img => {
+export const alfaDe = (img: Imagem) => {
   const c = document.createElement("canvas");
   c.width = img.width;
   c.height = img.height;
@@ -616,7 +616,7 @@ export function movSelo(s: Selo) {
   }
 }
 // quadro atual do monstro de um Selo, ou null (sem folha de animação: usa a imagem fixa)
-export function quadroAnimSelo(s) {
+export function quadroAnimSelo(s: Selo) {
   if (SIM.ativo || !J || !s.mon) return null;
   const e = est(s),
     fa = folhaAnimMonstro(s.mon.id, e, ramoAtual(s), s.mon.rar);

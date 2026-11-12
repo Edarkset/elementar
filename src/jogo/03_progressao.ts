@@ -815,7 +815,7 @@ export function abrirEquipe(seloIdx: number) {
     cartas
   );
 }
-export function trocar(si, ri) {
+export function trocar(si: number, ri: number) {
   R.st.trocas++;
   const s = R.selos[si],
     novo = R.reserva.splice(ri, 1)[0];

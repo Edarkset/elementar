@@ -57,7 +57,7 @@ for (const f of ordem) {
 
 // 2) o verificador diz o que falta em cada arquivo
 const prog = ts.createProgram(
-  [path.join(RAIZ, "src/tipos.d.ts"), path.join(RAIZ, "js/plataforma.js"), path.join(RAIZ, "js/dados.js"), ...ordem.map(caminho)],
+  [path.join(RAIZ, "src/tipos.d.ts"), path.join(RAIZ, "js/plataforma.js"), path.join(RAIZ, "src/dados.d.ts"), ...ordem.map(caminho)],
   {
     allowJs: true,
     checkJs: false,

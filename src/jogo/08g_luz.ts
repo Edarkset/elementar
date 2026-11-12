@@ -10,7 +10,7 @@ import { lumChao } from "./08_horda.js";
 import { VFX_EL } from "./08b_efeitos.js";
 import { passiva } from "./08f_lendas.js";
 // ================================================================ luz: tom de cada universo, crepúsculo do fim do mapa e luzes que vêm dos poderes
-export function luzFlash(x: number, y: number, cor, r: number, dur: number) {
+export function luzFlash(x: number, y: number, cor: string, r: number, dur: number) {
   J.flashes = J.flashes || [];
   if (J.flashes.length > 40) J.flashes.shift();
   J.flashes.push({ x, y, cor, r, t: 0, max: dur || 0.3 });

@@ -253,7 +253,7 @@ export function desenharVfx(ox: number, oy: number, camada: string) {
 }
 
 // ---------------------------------------------------------------- ataques básicos por classe
-export function vfxCorte(s, el: Elemento, r: number) {
+export function vfxCorte(s: Ponto | Selo, el: Elemento, r: number) {
   const K = VFX_K;
   const alvo = maisProximo(s, r + 20),
     ang = alvo ? Math.atan2(alvo.y - s.y, alvo.x - s.x) : Math.atan2(J.dir.y || 0, J.dir.x || 1),
@@ -825,7 +825,7 @@ export function efCortes(x0: number, y0: number, r: number, el: Elemento, n: num
   }
   particulasEl(x0, y0, el, 10, 90);
 }
-export function efImpactoChao(x0, y0, r, el) {
+export function efImpactoChao(x0: number, y0: number, r: number, el: Elemento) {
   if (SIM.ativo) return;
   const v = vEl(el),
     rach = Array.from({ length: 9 }, () => ({ a: Math.random() * Math.PI * 2, l: r * rnd(0.5, 1), q: rnd(-0.3, 0.3) }));
@@ -1489,7 +1489,7 @@ export function vfxReacao(e, a, b) {
   particulasEl(e.x, e.y, b, 7, 85);
   vfxOnda({ x: e.x, y: e.y }, b, 18);
 }
-export function vfxCombinado(c, P) {
+export function vfxCombinado(c, P: Ponto) {
   const chave = c.chave || c.a || "luz";
   luzFlash(P.x, P.y, "#ffffff", 160, 0.6);
   if (USAR_FOLHAS_ESPECIAL && tocarFolha(`arte/efeitos/combinado__${chave}.png`, 10, P.x, P.y, 170, 1.0)) return;

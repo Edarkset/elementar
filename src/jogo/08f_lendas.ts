@@ -373,7 +373,7 @@ export function lendaReviver() {
   }
   return false;
 }
-export function multDanoLenda(e) {
+export function multDanoLenda(e: Inimigo) {
   let f = 1;
   if (e.chefe || e.mini) f *= 1 + passiva("dano_chefe");
   if (J.vida < J.vidaMax * 0.4) f *= 1 + passiva("dano_baixa_vida");

@@ -13,7 +13,7 @@ import { anunciar, feriJogador, perigo } from "./09b_chefes.js";
 // chuva de meteoros (círculos anunciados: ferem inimigos e o Invocador), fugitivo dourado (foge; derrotado, deixa baú dourado),
 // altar do elemento (ficar em cima carrega o Despertar) e chuva de cristais de experiência
 export const EVENTOS = ["meteoros", "fugitivo", "altar", "cristais"];
-export function atualizarEventos(dt) {
+export function atualizarEventos(dt: number) {
   if (J.fim || J.chefeVivo || J.t > MAPA_SEG - 12 || J.t < 18) return;
   if (J.altar) {
     const a = J.altar,

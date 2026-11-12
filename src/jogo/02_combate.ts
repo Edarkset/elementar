@@ -1374,7 +1374,7 @@ export const HAB = {
   guerreiro: {
     h1: {
       cd: 5,
-      f(s: Selo, a: Atributos, el, cor: string, lv, mod: number) {
+      f(s: Selo, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         const e = pontoDenso(s, 90) || maisProximo(s, 90);
         if (!e) return false;
         J.fantasmas.push({ x: s.x, y: s.y, spr: spriteSelo(s), vida: 0.25 });
@@ -1430,7 +1430,7 @@ export const HAB = {
     },
     h2: {
       cd: 8,
-      f(s, a, el: Elemento, cor: string, lv: number, mod: number) {
+      f(s: Selo | Ponto, a, el: Elemento, cor: string, lv: number, mod: number) {
         let n = 0;
         for (const e of embaralhar(J.inimigos)) {
           if (e.hp <= 0 || dist2(s, e) > 110 * 110) continue;
@@ -1446,7 +1446,7 @@ export const HAB = {
   cacador: {
     h1: {
       cd: 4,
-      f(s, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
+      f(s: Selo | Ponto, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         const e = maisProximo(s, 150);
         if (!e) return false;
         const base = Math.atan2(e.y - s.y, e.x - s.x);

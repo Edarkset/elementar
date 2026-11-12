@@ -50,7 +50,7 @@ export function spriteCena(
   C.sprites.set(chave, c);
   return c;
 }
-export function spriteProp(p) {
+export function spriteProp(p: PropCena) {
   const C = J.cena,
     k = C.kit,
     t = p.tipo;

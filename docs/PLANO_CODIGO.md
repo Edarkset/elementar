@@ -79,7 +79,7 @@ Como a conversão foi feita: um programa usou o compilador do TypeScript para re
 
 Falta nesta etapa: estado em um lugar. `J` e `R` ainda são variáveis exportadas que qualquer módulo altera por dentro (`J.vida -= dano`); só a troca do objeto inteiro passou a ter nome (`defJ`, `defR`). Fechar isso é mais natural na etapa 2, com os tipos estritos dizendo quem mexe em quê.
 
-Não testado nesta etapa: a versão de computador (`desktop/`, Electron). Ela serve os mesmos arquivos por um protocolo próprio e deve carregar módulos normalmente, mas precisa ser aberta uma vez para confirmar.
+Versão de computador (`desktop/`, Electron 33) testada em 12/11/2026 sob tela virtual: carrega a entrada como módulo, usa a camada de plataforma do computador (com o acesso nativo ao save), abre o menu e o Pacto e começa uma partida no mapa 1, sem nenhum erro; nenhum nome do jogo fica no escopo global.
 
 ### Etapa 2. TypeScript de verdade — em andamento
 

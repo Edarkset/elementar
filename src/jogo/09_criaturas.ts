@@ -984,7 +984,7 @@ export function temPequeninoPerto(e: Inimigo) {
 }
 // retorna {m: multiplicador da velocidade normal, dx, dy: deslocamento extra}
 export const PASSO = { m: 1, dx: 0, dy: 0 };
-export function passoCriatura(e: Inimigo, dt: number, P) {
+export function passoCriatura(e: Inimigo, dt: number, P: Ponto) {
   const d = e.def;
   PASSO.m = 1;
   PASSO.dx = 0;
@@ -1355,7 +1355,7 @@ export function golpeCriatura(e: Inimigo, P: Ponto, dist: number) {
     }
   }
 }
-export function maisProximoInimigo(o, alc: number) {
+export function maisProximoInimigo(o: Ponto | Selo, alc: number) {
   let best = null,
     bd = alc * alc;
   for (const e of J.inimigos) {

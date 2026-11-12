@@ -29,7 +29,7 @@ export const embaralhar = a => {
   }
   return a;
 };
-export const dist2 = (a, b) => {
+export const dist2 = (a: Selo | Ponto, b) => {
   const dx = a.x - b.x,
     dy = a.y - b.y;
   return dx * dx + dy * dy;
@@ -56,7 +56,7 @@ export let MAPA_SEG = 150,
 export const MAPAS_POR_ERA = 3;
 export const RAR_BONUS = { comum: 1, incomum: 1.04, raro: 1.08, epico: 1.14, lendario: 1.22 },
   RAR_NOME = { comum: "Comum", incomum: "Incomum", raro: "Raro", epico: "Épico", lendario: "Lendário" };
-export const eficacia = (atk: string, def) =>
+export const eficacia = (atk: string, def: string) =>
   D.vantagem[atk] === def ? D.mult_vantagem.super_efetivo : D.vantagem[def] === atk ? D.mult_vantagem.pouco_efetivo : 1;
 export function hexRgb(h: string) {
   h = h.replace("#", "");
@@ -886,7 +886,7 @@ export function relMods() {
   return m;
 }
 // multiplicador de dano das relíquias de gatilho, aplicado em cada golpe
-export function relDano(e) {
+export function relDano(e: Inimigo) {
   if (!R.reliquias.length) return 1;
   let k = 1;
   if (J.hidro && J.hidro.length) {

@@ -801,7 +801,7 @@ export const COR_FRAG: Record<string, null | string[]> = {
   cristal: null,
   metal: ["#8a8a90", "#c8c8d0", "#5a5a60"]
 };
-export function corFrag(p) {
+export function corFrag(p: PropCena) {
   const C = J.cena,
     f = p.mat.frag;
   if (f === "ceramica") {
@@ -1737,7 +1737,7 @@ export function propNoPonto(x: number, y: number, r: number) {
   }
   return null;
 }
-export function propMaisProximo(o, alc: number) {
+export function propMaisProximo(o: Ponto | Selo, alc: number) {
   const C = J.cena;
   if (!C) return null;
   let best = null,

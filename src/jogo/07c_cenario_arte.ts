@@ -317,7 +317,7 @@ export function encaixarArte(img: Imagem, sx: number, sy: number, sw: number, sh
 }
 // Com a tela interna em alta resolução (Q>1) a arte vai direto para o mundo: fica na ordem certa com
 // efeitos e recebe a luz do mapa. A camada separada só é usada se a tela interna estiver em baixa resolução.
-export function desenharSprite(spr, dx: number, dy: number, dw: number, dh: number) {
+export function desenharSprite(spr: HTMLCanvasElement, dx: number, dy: number, dw: number, dh: number) {
   const hi = !SIM.ativo && Q <= 1 && spr && spr._src ? versaoHi(spr) : null;
   if (!hi) {
     lg.drawImage(spr, dx, dy, dw, dh);

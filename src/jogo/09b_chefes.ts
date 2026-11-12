@@ -175,7 +175,7 @@ export function empurrarProps(x: number, y: number, r: number, forca: number) {
 
 // ---------------------------------------------------------------- inteligência do chefe
 // cansaço: depois de 75 s de luta o chefe recebe cada vez mais dano (2x aos 105 s, 3x aos 135 s); evita lutas intermináveis em encontros desfavoráveis
-export function fadigaChefe(e) {
+export function fadigaChefe(e: Inimigo) {
   if (!e.chefe || J.tChefe == null) return 1;
   return 1 + Math.max(0, J.t - J.tChefe - 75) / 30;
 }

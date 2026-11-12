@@ -271,7 +271,12 @@ interface Sinergia {
 }
 
 // ---------------------------------------------------------------- o que existe no mapa
+/** o que um golpe pode atingir: inimigo ou objeto do cenário (vaso, barril, estátua...); distinguir com ehProp === true */
+type Alvo = Inimigo | PropCena;
+/** item da bolsa */
+type ItemBolsa = "incenso" | "chamado" | "doce" | "pedra" | "pena";
 interface Inimigo extends Ponto {
+  /** distingue de PropCena (objeto do cenário), que também pode levar golpes */ ehProp?: false;
   hp: number;
   max: number;
   v: number;

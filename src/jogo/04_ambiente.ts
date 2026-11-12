@@ -170,7 +170,7 @@ export function mudarSolo(x: number, y: number, tipo: string, dur?: number) {
   J.solo.set(cx + "," + cy, { t: tipo, ate: J.t + (dur ?? DUR[tipo] ?? 30) });
 }
 export const frio = () => terrenoBase()[0] === "gelo";
-export function aplicarElementoNoSolo(x: number, y: number, el: string) {
+export function aplicarElementoNoSolo(x: number, y: number, el: Elemento | "gelo") {
   const cx = Math.floor(x / CEL),
     cy = Math.floor(y / CEL),
     atual = soloEm(cx, cy);
@@ -240,7 +240,7 @@ export function atualizarSolo(dt: number) {
   const P = J.jogador,
     sj = soloEm(Math.floor(P.x / CEL), Math.floor(P.y / CEL));
   J.soloJog = sj;
-  const temEl = (el: string) => ativos().some(s => elementoDe(s) === el);
+  const temEl = (el: Elemento) => ativos().some(s => elementoDe(s) === el);
   if (sj === "fogo" && !temEl("fogo") && J.invuln <= 0) J.vida -= J.vidaMax * 0.04 * dt;
   if (sj === "eletrico" && !temEl("raio") && J.invuln <= 0) J.vida -= J.vidaMax * 0.05 * dt;
   if (sj === "luz") curar(J.vidaMax * 0.01 * dt);

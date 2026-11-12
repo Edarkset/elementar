@@ -59,7 +59,7 @@ export function atualizarEventos(dt) {
             if (!J) return;
             defFonte("ambiente");
             emArea(x, y, r + 4, e => {
-              if (!e.ehProp) ferir(e, DIF.hp * dificuldade() * 0.9, "fogo");
+              if (e.ehProp !== true) ferir(e, DIF.hp * dificuldade() * 0.9, "fogo");
             });
             defFonte("basico");
             if (Math.hypot(J.jogador.x - x, J.jogador.y - y) < r) feriJogador(J.vidaMax * 0.08, "fogo");

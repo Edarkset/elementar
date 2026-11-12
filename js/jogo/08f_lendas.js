@@ -313,7 +313,7 @@ export function atualizarLenda(dt) {
             particulasEl(x, y, "fogo", 14, 90);
             luzFlash(x, y, "#ffb060", 60, 0.4);
             emArea(x, y, p.r, e => {
-              if (!e.ehProp) ferir(e, base, "fogo");
+              if (e.ehProp !== true) ferir(e, base, "fogo");
             });
             tremor(3);
           },

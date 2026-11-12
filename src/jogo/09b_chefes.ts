@@ -55,7 +55,7 @@ export function distSeg(px: number, py: number, x1: number, y1: number, x2: numb
     t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / L));
   return Math.hypot(px - (x1 + dx * t), py - (y1 + dy * t));
 }
-export function feriJogador(dano: number, el: string) {
+export function feriJogador(dano: number, el: Elemento) {
   if (J.invuln > 0 || J.fim || J.deus) return false;
   if (J.chefeVivo) J.atingidoNoChefe = true;
   if (J.escudoGolpes > 0) {
@@ -77,7 +77,17 @@ export function feriJogador(dano: number, el: string) {
   particulas(J.jogador.x, J.jogador.y, COR[el] || "#ff5a4a", 5, 60);
   return true;
 }
-export function bala(dono: Inimigo, x: number, y: number, ang: number, vel: number, dano: number, proj: string, el: string, extra?) {
+export function bala(
+  dono: Inimigo,
+  x: number,
+  y: number,
+  ang: number,
+  vel: number,
+  dano: number,
+  proj: string,
+  el: Elemento | "multi",
+  extra?: Partial<Bala>
+) {
   const el2 = el === "multi" ? escolha(ELS) : el;
   J.balas.push(
     Object.assign(
@@ -98,7 +108,7 @@ export function bala(dono: Inimigo, x: number, y: number, ang: number, vel: numb
     )
   );
 }
-export function perigo(o) {
+export function perigo(o: Perigo): Perigo {
   o.max = o.t;
   J.perigos.push(o);
   return o;
@@ -123,7 +133,7 @@ export function pintarSolo(x: number, y: number, r: number, tipo: string, dur?: 
       J.solo.set(cx + "," + cy, { t, ate: J.t + (dur ?? DUR[t] ?? 30) });
     }
 }
-export function criarProp(tipo: string, x: number, y: number, extra?) {
+export function criarProp(tipo: string, x: number, y: number, extra?: Partial<PropCena>) {
   const C = J.cena;
   if (!C || !MAT[tipo]) return null;
   const cx = Math.floor(x / CH),
@@ -138,7 +148,7 @@ export function criarProp(tipo: string, x: number, y: number, extra?) {
 export const corG = (e: Inimigo, g) => (g.el && g.el !== "multi" ? COR[g.el] : COR[e.el] || "#ff5a4a");
 export const elG = (e: Inimigo, g) => (g.el === "multi" ? escolha(ELS) : g.el || e.el);
 export const D0 = (e: Inimigo) => e.dano * (e.mini ? 0.85 : 1);
-export function propsEm(x: number, y: number, r: number, fn) {
+export function propsEm(x: number, y: number, r: number, fn: (p: PropCena, d: number) => void) {
   if (!J.cena) return;
   for (const p of J.cena.lista) {
     if (p.morto) continue;
@@ -146,7 +156,7 @@ export function propsEm(x: number, y: number, r: number, fn) {
   }
 }
 export function empurrarProps(x: number, y: number, r: number, forca: number) {
-  propsEm(x, y, r, (p: PropCena, d: number) => {
+  propsEm(x, y, r, (p, d) => {
     if (p.mat.fixo) return;
     const dv = Math.min(300, forca / p.m);
     p.vx += ((p.x - x) / d) * dv;
@@ -169,7 +179,7 @@ export function fadigaChefe(e) {
   if (!e.chefe || J.tChefe == null) return 1;
   return 1 + Math.max(0, J.t - J.tChefe - 75) / 30;
 }
-export function anunciar(e, txt: string, sub?: string) {
+export function anunciar(e: { el: Elemento }, txt: string, sub?: string) {
   J.anuncio = { txt, sub: sub || "", vida: sub ? 3.2 : 1.8, cor: COR[e.el] || "#ffd34a" };
 }
 export function iaChefe(e: Inimigo, dt: number, P: Ponto) {
@@ -239,7 +249,7 @@ export function iaChefe(e: Inimigo, dt: number, P: Ponto) {
   }
   // saquê: o Orochi vai atrás dos barris e fica bêbado se quebrar um
   if (J.cena && !e.bebado)
-    propsEm(e.x, e.y, e.r + 2, (p: PropCena) => {
+    propsEm(e.x, e.y, e.r + 2, p => {
       if (p.saque && !p.morto) {
         p.hp = 0;
         quebrar(p);
@@ -533,7 +543,7 @@ export function executarGolpe(e: Inimigo, g, P) {
           cy = e.y;
         tremor(3);
         if (g.cospe && e.engolidos && e.engolidos.length) {
-          e.engolidos.forEach((tipo, i: number) => {
+          e.engolidos.forEach((tipo, i) => {
             const a = (i / e.engolidos.length) * 6.283 + Math.random() * 0.3;
             bala(e, cx, cy, a, 110, D0(e) * 0.7, MAT[tipo]?.frag === "pedra" ? "pedra" : "barril", e.el, { quebra: true, deixa: tipo });
           });
@@ -1068,7 +1078,7 @@ export function executarGolpe(e: Inimigo, g, P) {
     case "transmutar": {
       const r = g.r || 60;
       anel(e.x, e.y, r, "#ffd34a", 0.7);
-      propsEm(e.x, e.y, r, (p: Projetil) => transmutarProp(p));
+      propsEm(e.x, e.y, r, p => transmutarProp(p));
       if (g.solo) pintarSolo(e.x, e.y, r * 0.8, g.solo);
       tremor(2);
       return 1.0;
@@ -1200,7 +1210,7 @@ export function executarGolpe(e: Inimigo, g, P) {
               this.r = Math.min(15, this.r + Math.hypot(this.vx, this.vy) * dt * 0.012);
               pintarSolo(this.x, this.y, this.r * 0.6, "gelo", 20);
             }
-            propsEm(this.x, this.y, this.r, (p, d: number) => {
+            propsEm(this.x, this.y, this.r, (p, d) => {
               if (p.mat.fixo || this.neve || p.m > 100) {
                 const nx = (this.x - p.x) / d,
                   ny = (this.y - p.y) / d,
@@ -1532,7 +1542,7 @@ export function constricao(e: Inimigo, P: Ponto, r: number) {
         P.x = cx + ((P.x - cx) / d) * (this.R + lado * 7);
         P.y = cy + ((P.y - cy) / d) * (this.R + lado * 7);
       }
-      propsEm(cx, cy, this.R + 4, (p, dp: number) => {
+      propsEm(cx, cy, this.R + 4, (p, dp) => {
         if (Math.abs(dp - this.R) < 7) danificarProp(p, p.max * 2 * dt * 5, null);
       });
       this.rot = rot;

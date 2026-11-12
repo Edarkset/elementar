@@ -65,7 +65,7 @@ export function hexRgb(h: string) {
 export const hex = c =>
   "#" +
   c
-    .map((v: number) =>
+    .map(v =>
       Math.max(0, Math.min(255, Math.round(v)))
         .toString(16)
         .padStart(2, "0")
@@ -359,7 +359,7 @@ export function branco(spr: HTMLCanvasElement) {
 // ovo em vetor, desenhado em alta resolução (6x) e usado com 10x12 de mundo: casca com volume (degradê e brilho),
 // desenho do elemento na casca e acabamento pela raridade (comum: casca creme; raro: prata com faixa; lendário: ouro com runas que brilham)
 export const OVO_K = 6;
-export function spriteOvo(el: string, rar: string) {
+export function spriteOvo(el: Elemento, rar: string) {
   const k = "ovo|" + el + "|" + rar;
   if (cacheSpr.has(k)) return cacheSpr.get(k);
   const K = OVO_K,
@@ -920,7 +920,7 @@ export function atualizarReliquias(dt: number) {
       const f = FONTE;
       FONTE = "reliquia";
       const dm = danoMedioEquipe() * 1.5;
-      emArea(P.x, P.y, 75, (e: PropCena) => {
+      emArea(P.x, P.y, 75, e => {
         const dx = e.x - P.x,
           dy = e.y - P.y,
           d = Math.hypot(dx, dy) || 1;
@@ -971,7 +971,7 @@ export function atualizarReliquias(dt: number) {
       const f = FONTE;
       FONTE = "reliquia";
       const dm = danoMedioEquipe() * 3;
-      emArea(P.x, P.y, 32, (e: PropCena) => ferir(e, dm, "luz"));
+      emArea(P.x, P.y, 32, e => ferir(e, dm, "luz"));
       FONTE = f;
       anel(P.x, P.y, 32, "#e8f4ff", 0.6);
     } else if (J.tEsp <= 0) J._drEsp = dr;

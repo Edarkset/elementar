@@ -148,7 +148,7 @@ export function ramosElegiveis(s: Selo, ignorarPedra?: boolean, base?: boolean) 
     ok = [],
     elDe = base ? elementoBase : elementoDe;
   if (R.pedraAtiva && !ignorarPedra) return [0, 1, 2];
-  l.ramos.forEach((r, i: number) => {
+  l.ramos.forEach((r, i) => {
     const c = r.condicao;
     if (c.tipo === "afinidade" && outros.some(o => elDe(o) === l.elemento)) ok.push(i);
     else if (c.tipo === "solitario" && !outros.some(o => elDe(o) === l.elemento)) ok.push(i);
@@ -517,7 +517,7 @@ export function cartasNivel() {
     if (c) {
       c.dourada = true;
       c.raridade = "lendario";
-      c.titulo = "✦ " + c.titulo.replace(/(\d) → (\d)/, (m: Monstro, a: Atributos) => `${a} → ${Math.min(5, +a + 2)}`);
+      c.titulo = "✦ " + c.titulo.replace(/(\d) → (\d)/, (m, a) => `${a} → ${Math.min(5, +a + 2)}`);
       {
         const lv = c.s.pod[c.k],
           p2 = Math.min(5, lv + 2);
@@ -627,7 +627,7 @@ export function escolherMod(s: Selo, k: string) {
   mostrarCartas(
     `${c.nome}: modificador`,
     "Escolha como esta habilidade vai funcionar daqui pra frente.",
-    c.mods.map((m: string, i: number) => ({
+    c.mods.map((m, i) => ({
       titulo: m.split(":")[0],
       texto: m.split(":").slice(1).join(":").trim(),
       raridade: "epico",
@@ -1099,7 +1099,7 @@ export function telaDexLinha(l) {
   });
   mostrarCartas(
     l.filhote,
-    `Raridades vistas: ${d.r.length ? d.r.map((r: number) => RAR_NOME[r]).join(", ") : "nenhuma"}. Cada caminho de evolução leva a um Adulto e a um Supremo diferentes.`,
+    `Raridades vistas: ${d.r.length ? d.r.map(r => RAR_NOME[r]).join(", ") : "nenhuma"}. Cada caminho de evolução leva a um Adulto e a um Supremo diferentes.`,
     [...formas, { titulo: "Voltar", texto: "", acao: () => telaBestiario() }],
     { grade: true, fundo: "ui__livro" }
   );
@@ -1228,7 +1228,7 @@ export function cenaDescoberta(mon: Monstro) {
   som("jackpot");
 }
 export const CINE = { ativa: false, fila: [] };
-export function cenaTocar(html: string, classe: string, dur: number, aoFim?) {
+export function cenaTocar(html: string, classe: string, dur: number, aoFim?: () => void) {
   if (SIM.ativo) return;
   CINE.fila.push({ html, classe, dur, aoFim });
   if (!CINE.ativa) cenaProxima();
@@ -1867,26 +1867,23 @@ export function mostrarPortais() {
   if (
     !SIM.ativo &&
     !PORTAIS.jaEsperou &&
-    opcoes.some((u: Universo) => {
+    opcoes.some(u => {
       /* na simulação não espera: a espera em tempo real fazia a mesma semente dar partidas diferentes */ const im =
         ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`];
       return im && !im.pronta && !im.falhou;
     })
   ) {
-    Promise.race([
-      preCarregar(opcoes.map((u: Universo) => `arte/reinos/${u.era}/${u.id}__keyart.png`)),
-      new Promise(ok => setTimeout(ok, 2500))
-    ]).then(() => {
-      PORTAIS.jaEsperou = true;
-      PORTAIS.ops = opcoes;
-      mostrarPortais();
-    });
+    Promise.race([preCarregar(opcoes.map(u => `arte/reinos/${u.era}/${u.id}__keyart.png`)), new Promise(ok => setTimeout(ok, 2500))]).then(
+      () => {
+        PORTAIS.jaEsperou = true;
+        PORTAIS.ops = opcoes;
+        mostrarPortais();
+      }
+    );
     return;
   }
   opcoes.forEach(u =>
-    preCarregar(
-      artesQue((n: string) => n.startsWith(`arte/reinos/${u.era}/${u.id}__keyart`) || n.startsWith(`arte/reinos/${u.era}/${u.id}__piso`))
-    )
+    preCarregar(artesQue(n => n.startsWith(`arte/reinos/${u.era}/${u.id}__keyart`) || n.startsWith(`arte/reinos/${u.era}/${u.id}__piso`)))
   );
   PORTAIS.ops = null;
   PORTAIS.jaEsperou = false;
@@ -1895,7 +1892,7 @@ export function mostrarPortais() {
   mostrarCartas(
     "Escolha o portal",
     `Próximo: ${D.eras[era].nome}${R.mapaNaEra === MAPAS_POR_ERA - 1 ? " · o Guardião da Era espera no fim deste mapa" : ""}. A run fica salva aqui e as trocas são livres.`,
-    opcoes.map((u: Universo, i: number) => {
+    opcoes.map((u, i) => {
       const rec = recs[i];
       return {
         titulo: u.nome,
@@ -1952,7 +1949,7 @@ export function aplicarPortal(u: Universo, rec: string) {
   mostrarCartas(
     "Recrutar",
     "Escolha um monstro Raro do seu Pacto.",
-    pool.map((id: string) => {
+    pool.map(id => {
       const l = LINHA[id];
       return {
         titulo: l.filhote,
@@ -2097,7 +2094,7 @@ export function escolherEspecial(s: Selo) {
   mostrarCartas(
     `Especial de ${nomeForma(s)}`,
     `Escolha o especial deste Selo. Ele dispara sozinho a cada ~${Math.round(recargaEspecial(s))} s; no Supremo fica 50% mais forte. Trocar de monstro mantém a escolha.`,
-    ops.map((o, i: number) => ({
+    ops.map((o, i) => ({
       titulo: o[0],
       texto: o[1],
       raridade: "epico",
@@ -2134,7 +2131,7 @@ export function dispararEspecial(s, a: Atributos, el, cor) {
     case "guardiao0":
       J.escudo = Math.min(J.vidaMax * 0.5, J.escudo + J.vidaMax * 0.25);
       J.reducao = 4;
-      emArea(s.x, s.y, 70, (e: Ponto) => {
+      emArea(s.x, s.y, 70, e => {
         e.x += (s.x - e.x) * 0.6;
         e.y += (s.y - e.y) * 0.6;
       });
@@ -2153,7 +2150,7 @@ export function dispararEspecial(s, a: Atributos, el, cor) {
       anel(P.x, P.y, 50, "#ff5a4a", 0.6);
       break;
     case "guerreiro1":
-      emArea(alvo.x, alvo.y, 60, (e: Ponto) => ferir(e, d * 14, el));
+      emArea(alvo.x, alvo.y, 60, e => ferir(e, d * 14, el));
       anel(alvo.x, alvo.y, 60, cor, 0.6);
       tremor(7);
       break;
@@ -2196,7 +2193,7 @@ export function dispararEspecial(s, a: Atributos, el, cor) {
       break;
     }
     case "mago0":
-      emArea(alvo.x, alvo.y, 80, (e: Ponto) => ferir(e, d * 12, el));
+      emArea(alvo.x, alvo.y, 80, e => ferir(e, d * 12, el));
       anel(alvo.x, alvo.y, 80, cor, 0.8);
       particulas(alvo.x, alvo.y, cor, 40, 160, 2);
       tremor(10);
@@ -2223,7 +2220,7 @@ export function dispararEspecial(s, a: Atributos, el, cor) {
       particulas(P.x, P.y, "#7fe0a0", 24, 90);
       break;
     case "mistico1":
-      naTela((e: Ponto) => ferir(e, d * 8, el));
+      naTela(e => ferir(e, d * 8, el));
       J.flash = { vida: 0.25, cor: "#fff3c4" };
       break;
     case "xama0":
@@ -2296,7 +2293,7 @@ export function usarCombinado() {
       e.reacCd = 0;
       ferir(e, total / 2, c.b);
     });
-  else naTela((e: Ponto) => els.forEach(el => ferir(e, total / els.length, el)));
+  else naTela(e => els.forEach(el => ferir(e, total / els.length, el)));
   switch (c.tipo) {
     case "elo":
       curar(J.vidaMax * 0.1);
@@ -2332,7 +2329,7 @@ export function usarCombinado() {
             J.crias.push({ fonte: FONTE, x: P.x, y: P.y, dano: total * 0.015, el: els[0], cor: "#ffd34a", vida: 8, cd: 0 });
         },
         marinhos: () => {
-          naTela((e: Ponto) => {
+          naTela(e => {
             const dx = e.x - P.x,
               dy = e.y - P.y,
               d = Math.hypot(dx, dy) || 1;
@@ -2353,7 +2350,7 @@ export function usarCombinado() {
         agua: () => pintar("agua", 80, 30),
         terra: () => naTela(e => (e.congela = 2)),
         ar: () =>
-          naTela((e: Ponto) => {
+          naTela(e => {
             const dx = e.x - P.x,
               dy = e.y - P.y,
               d = Math.hypot(dx, dy) || 1;

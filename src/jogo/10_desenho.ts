@@ -894,7 +894,7 @@ export function quadroHeroi(pernas, bob, pisca, corGema) {
       g.fillStyle = cor;
       g.fillRect(x, y, 1, 1);
     };
-  HEROI.pernas[pernas].forEach((L, y: number) => {
+  HEROI.pernas[pernas].forEach((L, y) => {
     for (let x = 0; x < W; x++) if (L[x] !== ".") px(x, nc + ncp - 1 + y, L[x]);
   });
   HEROI.corpo.forEach((L, y) => {

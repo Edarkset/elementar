@@ -104,9 +104,9 @@ export function novaArte(nome: string) {
 export function preCarregar(nomes) {
   return Promise.all(
     nomes
-      .filter((n: number) => MANIFESTO && MANIFESTO[n])
+      .filter(n => MANIFESTO && MANIFESTO[n])
       .map(
-        (n: number) =>
+        n =>
           new Promise<void>(ok => {
             const img = ARTE_IMG[n];
             if (!img || img.pronta || img.falhou || img.complete) return ok();
@@ -137,15 +137,13 @@ export function artesDoMapa(u: Universo) {
       "efeitos",
       "anim"
     ];
-  const reino = artesQue((n: string) => n.startsWith(pre + u.id + "__") || n.startsWith(pre + "guardiao_" + u.era + "__")).sort(
-    (a: string | string[], b: string | string[]) => {
-      const i = (n: string | string[]) => {
-        const k = ord.findIndex(o => n.includes("__" + o));
-        return k < 0 ? 99 : k;
-      };
-      return i(a) - i(b);
-    }
-  );
+  const reino = artesQue(n => n.startsWith(pre + u.id + "__") || n.startsWith(pre + "guardiao_" + u.era + "__")).sort((a, b) => {
+    const i = (n: string | string[]) => {
+      const k = ord.findIndex(o => n.includes("__" + o));
+      return k < 0 ? 99 : k;
+    };
+    return i(a) - i(b);
+  });
   const equipe = [];
   if (R)
     for (const s of R.selos) {
@@ -156,8 +154,8 @@ export function artesDoMapa(u: Universo) {
       equipe.push(...artesQue(n => n.startsWith(pasta + s.mon.id + "__")));
     }
   const lenda = typeof LENDA === "function" && LENDA();
-  const extra = lenda ? artesQue((n: string) => n === `arte/lendas/${lenda.id}.png` || n === `arte/panteao/${lenda.id}.png`) : [];
-  return [...reino, ...equipe, ...extra, ...artesQue((n: string) => n.startsWith("arte/ambiente/") || n.startsWith("arte/efeitos/reacao"))];
+  const extra = lenda ? artesQue(n => n === `arte/lendas/${lenda.id}.png` || n === `arte/panteao/${lenda.id}.png`) : [];
+  return [...reino, ...equipe, ...extra, ...artesQue(n => n.startsWith("arte/ambiente/") || n.startsWith("arte/efeitos/reacao"))];
 }
 // artes em arquivos: arte/manifesto.json lista { "nome usado no código": "caminho do arquivo" }.
 // Na abertura baixa só a interface e as imagens fixas dos monstros (menu e cartas); o resto vem por mapa ou quando for usado.
@@ -174,7 +172,7 @@ if (window.ARTE_MANIFESTO) {
       const UI_USADA =
         /^arte\/ui\/(ui__(botao_primario|botao_secundario|botoes_acao|hud_icones|logo|pacto|tela_horizontal|tela_vertical|camada_ceu|camada_criaturas|camada_frente|derrota|vitoria|refugio|livro)|talismas|insignias)\.png$/;
       const base = artesQue(
-        (n: string) => UI_USADA.test(n) || /^arte\/monstros\/.*__base\.png$/.test(n) || /^arte\/lendarios\/.*__base\.png$/.test(n)
+        n => UI_USADA.test(n) || /^arte\/monstros\/.*__base\.png$/.test(n) || /^arte\/lendarios\/.*__base\.png$/.test(n)
       );
       let feitos = 0;
       const total = base.length;
@@ -270,7 +268,7 @@ export function melhorCorte(cont, nom: number, lo: number, hi: number) {
   }
   return best;
 }
-export function fatiarFolha(img, cols, rows, rigido?) {
+export function fatiarFolha(img: Imagem, cols: number, rows: number, rigido?: boolean) {
   if (!img._id) img._id = novoIdImg();
   const k = img._id + "|" + cols + "x" + rows + (rigido ? "r" : "");
   if (cacheFatia.has(k)) return cacheFatia.get(k);
@@ -535,7 +533,7 @@ export function correcaoAltura(img) {
 }
 // quadro (linha, índice do quadro) da folha, num canvas quadrado com folga: corpo na escala "alvo", pés na mesma linha em todos
 export const FOLGA_ANIM = 1.6;
-export function quadroAnim(img, row, i, alvo, cor?, rows?, folga?) {
+export function quadroAnim(img: Imagem, row: number, i: number, alvo: number, cor?: Imagem | null, rows?: number, folga?: number) {
   rows = rows || 3;
   folga = folga || FOLGA_ANIM;
   const fo = cor || img,

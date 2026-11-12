@@ -521,7 +521,7 @@ export function atualizarProps(dt) {
           if (Math.random() < 0.35 * (1 + Math.max(0, vientre) * Math.min(1.5, W / 40))) danificarProp(q, 0, "fogo");
         }
         emArea(p.x, p.y, p.r + 5, e => {
-          if (e.ehProp) return;
+          if (e.ehProp === true) return;
           e.status = { el: "fogo", t: J.t };
           const f = FONTE;
           defFonte("ambiente");
@@ -1548,7 +1548,7 @@ export function atualizarVortices(dt, ox, oy) {
         const f = FONTE;
         defFonte("ambiente");
         emArea(w.x, w.y, w.r + 3, e => {
-          if (e.ehProp) {
+          if (e.ehProp === true) {
             danificarProp(e, 0, "fogo");
             return;
           }
@@ -1652,7 +1652,7 @@ export function cairRaio(x, y, alvo) {
   defFonte("ambiente");
   const dano = DIF.hp * 2.2 * dificuldade();
   emArea(x, y, 24, e => {
-    if (e.ehProp) {
+    if (e.ehProp === true) {
       danificarProp(e, dano * 0.5, "raio");
       return;
     }

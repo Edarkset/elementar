@@ -20,9 +20,9 @@ export const VFX_EL: Record<string, { c1: string; c2: string; forma: string; g: 
   luz: { c1: "#fff8d8", c2: "#ffd34a", forma: "estrela", g: -8 },
   sombra: { c1: "#b080e0", c2: "#3a2050", forma: "fumaca", g: -24 }
 };
-export const vEl = (el: string) => VFX_EL[el] || VFX_EL.luz;
+export const vEl = (el: Elemento) => VFX_EL[el] || VFX_EL.luz;
 // partículas com forma (usa o mesmo J.parts; "forma" e "g" são opcionais)
-export function particulasEl(x: number, y: number, el: string, n: number, vel: number) {
+export function particulasEl(x: number, y: number, el: Elemento, n: number, vel: number) {
   const v = vEl(el),
     L = J.parts.length;
   if (L > 380) n = Math.ceil(n / 4);
@@ -136,7 +136,7 @@ export function desenharParticula(p: Particula, ox: number, oy: number) {
 // Desenho do círculo (anel duplo, runas, estrela de 6 pontas e marcas) feito uma vez por elemento num canvas; no jogo ele
 // é achatado em perspectiva, gira, cresce ao abrir e some com brilho. Usado ao invocar um monstro e ao lançar habilidades
 export const cacheCirculo = new Map();
-export function artCirculo(el: string) {
+export function artCirculo(el: Elemento) {
   if (cacheCirculo.has(el)) return cacheCirculo.get(el);
   const N = 160,
     c = document.createElement("canvas");
@@ -194,7 +194,7 @@ export function artCirculo(el: string) {
   cacheCirculo.set(el, c);
   return c;
 }
-export function circuloInvocacao(x: number, y: number, el: string, r: number, dur: number, forte: boolean) {
+export function circuloInvocacao(x: number, y: number, el: Elemento, r: number, dur: number, forte: boolean) {
   if (SIM.ativo || !J) return;
   const art = artCirculo(el),
     cor = COR[el] || "#ffd34a";
@@ -253,7 +253,7 @@ export function desenharVfx(ox: number, oy: number, camada: string) {
 }
 
 // ---------------------------------------------------------------- ataques básicos por classe
-export function vfxCorte(s, el: string, r: number) {
+export function vfxCorte(s, el: Elemento, r: number) {
   const K = VFX_K;
   const alvo = maisProximo(s, r + 20),
     ang = alvo ? Math.atan2(alvo.y - s.y, alvo.x - s.x) : Math.atan2(J.dir.y || 0, J.dir.x || 1),
@@ -303,7 +303,7 @@ export function vfxCorte(s, el: string, r: number) {
   }
   if (K > 1.6) luzFlash(s.x, s.y, v.c2, r * 1.2, 0.18);
 }
-export function vfxOnda(s, el: string, r: number) {
+export function vfxOnda(s: Ponto | Selo, el: Elemento, r: number) {
   const v = vEl(el),
     x0 = s.x,
     y0 = s.y,
@@ -342,7 +342,7 @@ export function vfxOnda(s, el: string, r: number) {
     particulasEl(x0 + Math.cos(a) * r, y0 + Math.sin(a) * r * 0.8, el, 1, 30 * K);
   }
 }
-export function vfxFeixe(s, e: Inimigo, el: string) {
+export function vfxFeixe(s, e: Inimigo, el: Elemento) {
   const v = vEl(el),
     K = VFX_K,
     pts = [];
@@ -380,7 +380,7 @@ export function vfxFeixe(s, e: Inimigo, el: string) {
   });
   particulasEl(e.x, e.y, el, 4, 50);
 }
-export function vfxX(e: Inimigo, el: string) {
+export function vfxX(e: Inimigo, el: Elemento) {
   const v = vEl(el),
     x0 = e.x,
     y0 = e.y,
@@ -408,7 +408,7 @@ export function vfxX(e: Inimigo, el: string) {
     }
   });
 }
-export function vfxSelo(x0: number, y0: number, el: string, r: number) {
+export function vfxSelo(x0: number, y0: number, el: Elemento, r: number) {
   const v = vEl(el),
     K = VFX_K;
   vfx({
@@ -632,7 +632,7 @@ export function tocarFolha(caminho: string, cols: number, x: number, y: number, 
 export const USAR_FOLHAS_ESPECIAL = false;
 // ---- peças de efeito desenhadas (nítidas em qualquer resolução)
 export const curvaEf = (q: number) => (q < 0.15 ? q / 0.15 : q > 0.75 ? (1 - q) / 0.25 : 1); // entra rápido, segura, some
-export function efCirculo(x0: number, y0: number, r: number, el: string, dur: number, rapido?: boolean) {
+export function efCirculo(x0: number, y0: number, r: number, el: Elemento, dur: number, rapido?: boolean) {
   if (SIM.ativo) return;
   const v = vEl(el),
     runas = Array.from({ length: 12 }, (_, i) => i);
@@ -695,7 +695,7 @@ export function efCirculo(x0: number, y0: number, r: number, el: string, dur: nu
     }
   });
 }
-export function efPilar(x0: number, y0: number, el: string, dur: number, larg: number) {
+export function efPilar(x0: number, y0: number, el: Elemento, dur: number, larg: number) {
   if (SIM.ativo) return;
   const v = vEl(el),
     L = larg || 10;
@@ -735,7 +735,7 @@ export function efPilar(x0: number, y0: number, el: string, dur: number, larg: n
       forma: "estrela"
     });
 }
-export function efCupula(x0: number, y0: number, r: number, el: string, dur: number) {
+export function efCupula(x0: number, y0: number, r: number, el: Elemento, dur: number) {
   if (SIM.ativo) return;
   const v = vEl(el);
   vfx({
@@ -783,7 +783,7 @@ export function efCupula(x0: number, y0: number, r: number, el: string, dur: num
     }
   });
 }
-export function efCortes(x0: number, y0: number, r: number, el: string, n: number) {
+export function efCortes(x0: number, y0: number, r: number, el: Elemento, n: number) {
   if (SIM.ativo) return;
   const v = vEl(el);
   for (let i = 0; i < n; i++) {
@@ -881,7 +881,7 @@ export function efImpactoChao(x0, y0, r, el) {
     });
   }
 }
-export function efChuva(x0: number, y0: number, r: number, el: string) {
+export function efChuva(x0: number, y0: number, r: number, el: Elemento) {
   if (SIM.ativo) return;
   const v = vEl(el);
   for (let i = 0; i < 14; i++) {
@@ -915,7 +915,7 @@ export function efChuva(x0: number, y0: number, r: number, el: string) {
     });
   }
 }
-export function efEspiral(x0: number, y0: number, r: number, el: string, dur: number) {
+export function efEspiral(x0: number, y0: number, r: number, el: Elemento, dur: number) {
   if (SIM.ativo) return;
   for (let i = 0; i < 22; i++) {
     const a = (i / 22) * Math.PI * 6,
@@ -940,7 +940,7 @@ export function efEspiral(x0: number, y0: number, r: number, el: string, dur: nu
 // Nada disto roda na simulação, e com o aparelho lento (QUAL 0) os enfeites extras são cortados.
 export const semVfx = () => SIM.ativo || !J || !J.cena;
 // explosão: núcleo branco, bola do elemento, anel que abre e raios curtos saindo
-export function efExplosao(x0: number, y0: number, r: number, el: string, forte?: boolean) {
+export function efExplosao(x0: number, y0: number, r: number, el: Elemento, forte?: boolean) {
   if (semVfx()) return;
   const v = vEl(el),
     K = Math.min(2, VFX_K),
@@ -992,7 +992,7 @@ export function efExplosao(x0: number, y0: number, r: number, el: string, forte?
   if (forte) rajada(x0, y0, r * 1.4, 1.2);
 }
 // meteoro: um risco cai do céu e termina no ponto de impacto, com a marca crescendo no chão (avisa onde vai cair)
-export function efQueda(x0: number, y0: number, el: string, atraso: number) {
+export function efQueda(x0: number, y0: number, el: Elemento, atraso: number) {
   if (semVfx()) return;
   const v = vEl(el),
     dur = 0.2,
@@ -1035,7 +1035,7 @@ export function efQueda(x0: number, y0: number, el: string, atraso: number) {
   });
 }
 // puxão: anéis que fecham para o centro e riscos correndo para dentro
-export function efPuxao(x0: number, y0: number, r: number, el: string) {
+export function efPuxao(x0: number, y0: number, r: number, el: Elemento) {
   if (semVfx()) return;
   const v = vEl(el),
     nR = QUAL > 0 ? 14 : 8,
@@ -1078,7 +1078,7 @@ export function efPuxao(x0: number, y0: number, r: number, el: string) {
   });
 }
 // muralha: pilares do elemento sobem em roda e seguram por um instante
-export function efMuralha(x0: number, y0: number, r: number, el: string, dur: number) {
+export function efMuralha(x0: number, y0: number, r: number, el: Elemento, dur: number) {
   if (semVfx()) return;
   const v = vEl(el),
     N = QUAL > 0 ? 16 : 10;
@@ -1117,7 +1117,7 @@ export function efMuralha(x0: number, y0: number, r: number, el: string, dur: nu
   });
 }
 // salto: risco de luz do ponto de partida até o alvo, que encurta e some
-export function efRastroSalto(x1: number, y1: number, x2: number, y2: number, el: string) {
+export function efRastroSalto(x1: number, y1: number, x2: number, y2: number, el: Elemento) {
   if (semVfx()) return;
   const v = vEl(el);
   vfx({
@@ -1425,7 +1425,7 @@ export function desenharEspirito(z, ox: number, oy: number) {
   lg.fill();
   lg.globalAlpha = 1;
 }
-export function vfxEspecial(s: Selo, alvo: Inimigo, cls, op, el) {
+export function vfxEspecial(s: Selo, alvo: Ponto, cls: Classe, op: number, el: Elemento) {
   const v = vEl(el),
     centro = ["guardiao", "mistico", "invocador", "xama"].includes(cls) ? s : alvo;
   luzFlash(centro.x, centro.y, v.c1, 90, 0.45);

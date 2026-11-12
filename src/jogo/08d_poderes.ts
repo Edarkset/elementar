@@ -211,11 +211,11 @@ export function puxar(cx: number, cy: number, r: number, forca: number) {
 }
 export const COMPORTAMENTO = {
   guardiao: {
-    b(s: Selo | Inimigo, a: Atributos, el: string) {
+    b(s: Selo | Inimigo, a: Atributos, el: Elemento) {
       const v = (J.danoRec || 0) * 0.25;
       if (v > 0) {
         vfxOnda(s, el, 40);
-        emArea(s.x, s.y, 40, (e: PropCena) => ferir(e, v, el));
+        emArea(s.x, s.y, 40, e => ferir(e, v, el));
       }
     },
     h1(s: Inimigo, a: Atributos, el: Elemento) {
@@ -231,9 +231,9 @@ export const COMPORTAMENTO = {
       }
       curar(J.vidaMax * 0.003 * n);
     },
-    h2(s: Selo | Inimigo, a: Inimigo, el: string) {
+    h2(s: Selo | Inimigo, a: Inimigo, el: Elemento) {
       vfxOnda(s, el, 47);
-      emArea(s.x, s.y, 47, (e: Ponto) => {
+      emArea(s.x, s.y, 47, e => {
         ferir(e, a.dano * 0.6, el);
         const dx = e.x - s.x,
           dy = e.y - s.y,
@@ -244,16 +244,16 @@ export const COMPORTAMENTO = {
     }
   },
   guerreiro: {
-    b(s: Selo, a: Inimigo, el: string) {
+    b(s: Selo, a: Inimigo, el: Elemento) {
       puxar(s.x, s.y, 44, 6);
-      emArea(s.x, s.y, 28, (e: Ponto) => ferir(e, a.dano * 0.4, el));
+      emArea(s.x, s.y, 28, e => ferir(e, a.dano * 0.4, el));
     },
-    h1(s: Selo | Inimigo, a: Inimigo, el: string) {
+    h1(s: Selo | Inimigo, a: Inimigo, el: Elemento) {
       for (const f of [0.5, 1])
         agendar(0.15 * f, () => {
           if (!J) return;
           vfxOnda(s, el, 22);
-          emArea(s.x, s.y, 22, (e: Ponto) => ferir(e, a.dano * 0.8, el));
+          emArea(s.x, s.y, 22, e => ferir(e, a.dano * 0.8, el));
         });
     },
     h2(s: Selo, a: Atributos, el: Elemento) {
@@ -269,7 +269,7 @@ export const COMPORTAMENTO = {
         J.proj.push(_P(s, a, el, cor, a.dano * 0.7, { vx: Math.cos(g) * 180, vy: Math.sin(g) * 180, ric: 2, perf: 2 }));
       }
     },
-    h1(s, a: Atributos, el: string) {
+    h1(s, a: Atributos, el: Elemento) {
       const vistos = new Set();
       for (let i = 0; i < 3; i++) {
         const e = maisProximo(s, 60, o => !vistos.has(o));
@@ -289,7 +289,7 @@ export const COMPORTAMENTO = {
     }
   },
   cacador: {
-    b(s, a: Inimigo, el: string) {
+    b(s, a: Inimigo, el: Elemento) {
       const e = maisProximo(s, 140);
       if (e)
         agendar(0.35, () => {
@@ -316,7 +316,7 @@ export const COMPORTAMENTO = {
         J.proj.push(_P(s, a, el, cor, a.dano * 0.6, { alvo: e, vel: 110, vida: 2.2, r: 3, explode: 16 }));
       }
     },
-    h1(s, a: Inimigo, el: string) {
+    h1(s, a: Inimigo, el: Elemento) {
       const p = pontoDenso(s, 150);
       if (p)
         agendar(0.3, () => {
@@ -325,7 +325,7 @@ export const COMPORTAMENTO = {
           emArea(p.x, p.y, 30, o => ferir(o, a.dano * 1.2, el));
         });
     },
-    h2(s: Selo, a: Inimigo, el: string) {
+    h2(s: Selo, a: Inimigo, el: Elemento) {
       const P = J.jogador;
       vfxSelo(P.x, P.y, el, 35);
       emArea(P.x, P.y, 35, o => {
@@ -354,7 +354,7 @@ export const COMPORTAMENTO = {
     }
   },
   mistico: {
-    b(s, a: Atributos, el: string) {
+    b(s, a: Atributos, el: Elemento) {
       const vistos = new Set();
       let o = maisProximo(s, 110);
       for (let i = 0; i < 2 && o; i++) {
@@ -396,7 +396,7 @@ export const COMPORTAMENTO = {
     }
   }
 };
-export function aoDisparar(s: Selo, k: string, a: Atributos, el: string, cor: string) {
+export function aoDisparar(s: Selo, k: string, a: Atributos, el: Elemento, cor: string) {
   if (k !== "b" && !SIM.ativo) circuloInvocacao(s.x, s.y + 3, el, 10 + est(s) * 2.5, 0.6, false); // habilidade: círculo pequeno sob o monstro
   if (!(s.desp && s.desp[k])) return;
   const f = (COMPORTAMENTO[L(s).classe] || {})[k];

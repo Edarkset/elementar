@@ -209,7 +209,7 @@ export function gerarCausticas() {
 }
 
 // ---------------------------------------------------------------- objetos: geração por pedaço do mapa
-export function pesoAleatorio(r: () => number, pesos) {
+export function pesoAleatorio(r: () => number, pesos: Record<string, number>) {
   let tot = 0;
   for (const k in pesos) tot += pesos[k];
   let x = r() * tot;
@@ -297,7 +297,7 @@ export function atritoSolo(t: string) {
 export function rolamentoSolo(t: string) {
   return t === "areia" ? 3 : t === "lama" ? 4 : t === "grama" || t === "vinha" ? 1.5 : 1;
 } // areia e lama "engolem" a roda
-export function colidir(p: PropCena, ent, r: number, m: number, vx: number, vy: number, inimigo: Inimigo) {
+export function colidir(p: PropCena, ent: Ponto | Selo, r: number, m: number, vx: number, vy: number, inimigo: Inimigo) {
   if (p.mat.fantasma) return false;
   const R = r + p.r * p.esc,
     dx = p.x - ent.x,
@@ -526,7 +526,7 @@ export function atualizarProps(dt: number) {
           if (Math.random() < 0.35 * (1 + Math.max(0, vientre) * Math.min(1.5, W / 40))) danificarProp(q, 0, "fogo");
         }
         emArea(p.x, p.y, p.r + 5, e => {
-          if (e.ehProp) return;
+          if (e.ehProp === true) return;
           e.status = { el: "fogo", t: J.t };
           const f = FONTE;
           defFonte("ambiente");
@@ -592,9 +592,9 @@ export function conduzir(p: PropCena, dano: number, alc: number) {
   p.tCond = J.t + 0.5;
   const vistos = new Set();
   let n = 0,
-    o = p;
+    o: Alvo = p;
   for (let i = 0; i < 4; i++) {
-    const alvo = maisProximo(o, alc, (e: Ponto) => !vistos.has(e));
+    const alvo = maisProximo(o, alc, e => !vistos.has(e));
     if (!alvo) break;
     vistos.add(alvo);
     raio(o.x, o.y - (o === p ? p.r : 0), alvo.x, alvo.y, "#bfe0ff");
@@ -611,7 +611,7 @@ export function conduzir(p: PropCena, dano: number, alc: number) {
     anel(p.x, p.y, 10, "#bfe0ff", 0.25);
   }
 }
-export function danificarProp(p, dano: number, el: string) {
+export function danificarProp(p: PropCena, dano: number, el: Elemento | "explosao" | null) {
   if (p.morto) return;
   const M = p.mat;
   // objetos indestrutíveis têm vida infinita: golpes calculados "em % da vida" viram um valor finito antes de seguir (senão o raio conduzido seria infinito)
@@ -817,7 +817,7 @@ export function corFrag(p) {
   const base = COR_FRAG[f] || COR_FRAG.madeira;
   return p.carvao > 0.5 ? ["#2a2224", "#4a3a34", "#1a1416"] : base;
 }
-export function lascas(p, n: number, quebra: boolean) {
+export function lascas(p: PropCena, n: number, quebra: boolean) {
   const C = J.cena,
     cores = corFrag(p),
     leve = p.mat.frag === "palha";
@@ -1558,7 +1558,7 @@ export function atualizarVortices(dt: number, ox: number, oy: number) {
         const f = FONTE;
         defFonte("ambiente");
         emArea(w.x, w.y, w.r + 3, e => {
-          if (e.ehProp) {
+          if (e.ehProp === true) {
             danificarProp(e, 0, "fogo");
             return;
           }
@@ -1663,7 +1663,7 @@ export function cairRaio(x: number, y: number, alvo: PropCena) {
   defFonte("ambiente");
   const dano = DIF.hp * 2.2 * dificuldade();
   emArea(x, y, 24, e => {
-    if (e.ehProp) {
+    if (e.ehProp === true) {
       danificarProp(e, dano * 0.5, "raio");
       return;
     }

@@ -173,7 +173,7 @@ export function atualizarLenda(dt: number) {
         const a = J.lendaAng + (i / p.n) * Math.PI * 2,
           x = P.x + Math.cos(a) * p.r,
           y = P.y + Math.sin(a) * p.r * 0.8;
-        emArea(x, y, 12, (e: PropCena) => ferir(e, base, i % 2 ? el2 : el));
+        emArea(x, y, 12, e => ferir(e, base, i % 2 ? el2 : el));
       }
     }
     if (!J.lendaVfx) {
@@ -257,7 +257,7 @@ export function atualizarLenda(dt: number) {
       break;
     case "onda":
       vfxOnda(P, el, p.r);
-      emArea(P.x, P.y, p.r, (e: PropCena) => {
+      emArea(P.x, P.y, p.r, e => {
         ferir(e, base, el);
         const dx = e.x - P.x,
           dy = e.y - P.y,
@@ -311,8 +311,8 @@ export function atualizarLenda(dt: number) {
             vfxOnda({ x, y }, "fogo", p.r);
             particulasEl(x, y, "fogo", 14, 90);
             luzFlash(x, y, "#ffb060", 60, 0.4);
-            emArea(x, y, p.r, (e: PropCena) => {
-              if (!e.ehProp) ferir(e, base, "fogo");
+            emArea(x, y, p.r, e => {
+              if (e.ehProp !== true) ferir(e, base, "fogo");
             });
             tremor(3);
           },
@@ -326,7 +326,7 @@ export function atualizarLenda(dt: number) {
       /* avança na direção da horda */ for (let k = 1; k <= 5; k++) {
         const x = P.x + Math.cos(a) * k * 14,
           y = P.y + Math.sin(a) * k * 14;
-        emArea(x, y, 12, (e: PropCena) => ferir(e, base, k % 2 ? el : el2));
+        emArea(x, y, 12, e => ferir(e, base, k % 2 ? el : el2));
         particulasEl(x, y, el, 3, 40);
       }
       vfxCorte(P, el, 40);
@@ -335,7 +335,7 @@ export function atualizarLenda(dt: number) {
     case "area":
       if (denso) {
         vfxSelo(denso.x, denso.y, el, p.r);
-        emArea(denso.x, denso.y, p.r, (e: PropCena) => {
+        emArea(denso.x, denso.y, p.r, e => {
           ferir(e, base, el);
           if (p.prende) e.lenta = Math.max(e.lenta || 0, 2);
         });
@@ -439,8 +439,8 @@ export function atualizarDom(dt: number) {
   J.domCd = d.cd;
   defFonte("lenda");
   const base = (ativos().reduce((t, s) => t + atrib(s).dano, 0) / Math.max(1, ativos().length)) * (1 + 0.25 * ((R.lendaNv || 1) - 1)),
-    el = g.elementos[0],
-    el2 = g.elementos[1];
+    el = g.elementos[0] as Elemento,
+    el2 = g.elementos[1] as Elemento;
   J.lendaPose = { t: 0, dur: 0.6, dom: true };
   avisar(d.nome, g.nome, COR[el]);
   luzFlash(P.x, P.y, VFX_EL[el].c1, 140, 0.8);
@@ -475,7 +475,7 @@ export function atualizarDom(dt: number) {
       for (let k = 1; k <= 14; k++) {
         const x = P.x + Math.cos(a) * k * 16,
           y = P.y + Math.sin(a) * k * 16;
-        emArea(x, y, 14, (e: PropCena) => ferir(e, (base * d.dano) / 3, k % 2 ? el : el2));
+        emArea(x, y, 14, e => ferir(e, (base * d.dano) / 3, k % 2 ? el : el2));
         particulasEl(x, y, el, 2, 30);
       }
       vfxCorte(P, el, 60);
@@ -549,7 +549,7 @@ export function atualizarDom(dt: number) {
       agendar(0.3, () => {
         if (!J) return;
         vfxOnda(c, "ar", 50);
-        emArea(c.x, c.y, 50, (e: PropCena) => ferir(e, base * d.dano, "raio"));
+        emArea(c.x, c.y, 50, e => ferir(e, base * d.dano, "raio"));
       });
       break;
     }

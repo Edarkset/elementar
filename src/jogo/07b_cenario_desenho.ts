@@ -31,14 +31,19 @@ import { vEl } from "./08b_efeitos.js";
 import { crepusculo, nivelEscuro, sombraProjetada } from "./08g_luz.js";
 import { chao } from "./10_desenho.js";
 // ================================================================ desenho do cenário
-export function spriteCena(chave: string, w: number, h: number, fn) {
+export function spriteCena(
+  chave: string,
+  w: number,
+  h: number,
+  fn: (g: CanvasRenderingContext2D, px: (x: number, y: number, cor: string) => void) => void
+) {
   const C = J.cena;
   if (C.sprites.has(chave)) return C.sprites.get(chave);
   const c = document.createElement("canvas");
   c.width = w;
   c.height = h;
   const g = c.getContext("2d");
-  fn(g, (x: number, y: number, cor: string | CanvasGradient | CanvasPattern) => {
+  fn(g, (x, y, cor) => {
     g.fillStyle = cor;
     g.fillRect(x, y, 1, 1);
   });

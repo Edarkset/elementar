@@ -255,7 +255,7 @@ export function iniciarMapa() {
 export function MOD(k: string) {
   return (R && R.mods && R.mods[k]) || 0;
 }
-export function somarMods(m) {
+export function somarMods(m: Record<string, number>) {
   R.mods = R.mods || {};
   for (const k in m) R.mods[k] = (R.mods[k] || 0) + m[k];
   if (typeof calcularSinergia === "function" && J) calcularSinergia();
@@ -428,7 +428,7 @@ export function cartaProibida() {
     }
   };
 }
-export function dicaVantagem(el: string) {
+export function dicaVantagem(el: Elemento) {
   const forte = ELS.find(k => D.vantagem[k] === el);
   return `${NOME_EL(forte)} é super efetivo aqui.`;
 }
@@ -632,7 +632,7 @@ export function spawnChefe(mini: boolean) {
   if (mini) toast(`Mini-chefe: ${nome}`);
   else cenaChefe(e, nome, J.eraChefe);
 }
-export function maisProximo(o, alc: number, f?) {
+export function maisProximo(o: Ponto | Selo, alc: number, f?: (e: Inimigo) => boolean): Inimigo | null {
   let best = null,
     bd = alc * alc;
   for (const e of J.inimigos) {
@@ -651,7 +651,7 @@ export function maisProximo(o, alc: number, f?) {
   }
   return best;
 }
-export function maisForte(o, alc: number) {
+export function maisForte(o: Ponto | Selo, alc: number): Inimigo | null {
   let best = null,
     bh = -1;
   for (const e of J.inimigos) {
@@ -664,7 +664,7 @@ export function maisForte(o, alc: number) {
   }
   return best;
 }
-export function emArea(x: number, y: number, r: number, fn) {
+export function emArea(x: number, y: number, r: number, fn: (e: Alvo) => void) {
   if (FONTE !== "ambiente") r *= tal.area();
   const r2 = r * r;
   for (const e of J.inimigos) {
@@ -695,7 +695,7 @@ export function emArea(x: number, y: number, r: number, fn) {
       }
     }
 }
-export function pontoDenso(o, alc: number) {
+export function pontoDenso(o: Ponto | Selo, alc: number): Inimigo | null {
   let best = null,
     bn = 0;
   for (const e of J.inimigos) {
@@ -739,7 +739,7 @@ export function particulas(x: number, y: number, cor: string, n: number, vel: nu
     });
   }
 }
-export function anel(x: number, y: number, r: number, cor, dur: number) {
+export function anel(x: number, y: number, r: number, cor: string, dur: number) {
   J.efeitos.push({ x, y, r, cor, vida: dur || 0.35, max: dur || 0.35 });
 }
 export function raio(x1: number, y1: number, x2: number, y2: number, cor: string) {
@@ -772,7 +772,7 @@ export function numero(x: number, y: number, v: number, cor: string, tam: number
     alvo
   });
 }
-export function texto(x: number, y: number, t: string, cor, tam: number) {
+export function texto(x: number, y: number, t: string, cor: string, tam: number) {
   if (J.textos.length > 12) J.textos.shift();
   J.textos.push({ x, y, t, cor, tam: tam || 16, vida: 1.1 });
 }
@@ -804,7 +804,7 @@ export function sombraContato(x: number, y: number, w: number, a: number) {
 }
 // faísca de impacto: clarão branco no ponto do golpe, riscos que saem na cor do elemento e um anel fino (crítico maior).
 // No máximo uma a cada 0,07 s por inimigo, para não virar borrão quando muitos golpes acertam juntos.
-export function faiscaImpacto(e, el: string, crit: boolean, sup: boolean) {
+export function faiscaImpacto(e: Inimigo, el: Elemento, crit: boolean, sup: boolean) {
   if (SIM.ativo || QUAL === 0) return;
   if (J.t - (e._faisca ?? -9) < 0.07) return;
   e._faisca = J.t;
@@ -862,8 +862,8 @@ export function faiscaImpacto(e, el: string, crit: boolean, sup: boolean) {
   if (crit) luzFlash(e.x, e.y, "#ffe9a0", 34, 0.18);
 }
 // ================================================================ dano, reações, mortes
-export function ferir(e, dano: number, el: string, o: { crit?: boolean } = {}) {
-  if (e.ehProp) {
+export function ferir(e: Alvo, dano: number, el: Elemento, o: { crit?: boolean } = {}) {
+  if (e.ehProp === true) {
     danificarProp(e, dano, el);
     return;
   }
@@ -920,8 +920,8 @@ export function ferir(e, dano: number, el: string, o: { crit?: boolean } = {}) {
   e.status = { el, t: J.t };
   if (e.hp <= 0) morrer(e);
 }
-export function danoSimples(e: Inimigo, d: number) {
-  if (e.ehProp) {
+export function danoSimples(e: Alvo, d: number) {
+  if (e.ehProp === true) {
     danificarProp(e, d, null);
     return;
   }
@@ -931,7 +931,7 @@ export function danoSimples(e: Inimigo, d: number) {
   e.flash = 0.06;
   if (e.hp <= 0) morrer(e);
 }
-export function reagir(e: Ponto, a, b, dano: number) {
+export function reagir(e: Inimigo, a: string, b: string, dano: number) {
   const r = REAC[[a, b].sort().join("|")];
   if (!r) return;
   const fonteAnt = FONTE;
@@ -939,7 +939,7 @@ export function reagir(e: Ponto, a, b, dano: number) {
   reagirEfeito(e, a, b, dano, r);
   defFonte(fonteAnt);
 }
-export function reagirEfeito(e, a: string, b: string, dano: number, r) {
+export function reagirEfeito(e: Inimigo, a: string, b: string, dano: number, r: { nome: string; tipo: string }) {
   evento("reacao");
   diaria("reacoes");
   if (!SIM.ativo && !META.dicaReacao) {
@@ -1192,7 +1192,7 @@ export function utilItem(k: string) {
   }
   return 1;
 }
-export function itemUtil(lista) {
+export function itemUtil(lista: ItemBolsa[]): ItemBolsa {
   const w = lista.map(utilItem),
     tot = w.reduce((a, b) => a + b, 0);
   let r = Math.random() * tot;
@@ -1228,11 +1228,11 @@ export function darItem(k: string, e: Ponto) {
 }
 
 // ================================================================ ataques: básico + habilidades por classe
-export function ataqueBasico(s, a: Atributos, el, cor: string) {
+export function ataqueBasico(s: Selo, a: Atributos, el: Elemento, cor: string) {
   const cls = L(s).classe;
   switch (cls) {
     case "guardiao":
-      emArea(s.x, s.y, 26, (e: Ponto) => {
+      emArea(s.x, s.y, 26, e => {
         ferir(e, a.dano, el);
         const dx = e.x - s.x,
           dy = e.y - s.y,
@@ -1243,7 +1243,7 @@ export function ataqueBasico(s, a: Atributos, el, cor: string) {
       vfxOnda(s, el, 26);
       break;
     case "guerreiro":
-      emArea(s.x, s.y, 24, (e: Ponto) => ferir(e, a.dano, el));
+      emArea(s.x, s.y, 24, e => ferir(e, a.dano, el));
       vfxCorte(s, el, 24);
       break;
     case "assassino": {
@@ -1333,8 +1333,8 @@ export const HAB = {
   guardiao: {
     h1: {
       cd: 7,
-      f(s, a: Inimigo, el: string, cor: string, lv: number, mod: number) {
-        emArea(s.x, s.y, 60, (e: Ponto) => {
+      f(s, a: Inimigo, el: Elemento, cor: string, lv: number, mod: number) {
+        emArea(s.x, s.y, 60, e => {
           e.x += (s.x - e.x) * 0.5;
           e.y += (s.y - e.y) * 0.5;
           if (mod === 0) ferir(e, a.dano * 2 * fNivel(lv), el);
@@ -1348,9 +1348,9 @@ export const HAB = {
     },
     h2: {
       cd: 10,
-      f(s, a: Inimigo, el: string, cor: string, lv: number, mod: number) {
+      f(s, a: Inimigo, el: Elemento, cor: string, lv: number, mod: number) {
         const rr = mod === 0 ? 65 : 50;
-        emArea(s.x, s.y, rr, (e: PropCena) => {
+        emArea(s.x, s.y, rr, e => {
           ferir(e, a.dano * 2 * fNivel(lv), el);
           const dx = e.x - s.x,
             dy = e.y - s.y,
@@ -1364,7 +1364,7 @@ export const HAB = {
         efImpactoChao(s.x, s.y, rr * 0.7, el);
         if (mod === 1)
           agendar(1, () => {
-            emArea(s.x, s.y, 55, (e: Ponto) => ferir(e, a.dano * 4 * fNivel(lv), el));
+            emArea(s.x, s.y, 55, e => ferir(e, a.dano * 4 * fNivel(lv), el));
             efExplosao(s.x, s.y, 55, el, true);
             tremor(4);
           });
@@ -1491,7 +1491,7 @@ export const HAB = {
   mago: {
     h1: {
       cd: 6,
-      f(s, a: Inimigo, el: string, cor: string, lv: number, mod: number) {
+      f(s, a: Inimigo, el: Elemento, cor: string, lv: number, mod: number) {
         const e = pontoDenso(s, 140);
         if (!e) return false;
         if (mod === 0) {
@@ -1614,7 +1614,7 @@ export const HAB = {
         if (mod === 0) J.fervor = 5;
         efCanto(46, el);
         if (mod === 1)
-          emArea(J.jogador.x, J.jogador.y, 45, (e: PropCena) => {
+          emArea(J.jogador.x, J.jogador.y, 45, e => {
             const dx = e.x - J.jogador.x,
               dy = e.y - J.jogador.y,
               d = Math.hypot(dx, dy) || 1;

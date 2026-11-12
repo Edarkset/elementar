@@ -374,13 +374,13 @@ export function comecarTeste(pacto: string[], equipe, lenda?: string) {
   $("telaMenu").classList.remove("ativa");
   novaRun(pacto, equipe[0].id);
   R.teste = true;
-  equipe.forEach((m: Monstro, i: number) => {
+  equipe.forEach((m, i) => {
     const s = R.selos[i];
     s.mon = { id: m.id, rar: m.rar || "comum", ramo: m.ramo ?? null };
     s.nivel = m.nivel || 1;
     s.pod = { b: Math.min(5, 1 + Math.floor(s.nivel / 4)), h1: s.nivel >= NIV[1] ? 2 : 0, h2: s.nivel >= NIV[2] ? 2 : 0 };
   });
-  if (equipe.some((m: Monstro) => m.supremo)) R.chefesVencidos = 1;
+  if (equipe.some(m => m.supremo)) R.chefesVencidos = 1;
   if (lenda) {
     R.lenda = lenda;
     R.lendaNv = 5;
@@ -431,7 +431,7 @@ export function telaTesteDragao() {
               texto: `Nível ${nv}`,
               acao: () => {
                 const outros = equipeTeste([l.elemento], nv)
-                  .filter((m: Monstro) => m.id !== l.id)
+                  .filter(m => m.id !== l.id)
                   .slice(0, 2);
                 comecarTeste(
                   [l.elemento, ELS.find(e => e !== l.elemento)],
@@ -524,7 +524,7 @@ export function telaFerramentas() {
 }
 // emblema de elemento desenhado em vetor (orbe com o símbolo), nítido em qualquer tela
 export const cacheEmblema = new Map();
-export function emblemaElemento(el: string, ativo: boolean) {
+export function emblemaElemento(el: Elemento, ativo: boolean) {
   const k = el + "|" + !!ativo;
   if (cacheEmblema.has(k)) return cacheEmblema.get(k);
   const N = 96,
@@ -733,7 +733,7 @@ export function telaPacto() {
   };
   render();
 }
-export function infoElemento(el: string) {
+export function infoElemento(el: Elemento) {
   const n = META.liberados.filter(id => LINHA[id].elemento === el).length,
     perde = ELS.find(k => D.vantagem[k] === el);
   return `${n} monstros · vence ${NOME_EL(D.vantagem[el])} · perde para ${NOME_EL(perde)}`;
@@ -752,12 +752,10 @@ export function escolherInicial(pacto: Elemento[], opsProntas?) {
     // a animação de cada monstro só começa a baixar quando é pedida: sem ela a carta mostrava a imagem reserva, bem menor e borrada.
     // Espera chegar (até 2,5 s, uma vez) e só então mostra a tela.
     const nomes = ops
-      .map((id: string) =>
-        LINHA[id].ancestral ? `arte/lendarios/${id}__anim_1.png` : `arte/monstros/${LINHA[id].elemento}/${id}__anim_1.png`
-      )
-      .filter((n: number) => MANIFESTO && MANIFESTO[n]);
+      .map(id => (LINHA[id].ancestral ? `arte/lendarios/${id}__anim_1.png` : `arte/monstros/${LINHA[id].elemento}/${id}__anim_1.png`))
+      .filter(n => MANIFESTO && MANIFESTO[n]);
     if (
-      nomes.some((n: number) => {
+      nomes.some(n => {
         const im = ARTE_IMG[n];
         return im && !im.pronta && !im.falhou;
       })
@@ -769,7 +767,7 @@ export function escolherInicial(pacto: Elemento[], opsProntas?) {
   mostrarCartas(
     "Monstro inicial",
     "Os outros chegam por ovos, capturas e invocações durante a run.",
-    ops.map((id: string) => {
+    ops.map(id => {
       const l = LINHA[id];
       return {
         titulo: l.filhote,

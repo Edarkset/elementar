@@ -861,7 +861,7 @@ export function faiscaImpacto(e, el, crit, sup) {
 }
 // ================================================================ dano, reações, mortes
 export function ferir(e, dano, el, o = {}) {
-  if (e.ehProp) {
+  if (e.ehProp === true) {
     danificarProp(e, dano, el);
     return;
   }
@@ -919,7 +919,7 @@ export function ferir(e, dano, el, o = {}) {
   if (e.hp <= 0) morrer(e);
 }
 export function danoSimples(e, d) {
-  if (e.ehProp) {
+  if (e.ehProp === true) {
     danificarProp(e, d, null);
     return;
   }

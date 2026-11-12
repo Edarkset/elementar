@@ -137,13 +137,15 @@ export function artesDoMapa(u: Universo) {
       "efeitos",
       "anim"
     ];
-  const reino = artesQue((n: string) => n.startsWith(pre + u.id + "__") || n.startsWith(pre + "guardiao_" + u.era + "__")).sort((a, b) => {
-    const i = (n: string | string[]) => {
-      const k = ord.findIndex(o => n.includes("__" + o));
-      return k < 0 ? 99 : k;
-    };
-    return i(a) - i(b);
-  });
+  const reino = artesQue((n: string) => n.startsWith(pre + u.id + "__") || n.startsWith(pre + "guardiao_" + u.era + "__")).sort(
+    (a: string | string[], b: string | string[]) => {
+      const i = (n: string | string[]) => {
+        const k = ord.findIndex(o => n.includes("__" + o));
+        return k < 0 ? 99 : k;
+      };
+      return i(a) - i(b);
+    }
+  );
   const equipe = [];
   if (R)
     for (const s of R.selos) {

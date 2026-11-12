@@ -42,7 +42,7 @@ import { MULTIDAO } from "./10_desenho.js";
 // Quando a folha de arte do universo for importada, ela substitui o sprite pintado (mesma ordem de quadros).
 
 export const cacheCri = new Map();
-export function spriteCriatura(def, tam, cor: string, q: number, pose: string, semente: number) {
+export function spriteCriatura(def, tam: number, cor: string, q: number, pose: string, semente: number) {
   const det = def.detalhes || [],
     k = def.nome + "|" + tam + "|" + cor + "|" + q + "|" + pose + "|" + (semente || 0);
   if (cacheCri.has(k)) return cacheCri.get(k);
@@ -1409,13 +1409,13 @@ export function petrificar(e: Inimigo) {
   e.hp = 0;
   morrer(e);
 }
-export function spriteDe(e, pose: string, q: number) {
+export function spriteDe(e: Inimigo, pose: string, q: number) {
   const arte = arteCriatura(e, pose, q);
   if (arte) return arte;
   return spriteCriatura(e.def, e.tam, e.cor, q, pose, e.semente);
 }
 // ---------------------------------------------------------------- derrota: cada inimigo cai do seu jeito
-export function aoMorrerCriatura(e) {
+export function aoMorrerCriatura(e: Inimigo) {
   const d = e.def;
   if (!d || e.semCadaver) return;
   const C = J.cena;

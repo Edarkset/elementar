@@ -274,7 +274,7 @@ export function luminancia(r: number, g: number, b: number) {
   };
   return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
 }
-export function lumMedia(cv, passo: number) {
+export function lumMedia(cv: HTMLCanvasElement, passo: number) {
   try {
     const d = cv.getContext("2d").getImageData(0, 0, cv.width, cv.height).data;
     let r = 0,

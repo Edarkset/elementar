@@ -71,7 +71,7 @@ export function aplicarArteBotoes() {
   document.documentElement.classList.add("ui-arte");
 }
 // menu em camadas (céu, criaturas e o herói na frente): cada uma se move num ritmo e acompanha o dedo, o mouse ou a inclinação do aparelho
-export function montarParalaxe(m) {
+export function montarParalaxe(m: HTMLElement) {
   const ceu = UI_ARQ("ui__camada_ceu"),
     cri = UI_ARQ("ui__camada_criaturas"),
     fr = UI_ARQ("ui__camada_frente");

@@ -939,7 +939,7 @@ export function reagir(e: Ponto, a, b, dano: number) {
   reagirEfeito(e, a, b, dano, r);
   defFonte(fonteAnt);
 }
-export function reagirEfeito(e, a, b, dano: number, r) {
+export function reagirEfeito(e, a: string, b: string, dano: number, r) {
   evento("reacao");
   diaria("reacoes");
   if (!SIM.ativo && !META.dicaReacao) {
@@ -1333,7 +1333,7 @@ export const HAB = {
   guardiao: {
     h1: {
       cd: 7,
-      f(s, a: Inimigo, el, cor: string, lv, mod: number) {
+      f(s, a: Inimigo, el: string, cor: string, lv: number, mod: number) {
         emArea(s.x, s.y, 60, (e: Ponto) => {
           e.x += (s.x - e.x) * 0.5;
           e.y += (s.y - e.y) * 0.5;
@@ -1348,7 +1348,7 @@ export const HAB = {
     },
     h2: {
       cd: 10,
-      f(s, a: Inimigo, el, cor: string, lv, mod: number) {
+      f(s, a: Inimigo, el: string, cor: string, lv: number, mod: number) {
         const rr = mod === 0 ? 65 : 50;
         emArea(s.x, s.y, rr, (e: PropCena) => {
           ferir(e, a.dano * 2 * fNivel(lv), el);
@@ -1430,7 +1430,7 @@ export const HAB = {
     },
     h2: {
       cd: 8,
-      f(s, a, el: Elemento, cor: string, lv, mod: number) {
+      f(s, a, el: Elemento, cor: string, lv: number, mod: number) {
         let n = 0;
         for (const e of embaralhar(J.inimigos)) {
           if (e.hp <= 0 || dist2(s, e) > 110 * 110) continue;
@@ -1491,7 +1491,7 @@ export const HAB = {
   mago: {
     h1: {
       cd: 6,
-      f(s, a: Inimigo, el, cor: string, lv, mod: number) {
+      f(s, a: Inimigo, el: string, cor: string, lv: number, mod: number) {
         const e = pontoDenso(s, 140);
         if (!e) return false;
         if (mod === 0) {

@@ -56,7 +56,7 @@ export let MAPA_SEG = 150,
 export const MAPAS_POR_ERA = 3;
 export const RAR_BONUS = { comum: 1, incomum: 1.04, raro: 1.08, epico: 1.14, lendario: 1.22 },
   RAR_NOME = { comum: "Comum", incomum: "Incomum", raro: "Raro", epico: "Épico", lendario: "Lendário" };
-export const eficacia = (atk, def) =>
+export const eficacia = (atk: string, def) =>
   D.vantagem[atk] === def ? D.mult_vantagem.super_efetivo : D.vantagem[def] === atk ? D.mult_vantagem.pouco_efetivo : 1;
 export function hexRgb(h: string) {
   h = h.replace("#", "");
@@ -65,7 +65,7 @@ export function hexRgb(h: string) {
 export const hex = c =>
   "#" +
   c
-    .map(v =>
+    .map((v: number) =>
       Math.max(0, Math.min(255, Math.round(v)))
         .toString(16)
         .padStart(2, "0")
@@ -692,7 +692,7 @@ export function novaRun(pacto, inicial) {
   R.recordeAntes = META.recorde;
 }
 export const ativos = () => R.selos.filter(s => s.mon);
-export const L = s => LINHA[s.mon.id];
+export const L = (s: Selo) => LINHA[s.mon.id];
 export function ramoAtual(s: Selo) {
   return s.mon.ramo ?? (J && J.desp > 0 ? s.tmpRamo : null);
 }
@@ -716,7 +716,7 @@ export function est(s: Selo) {
   return b;
 }
 // elemento sem considerar formas temporárias do Despertar (evita recursão entre Selos)
-export function elementoBase(o) {
+export function elementoBase(o: Selo) {
   return o.mon.ramo != null && estBase(o) >= 2 ? L(o).ramos[o.mon.ramo].elemento : L(o).elemento;
 }
 export function ramoObj(s: Selo) {

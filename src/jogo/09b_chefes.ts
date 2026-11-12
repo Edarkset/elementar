@@ -135,8 +135,8 @@ export function criarProp(tipo: string, x: number, y: number, extra?) {
   C.lista.push(p);
   return p;
 }
-export const corG = (e, g) => (g.el && g.el !== "multi" ? COR[g.el] : COR[e.el] || "#ff5a4a");
-export const elG = (e, g) => (g.el === "multi" ? escolha(ELS) : g.el || e.el);
+export const corG = (e: Inimigo, g) => (g.el && g.el !== "multi" ? COR[g.el] : COR[e.el] || "#ff5a4a");
+export const elG = (e: Inimigo, g) => (g.el === "multi" ? escolha(ELS) : g.el || e.el);
 export const D0 = (e: Inimigo) => e.dano * (e.mini ? 0.85 : 1);
 export function propsEm(x: number, y: number, r: number, fn) {
   if (!J.cena) return;
@@ -239,7 +239,7 @@ export function iaChefe(e: Inimigo, dt: number, P: Ponto) {
   }
   // saquê: o Orochi vai atrás dos barris e fica bêbado se quebrar um
   if (J.cena && !e.bebado)
-    propsEm(e.x, e.y, e.r + 2, p => {
+    propsEm(e.x, e.y, e.r + 2, (p: PropCena) => {
       if (p.saque && !p.morto) {
         p.hp = 0;
         quebrar(p);
@@ -533,7 +533,7 @@ export function executarGolpe(e: Inimigo, g, P) {
           cy = e.y;
         tremor(3);
         if (g.cospe && e.engolidos && e.engolidos.length) {
-          e.engolidos.forEach((tipo, i) => {
+          e.engolidos.forEach((tipo, i: number) => {
             const a = (i / e.engolidos.length) * 6.283 + Math.random() * 0.3;
             bala(e, cx, cy, a, 110, D0(e) * 0.7, MAT[tipo]?.frag === "pedra" ? "pedra" : "barril", e.el, { quebra: true, deixa: tipo });
           });
@@ -1414,7 +1414,7 @@ export function executarGolpe(e: Inimigo, g, P) {
   return 0.5;
 }
 
-export function impactoChuva(e, g, x: number, y: number, r: number) {
+export function impactoChuva(e: Inimigo, g, x: number, y: number, r: number) {
   const P = J.jogador,
     el = elG(e, g),
     cor = corG(e, g);
@@ -1438,7 +1438,7 @@ export function impactoChuva(e, g, x: number, y: number, r: number) {
   }
   if (g.solo) pintarSolo(x, y, r * 0.75, g.solo);
 }
-export function impactoSalto(e, g, x: number, y: number, r: number) {
+export function impactoSalto(e: Inimigo, g, x: number, y: number, r: number) {
   const P = J.jogador,
     el = elG(e, g),
     cor = corG(e, g);
@@ -1788,7 +1788,7 @@ export function faseDois(e: Inimigo, f) {
   }
 }
 // Koschei: a morte dele mora no ovo dentro do carvalho
-export function aoQuebrarProp(p) {
+export function aoQuebrarProp(p: PropCena) {
   if (p.carvalho) {
     const o = criarProp("ovo", p.x, p.y, { ovoMorte: true, subindo: 0.2 });
     if (o && estruturaU()) sairDoAbismo(o, 6);

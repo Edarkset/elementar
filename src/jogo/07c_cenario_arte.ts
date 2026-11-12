@@ -223,7 +223,7 @@ export function versaoHi(c: Carta, K?: number) {
 {
   const desenhoOriginal = lg.drawImage.bind(lg);
   // o tipo do navegador descreve as três formas de chamar drawImage; esta função atende as três e troca a imagem pela versão nítida
-  lg.drawImage = function (img, a: number, b: number, c: number, d: number, e: PropCena, f: number, g2, h2) {
+  lg.drawImage = function (img: Carta, a: number, b: number, c: number, d: number, e: PropCena, f: number, g2, h2) {
     if (img && img._suave && !lg.imageSmoothingEnabled) {
       lg.imageSmoothingEnabled = true;
       desenhoOriginal.apply(null, arguments);
@@ -364,7 +364,7 @@ export function spriteUI(spr) {
   return (spr && spr._src && versaoHi(spr)) || spr;
 }
 // quando uma imagem termina de carregar, refaz o que foi desenhado sem ela
-export function arteCarregou(ns) {
+export function arteCarregou(ns: string[]) {
   if (!J || !R || typeof chao === "undefined" || !chao || !chao.u) return;
   const u = chao.u,
     pre = `arte/reinos/${u.era}/${u.id}__`;
@@ -560,7 +560,7 @@ export function sortearMarcos(cx: number, cy: number, r: () => number, out: Prop
 // marcos: recorta só a parte desenhada da célula (a folha tem muita margem vazia) e dá a altura certa para cada tipo
 // (colunas e estátuas altas, templo e árvore grandes, braseiro baixo); antes a célula inteira virava um quadrado e tudo saía pequeno
 export const ALT_MARCO = [56, 30, 60, 56, 62, 48, 44, 74]; // 6 = luz (lampião, braseiro): era 32 e ficava baixinho perto das construções
-export function spriteMarco(p) {
+export function spriteMarco(p: PropCena) {
   const img = folhaU("props");
   if (!img) return null;
   if (!img._id) img._id = ++ID_IMG;
@@ -609,7 +609,7 @@ export function linhaObjeto(p) {
   const u = UNIV[R.universo];
   return u && u.objetos ? u.objetos.indexOf(p.saque ? "saque" : p.tipo) : -1;
 }
-export function spriteObjetoArte(p) {
+export function spriteObjetoArte(p: PropCena) {
   const img = folhaU("objetos");
   if (!img) return null;
   const u = UNIV[R.universo],
@@ -635,19 +635,19 @@ export function cacoArte(p: Ponto) {
 }
 
 // ---------------------------------------------------------------- efeitos dos golpes dos chefes (8x2 por chefe, 8x3 por Guardião)
-export function folhaEfeitos(e) {
+export function folhaEfeitos(e: Inimigo) {
   const u = UNIV[R.universo];
   if (!u || !(e && e.chefe)) return null;
   return e.eraChefe ? folhaArte(`arte/reinos/${u.era}/guardiao_${u.era}__efeitos.png`) : folhaU("efeitos");
 }
-export function quadroEfeito(e, linha, col: number, tam: number) {
+export function quadroEfeito(e: Inimigo, linha, col: number, tam: number) {
   const img = folhaEfeitos(e);
   if (!img) return null;
   const rows = e.eraChefe ? 3 : 2;
   return celulaArte(img, 8, rows, col, Math.min(rows - 1, linha || 0), tam, tam, 0.5);
 }
 // toca os quadros 5 a 8 (estouro no chão) no ponto do impacto
-export function impactoArte(e, x: number, y: number, tam: number) {
+export function impactoArte(e: Inimigo, x: number, y: number, tam: number) {
   const linha = (e && e.golpeIdx) || 0;
   if (!quadroEfeito(e, linha, 4, tam)) return;
   J.golpes.push({

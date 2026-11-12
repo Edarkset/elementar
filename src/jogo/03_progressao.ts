@@ -148,7 +148,7 @@ export function ramosElegiveis(s: Selo, ignorarPedra?: boolean, base?: boolean) 
     ok = [],
     elDe = base ? elementoBase : elementoDe;
   if (R.pedraAtiva && !ignorarPedra) return [0, 1, 2];
-  l.ramos.forEach((r, i) => {
+  l.ramos.forEach((r, i: number) => {
     const c = r.condicao;
     if (c.tipo === "afinidade" && outros.some(o => elDe(o) === l.elemento)) ok.push(i);
     else if (c.tipo === "solitario" && !outros.some(o => elDe(o) === l.elemento)) ok.push(i);
@@ -393,7 +393,7 @@ export function proximaEscolha() {
   calcularSinergia();
   desenharEquipe();
 }
-export function escolherRamo(s) {
+export function escolherRamo(s: Selo) {
   if (!s.mon || s.mon.ramo != null) return proximaEscolha();
   if (LINHA[s.mon.id].ancestral) {
     const antes = estBase(s);
@@ -627,7 +627,7 @@ export function escolherMod(s: Selo, k: string) {
   mostrarCartas(
     `${c.nome}: modificador`,
     "Escolha como esta habilidade vai funcionar daqui pra frente.",
-    c.mods.map((m, i) => ({
+    c.mods.map((m: string, i: number) => ({
       titulo: m.split(":")[0],
       texto: m.split(":").slice(1).join(":").trim(),
       raridade: "epico",
@@ -1272,7 +1272,7 @@ export function imgDe(spr: Imagem) {
 }
 export function cenaEvolucao(s: Selo, antes, depois: number) {
   if (SIM.ativo || !J) return;
-  const q = (e, r) => {
+  const q = (e: number, r: number) => {
     const f = quadrosForma(s.mon.id, e, r, s.mon.rar);
     return f && f[0];
   };
@@ -1283,7 +1283,7 @@ export function cenaEvolucao(s: Selo, antes, depois: number) {
   const novo = q(depois, s.mon.ramo) || spriteSelo(s),
     cor = COR[elementoDe(s)],
     etapa = ["Filhote", "Jovem", "Adulto", "Supremo"][depois];
-  const url = sp => {
+  const url = (sp: Carta | Imagem) => {
     try {
       return (sp._src && !sp._alvo ? spriteUI(sp) : sp).toDataURL();
     } catch (e) {
@@ -1686,7 +1686,7 @@ export function abrirBau(b) {
     <div class="bau-casas">${premios.map(() => `<div class="casa"><img alt=""><span></span></div>`).join("")}</div><button class="botao bau-coletar">Coletar</button>`;
   const casas = [...tela.querySelectorAll(".casa")],
     todos = ["estrela", "gema", "coracao", "ampulheta", "bolsa", "trofeu", "fogo", "livro"];
-  const mostrar = (c, p) => {
+  const mostrar = (c: Element, p) => {
     const u = iconeHud(p.icone);
     const im = c.querySelector("img");
     if (u) im.src = u;
@@ -1749,7 +1749,7 @@ export function abrirBau(b) {
     if (filaRamo.length || filaEsp.length || (J && J.niveisPend > 0)) proximaEscolha();
   };
 }
-export function chuvaMoedas(el, n: number) {
+export function chuvaMoedas(el: Element, n: number) {
   for (let i = 0; i < n; i++) {
     const m = document.createElement("i");
     m.className = "moeda-voa";
@@ -1909,7 +1909,7 @@ export function mostrarPortais() {
     })
   );
 }
-export function aplicarPortal(u, rec: string) {
+export function aplicarPortal(u: Universo, rec: string) {
   R.universo = u.id;
   R.selos.forEach(s => (s.trocaCd = 0));
   const bussola = temRel("Bússola Enlouquecida"),
@@ -2097,7 +2097,7 @@ export function escolherEspecial(s: Selo) {
   mostrarCartas(
     `Especial de ${nomeForma(s)}`,
     `Escolha o especial deste Selo. Ele dispara sozinho a cada ~${Math.round(recargaEspecial(s))} s; no Supremo fica 50% mais forte. Trocar de monstro mantém a escolha.`,
-    ops.map((o, i) => ({
+    ops.map((o, i: number) => ({
       titulo: o[0],
       texto: o[1],
       raridade: "epico",

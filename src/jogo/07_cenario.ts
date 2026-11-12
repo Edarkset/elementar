@@ -297,7 +297,7 @@ export function atritoSolo(t: string) {
 export function rolamentoSolo(t: string) {
   return t === "areia" ? 3 : t === "lama" ? 4 : t === "grama" || t === "vinha" ? 1.5 : 1;
 } // areia e lama "engolem" a roda
-export function colidir(p, ent, r: number, m: number, vx: number, vy: number, inimigo: Inimigo) {
+export function colidir(p: PropCena, ent, r: number, m: number, vx: number, vy: number, inimigo: Inimigo) {
   if (p.mat.fantasma) return false;
   const R = r + p.r * p.esc,
     dx = p.x - ent.x,
@@ -344,7 +344,7 @@ export function colidir(p, ent, r: number, m: number, vx: number, vy: number, in
   }
   return true;
 }
-export function colidirProps(a, b) {
+export function colidirProps(a: PropCena, b: PropCena) {
   if (a.mat.fantasma || b.mat.fantasma) return;
   const R = a.r * a.esc + b.r * b.esc,
     dx = b.x - a.x,
@@ -563,7 +563,7 @@ export function acender(p) {
     p.queima = M.queimaT;
   }
 }
-export function apagar(p) {
+export function apagar(p: PropCena) {
   if (p.queima > 0) {
     p.queima = 0;
     fumaca(p.x, p.y - p.r, 6);
@@ -571,7 +571,7 @@ export function apagar(p) {
   }
   if (p.pavio > 0) p.pavio = 0;
 }
-export function derreter(p, q: number) {
+export function derreter(p: PropCena, q: number) {
   p.esc = Math.max(0, p.esc - q);
   p.m = p.mat.m * p.esc * p.esc;
   if (Math.random() < 0.4) J.cena.destrocos.push(gota(p.x + rnd(-3, 3), p.y));
@@ -587,7 +587,7 @@ export function afundar(p: PropCena) {
   for (let i = 0; i < 3; i++) J.cena.ondas.push({ x: p.x, y: p.y, r: 1 + i * 3, vida: 1 });
   particulas(p.x, p.y, "#bfe6ff", 8, 50);
 }
-export function conduzir(p, dano: number, alc: number) {
+export function conduzir(p: PropCena, dano: number, alc: number) {
   if (J.t < p.tCond) return;
   p.tCond = J.t + 0.5;
   const vistos = new Set();
@@ -649,7 +649,7 @@ export function danificarProp(p, dano: number, el: string) {
     } else quebrar(p);
   }
 }
-export function quebrar(p) {
+export function quebrar(p: PropCena) {
   if (p.morto) return;
   p.morto = true;
   const M = p.mat,
@@ -1641,7 +1641,7 @@ export function atualizarRaios(dt: number) {
   for (const r of C.raios) r.vida -= dt;
   C.raios = C.raios.filter(r => r.vida > 0);
 }
-export function cairRaio(x: number, y: number, alvo) {
+export function cairRaio(x: number, y: number, alvo: PropCena) {
   const C = J.cena,
     P = J.jogador;
   const pts = [];

@@ -343,7 +343,7 @@ export function spriteProp(p) {
   return null;
 }
 // marcos e objetos entram na fila de profundidade (ordenada pelo pé): quem está mais embaixo na tela fica na frente
-export function desenharProps(ox, oy, fila) {
+export function desenharProps(ox: number, oy: number, fila) {
   const C = J.cena;
   for (const p of C.lista) {
     if (p.tipo === "frente") fila.push({ y: p.y, f: () => desenharFrente(p, ox, oy) });
@@ -358,7 +358,7 @@ export function equipeAtras(xc: number, yPe: number, w: number, h: number) {
   for (const s of R.selos) if (s.mon && s.x != null && dentro(s.x, s.y + 8)) return true;
   return false;
 }
-export function desenharFrente(p, ox: number, oy: number) {
+export function desenharFrente(p: PropCena, ox: number, oy: number) {
   const s = spriteMarco(p);
   if (!s) return;
   const atras = equipeAtras(p.x, p.y, s.width, s.height * (s.base || 0.85));
@@ -378,7 +378,7 @@ export function desenharFrente(p, ox: number, oy: number) {
   lg.restore();
   lg.globalAlpha = 1;
 }
-export function desenharUmProp(p, ox: number, oy: number) {
+export function desenharUmProp(p: PropCena, ox: number, oy: number) {
   const spr = p.spriteFixo || spriteProp(p);
   if (!spr) return;
   const kq = p.caindo > 0 ? p.caindo / 0.7 : 1,

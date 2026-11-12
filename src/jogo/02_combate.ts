@@ -487,6 +487,8 @@ export const DIF = {
   misticoSaltos: 2,
   // poderes: até que nível cada um sobe (o Desperto continua abrindo no 5) e quanto vale cada nível além do 5 (0,5 = metade)
   poderMax: 8,
+  /** Poder do Elemento (08j_elementais.ts): 1 liga, 0 desliga (para medir por simulação) */
+  elementais: 1,
   poderAlem: 0.5,
   hordaVida: 0.9,
   hordaDano: 1.4,
@@ -936,7 +938,7 @@ export function ferir(e: Alvo, dano: number, el: Elemento, o: { crit?: boolean }
   if (e.hp <= 0) morrer(e);
 }
 /** dano por monstro, para o resumo de fim de run: só o que um monstro causou (básico, habilidade, especial e as reações que ele disparou) */
-const FONTES_DE_MONSTRO = new Set<FonteDano>(["basico", "habilidade", "especial", "reacao"]);
+const FONTES_DE_MONSTRO = new Set<FonteDano>(["basico", "habilidade", "especial", "reacao", "elemental"]);
 export function contarAutor(d: number) {
   const st = R.st;
   if (!AUTOR || !st || !FONTES_DE_MONSTRO.has(FONTE)) return;

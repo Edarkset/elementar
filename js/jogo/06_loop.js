@@ -79,6 +79,7 @@ import { atualizarArvore, tal } from "./08d_poderes.js";
 import { atualizarConquistas } from "./08e_conquistas.js";
 import { atualizarLenda, custo, lendaReviver, passiva } from "./08f_lendas.js";
 import { atualizarLuz, luzFlash } from "./08g_luz.js";
+import { passoElementais } from "./08j_elementais.js";
 import { atualizarCriaturas, passoCriatura } from "./09_criaturas.js";
 import { atualizarPerigos, criarProp, feriJogador, iaChefe, pintarSolo } from "./09b_chefes.js";
 import { chao, desenhar, desenharEquipe, desenharNinho, hud, quadroHeroi, toast } from "./10_desenho.js";
@@ -226,6 +227,7 @@ export function atualizar(dt) {
   if (!passoRelogios(dt)) return;
   passoMovimento(dt, P, rm);
   passoFormacao(dt, P, rm);
+  passoElementais(dt);
   passoSurgimentos(dt);
   if (!passoInimigos(dt, P)) return;
   passoProjeteis(dt);

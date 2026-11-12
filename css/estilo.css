@@ -465,3 +465,6 @@ html.ui-acao .circ.pronto{animation:pulsaArte .9s infinite alternate}
 .resumo-dano .rd-nota b{color:#f2e7c9}
 /* combo menor e mais discreto: nas capturas ele tomava o meio de cima da tela em todo combate */
 .combo{font-size:20px} .combo small{font-size:10.5px; opacity:.85}
+/* relatório da partida (tela de fim): carta discreta e caixa de texto para copiar à mão quando o navegador não deixa */
+.carta.relatorio{opacity:.8; padding:6px 12px} .carta.relatorio b{font-size:13.5px}
+.relatorio-copiar{position:fixed; left:5%; right:5%; top:30%; height:40%; z-index:60; font:12px/1.3 monospace; color:#e8e2f4; background:#141022; border:1px solid var(--ouro); border-radius:8px; padding:8px}

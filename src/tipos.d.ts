@@ -10,7 +10,8 @@ type Elemento = "fogo" | "agua" | "terra" | "ar" | "raio" | "natureza" | "luz" |
 type Raridade = "comum" | "incomum" | "raro" | "epico" | "lendario";
 type Classe = "guardiao" | "guerreiro" | "assassino" | "cacador" | "mago" | "invocador" | "mistico" | "xama";
 /** origem do dano corrente (R.st.porFonte) */
-type FonteDano = "basico" | "habilidade" | "especial" | "combinado" | "despertar" | "reacao" | "ambiente" | "reliquia" | "lenda";
+type FonteDano =
+  "basico" | "habilidade" | "especial" | "combinado" | "despertar" | "reacao" | "ambiente" | "reliquia" | "lenda" | "elemental";
 type ChavePoder = "b" | "h1" | "h2";
 type Ponto = { x: number; y: number };
 
@@ -177,10 +178,35 @@ interface OvoNinho {
   prog: number;
   alvo: number;
 }
+/** registro de um mapa no relatório da partida (soma das amostras de inimigos na tela por faixa de tempo) */
+interface MapaRelatorio {
+  mapa: number;
+  universo: string;
+  nivel0: number;
+  abates0: number;
+  soma: number[];
+  n: number[];
+  pico: number;
+  vidaMin: number;
+  amostras: number;
+  baixa: number;
+  vazia: number;
+  niveis?: number;
+  abates?: number;
+}
+interface Relatorio {
+  mapas: MapaRelatorio[];
+  escolhas: string[];
+  t0: number;
+  /** a run acabou: escolhas na tela de fim não entram */
+  fechado?: boolean;
+}
 interface EstatisticasRun {
   porFonte: Partial<Record<FonteDano, number>>;
   /** dano por monstro (id da linha): o que cada um causou com básico, habilidade, especial e reações */
   porMonstro?: Record<string, number>;
+  /** relatório da partida (jogo de verdade, não o robô): ver 08i_relatorio.ts */
+  rel?: Relatorio;
   especiais: number;
   combinados: number;
   transformacoes: number;
@@ -206,6 +232,8 @@ interface EstatisticasRun {
   despertos?: number;
   mapaPrimeiroDesperto?: number | null;
   unioes?: number;
+  /** níveis de Poder do Elemento escolhidos na run */
+  elementais?: number;
 }
 /** R: tudo o que vale para a run inteira (é o que vai para o save no meio da run) */
 interface Run {
@@ -239,6 +267,8 @@ interface Run {
   maldicoes?: string[];
   talismas?: Record<string, number>;
   unioes?: string[];
+  /** Poder do Elemento: nível (1 a 5) de cada elemento aberto na run */
+  elementais?: Partial<Record<Elemento, number>>;
   lenda?: string | null;
   lendaNv?: number;
   lendaReviveu?: boolean;
@@ -487,6 +517,7 @@ interface CartaNivel {
   s: Selo;
   k?: ChavePoder;
   /** caminho da Ascensão */ asc?: "d" | "c" | "v";
+  /** Poder do Elemento (08j_elementais.ts) */ elem?: Elemento;
   raridade: string;
   titulo: string;
   texto: string;
@@ -874,6 +905,8 @@ interface Mapa {
   shake: number;
   hitstop: number;
   lento: number;
+  /** recarga de cada Poder do Elemento */
+  cdElem?: Partial<Record<Elemento, number>>;
   flash?: { cor: string; vida: number } | null;
   escuro: number;
   escuroAlvo?: number;

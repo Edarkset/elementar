@@ -4,6 +4,7 @@ import { agendar, ctx, H, J, MAPA_SEG, R, rnd, VH, VW, W } from "./01_nucleo.js"
 import { DIF, MOD, ondaCerco, particulas, spawnInimigo } from "./02_combate.js";
 import { abismoEm, estruturaU, pecasPerto } from "./07d_estrutura.js";
 import { evento } from "./08e_conquistas.js";
+import { relatorioAmostra } from "./08i_relatorio.js";
 import { perigo } from "./09b_chefes.js";
 import { chao } from "./10_desenho.js";
 // ================================================================ diretor de horda: ajusta o ritmo pelo que está acontecendo na tela
@@ -75,6 +76,7 @@ export function atualizarDiretor(dt: number) {
     d.n = n;
     d.perto = perto;
     d.vida = vida;
+    relatorioAmostra(n, vida);
     if (col > 22 && vida < 0.45 && d.respiro <= 0) {
       d.respiro = 3;
     } // afogado: respiro curto

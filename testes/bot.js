@@ -317,7 +317,10 @@
       // árvore de poderes: níveis de Talismã somados, Despertos e Uniões conquistados na run
       talismas: Object.values(R.talismas || {}).reduce((a, b) => a + b, 0),
       despertos: R.st.despertos || 0,
-      unioes: R.st.unioes || 0
+      unioes: R.st.unioes || 0,
+      // Poder do Elemento: níveis escolhidos na run e de quais elementos
+      elementais: R.st.elementais || 0,
+      elementos: Object.assign({}, R.elementais || {})
     };
   }
   window.ElementarBot = { rodar };

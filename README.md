@@ -58,7 +58,7 @@ elementar/
 │   │   ├── 07_cenario.js       # cenário vivo: vento, vegetação, objetos físicos, clima
 │   │   ├── 07b_cenario_desenho.js · 07c_cenario_arte.js · 07d_estrutura.js (abismos, lagos, fauna, abertura)
 │   │   ├── 08_horda.js         # diretor de horda
-│   │   ├── 08b_efeitos.js … 08h_interface.js   # efeitos, eventos, poderes, conquistas, Lendas e Panteão, luz, interface
+│   │   ├── 08b_efeitos.js … 08j_elementais.js   # efeitos, eventos, poderes, conquistas, Lendas e Panteão, luz, interface, relatório da partida, Poder do Elemento
 │   │   ├── 09_criaturas.js     # inimigos e mini-chefes
 │   │   ├── 09b_chefes.js       # chefes: golpes, perigos anunciados, segunda fase
 │   │   ├── 10_desenho.js       # desenho de cada quadro, herói e HUD

@@ -27,6 +27,10 @@ Comparações sempre com 28 a 32 partidas por versão, até o mapa 10. O robô a
 
 Doze partidas por classe, até o mapa 8, todas com as mesmas sementes. Cada partida começa com um monstro da classe (`--classe`); o resto da equipe vem pelo jogo. Profundidade média: Invocador 6,75 · Guerreiro 6,08 · Guardião 5,67 · Mago 5,42 · Caçador 5,0 · Assassino 5,0 · Místico 5,0 · Xamã 4,58. Com 12 partidas, diferenças menores que cerca de 1 mapa são ruído; Invocador contra Xamã (2,2 mapas) não é.
 
+**Caçador e Xamã:** testados com as mesmas sementes, o tiro do Caçador atravessando 2 inimigos (`cacadorPerfura`) e uma explosão de 14 px no tiro do totem (`totemArea`). O efeito ficou dentro do ruído: Caçador de 5,00 para 5,17 mapas (melhorou em 6 sementes e piorou em 4) e Xamã de 4,58 para 4,75 (melhorou em 5 e piorou em 4). **Não adotados.** Os dois têm dano por segundo parecido com o das outras classes no mapa 1 (cerca de 300) e morrem em mapas espalhados; o que os separa do Invocador é pequeno e não está no ataque básico. Os parâmetros ficam no código (com o valor de hoje) para uma próxima rodada.
+
+**Místico:** o achado desta medição. Começando com ele, o chefe do mapa 1 leva 98,6 s (mediana; as outras classes, de 6 a 24 s), o dano por segundo é 102 (as outras, de 280 a 470) e a equipe sobe só 11,7 níveis no mapa 1 (as outras, de 15 a 21). O Raio Vital fere um inimigo só, com 6 de dano.
+
 ## Rodada de 10/11/2026: intensidade da horda, efeitos e performance
 
 Mais de 200 partidas simuladas nesta rodada. Tudo abaixo foi medido com o bot; onde o bot não serve de régua, está dito.

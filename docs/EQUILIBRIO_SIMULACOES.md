@@ -55,6 +55,19 @@ O robô escolhe uma carta ao acaso, então pega o Talismã só 1 vez em 3 mesmo 
 
 **O que ainda falta (decisão de design):** mesmo assim a Ascensão segue maioria, porque cada poder vai só até o nível 5 e a equipe chega lá em dois mapas. As saídas são mais níveis de poder (até 8, com ganho menor por nível), poderes novos no meio da run, ou subir de nível mais devagar.
 
+### 4. Chefe dos Andes (falso alarme)
+
+A primeira análise (92 partidas) deu ao chefe dos Andes 77 s para vencer, contra 15 a 30 s dos outros, e a suspeita era a Muralha Encaixada e os Terraços prendendo o jogador entre pedras. Medido de novo:
+
+- **isolado no mapa 1** (`--universo`, 12 partidas por reino): Andes 23,5 s, Grécia 21,7 s e Xibalba 11,7 s. Todos têm uma luta lenta de vez em quando (Grécia 89 s, Xibalba 76 s, Andes 149 s);
+- **todas as lutas do dia** contra os chefes da mesma era: Andes 32 s (n=49), Polinésia 28 s (n=92), Tenochtitlán 28 s (n=68), Xibalba 24 s (n=63) e Amazônia 22 s (n=71). As lutas acima de 60 s acontecem na mesma proporção: Andes 18%, os outros de 14% a 22%.
+
+Os 77 s vinham de só 9 lutas. O chefe dos Andes é um pouco mais lento que os da mesma era, mas não fora da curva. **Nada foi mudado.**
+
+### 5. Quem carregou a run
+
+A tela de fim agora mostra os três monstros que mais causaram dano (básico, habilidades, especiais e as reações que dispararam), com uma frase: carregou a run sozinho, dano bem dividido, ou quem mais causou. Cada golpe sabe qual monstro o causou (`AUTOR` em `01_nucleo.ts`). Só contabilidade: as partidas de referência ficaram idênticas.
+
 ## Rodada de 10/11/2026: intensidade da horda, efeitos e performance
 
 Mais de 200 partidas simuladas nesta rodada. Tudo abaixo foi medido com o bot; onde o bot não serve de régua, está dito.

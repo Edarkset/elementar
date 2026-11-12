@@ -134,6 +134,7 @@
     const pool = META.liberados.filter(id => pac.includes(LINHA[id].elemento));
     const ini = cfg.inicial || pool[Math.floor(r() * pool.length)];
     novaRun(pac, ini);
+    if (cfg.universo) R.universo = cfg.universo; // --universo: o primeiro mapa é este reino (para medir um chefe isolado)
     iniciarMapa();
     rodando = false; // o laço de desenho fica parado; o bot avança o tempo
     let tSim = 0;

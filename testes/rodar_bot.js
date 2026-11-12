@@ -16,7 +16,8 @@ const N = +arg("n", 12),
   S0 = +arg("semente0", 1),
   LOJA = arg("loja", null), // --loja max: Santuário todo comprado
   CLASSE = arg("classe", null),
-  PODERES = arg("poderes", null); // --poderes '{"chance_carta_sem_poder":0.8}': muda D.poderes só nesta bateria
+  PODERES = arg("poderes", null), // --poderes '{"chance_carta_sem_poder":0.8}': muda D.poderes só nesta bateria
+  UNIVERSO = arg("universo", null); // --universo andes: o primeiro mapa é este reino
 (async () => {
   const b = await chromium.launch();
   const res = [];
@@ -39,13 +40,13 @@ const N = +arg("n", 12),
       await p.addScriptTag({ url: "testes/bot.js" });
       const t0 = Date.now();
       const r = await p.evaluate(
-        ([sem, m, dif, loja, classe, poderes]) => {
+        ([sem, m, dif, loja, classe, poderes, universo]) => {
           if (poderes) Object.assign(D.poderes, JSON.parse(poderes));
           if (loja === "max") {
             META.loja = {};
             LOJA.forEach(it => (META.loja[it.id] = it.max));
           }
-          const cfg = { semente: sem, maxMapas: m, dif: dif ? JSON.parse(dif) : null };
+          const cfg = { semente: sem, maxMapas: m, dif: dif ? JSON.parse(dif) : null, universo };
           if (classe) {
             const pool = META.liberados.map(id => LINHA[id]).filter(l => l && l.classe === classe);
             if (!pool.length) throw new Error("nenhum monstro liberado da classe " + classe);
@@ -58,7 +59,7 @@ const N = +arg("n", 12),
           }
           return ElementarBot.rodar(cfg);
         },
-        [sem, MAPAS, DIF, LOJA, CLASSE, PODERES]
+        [sem, MAPAS, DIF, LOJA, CLASSE, PODERES, UNIVERSO]
       );
       res.push(r);
       require("fs").writeFileSync(SAIDA, JSON.stringify(res, null, 1)); // grava a cada partida: uma bateria interrompida não se perde

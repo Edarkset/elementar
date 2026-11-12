@@ -532,7 +532,7 @@ function passoInimigos(dt, P) {
       if (b.deixaLascas && J.cena) {
         b.deixaLascas.x = b.x;
         b.deixaLascas.y = b.y;
-        lascas(b.deixaLascas, 8, true);
+        lascas(J.cena, b.deixaLascas, 8, true);
       }
     }
   }

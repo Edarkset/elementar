@@ -166,9 +166,8 @@ export function gerarBolha() {
   g.fillRect(0, 0, 64, 64);
   return c;
 }
-export function bolhaCor(cor: string | CanvasGradient | CanvasPattern) {
-  const C = J.cena,
-    k = "bolha" + cor;
+export function bolhaCor(C: Cena, cor: string | CanvasGradient | CanvasPattern) {
+  const k = "bolha" + cor;
   const ja = C.sprites.get(k);
   if (ja) return ja;
   const c = document.createElement("canvas");
@@ -219,9 +218,8 @@ export function pesoAleatorio(r: () => number, pesos: Record<string, number>) {
   }
   return Object.keys(pesos)[0];
 }
-export function gerarPedaco(cx: number, cy: number) {
-  const C = J.cena,
-    k = cx + ":" + cy;
+export function gerarPedaco(C: Cena, cx: number, cy: number) {
+  const k = cx + ":" + cy;
   if (C.props.has(k)) return;
   const r = semente(C.u.id + "p" + k + "#" + R.profundidade),
     out = [];
@@ -276,16 +274,15 @@ export function novoProp(tipo: string, x: number, y: number, r: () => number): P
     var: Math.floor(r() * 3)
   };
 }
-export function carregarProps(ox: number, oy: number) {
-  const C = J.cena,
-    c0 = Math.floor((ox - 60) / CH),
+export function carregarProps(C: Cena, ox: number, oy: number) {
+  const c0 = Math.floor((ox - 60) / CH),
     c1 = Math.floor((ox + VW + 60) / CH),
     r0 = Math.floor((oy - 60) / CH),
     r1 = Math.floor((oy + VH + 60) / CH);
   C.lista.length = 0;
   for (let cy = r0; cy <= r1; cy++)
     for (let cx = c0; cx <= c1; cx++) {
-      gerarPedaco(cx, cy);
+      gerarPedaco(C, cx, cy);
       for (const p of C.props.get(cx + ":" + cy)) if (!p.morto) C.lista.push(p);
     }
 }
@@ -377,9 +374,8 @@ export function colidirProps(a: PropCena, b: PropCena) {
     if (!p.mat.indestrutivel && vn > p.mat.fragil * (p.congela > 0 ? 0.6 : 1))
       danificarProp(p, p.max * (vn / p.mat.fragil - 0.7) * 1.2, null);
 }
-export function atualizarProps(dt: number) {
-  const C = J.cena,
-    L0 = C.lista,
+export function atualizarProps(C: Cena, dt: number) {
+  const L0 = C.lista,
     P = J.jogador;
   for (const p of L0) {
     const M = p.mat;
@@ -469,7 +465,7 @@ export function atualizarProps(dt: number) {
       p.y += p.vy * dt;
     }
     // pisoteio da grama pelo objeto em movimento
-    if (sp > 10) tocarTufos(p.x, p.y, p.r, p.vx, p.vy, dt);
+    if (sp > 10) tocarTufos(C, p.x, p.y, p.r, p.vx, p.vy, dt);
   }
   // contatos com quem anda: Invocador, equipe e inimigos
   const dashing = J.dashT > 0,
@@ -511,7 +507,7 @@ export function atualizarProps(dt: number) {
       p.hp -= ((p.max * dt) / M.queimaT) * oxi;
       p.carvao = Math.min(1, p.carvao + (dt / M.queimaT) * oxi);
       if (Math.random() < dt * 14) brasa(p.x + rnd(-p.r, p.r), p.y - p.r * 0.5, rnd(4, 8));
-      if (Math.random() < dt * 6) fumaca(p.x + rnd(-2, 2), p.y - p.r, 4);
+      if (Math.random() < dt * 6) fumaca(C, p.x + rnd(-2, 2), p.y - p.r, 4);
       p.tQ = (p.tQ || 0) - dt;
       if (p.tQ <= 0) {
         p.tQ = 0.4;
@@ -548,7 +544,7 @@ export function atualizarProps(dt: number) {
   for (const x of C.filaExp) x.t -= dt;
   const prontas = C.filaExp.filter(x => x.t <= 0);
   C.filaExp = C.filaExp.filter(x => x.t > 0);
-  prontas.forEach(x => explodir(x.x, x.y, x.R));
+  prontas.forEach(x => explodir(C, x.x, x.y, x.R));
 }
 export function acender(p: PropCena) {
   const M = p.mat;
@@ -566,8 +562,8 @@ export function acender(p: PropCena) {
 export function apagar(p: PropCena) {
   if (p.queima > 0) {
     p.queima = 0;
-    fumaca(p.x, p.y - p.r, 6);
-    fumaca(p.x + 2, p.y - p.r, 5);
+    fumaca(J.cena, p.x, p.y - p.r, 6);
+    fumaca(J.cena, p.x + 2, p.y - p.r, 5);
   }
   if (p.pavio > 0) p.pavio = 0;
 }
@@ -637,7 +633,7 @@ export function danificarProp(p: PropCena, dano: number, el: Elemento | "explosa
   p.hp -= dano * mult;
   if (dano > 0) {
     p.flash = 0.07;
-    lascas(p, 1 + Math.floor(Math.random() * 2), false);
+    lascas(J.cena, p, 1 + Math.floor(Math.random() * 2), false);
   }
   if (p.hp <= 0) {
     if (M.explode && !(p.pavio > 0) && el !== "explosao") {
@@ -657,10 +653,10 @@ export function quebrar(p: PropCena) {
   if (!p.semDrop && !p.temporario) evento("quebra:" + (p.saque ? "barril" : p.tipo));
   if (typeof aoQuebrarProp === "function") aoQuebrarProp(p);
   if (p.semDrop) {
-    lascas(p, 6, true);
+    lascas(C, p, 6, true);
     return;
   }
-  lascas(p, M.frag === "pedra" ? 12 : M.frag === "palha" ? 16 : 10, true);
+  lascas(C, p, M.frag === "pedra" ? 12 : M.frag === "palha" ? 16 : 10, true);
   particulas(p.x, p.y, "#d8d0c0", 6, 50);
   tremor(M.m > 100 ? 3 : 1.2);
   const prof = 1 + 0.12 * R.profundidade,
@@ -684,7 +680,7 @@ export function quebrar(p: PropCena) {
       break;
     case "rocha":
       if (Math.random() < 0.15) gemas(1, 1, "#c8b8a0");
-      for (let i = 0; i < 3; i++) fumaca(p.x + rnd(-4, 4), p.y, 3, "#b8a888");
+      for (let i = 0; i < 3; i++) fumaca(C, p.x + rnd(-4, 4), p.y, 3, "#b8a888");
       break;
     case "cristal":
       gemas(3, 0.8, C.kit.cristal || "#c8f0ff");
@@ -701,13 +697,12 @@ export function quebrar(p: PropCena) {
   }
   if (p.queima > 0 || p.carvao > 0.5) {
     mudarSolo(p.x, p.y, "cinza");
-    for (let i = 0; i < 4; i++) fumaca(p.x + rnd(-3, 3), p.y - 2, 5);
+    for (let i = 0; i < 4; i++) fumaca(C, p.x + rnd(-3, 3), p.y - 2, 5);
   }
   if (M.explode) C.filaExp.push({ x: p.x, y: p.y, R: 44, t: 0.02 });
 }
-export function explodir(x: number, y: number, R: number) {
-  const C = J.cena,
-    P = J.jogador;
+export function explodir(C: Cena, x: number, y: number, R: number) {
+  const P = J.jogador;
   evento("explosao");
   tremor(9);
   parar(0.06);
@@ -716,7 +711,7 @@ export function explodir(x: number, y: number, R: number) {
   anel(x, y, R * 0.6, "#ff6a2a", 0.4);
   particulas(x, y, "#ffd34a", 26, 190, 2);
   particulas(x, y, "#ff6a2a", 18, 150, 2);
-  for (let i = 0; i < 10; i++) fumaca(x + rnd(-R * 0.4, R * 0.4), y + rnd(-R * 0.3, R * 0.3), rnd(6, 10));
+  for (let i = 0; i < 10; i++) fumaca(C, x + rnd(-R * 0.4, R * 0.4), y + rnd(-R * 0.3, R * 0.3), rnd(6, 10));
   for (let i = 0; i < 24; i++) brasa(x + rnd(-8, 8), y + rnd(-6, 6), rnd(10, 30), rnd(-120, 120), rnd(-120, 120));
   C.luzes = C.luzes || [];
   C.luzes.push({ x, y, r: R * 2.2, cor: "255,170,80", vida: 0.35, max: 0.35 });
@@ -801,9 +796,8 @@ export const COR_FRAG: Record<string, null | string[]> = {
   cristal: null,
   metal: ["#8a8a90", "#c8c8d0", "#5a5a60"]
 };
-export function corFrag(p: PropCena) {
-  const C = J.cena,
-    f = p.mat.frag;
+export function corFrag(C: Cena, p: PropCena) {
+  const f = p.mat.frag;
   if (f === "ceramica") {
     const v = C.kit.vaso || ["#b8683a", "#2a3a5a"];
     return [v[0], tom(v[0], 0.7), v[1]];
@@ -817,9 +811,8 @@ export function corFrag(p: PropCena) {
   const base = COR_FRAG[f] || COR_FRAG.madeira;
   return p.carvao > 0.5 ? ["#2a2224", "#4a3a34", "#1a1416"] : base;
 }
-export function lascas(p: PropCena, n: number, quebra: boolean) {
-  const C = J.cena,
-    cores = corFrag(p),
+export function lascas(C: Cena, p: PropCena, n: number, quebra: boolean) {
+  const cores = corFrag(C, p),
     leve = p.mat.frag === "palha";
   for (let i = 0; i < n; i++) {
     if (C.destrocos.length > 260) C.destrocos.shift();
@@ -844,9 +837,8 @@ export function lascas(p: PropCena, n: number, quebra: boolean) {
 export function gota(x: number, y: number) {
   return { x, y, z: rnd(1, 4), vx: rnd(-5, 5), vy: rnd(-5, 5), vz: 0, cor: "#bfe6ff", tam: 1, vida: 0.6, leve: false };
 }
-export function atualizarDestrocos(dt: number) {
-  const C = J.cena,
-    P = J.jogador,
+export function atualizarDestrocos(C: Cena, dt: number) {
+  const P = J.jogador,
     sub = C.kit.submerso;
   for (const g of C.destrocos) {
     g.vida -= dt;
@@ -891,9 +883,8 @@ export function atualizarDestrocos(dt: number) {
 }
 
 // ---------------------------------------------------------------- vegetação: balanço com o vento + mola amortecida quando é tocada
-export function tufoInfo(cx: number, cy: number) {
-  const C = J.cena,
-    t = soloEm(cx, cy),
+export function tufoInfo(C: Cena, cx: number, cy: number) {
+  const t = soloEm(cx, cy),
     h = hash2(cx, cy, 41),
     d = C.kit.dens;
   let lim;
@@ -945,7 +936,7 @@ export function rajada(x: number, y: number, R: number, forca: number) {
         dy = by - y,
         d = Math.hypot(dx, dy) || 1;
       if (d > R) continue;
-      if (!tufoInfo(cx, cy)) continue;
+      if (!tufoInfo(J.cena, cx, cy)) continue;
       const k = cx + "," + cy;
       let st = C.tufos.get(k);
       if (!st) {
@@ -972,9 +963,8 @@ export function rajada(x: number, y: number, R: number, forca: number) {
       particulaAr("poeira", x + Math.cos(a) * R * 0.6, y + Math.sin(a) * R * 0.5, 1, Math.cos(a) * 20, Math.sin(a) * 12);
     }
 }
-export function tocarTufos(x: number, y: number, r: number, vx: number, vy: number, dt: number, horda?: boolean) {
-  const C = J.cena,
-    V = VEG[C.veg],
+export function tocarTufos(C: Cena, x: number, y: number, r: number, vx: number, vy: number, dt: number, horda?: boolean) {
+  const V = VEG[C.veg],
     R = r + 4,
     sp = Math.hypot(vx, vy);
   const cx0 = Math.floor((x - R) / CEL),
@@ -983,7 +973,7 @@ export function tocarTufos(x: number, y: number, r: number, vx: number, vy: numb
     cy1 = Math.floor((y + R + 3) / CEL);
   for (let cy = cy0; cy <= cy1; cy++)
     for (let cx = cx0; cx <= cx1; cx++) {
-      const t = tufoInfo(cx, cy);
+      const t = tufoInfo(C, cx, cy);
       if (!t || t === "cinza") continue;
       const bx = cx * CEL + 1 + Math.floor(hash2(cx, cy, 43) * 6),
         by = cy * CEL + 2 + Math.floor(hash2(cx, cy, 47) * 5),
@@ -1023,9 +1013,8 @@ export function tocarTufos(x: number, y: number, r: number, vx: number, vy: numb
       if (t === "agua" && sp > 10 && Math.random() < dt * 3) C.ondas.push({ x: bx, y: by, r: 1, vida: 0.8 });
     }
 }
-export function atualizarTufos(dt: number) {
-  const C = J.cena,
-    V = VEG[C.veg],
+export function atualizarTufos(C: Cena, dt: number) {
+  const V = VEG[C.veg],
     P = J.jogador;
   let h = dt;
   const passos = dt > 0.025 ? 2 : 1;
@@ -1050,8 +1039,8 @@ export function atualizarTufos(dt: number) {
   if (C.tufos.size > 900) C.tufos.clear();
   for (const [k, t] of C.marcas) if (J.t - t > 28) C.marcas.delete(k);
   // quem anda pela vegetação
-  tocarTufos(P.x, P.y, 4, J.pvx, J.pvy, dt);
-  for (const s of R.selos) if (s.mon && s.x != null) tocarTufos(s.x, s.y, 3, s.vx || 0, s.vy || 0, dt);
+  tocarTufos(C, P.x, P.y, 4, J.pvx, J.pvy, dt);
+  for (const s of R.selos) if (s.mon && s.x != null) tocarTufos(C, s.x, s.y, 3, s.vx || 0, s.vy || 0, dt);
   const ox = P.x - VW / 2,
     oy = P.y - VH / 2;
   let n = 0;
@@ -1062,13 +1051,12 @@ export function atualizarTufos(dt: number) {
     const e = L[i];
     if (e.hp <= 0 || e.x < ox - 10 || e.x > ox + VW + 10 || e.y < oy - 10 || e.y > oy + VH + 10) continue;
     if (++n > 70) break;
-    tocarTufos(e.x, e.y, e.r * 0.8, e.vx || 0, e.vy || 0, dt * 2, true);
+    tocarTufos(C, e.x, e.y, e.r * 0.8, e.vx || 0, e.vy || 0, dt * 2, true);
   }
 }
 
 // ---------------------------------------------------------------- pegadas e ondas na água
-export function rastroDe(o: Mapa | Selo | Inimigo, x: number, y: number, dist: number, r: number) {
-  const C = J.cena;
+export function rastroDe(C: Cena, o: Mapa | Selo | Inimigo, x: number, y: number, dist: number, r: number) {
   o._pd = (o._pd || 0) + dist;
   if (o._pd < 5) return;
   o._pd = 0;
@@ -1115,9 +1103,8 @@ export function rastroDe(o: Mapa | Selo | Inimigo, x: number, y: number, dist: n
     tam: r > 6 ? 2 : 1
   });
 }
-export function atualizarPegadas(dt: number) {
-  const C = J.cena,
-    P = J.jogador;
+export function atualizarPegadas(C: Cena, dt: number) {
+  const P = J.jogador;
   // na areia o vento apaga as pegadas mais depressa (transporte de grãos)
   const apaga = 1 + C.Wm / 45;
   const corAreia = C.corAreia || (C.corAreia = tom(COR_SOLO.areia[0], 0.75)); // antes a cor era recalculada para cada pegada, a cada quadro
@@ -1129,16 +1116,16 @@ export function atualizarPegadas(dt: number) {
   }
   C.ondas = C.ondas.filter(o => o.vida > 0);
   const vj = Math.hypot(J.pvx, J.pvy);
-  if (vj > 8) rastroDe(J, P.x, P.y + 4, vj * dt, 4);
+  if (vj > 8) rastroDe(C, J, P.x, P.y + 4, vj * dt, 4);
   for (const s of R.selos) {
     if (!s.mon || s.x == null) continue;
     const v = Math.hypot(s.vx || 0, s.vy || 0);
-    if (v > 8) rastroDe(s, s.x, s.y + 4, v * dt, 3);
+    if (v > 8) rastroDe(C, s, s.x, s.y + 4, v * dt, 3);
   }
   for (const e of J.inimigos) {
     if (e.hp <= 0 || (e.tipo !== 2 && !e.chefe && !e.mini && !e.elite)) continue;
     const v = Math.hypot(e.vx || 0, e.vy || 0);
-    if (v > 6) rastroDe(e, e.x, e.y + e.r * 0.6, v * dt, e.r);
+    if (v > 6) rastroDe(C, e, e.x, e.y + e.r * 0.6, v * dt, e.r);
   }
 }
 
@@ -1256,15 +1243,13 @@ export function brasa(x: number, y: number, z: number, vx?: number, vy?: number)
   p.vx = vx || 0;
   p.vy = vy || 0;
 }
-export function fumaca(x: number, y: number, r: number, cor?: string) {
-  const C = J.cena;
+export function fumaca(C: Cena, x: number, y: number, r: number, cor?: string) {
   if (C.fumaca.length > 120) C.fumaca.shift();
   C.fumaca.push({ x, y, z: rnd(2, 6), r: r * 0.5, r1: r * 1.8, vida: rnd(1.8, 2.8), max: 2.8, cor: cor || "#4a4650", vz: rnd(8, 14) });
 }
 export const QUEDA: Record<string, number> = { neve: 1, cinzas: 1, chuva: 1, garoa: 1, folhas: 1, petalas: 1 };
-export function atualizarAr(dt: number, ox: number, oy: number) {
-  const C = J.cena,
-    k = C.kit;
+export function atualizarAr(C: Cena, dt: number, ox: number, oy: number) {
+  const k = C.kit;
   // geração: as que caem nascem no alto e "a barlavento", para pousarem dentro da tela
   const taxa: Record<string, number> = {
     neve: 30,
@@ -1325,7 +1310,7 @@ export function atualizarAr(dt: number, ox: number, oy: number) {
       if (x < ox - 10 || x > ox + VW + 10 || y < oy - 10 || y > oy + VH + 10) continue;
       if (++fogos > 40) break;
       if (Math.random() < 0.35) brasa(x + rnd(-3, 3), y, rnd(2, 5));
-      if (Math.random() < 0.12) fumaca(x, y, 3);
+      if (Math.random() < 0.12) fumaca(C, x, y, 3);
     }
   }
   const sub = k.submerso;
@@ -1340,7 +1325,7 @@ export function atualizarAr(dt: number, ox: number, oy: number) {
         p.z += p.vz * dt;
         if (p.z <= 0) {
           p.vida = 0;
-          respingo(p.x, p.y);
+          respingo(C, p.x, p.y);
         }
         break; // gota em velocidade terminal: anda com o vento
       case "neve":
@@ -1501,9 +1486,8 @@ export function envolver(n: Ponto, ox: number, oy: number, r: number) {
   n.x = x0 + ((((n.x - x0) % w) + w) % w);
   n.y = y0 + ((((n.y - y0) % h) + h) % h);
 }
-export function respingo(x: number, y: number) {
-  const C = J.cena,
-    t = soloEm(Math.floor(x / CEL), Math.floor(y / CEL));
+export function respingo(C: Cena, x: number, y: number) {
+  const t = soloEm(Math.floor(x / CEL), Math.floor(y / CEL));
   if ((t === "agua" || t === "eletrico") && C.ondas.length < 80 && Math.random() < 0.5) C.ondas.push({ x, y, r: 0.5, vida: 0.6 });
   else if (Math.random() < 0.25 && C.destrocos.length < 260)
     C.destrocos.push({ x, y, z: 1, vx: rnd(-12, 12), vy: rnd(-12, 12), vz: rnd(15, 30), cor: "#c8d8f0", tam: 1, vida: 0.25 });
@@ -1512,9 +1496,8 @@ export function respingo(x: number, y: number) {
 }
 
 // ---------------------------------------------------------------- redemoinhos de poeira e de fogo
-export function atualizarVortices(dt: number, ox: number, oy: number) {
-  const C = J.cena,
-    P = J.jogador;
+export function atualizarVortices(C: Cena, dt: number, ox: number, oy: number) {
+  const P = J.jogador;
   if (C.kit.redemoinho && !J.fim) {
     C.tVort -= dt;
     if (C.tVort <= 0 && C.vort.length < 2) {
@@ -1601,9 +1584,8 @@ export function atualizarVortices(dt: number, ox: number, oy: number) {
 }
 
 // ---------------------------------------------------------------- relâmpagos: preferem o que é alto e condutor (para-raios)
-export function atualizarRaios(dt: number) {
-  const C = J.cena,
-    P = J.jogador;
+export function atualizarRaios(C: Cena, dt: number) {
+  const P = J.jogador;
   if (C.kit.relampago && !J.fim) {
     C.tRaio -= dt;
     if (C.tRaio <= 0 && !C.aviso) {
@@ -1635,15 +1617,14 @@ export function atualizarRaios(dt: number) {
     if (C.aviso.t <= 0) {
       const { x, y, alvo } = C.aviso;
       C.aviso = null;
-      cairRaio(x, y, alvo);
+      cairRaio(C, x, y, alvo);
     }
   }
   for (const r of C.raios) r.vida -= dt;
   C.raios = C.raios.filter(r => r.vida > 0);
 }
-export function cairRaio(x: number, y: number, alvo: PropCena) {
-  const C = J.cena,
-    P = J.jogador;
+export function cairRaio(C: Cena, x: number, y: number, alvo: PropCena) {
+  const P = J.jogador;
   const pts = [];
   let px = x + rnd(-20, 20),
     py = y - VH;
@@ -1716,14 +1697,14 @@ export function atualizarCena(dt: number) {
   }
   const ox = P.x - VW / 2,
     oy = P.y - VH / 2;
-  carregarProps(ox, oy);
-  atualizarProps(dt);
-  atualizarTufos(dt);
-  atualizarPegadas(dt);
-  atualizarDestrocos(dt);
-  atualizarAr(dt, ox, oy);
-  atualizarVortices(dt, ox, oy);
-  atualizarRaios(dt);
+  carregarProps(C, ox, oy);
+  atualizarProps(C, dt);
+  atualizarTufos(C, dt);
+  atualizarPegadas(C, dt);
+  atualizarDestrocos(C, dt);
+  atualizarAr(C, dt, ox, oy);
+  atualizarVortices(C, dt, ox, oy);
+  atualizarRaios(C, dt);
   atualizarEstrutura(dt);
 }
 // golpe que atinge um objeto (projéteis e balas)

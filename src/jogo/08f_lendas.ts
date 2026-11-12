@@ -431,7 +431,7 @@ export function luzPesHeroi(x: number, y: number, cor: string) {
   const a0 = lg.globalAlpha;
   lg.globalCompositeOperation = "lighter";
   lg.globalAlpha = a0 * (0.18 + 0.5 * nivelEscuro());
-  lg.drawImage(bolhaCor(cor), x - 18, y - 7, 36, 14);
+  lg.drawImage(bolhaCor(J.cena, cor), x - 18, y - 7, 36, 14);
   lg.globalAlpha = a0;
   lg.globalCompositeOperation = "source-over";
 }

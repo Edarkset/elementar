@@ -1132,7 +1132,7 @@ export function tentarCaptura(f) {
       lg.rotate(bal);
       lg.globalCompositeOperation = "lighter";
       lg.globalAlpha = 0.5 + 0.3 * Math.sin(t * 20);
-      lg.drawImage(bolhaCor(cor), -10, -10, 20, 20);
+      lg.drawImage(bolhaCor(J.cena, cor), -10, -10, 20, 20);
       lg.globalCompositeOperation = "source-over";
       lg.globalAlpha = 1;
       // sigilo: disco dourado com runa do elemento
@@ -1405,7 +1405,7 @@ export function desenharBauMapa(b: BauMapa, x: number, y: number) {
   lg.fillStyle = gr;
   lg.fillRect(x - 5, y - 60, 10, 60);
   lg.globalAlpha = 0.5 + 0.3 * pul;
-  lg.drawImage(bolhaCor(ouro ? "#ffd34a" : "#bfe6ff"), x - 14, y - 14, 28, 28);
+  lg.drawImage(bolhaCor(J.cena, ouro ? "#ffd34a" : "#bfe6ff"), x - 14, y - 14, 28, 28);
   lg.globalAlpha = 1;
   lg.globalCompositeOperation = "source-over";
   lg.fillStyle = "rgba(0,0,0,.35)";
@@ -1462,7 +1462,7 @@ export function desenharMoedasBaus(ox: number, oy: number) {
     lg.fill();
     lg.globalCompositeOperation = "lighter";
     lg.globalAlpha = 0.45;
-    lg.drawImage(bolhaCor("#ffcc40"), x - 6, y - 6, 12, 12);
+    lg.drawImage(bolhaCor(J.cena, "#ffcc40"), x - 6, y - 6, 12, 12);
     lg.globalAlpha = 1;
     lg.globalCompositeOperation = "source-over";
     lg.fillStyle = "#b8860b";

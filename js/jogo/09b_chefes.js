@@ -125,7 +125,7 @@ export function criarProp(tipo, x, y, extra) {
   if (!C || !MAT[tipo]) return null;
   const cx = Math.floor(x / CH),
     cy = Math.floor(y / CH);
-  gerarPedaco(cx, cy);
+  gerarPedaco(C, cx, cy);
   const p = novoProp(tipo, x, y, Math.random);
   Object.assign(p, extra || {});
   C.props.get(cx + ":" + cy).push(p);
@@ -393,7 +393,7 @@ export function executarFissuraCurta(x, y, a, L, cor) {
 }
 export function transmutarProp(p) {
   if (p.morto || p.mat.indestrutivel) return;
-  const spr = p.spriteFixo || spriteProp(p);
+  const spr = p.spriteFixo || spriteProp(J.cena, p);
   if (!spr) return;
   p.spriteFixo = silhuetaMundo(spr, "#e0b040");
   p.ouro = true;

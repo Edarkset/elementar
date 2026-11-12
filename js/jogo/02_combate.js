@@ -838,7 +838,7 @@ export function faiscaImpacto(e, el, crit, sup) {
       lg.lineCap = "round";
       lg.globalAlpha = k * 0.9;
       lg.drawImage(
-        bolhaCor(crit ? "#fff3a0" : v.c1),
+        bolhaCor(J.cena, crit ? "#fff3a0" : v.c1),
         x - 6 * tam * (0.6 + q),
         y - 6 * tam * (0.6 + q),
         12 * tam * (0.6 + q),

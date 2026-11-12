@@ -128,7 +128,7 @@ export function desenharAltar(ox, oy) {
   lg.scale(1, 0.55);
   lg.globalCompositeOperation = "lighter";
   lg.globalAlpha = 0.25 + 0.15 * pul;
-  lg.drawImage(bolhaCor(cor), -a.r * 1.3, -a.r * 1.3, a.r * 2.6, a.r * 2.6);
+  lg.drawImage(bolhaCor(J.cena, cor), -a.r * 1.3, -a.r * 1.3, a.r * 2.6, a.r * 2.6);
   lg.globalAlpha = 0.9;
   lg.strokeStyle = cor;
   lg.lineWidth = 1.4;

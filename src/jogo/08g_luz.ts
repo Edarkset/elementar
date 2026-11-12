@@ -182,7 +182,7 @@ export function desenharLuzAmbiente(ox: number, oy: number) {
       Y = y - oy;
     if (X < -r || Y < -r || X > VW + r || Y > VH + r) return;
     lg.globalAlpha = Math.min(1, a * k);
-    lg.drawImage(bolhaCor(cor), X - r, Y - r, r * 2, r * 2);
+    lg.drawImage(bolhaCor(J.cena, cor), X - r, Y - r, r * 2, r * 2);
   };
   const P = J.jogador;
   if (L.noite) luz(P.x, P.y, 46, "#ffe0b0", 0.22);

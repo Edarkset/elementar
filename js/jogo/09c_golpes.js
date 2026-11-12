@@ -760,7 +760,7 @@ export function golpeTeleporte(e, g, _P, cor, el, C) {
     x = P.x + Math.cos(a) * 48,
     y = P.y + Math.sin(a) * 48;
   e.oculto = true;
-  if (C) for (let i = 0; i < 4; i++) fumaca(e.x + rnd(-5, 5), e.y, 6, "#c8c8e0");
+  if (C) for (let i = 0; i < 4; i++) fumaca(C, e.x + rnd(-5, 5), e.y, 6, "#c8c8e0");
   perigo({
     tipo: "circ",
     x,
@@ -908,7 +908,7 @@ export function golpeTempestade(e, g, P, cor, el, C) {
         t: 0.75,
         cor: "#e8f0ff",
         fim: () => {
-          if (C) cairRaio(x, y, alvo);
+          if (C) cairRaio(C, x, y, alvo);
           else {
             anel(x, y, r, "#e8f0ff", 0.4);
             const P = J.jogador;
@@ -1041,7 +1041,7 @@ export function golpeTelecinese(e, g, P, cor, el, C) {
         const P = J.jogador,
           a = Math.atan2(P.y - p.y, P.x - p.x);
         p.morto = true;
-        bala(e, p.x, p.y - 6, a, 190, D0(e) * 0.8, "objeto", e.el, { spr: spriteProp(p), quebra: true, deixaLascas: p });
+        bala(e, p.x, p.y - 6, a, 190, D0(e) * 0.8, "objeto", e.el, { spr: spriteProp(C, p), quebra: true, deixaLascas: p });
       }
     });
   });

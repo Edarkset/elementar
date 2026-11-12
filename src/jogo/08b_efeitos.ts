@@ -460,7 +460,7 @@ export function desenharProjetil(p: Projetil, ox: number, oy: number) {
   }
   const R = orbe ? 10 : 6.5;
   lg.globalAlpha = orbe ? 0.6 : 0.45;
-  lg.drawImage(bolhaCor(v.c1), x - R, y - R, R * 2, R * 2);
+  lg.drawImage(bolhaCor(J.cena, v.c1), x - R, y - R, R * 2, R * 2);
   lg.globalAlpha = 1;
   if (orbe) {
     const pul = 1 + Math.sin(J.t * 20) * 0.2;
@@ -650,7 +650,7 @@ export function efCirculo(x0: number, y0: number, r: number, el: Elemento, dur: 
       lg.globalCompositeOperation = "lighter";
       lg.lineCap = "round";
       lg.globalAlpha = a * 0.35;
-      lg.drawImage(bolhaCor(v.c1), -rr * 1.1, -rr * 1.1, rr * 2.2, rr * 2.2);
+      lg.drawImage(bolhaCor(J.cena, v.c1), -rr * 1.1, -rr * 1.1, rr * 2.2, rr * 2.2);
       for (const [k, lw, cor, al] of [
         [1, 2.2, v.c2, 0.55],
         [1, 0.8, "#ffffff", 0.9],
@@ -717,7 +717,7 @@ export function efPilar(x0: number, y0: number, el: Elemento, dur: number, larg:
       lg.fillStyle = gr;
       lg.fillRect(x - w, y - h, w * 2, h);
       lg.globalAlpha = a * 0.6;
-      lg.drawImage(bolhaCor(v.c1), x - w * 2.2, y - w * 1.1, w * 4.4, w * 2.2);
+      lg.drawImage(bolhaCor(J.cena, v.c1), x - w * 2.2, y - w * 1.1, w * 4.4, w * 2.2);
       lg.globalCompositeOperation = "source-over";
     }
   });
@@ -906,7 +906,7 @@ export function efChuva(x0: number, y0: number, r: number, el: Elemento) {
         lg.stroke();
         if (q > 0.85) {
           lg.globalAlpha = (1 - q) * 6;
-          lg.drawImage(bolhaCor(v.c1), x - 5, y - 3, 10, 6);
+          lg.drawImage(bolhaCor(J.cena, v.c1), x - 5, y - 3, 10, 6);
         }
         lg.globalCompositeOperation = "source-over";
         lg.lineCap = "butt";
@@ -956,9 +956,9 @@ export function efExplosao(x0: number, y0: number, r: number, el: Elemento, fort
       lg.globalCompositeOperation = "lighter";
       // núcleo claro pequeno e curto: grande e forte, várias explosões juntas viravam uma tela branca
       lg.globalAlpha = a * a * a * 0.55;
-      lg.drawImage(bolhaCor("#ffffff"), x - rr * 0.4, y - rr * 0.32, rr * 0.8, rr * 0.64);
+      lg.drawImage(bolhaCor(J.cena, "#ffffff"), x - rr * 0.4, y - rr * 0.32, rr * 0.8, rr * 0.64);
       lg.globalAlpha = a * a * 0.42;
-      lg.drawImage(bolhaCor(v.c2), x - rr * 1.05, y - rr * 0.84, rr * 2.1, rr * 1.68);
+      lg.drawImage(bolhaCor(J.cena, v.c2), x - rr * 1.05, y - rr * 0.84, rr * 2.1, rr * 1.68);
       lg.lineCap = "round";
       lg.strokeStyle = v.c2;
       lg.lineWidth = (forte ? 3 : 2) * K * a + 0.4;
@@ -1021,7 +1021,7 @@ export function efQueda(x0: number, y0: number, el: Elemento, atraso: number) {
         lg.stroke();
       }
       lg.globalAlpha = 0.8;
-      lg.drawImage(bolhaCor(v.c1), x + dx - 4, y - h - 4, 8, 8);
+      lg.drawImage(bolhaCor(J.cena, v.c1), x + dx - 4, y - h - 4, 8, 8);
       lg.globalAlpha = 0.4 * q;
       lg.strokeStyle = v.c1;
       lg.lineWidth = 0.8;
@@ -1169,7 +1169,7 @@ export function efLeque(x0: number, y0: number, ang: number, el: Elemento) {
         lg.stroke();
       }
       lg.globalAlpha = a * 0.7;
-      lg.drawImage(bolhaCor(v.c1), x - 7, y - 7, 14, 14);
+      lg.drawImage(bolhaCor(J.cena, v.c1), x - 7, y - 7, 14, 14);
       lg.globalCompositeOperation = "source-over";
       lg.lineCap = "butt";
     }
@@ -1221,7 +1221,7 @@ export function efCura(r: number) {
         lg.stroke();
       }
       lg.globalAlpha = a * 0.3;
-      lg.drawImage(bolhaCor("#7fe0a0"), x - r * 0.7, y - r * 0.6, r * 1.4, r * 1.2);
+      lg.drawImage(bolhaCor(J.cena, "#7fe0a0"), x - r * 0.7, y - r * 0.6, r * 1.4, r * 1.2);
       lg.globalCompositeOperation = "source-over";
     }
   });
@@ -1276,7 +1276,7 @@ export function desenharCria(c: Cria, ox: number, oy: number) {
   // espírito em forma de chama com olhos (servo comum) ou maior, com anel (gigante da Fusão); o que protege o herói gira com um arco
   lg.globalCompositeOperation = "lighter";
   lg.globalAlpha = 0.55 * some;
-  lg.drawImage(bolhaCor(c.cor), x - t * 2.3, y - t * 2.3 + bob, t * 4.6, t * 4.6);
+  lg.drawImage(bolhaCor(J.cena, c.cor), x - t * 2.3, y - t * 2.3 + bob, t * 4.6, t * 4.6);
   lg.globalCompositeOperation = "source-over";
   lg.globalAlpha = some;
   lg.fillStyle = tom(c.cor, 1.15);
@@ -1306,7 +1306,7 @@ export function desenharArmadilha(a: Armadilha, ox: number, oy: number) {
   if (x < -10 || y < -10 || x > VW + 10 || y > VH + 10) return;
   const pul = 0.5 + 0.5 * Math.sin(J.t * 6 + a.x);
   lg.globalAlpha = 0.22 + 0.2 * pul;
-  lg.drawImage(bolhaCor(a.cor), x - 8, y - 6, 16, 12);
+  lg.drawImage(bolhaCor(J.cena, a.cor), x - 8, y - 6, 16, 12);
   lg.globalAlpha = 0.9;
   lg.strokeStyle = a.cor;
   lg.lineWidth = 0.8;
@@ -1347,7 +1347,7 @@ export function desenharZona(z, ox: number, oy: number) {
     const a = J.t * 5;
     lg.globalCompositeOperation = "lighter";
     lg.globalAlpha = 0.5 * fim;
-    lg.drawImage(bolhaCor(z.cor), x - 12, y - 9, 24, 18);
+    lg.drawImage(bolhaCor(J.cena, z.cor), x - 12, y - 9, 24, 18);
     lg.globalAlpha = 0.9 * fim;
     lg.strokeStyle = z.cor;
     lg.lineWidth = 1.2;
@@ -1387,11 +1387,11 @@ export function desenharZona(z, ox: number, oy: number) {
         d = r * 0.5 * (0.5 + 0.5 * Math.sin(J.t * 3 + i)),
         rr = r * (0.5 + 0.12 * Math.sin(J.t * 9 + i * 2));
       lg.globalAlpha = (0.24 + 0.1 * pul) * fim;
-      lg.drawImage(bolhaCor(i % 2 ? v.c1 : v.c2), x + Math.cos(a) * d - rr, y + Math.sin(a) * d * 0.8 - rr * 0.8, rr * 2, rr * 1.6);
+      lg.drawImage(bolhaCor(J.cena, i % 2 ? v.c1 : v.c2), x + Math.cos(a) * d - rr, y + Math.sin(a) * d * 0.8 - rr * 0.8, rr * 2, rr * 1.6);
     }
   } else {
     lg.globalAlpha = (0.2 + 0.06 * pul) * fim;
-    lg.drawImage(bolhaCor(z.cor), x - r * 1.15, y - r * 1.15, r * 2.3, r * 2.3);
+    lg.drawImage(bolhaCor(J.cena, z.cor), x - r * 1.15, y - r * 1.15, r * 2.3, r * 2.3);
     lg.globalAlpha = 0.45 * fim;
     lg.strokeStyle = z.cor;
     lg.lineWidth = 0.8;
@@ -1414,10 +1414,10 @@ export function desenharEspirito(z, ox: number, oy: number) {
     const a = z.ang - i * 0.2,
       rr = 5.5 - i * 0.7;
     lg.globalAlpha = 0.5 * (1 - i / 6);
-    lg.drawImage(bolhaCor(z.cor), P.x + Math.cos(a) * 28 - ox - rr, P.y + Math.sin(a) * 28 - oy - rr, rr * 2, rr * 2);
+    lg.drawImage(bolhaCor(J.cena, z.cor), P.x + Math.cos(a) * 28 - ox - rr, P.y + Math.sin(a) * 28 - oy - rr, rr * 2, rr * 2);
   }
   lg.globalAlpha = 0.95;
-  lg.drawImage(bolhaCor(z.cor), x - 8, y - 8, 16, 16);
+  lg.drawImage(bolhaCor(J.cena, z.cor), x - 8, y - 8, 16, 16);
   lg.fillStyle = "#ffffff";
   lg.beginPath();
   lg.arc(x, y, 1.8, 0, Math.PI * 2);

@@ -1493,7 +1493,7 @@ export function aoMorrerCriatura(e: Inimigo) {
         }
       break;
     case "puff":
-      if (C) for (let i = 0; i < 4; i++) fumaca(e.x + rnd(-3, 3), e.y + rnd(-3, 1), 4, "#d8d0e0");
+      if (C) for (let i = 0; i < 4; i++) fumaca(C, e.x + rnd(-3, 3), e.y + rnd(-3, 1), 4, "#d8d0e0");
       break;
     case "penas":
       if (C)
@@ -1519,7 +1519,7 @@ export function aoMorrerCriatura(e: Inimigo) {
     case "sapo":
       J.sapos = J.sapos || [];
       J.sapos.push({ x: e.x, y: e.y, vida: 3, f: Math.random() * 6 });
-      if (C) fumaca(e.x, e.y, 5, "#a8e0a0");
+      if (C) fumaca(C, e.x, e.y, 5, "#a8e0a0");
       break;
     case "desmancha":
       if (C)

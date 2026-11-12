@@ -131,7 +131,7 @@ export function desenharColunaNivel(ox: number, oy: number) {
   lg.fillStyle = g;
   lg.fillRect(x - w / 2, y - 160, w, 160);
   lg.globalAlpha = 0.4 * a;
-  lg.drawImage(bolhaCor("#ffe080"), x - 30, y - 30, 60, 60);
+  lg.drawImage(bolhaCor(J.cena, "#ffe080"), x - 30, y - 30, 60, 60);
   lg.globalAlpha = 1;
   lg.globalCompositeOperation = "source-over";
 }
@@ -216,7 +216,7 @@ export function desenhar(dt: number) {
       lg.fillStyle = gr;
       lg.fillRect(X - (lend ? 5 : 3.5), Y - alt, lend ? 10 : 7, alt); // coluna de luz
       lg.globalAlpha = 0.3 + 0.2 * pul;
-      lg.drawImage(bolhaCor(cor), X - (lend ? 18 : 13), Y - (lend ? 18 : 13), lend ? 36 : 26, lend ? 36 : 26);
+      lg.drawImage(bolhaCor(J.cena, cor), X - (lend ? 18 : 13), Y - (lend ? 18 : 13), lend ? 36 : 26, lend ? 36 : 26);
       lg.globalAlpha = 1;
       if (Math.floor(J.t * 8 + o.x) % 5 === 0) {
         lg.fillStyle = "#ffffff";
@@ -281,7 +281,7 @@ export function desenhar(dt: number) {
     if (x < -6 || y < -6 || x > VW + 6 || y > VH + 6) continue;
     const c = corGema(g.v);
     lg.globalAlpha = 0.35 + 0.15 * Math.sin(J.t * 6 + g.x);
-    lg.drawImage(bolhaCor(c), x - 5, y - 5, 10, 10);
+    lg.drawImage(bolhaCor(J.cena, c), x - 5, y - 5, 10, 10);
     if (g.voa) {
       lg.globalAlpha = 0.5;
       lg.strokeStyle = c;
@@ -621,9 +621,9 @@ export function desenharSelo(s: Selo, ox: number, oy: number, sombra) {
       a = (0.1 + 0.08 * nivelEscuro() + 0.04 * pul) * (J.desp > 0 ? 2 : 1);
     lg.globalCompositeOperation = "lighter";
     lg.globalAlpha = Math.min(0.6, a);
-    lg.drawImage(bolhaCor(cor), x - r, pe - r * 0.42, r * 2, r * 0.84);
+    lg.drawImage(bolhaCor(J.cena, cor), x - r, pe - r * 0.42, r * 2, r * 0.84);
     lg.globalAlpha = Math.min(0.35, a * 0.55);
-    lg.drawImage(bolhaCor(cor), x - r * 0.7, pe - alvo * 0.55 - r * 0.5, r * 1.4, r);
+    lg.drawImage(bolhaCor(J.cena, cor), x - r * 0.7, pe - alvo * 0.55 - r * 0.5, r * 1.4, r);
     lg.globalAlpha = 1;
     // anel de equipe: elipse fina na cor do elemento com três marcas girando devagar (como a marcação de time dos jogos de ação)
     const ra = alvo * 0.48,
@@ -688,7 +688,7 @@ export function desenharSelo(s: Selo, ox: number, oy: number, sombra) {
     const pf = 0.5 + 0.5 * Math.sin(t * 14 + s.x);
     lg.globalCompositeOperation = "lighter";
     lg.globalAlpha = 0.3 + 0.2 * pf;
-    lg.drawImage(bolhaCor("#ff5a4a"), x - alvo * 0.7, pe - alvo * 1.05, alvo * 1.4, alvo * 1.2);
+    lg.drawImage(bolhaCor(J.cena, "#ff5a4a"), x - alvo * 0.7, pe - alvo * 1.05, alvo * 1.4, alvo * 1.2);
     lg.globalCompositeOperation = "source-over";
     lg.globalAlpha = 1;
     if (QUAL > 0 && Math.random() < 0.25)
@@ -716,9 +716,9 @@ export function desenharTotem(t: Totem, ox: number, oy: number) {
   sombraContato(x, y + 0.5, 9, 0.5);
   lg.globalCompositeOperation = "lighter";
   lg.globalAlpha = 0.25 + 0.2 * pul;
-  lg.drawImage(bolhaCor(cor), x - 11, y - 4, 22, 8);
+  lg.drawImage(bolhaCor(J.cena, cor), x - 11, y - 4, 22, 8);
   lg.globalAlpha = 0.35 + 0.25 * pul;
-  lg.drawImage(bolhaCor(cor), x - 6, y - 19, 12, 12);
+  lg.drawImage(bolhaCor(J.cena, cor), x - 6, y - 19, 12, 12);
   lg.globalAlpha = 1;
   lg.globalCompositeOperation = "source-over";
   const pau = lg.createLinearGradient(x - 2.5, 0, x + 2.5, 0);

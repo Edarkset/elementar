@@ -384,7 +384,7 @@ export function spriteCriatura(def, tam, cor: string, q: number, pose: string, s
           [0.6, 0.26],
           [0.5, 0.4],
           [0.7, 0.42]
-        ])
+        ] as [number, number][])
           px(s * a, s * b, "#f4f0e8");
         hx = s * 0.5;
         hy = s * 0.64;

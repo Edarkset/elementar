@@ -791,7 +791,7 @@ export function explodir(x: number, y: number, R: number) {
 }
 
 // ---------------------------------------------------------------- destroços (lascas com gravidade, quique e atrito)
-export const COR_FRAG = {
+export const COR_FRAG: Record<string, null | string[]> = {
   ceramica: null,
   madeira: ["#8a5a30", "#b07a44", "#5a3a20"],
   palha: ["#d8b85a", "#a8843c", "#f0d88a"],
@@ -1261,12 +1261,12 @@ export function fumaca(x: number, y: number, r: number, cor?: string) {
   if (C.fumaca.length > 120) C.fumaca.shift();
   C.fumaca.push({ x, y, z: rnd(2, 6), r: r * 0.5, r1: r * 1.8, vida: rnd(1.8, 2.8), max: 2.8, cor: cor || "#4a4650", vz: rnd(8, 14) });
 }
-export const QUEDA = { neve: 1, cinzas: 1, chuva: 1, garoa: 1, folhas: 1, petalas: 1 };
+export const QUEDA: Record<string, number> = { neve: 1, cinzas: 1, chuva: 1, garoa: 1, folhas: 1, petalas: 1 };
 export function atualizarAr(dt: number, ox: number, oy: number) {
   const C = J.cena,
     k = C.kit;
   // geração: as que caem nascem no alto e "a barlavento", para pousarem dentro da tela
-  const taxa = {
+  const taxa: Record<string, number> = {
     neve: 30,
     cinzas: 8,
     chuva: 150,
@@ -1536,7 +1536,7 @@ export function atualizarVortices(dt: number, ox: number, oy: number) {
       [-1, 0],
       [0, 1],
       [0, -1]
-    ]) {
+    ] as [number, number][]) {
       const v = soloEm(Math.floor((w.x + ax * w.r * 0.7) / CEL), Math.floor((w.y + ay * w.r * 0.7) / CEL));
       if (v === "fogo") {
         t = v;

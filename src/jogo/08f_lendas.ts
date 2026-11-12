@@ -129,7 +129,7 @@ export function cartaLenda() {
     }
   };
 }
-export const TIPOS_LENDA_TXT = {
+export const TIPOS_LENDA_TXT: Record<string, string> = {
   orbita: "gira em volta",
   projetil: "arremesso",
   onda: "onda de choque",

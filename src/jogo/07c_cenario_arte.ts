@@ -123,7 +123,7 @@ export function limparTopoSolto(c: HTMLCanvasElement) {
     for (const [ini, passo] of [
       [0, 1],
       [W - 1, -1]
-    ]) {
+    ] as [number, number][]) {
       let v = false;
       for (let i = 0; i < L; i++) {
         const x = ini + i * passo,
@@ -486,7 +486,7 @@ export function tornarContinuo(img: CanvasImageSource, T: number) {
     [-1, 1],
     [1, -1],
     [-1, -1]
-  ]) {
+  ] as [number, number][]) {
     ge.save();
     ge.translate(sx < 0 ? T2 : 0, sy < 0 ? T2 : 0);
     ge.scale(sx, sy);
@@ -589,7 +589,7 @@ export function spriteMarco(p) {
 }
 
 // ---------------------------------------------------------------- objetos físicos (folha 8xN: intacto, trincado, quebrado, estado especial, 4 cacos)
-export const TAM_OBJ = {
+export const TAM_OBJ: Record<string, number> = {
   vaso: 13,
   caixote: 13,
   barril: 14,

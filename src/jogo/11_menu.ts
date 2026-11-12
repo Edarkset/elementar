@@ -587,7 +587,7 @@ export function emblemaElemento(el: string, ativo: boolean) {
         [-12, 20],
         [0, 26],
         [12, 16]
-      ]) {
+      ] as [number, number][]) {
         g.moveTo(-w, y);
         g.bezierCurveTo(-w / 3, y - 6, w / 3, y + 6, w, y - 2);
       }

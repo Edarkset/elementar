@@ -186,7 +186,7 @@ export function paresPendentes() {
     for (const [x, y] of [
       [u.a, u.b],
       [u.b, u.a]
-    ]) {
+    ] as [string, string][]) {
       if (!tem.has(x) || tem.has(y)) continue;
       const d = PD().despertos.find(k => k.nome === y);
       if (d && ativos().some(s => L(s).classe === d.classe)) out.push({ talisma: d.talisma, uniao: u.nome });

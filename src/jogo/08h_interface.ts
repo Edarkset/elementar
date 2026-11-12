@@ -135,7 +135,7 @@ export function iconeTalisma(id: string) {
   return celulaArte(img, 4, 3, i % 4, Math.floor(i / 4), 64, 64);
 }
 // Insígnia: moldura do nível (linha 1) com o emblema do tipo de conquista (linha 2); conquistas globais usam a estrela
-export const EMBLEMA = { chefe: 0, desafio: 1, cenario: 2, mestria: 3, secreta: 4, chamado: 5 };
+export const EMBLEMA: Record<string, number> = { chefe: 0, desafio: 1, cenario: 2, mestria: 3, secreta: 4, chamado: 5 };
 export function insigniaSprite(c, ok: boolean) {
   const img = folhaArte("arte/ui/insignias.png");
   if (!img) return null;

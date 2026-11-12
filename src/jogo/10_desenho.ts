@@ -666,7 +666,7 @@ export function desenharSelo(s: Selo, ox: number, oy: number, sombra) {
       [d, 0],
       [0, -d],
       [0, d]
-    ])
+    ] as [number, number][])
       lg.drawImage(sil, -w / 2 + ddx, -peS + ddy, w, h);
     lg.globalAlpha = 1;
   }

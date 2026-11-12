@@ -481,7 +481,7 @@ export const DIF = {
 };
 // intensidade da horda neste mapa: cada fator vai de 1 (primeiro mapa) até o valor de DIF
 export const hordaK = () => (DIF.hordaRampa > 0 ? Math.min(1, R.profundidade / DIF.hordaRampa) : 1);
-export const hordaF = (k: string) =>
+export const hordaF = (k: "horda" | "hordaVida" | "hordaDano" | "hordaXp") =>
   1 + (DIF[k] - 1) * hordaK(); /* mais difícil (o jogo estava fácil): mais dano, mais inimigos desde o começo e rampa inicial mais forte */ // vida de mini-chefe, chefe e Guardião da Era (em inimigos comuns); o 1º chefe leva chefe1 disso
 // ameaças que crescem com a profundidade: começo suave, fim duro
 export const velRapido = () => Math.min(DIF.rapidoMax, DIF.rapido + DIF.rapidoCresc * R.profundidade);

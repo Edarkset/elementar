@@ -271,7 +271,7 @@ export function fundoAbismo() {
       [-128, 0],
       [0, 128],
       [0, -128]
-    ]) {
+    ] as [number, number][]) {
       g.globalAlpha = 0.55;
       g.drawImage(bolhaCor(i % 3 ? "#ffffff" : "#e8f0f8"), x - r + dx, y - r + dy, r * 2, r * 2);
     }

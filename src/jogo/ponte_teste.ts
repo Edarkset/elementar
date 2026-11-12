@@ -26,7 +26,7 @@ import * as m20 from "./10_desenho.js";
 import * as m21 from "./11_menu.js";
 
 /** variável → função de escrita no módulo dono */
-const ESCRITA = {
+const ESCRITA: Record<string, string> = {
   FONTE: "defFonte",
   pausado: "defPausado",
   rodando: "defRodando",

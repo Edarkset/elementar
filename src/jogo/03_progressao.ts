@@ -595,7 +595,7 @@ export function abrirNivel() {
   if (cl) cartas.push(cl);
   if (cartas.some(c => c.raridade === "lendario")) som("ding");
   // ritmo: em nível ímpar sem carta especial, a melhor carta entra sozinha (metade das interrupções; a força da equipe é a mesma)
-  const RANK = { comum: 0, incomum: 1, raro: 2, epico: 3, lendario: 4 },
+  const RANK: Record<string, number> = { comum: 0, incomum: 1, raro: 2, epico: 3, lendario: 4 },
     especial = false;
   if (J.nivel % 2 === 1 && !especial && sorteadas.length && !META.escolhaManual) {
     const c = cartas
@@ -907,7 +907,7 @@ export function usarItem(k: string) {
 }
 
 // ================================================================ missões do dia: 3 objetivos sorteados pela data, Essência por missão e sequência de dias
-export const TIPOS_DIARIA = {
+export const TIPOS_DIARIA: Record<string, { txt: (n: number) => string; alvos: number[] }> = {
   abates: { txt: (n: number) => `Derrote ${n} inimigos`, alvos: [300, 500, 800] },
   capturas: { txt: (n: number) => `Capture ${n} filhotes selvagens`, alvos: [2, 3, 5] },
   chocados: { txt: (n: number) => `Choque ${n} ovos`, alvos: [2, 3, 4] },

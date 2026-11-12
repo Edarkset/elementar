@@ -52,7 +52,7 @@ export function elementoNoSolo(s: Selo) {
   return el;
 }
 // o chão mudou embaixo de um monstro: um sinal pequeno para a mudança ser vista (com limite, para não poluir)
-export const SINAL_SOLO = {
+export const SINAL_SOLO: Record<string, [cor: string, n: number, forma: string | null]> = {
   vapor: ["#e8eef4", 3, "fumaca"],
   gelo: ["#cfefff", 3, "estrela"],
   agua: ["#7fc8ff", 3, null],
@@ -89,7 +89,7 @@ export function sinalSolo(cx: number, cy: number, vira) {
     });
   }
 }
-export const DUR = {
+export const DUR: Record<string, number> = {
   agua: 40,
   lama: 25,
   fogo: 5,
@@ -106,7 +106,7 @@ export const DUR = {
   queimado: 12,
   rachado: 16
 };
-export const DEPOIS = { fogo: "cinza", eletrico: "agua", vinha: "grama" };
+export const DEPOIS: Record<string, string> = { fogo: "cinza", eletrico: "agua", vinha: "grama" };
 export function hash2(x: number, y: number, s: number) {
   let h = (x * 374761393 + y * 668265263 + s * 982451653) | 0;
   h = Math.imul(h ^ (h >>> 13), 1274126177);
@@ -186,7 +186,7 @@ export function aplicarElementoNoSolo(x: number, y: number, el: string) {
       [-1, 0],
       [0, 1],
       [0, -1]
-    ]) {
+    ] as [number, number][]) {
       const v = soloEm(cx + dx, cy + dy);
       if (v === "grama" || v === "vinha") J.solo.set(cx + dx + "," + (cy + dy), { t: "fogo", ate: J.t + DUR.fogo });
     }
@@ -226,7 +226,7 @@ export function atualizarSolo(dt: number) {
         [-1, 0],
         [0, 1],
         [0, -1]
-      ]) {
+      ] as [number, number][]) {
         if (Math.random() >= 0.15 * vivo * fatorVentoFogo(dx, dy)) continue;
         const v = soloEm(cx + dx, cy + dy);
         if (v === "grama" || v === "vinha") J.solo.set(cx + dx + "," + (cy + dy), { t: "fogo", ate: J.t + DUR.fogo });
@@ -309,7 +309,7 @@ export function efeitoSoloInimigo(e: Inimigo, dt: number) {
   }
   return r;
 }
-export const COR_SOLO = {
+export const COR_SOLO: Record<string, string[]> = {
   gelo: ["#8fc4e0", "#e8f8ff"],
   agua: ["#3a7fd0", "#7fc0ff"],
   lama: ["#5a4028", "#7a5838"],
@@ -333,7 +333,7 @@ export const TEX_SOLO = {},
   TEX_N = 64,
   BASE_TEX = {};
 // molhado, rachado e queimado escurecem o piso por multiplicação (o desenho do chão continua por baixo, como pedra molhada de verdade)
-export const SOLO_MULT = { molhado: 1, rachado: 1, queimado: 1 };
+export const SOLO_MULT: Record<string, number> = { molhado: 1, rachado: 1, queimado: 1 };
 export function texturaSolo(t: string) {
   if (TEX_SOLO[t]) return TEX_SOLO[t];
   const cor = COR_SOLO[t],
@@ -592,8 +592,8 @@ export function texturaBrilho() {
   return c;
 }
 // força do terreno natural sobre um piso pintado (o piso já tem a própria textura; areia nele seria só uma mancha cinza)
-export const SOLO_NAT_PINTADO = { areia: 0, grama: 0, cinza: 0, sombra: 0.5, gelo: 0.6 };
-export const ALFA_SOLO = {
+export const SOLO_NAT_PINTADO: Record<string, number> = { areia: 0, grama: 0, cinza: 0, sombra: 0.5, gelo: 0.6 };
+export const ALFA_SOLO: Record<string, number> = {
   molhado: 0.6,
   queimado: 0.42,
   rachado: 0.6,

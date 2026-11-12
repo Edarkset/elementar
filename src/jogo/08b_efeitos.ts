@@ -10,7 +10,7 @@ import { luzFlash } from "./08g_luz.js";
 // ================================================================ poderes: identidade visual de cada elemento e de cada classe
 // Cada golpe dos monstros tem forma (corte, onda, feixe, projétil) dada pela classe e "material" dado pelo elemento.
 // Quando as folhas de efeito forem importadas (arte/efeitos/...), especiais, reações e combinados tocam a animação da folha.
-export const VFX_EL = {
+export const VFX_EL: Record<string, { c1: string; c2: string; forma: string; g: number }> = {
   fogo: { c1: "#ffb040", c2: "#e8603c", forma: "brasa", g: -30 },
   agua: { c1: "#9fe0ff", c2: "#3f8ae0", forma: "gota", g: 120 },
   terra: { c1: "#c8a070", c2: "#7a5a3a", forma: "pedra", g: 160 },
@@ -277,7 +277,7 @@ export function vfxCorte(s, el: string, r: number) {
         [v.c1, 4.2, 0.35],
         [v.c2, 2.2, 0.9],
         ["#ffffff", 0.8, 1]
-      ]) {
+      ] as [string, number, number][]) {
         const lw = lw0 * K;
         lg.strokeStyle = cor;
         for (let i = 0; i < N; i++) {
@@ -363,7 +363,7 @@ export function vfxFeixe(s, e: Inimigo, el: string) {
         [3, v.c2, 0.45],
         [1, v.c1, 1],
         [0.5, "#ffffff", K > 1.5 ? 0.9 : 0]
-      ]) {
+      ] as [number, string, number][]) {
         const lw = lw0 * K;
         lg.globalAlpha = al * (1 - q);
         lg.strokeStyle = cor;
@@ -556,7 +556,7 @@ export function desenharProjetil(p: Projetil, ox: number, oy: number) {
       for (const [cor, lw] of [
         [v.c1, 1.4],
         ["#ffffff", 0.55]
-      ]) {
+      ] as [string, number][]) {
         lg.strokeStyle = cor;
         lg.lineWidth = lw;
         lg.beginPath();
@@ -656,7 +656,7 @@ export function efCirculo(x0: number, y0: number, r: number, el: string, dur: nu
         [1, 2.2, v.c2, 0.55],
         [1, 0.8, "#ffffff", 0.9],
         [0.78, 1.4, v.c1, 0.8]
-      ]) {
+      ] as [number, number, string, number][]) {
         lg.globalAlpha = a * al;
         lg.strokeStyle = cor;
         lg.lineWidth = lw;
@@ -809,7 +809,7 @@ export function efCortes(x0: number, y0: number, r: number, el: string, n: numbe
           [4, v.c2, 0.4],
           [1.6, v.c1, 0.9],
           [0.6, "#ffffff", 1]
-        ]) {
+        ] as [number, string, number][]) {
           lg.globalAlpha = a * al;
           lg.strokeStyle = cor;
           lg.lineWidth = lw * (1 - q * 0.5);
@@ -1012,7 +1012,7 @@ export function efQueda(x0: number, y0: number, el: string, atraso: number) {
         [3.2, v.c2, 0.45],
         [1.4, v.c1, 0.95],
         [0.5, "#ffffff", 1]
-      ]) {
+      ] as [number, string, number][]) {
         lg.globalAlpha = al;
         lg.strokeStyle = cor;
         lg.lineWidth = lw;
@@ -1053,7 +1053,7 @@ export function efPuxao(x0: number, y0: number, r: number, el: string) {
       for (const [m, lw, cor, al] of [
         [1, 2, v.c2, 0.5],
         [0.72, 1, v.c1, 0.8]
-      ]) {
+      ] as [number, number, string, number][]) {
         lg.globalAlpha = a * al;
         lg.strokeStyle = cor;
         lg.lineWidth = lw;
@@ -1132,7 +1132,7 @@ export function efRastroSalto(x1: number, y1: number, x2: number, y2: number, el
         [6, v.c2, 0.3],
         [2.4, v.c1, 0.8],
         [0.8, "#ffffff", 1]
-      ]) {
+      ] as [number, string, number][]) {
         lg.globalAlpha = a * al;
         lg.strokeStyle = cor;
         lg.lineWidth = lw * a + 0.2;
@@ -1475,7 +1475,7 @@ export function nomeArqReacao(a: Inimigo, b: HTMLButtonElement) {
   for (const [x, y] of [
     [a, b],
     [b, a]
-  ]) {
+  ] as [HTMLButtonElement | Inimigo, HTMLButtonElement | Inimigo][]) {
     const c = `arte/efeitos/reacao__${x}_${y}.png`;
     if (folhaArte(c)) return c;
   }

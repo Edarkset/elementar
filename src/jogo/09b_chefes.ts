@@ -1894,7 +1894,7 @@ export function desenharPerigos(ox: number, oy: number) {
   lg.globalAlpha = 1;
   for (const g of J.golpes) if (g.chao) g.chao(ox, oy);
 }
-export const COR_PROJ = {
+export const COR_PROJ: Record<string, string> = {
   pedra: "#8a8478",
   osso: "#e8e0d0",
   moeda: "#e0b040",

@@ -474,9 +474,9 @@ export const DIF = {
   hordaMax: 110,
   hordaCurva: 1.3,
   hordaSobe: 0.85,
-  hordaEnche: 0.8,
+  hordaEnche: 2.5,
   hordaRepor: 0.4,
-  hordaChegando: 2,
+  hordaChegando: 1.4,
   // classes de alvo único contra a multidão: quantos inimigos o tiro do Caçador atravessa e o raio da explosão do tiro do totem
   // do Xamã (0 = sem área). Escolhidos por simulação (docs/EQUILIBRIO_SIMULACOES.md)
   cacadorPerfura: 1,

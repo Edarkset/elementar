@@ -79,8 +79,8 @@ export function atualizarDiretor(dt) {
     if (col > 22 && vida < 0.45 && d.respiro <= 0) {
       d.respiro = 3;
     } // afogado: respiro curto
-    // ajuste do diretor sobre a curva: quem domina (vida cheia por muito tempo) recebe até 40% a mais; quem está mal, 20% a menos
-    const alvoAj = vida < 0.4 ? 0.8 : d.tCheia > 20 ? Math.min(1.4, 1 + (d.tCheia - 20) / 100) : 1;
+    // ajuste do diretor sobre a curva: quem domina (vida cheia por muito tempo) recebe até 30% a mais; quem está mal, 20% a menos
+    const alvoAj = vida < 0.4 ? 0.8 : d.tCheia > 20 ? Math.min(1.3, 1 + (d.tCheia - 20) / 100) : 1;
     d.ajuste += (alvoAj - d.ajuste) * 0.05;
     d.alvo = alvoHorda() * d.ajuste;
     d.tCheia = vida > 0.8 ? d.tCheia + 0.5 : Math.max(0, d.tCheia - 1.5);

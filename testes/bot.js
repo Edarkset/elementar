@@ -165,6 +165,7 @@
         mapa: am.mapa,
         tela: +(am.somaTela / am.n).toFixed(1),
         picoTela: am.picoTela,
+        tPico: am.tPico,
         picoTotal: am.picoTotal,
         abates: R.abates - am.abates0,
         niveis: (J ? J.nivel : am.nivel0) - am.nivel0,
@@ -250,6 +251,9 @@
           const faixa = J.t < 15 ? 0 : J.t < 30 ? 1 : J.t < 60 ? 2 : J.t < 90 ? 3 : 4;
           am.curvaSoma[faixa] += n;
           am.curvaN[faixa]++;
+          if (n > am.picoTela)
+            am.tPico =
+              Math.round(J.t) + (J.chefeVivo ? " chefe" : "") + (J.diretor && J.diretor.eventos ? " ondas" + J.diretor.eventos : "");
           am.picoTela = Math.max(am.picoTela, n);
           am.picoTotal = Math.max(am.picoTotal, J.inimigos.length);
           if (J.vida / J.vidaMax < 0.35) am.baixa++;

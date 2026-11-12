@@ -52,6 +52,7 @@ import {
   fechar,
   FORMAS_TOTAL,
   formasVistas,
+  limparCenas,
   mostrarCartas,
   mostrarPortais,
   quadrosRetrato,
@@ -130,6 +131,7 @@ export function pausar() {
 export function menu() {
   defRodando(false);
   fechar();
+  limparCenas();
   $("telaMenu").classList.add("ativa");
   $("hud").style.display = "none";
   $("hudBase").style.display = "none";

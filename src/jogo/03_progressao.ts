@@ -1232,6 +1232,16 @@ export function cenaTocar(html: string, classe: string, dur: number, aoFim?: () 
   CINE.fila.push({ html, classe, dur, aoFim });
   if (!CINE.ativa) cenaProxima();
 }
+/** descarta as cenas que ainda estavam na fila (ao voltar ao menu): senão tocariam por cima do menu ou da próxima run */
+export function limparCenas() {
+  CINE.fila.length = 0;
+  CINE.ativa = false;
+  const el = $("cine");
+  if (el) {
+    el.className = "cine";
+    el.innerHTML = "";
+  }
+}
 export function cenaProxima() {
   const c = CINE.fila.shift();
   let el = $("cine");

@@ -154,7 +154,10 @@
       vazia: 0,
       abates0: R.abates,
       nivel0: J ? J.nivel : 1,
-      rec0: R.st.recContato + R.st.recBala
+      rec0: R.st.recContato + R.st.recBala,
+      // curva dentro do mapa: inimigos na tela por faixa de tempo (0-15 s, 15-30, 30-60, 60-90, 90 até o chefe)
+      curvaSoma: [0, 0, 0, 0, 0],
+      curvaN: [0, 0, 0, 0, 0]
     });
     const fechaAm = () => {
       if (!am || !am.n) return;
@@ -167,7 +170,8 @@
         niveis: (J ? J.nivel : am.nivel0) - am.nivel0,
         vidaBaixa: +(am.baixa / am.n).toFixed(3),
         telaVazia: +(am.vazia / am.n).toFixed(3),
-        seg: Math.round(am.n * 0.5)
+        seg: Math.round(am.n * 0.5),
+        curva: am.curvaSoma.map((v, i) => (am.curvaN[i] ? +(v / am.curvaN[i]).toFixed(1) : null))
       });
     };
     am = novaAm();
@@ -243,6 +247,9 @@
           }
           am.n++;
           am.somaTela += n;
+          const faixa = J.t < 15 ? 0 : J.t < 30 ? 1 : J.t < 60 ? 2 : J.t < 90 ? 3 : 4;
+          am.curvaSoma[faixa] += n;
+          am.curvaN[faixa]++;
           am.picoTela = Math.max(am.picoTela, n);
           am.picoTotal = Math.max(am.picoTotal, J.inimigos.length);
           if (J.vida / J.vidaMax < 0.35) am.baixa++;

@@ -107,6 +107,8 @@ import { eventosVitoria } from "./08e_conquistas.js";
 import { cartaLenda, passiva } from "./08f_lendas.js";
 import { luzFlash } from "./08g_luz.js";
 import { UI_ARQ } from "./08h_interface.js";
+import { copiarRelatorio, fecharRelatorio, relatorioEscolha } from "./08i_relatorio.js";
+import { aplicarElemental, cartaElemental, elementosAbertos, PODER_ELEMENTO } from "./08j_elementais.js";
 import { arteCriatura } from "./09_criaturas.js";
 import { anunciar } from "./09b_chefes.js";
 import { desenharEquipe, desenharNinho, toast } from "./10_desenho.js";
@@ -228,6 +230,7 @@ export function mostrarCartas(titulo, sub, cartas, op = {}) {
         c.acao(b);
         return;
       }
+      relatorioEscolha(titulo, c.titulo);
       box._escolhendo = true;
       b.classList.add("escolhida");
       som("tic"); // a carta escolhida cresce e brilha por um instante
@@ -504,6 +507,7 @@ export function cartasNivel() {
       });
     }
   }
+  for (const el of elementosAbertos()) cand.push(cartaElemental(el));
   const sorteio = [],
     pool = cand.slice();
   while (sorteio.length < 3 && pool.length) {
@@ -514,7 +518,7 @@ export function cartasNivel() {
     sorteio.push(c);
   }
   if (sorteio.length && Math.random() < 0.07 + ((SIN.rm && SIN.rm.talisma) || 0) * 0.1) {
-    const c = escolha(sorteio.filter(c => !c.asc && c.s.pod[c.k] <= 3));
+    const c = escolha(sorteio.filter(c => !c.asc && !c.elem && c.s.pod[c.k] <= 3));
     if (c) {
       c.dourada = true;
       c.raridade = "lendario";
@@ -540,7 +544,13 @@ export function aplicarCartaNivel(c) {
     anel(s.x, s.y, 30, cor, 0.5);
     particulas(s.x, s.y, cor, 18, 90, 2);
     luzFlash(s.x, s.y, cor, 60, 0.4);
-    texto(s.x, s.y - 20, c.asc ? "Ascensão!" : "Mais forte!", cor, 14);
+    texto(s.x, s.y - 20, c.asc ? "Ascensão!" : c.elem ? PODER_ELEMENTO[c.elem].nome + "!" : "Mais forte!", c.elem ? COR[c.elem] : cor, 14);
+  }
+  if (c.elem) {
+    aplicarElemental(c.elem);
+    aplicarNivel(s, 1);
+    if (J) calcularSinergia();
+    return proximaEscolha();
   }
   if (c.asc) {
     s.asc = s.asc || { d: 0, c: 0, v: 0 };
@@ -603,6 +613,7 @@ export function abrirNivel() {
       .slice(0, sorteadas.length)
       .sort((a, b) => +(b.classe === "dourada") - +(a.classe === "dourada") || (RANK[b.raridade] || 0) - (RANK[a.raridade] || 0))[0];
     if (!SIM.ativo) texto(J.jogador.x, J.jogador.y - 30, `Nível ${J.nivel}: ${c.titulo}`, "#ffe6a6", 13);
+    relatorioEscolha(`Nível ${J.nivel} (automática)`, c.titulo);
     c.acao();
     return;
   }
@@ -2014,7 +2025,8 @@ export function resumoRun() {
     especial: ["Especiais", "#c58cff"],
     despertar: ["Despertar", "#ffd34a"],
     combinado: ["Combinado", "#ff8ab0"],
-    ambiente: ["Ambiente", "#9ff07a"]
+    ambiente: ["Ambiente", "#9ff07a"],
+    elemental: ["Poder do Elemento", "#ff9a5a"]
   };
   const linhas = Object.entries(pf)
     .map(([k, v]) => [k, (v / tot) * 100])
@@ -2082,6 +2094,7 @@ export function derrota() {
       bonusLoja("ganancia")
   );
   META.essencia += ess;
+  const relatorio = fecharRelatorio(); // antes de qualquer saída da tela: "Nova run" troca a run
   defRunSalva(null);
   gravar();
   // fim de run que puxa para a próxima: recorde, quanto falta para a próxima melhoria e atalho para o Santuário
@@ -2108,7 +2121,14 @@ export function derrota() {
           ]
         : []),
       { titulo: "Nova run", raridade: podem.length ? "comum" : "raro", texto: "Formar uma nova Aliança agora.", acao: () => telaPacto() },
-      { titulo: "Voltar ao Nexo", texto: "Ir para o menu.", acao: () => menu() }
+      { titulo: "Voltar ao Nexo", texto: "Ir para o menu.", acao: () => menu() },
+      {
+        titulo: "Copiar relatório",
+        texto: "Os números desta partida, para comparar com as simulações.",
+        classe: "relatorio",
+        manter: true,
+        acao: () => copiarRelatorio(relatorio)
+      }
     ],
     { fundo: recorde ? "ui__vitoria" : "ui__derrota" }
   );

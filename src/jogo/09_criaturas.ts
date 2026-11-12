@@ -1,5 +1,5 @@
 // Elementar · criaturas: inimigos comuns e mini-chefes (corpo, passo, golpe, derrota e desenho)
-import "./08h_interface.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
+import "./08j_elementais.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   agendar,
   ativos,

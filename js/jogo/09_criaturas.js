@@ -1,6 +1,6 @@
 // GERADO por "npm run compilar" a partir de src/jogo/09_criaturas.ts. Edite o .ts, não este arquivo.
 // Elementar · criaturas: inimigos comuns e mini-chefes (corpo, passo, golpe, derrota e desenho)
-import "./08h_interface.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
+import "./08j_elementais.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   agendar,
   ativos,

@@ -163,6 +163,14 @@ const RAIZ = path.join(__dirname, "..");
   descarta("monstro da reserva desconhecido", r => r.reserva.push({ id: "sumido", rar: "comum", ramo: null }));
   descarta("ovo do ninho desconhecido", r => (r.ninho = [{ id: "sumido", rar: "raro", prog: 0, alvo: 10 }]));
   descarta("relíquias que não são lista", r => (r.reliquias = "x"));
+  descarta("Poder do Elemento ilegível", r => (r.elementais = "fogo"));
+  caso("run com Poder do Elemento e relatório da partida abre como foi salva", () => {
+    const s = comRun(r => {
+      r.elementais = { fogo: 3, luz: 1 };
+      r.st = { rel: { mapas: [], escolhas: ["Nível 2 → Erupção (novo)"], t0: 1 }, elementais: 4 };
+    });
+    assert.deepEqual(ler(s).run, s.run);
+  });
   descarta("run que não é tabela", (r, s) => Object.keys(r).forEach(k => delete r[k]));
   caso("run de save antigo sem campos novos (ninho, elos) continua", () => {
     const s = comRun(r => {

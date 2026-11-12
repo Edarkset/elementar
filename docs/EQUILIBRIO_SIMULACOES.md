@@ -76,6 +76,47 @@ Os 77 s vinham de só 9 lutas. O chefe dos Andes é um pouco mais lento que os d
 
 A tela de fim agora mostra os três monstros que mais causaram dano (básico, habilidades, especiais e as reações que dispararam), com uma frase: carregou a run sozinho, dano bem dividido, ou quem mais causou. Cada golpe sabe qual monstro o causou (`AUTOR` em `01_nucleo.ts`). Só contabilidade: as partidas de referência ficaram idênticas.
 
+### 6. Relatório da partida: o robô contra quem joga de verdade
+
+A tela de fim tem a carta **Copiar relatório**. Ela copia, num texto só, os mesmos números que o robô mede: inimigos na tela por faixa de tempo em cada mapa, pico, abates e níveis por mapa, tempo de chefe, vida mínima, dano por fonte e por monstro, reações, Talismãs, Despertos, Uniões e as cartas escolhidas. Nada sai do aparelho: o texto só vai para onde a pessoa colar. O registro vai junto no save da run, então fechar e reabrir o jogo no meio não perde nada.
+
+Para comparar: cole os relatórios num arquivo, um por linha, e passe junto com um resultado do robô:
+
+```bash
+python3 testes/resumo.py partidas.txt testes/res.json
+```
+
+Se a curva da horda ou o tempo de chefe de quem joga ficar longe do robô, o robô está jogando diferente de uma pessoa e os números dele precisam de cuidado. O robô não passa por esse registro: as partidas de referência ficaram idênticas.
+
+### 7. Poder do Elemento: uma escolha nova no meio da run
+
+Quando um monstro chega à forma Suprema (estágio 3: nível 15 e um chefe vencido), o poder do elemento dele passa a aparecer nas cartas de nível. É da equipe, vai do nível 1 ao 5 e dispara sozinho (`src/jogo/08j_elementais.ts`):
+
+| Elemento | Poder | O que faz | Recarga |
+|---|---|---|---|
+| Fogo | Erupção | explosões nos pontos de maior multidão; o chão pega fogo | 9 s |
+| Água | Maré | onda que fere e empurra a horda | 8 s |
+| Terra | Queda de Rochas | rochas sobre vários inimigos na tela | 10 s |
+| Ar | Ciclone | puxa e fere a multidão por alguns segundos | 11 s |
+| Raio | Tempestade | raios em vários inimigos | 7 s |
+| Natureza | Bênção da Mata | cura a equipe e enraíza quem está perto | 12 s |
+| Luz | Pilar Solar | dano muito alto no inimigo mais forte | 9 s |
+| Sombra | Abraço da Sombra | puxa a multidão para um ponto, fere e cega | 10 s |
+
+O dano vem do Supremo mais forte daquele elemento (220% no nível 1 até 500% no 5) e a recarga cai até 25%. Usa os efeitos visuais que já existem, sem arte nova. No resumo de fim aparece como "Poder do Elemento" e conta para o monstro que o carrega.
+
+Medição (32 partidas com e 32 sem, até o mapa 10; `--dif '{"elementais":0}'` desliga):
+
+| | sem | com |
+|---|---|---|
+| profundidade média · mediana | 6,25 · 6,5 | 6,47 · 6,5 |
+| runs em que o poder apareceu | | 31 de 32 (sempre do mapa 2 em diante) |
+| cartas de nível: Ascensão | 28% | 21% |
+| cartas de nível: Poder do Elemento | | 9% |
+| dano do Poder do Elemento | | 8% do total |
+
+A Ascensão (a carta de quando tudo está no máximo) perdeu espaço para uma escolha com efeito na tela, e a dificuldade ficou dentro do ruído: não foi preciso compensar. Mudança de jogo intencional: as partidas de referência foram gravadas de novo no mesmo commit.
+
 ## Rodada de 10/11/2026: intensidade da horda, efeitos e performance
 
 Mais de 200 partidas simuladas nesta rodada. Tudo abaixo foi medido com o bot; onde o bot não serve de régua, está dito.

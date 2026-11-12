@@ -30,6 +30,8 @@ O código que se edita fica em `src/jogo/*.ts`. O `js/jogo/*.js` é gerado por `
 | `08_horda` | diretor de horda: ritmo, ondas, ameaça |
 | `08b_efeitos` | efeitos visuais dos poderes, projéteis, reações e combinados |
 | `08c` a `08h` | eventos no meio do mapa, árvore de poderes, conquistas, Lendas e Panteão, luz, arte da interface |
+| `08i` | relatório da partida: as medidas do robô registradas no jogo de verdade, copiadas na tela de fim |
+| `08j` | Poder do Elemento: o poder da equipe que abre quando um monstro chega à forma Suprema |
 | `09_criaturas` | inimigos comuns e mini-chefes: corpo, passo, golpe, derrota e desenho |
 | `09b_chefes` | chefes: inteligência, escolha do golpe, perigos anunciados, segunda fase |
 | `09c_golpes` | **um golpe por função** (leque, espiral, chuva, investida...) e a tabela `GOLPES` |

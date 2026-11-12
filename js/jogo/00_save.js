@@ -173,5 +173,6 @@ function problemaRun(r, cat) {
   if (Array.isArray(r.ninho) && !r.ninho.every(o => ehObj(o) && typeof o.id === "string" && cat.linhas.has(o.id)))
     return "ovo do ninho desconhecido";
   if ("itens" in r && !ehObj(r.itens)) return "bolsa ilegível";
+  if ("elementais" in r && r.elementais != null && !ehObj(r.elementais)) return "Poder do Elemento ilegível";
   return null;
 }

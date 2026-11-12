@@ -1,5 +1,24 @@
 # Equilíbrio: testes por simulação
 
+## Rodada de 12/11/2026: horda gradual e as outras mecânicas
+
+Comparações sempre com 28 a 32 partidas por versão, até o mapa 10. O robô agora mede a horda ao longo do mapa (inimigos na tela de 0 a 15 s, 15 a 30, 30 a 60, 60 a 90 e 90 em diante) e o momento do pico. Também dá para fixar a classe (`--classe`) e mudar dados de poderes (`--poderes`) por bateria.
+
+### 1. Horda gradual
+
+**O que estava errado:** a taxa de nascimento crescia sozinha com o tempo, sem limite, e o diretor só corrigia devagar. Resultado medido (31 partidas): a tela triplicava entre 15 e 30 s (mapa 3: de 11,3 para 35,6 inimigos) e havia picos de até 140 inimigos já no mapa 1.
+
+**O que mudou:** cada mapa tem uma curva de inimigos na tela. Ela começa com poucos e cresce aos poucos até o pico perto do chefe (`alvoHorda` em `08_horda.ts`), e os nascimentos completam o que falta na tela para a curva. O diretor continua decidindo quanto (até +30% para quem domina, -20% e respiro para quem está mal). As ondas especiais passam a ser proporcionais à horda do momento e nunca aparecem nos primeiros 30 s.
+
+| Versão | Mapa 3 na tela (0-15 · 15-30 · 30-60 · 60-90 s) | Tela vazia | Profundidade mediana | O que ensinou |
+|---|---|---|---|---|
+| antes | 11,3 · 35,6 · 42,8 · 60,6 | 6-10% | 5 | o salto do começo |
+| 1 | 3,2 · 5,7 · 11,7 · 22,0 | 14-22% | 6 | contar os que estavam chegando esvaziava a tela (o robô foge, eles ficam fora dela) |
+| 2 | 4,6 · 7,7 · 14,9 · 28,5 | 13-17% | 7,5 | a equipe forte mata mais rápido do que a reposição |
+| 3 | 7,7 · 12,1 · 21,9 · 40,7 | 3-9% | 6 | forma certa; picos de até 240 depois das ondas |
+| 4 | 6,7 · 10,7 · 19,2 · 35,7 | 5-9% | 7 | picos menores (118 a 192); ficou fácil |
+| 5 | 6,6 · 10,8 · 19,8 · 35,0 | 5-9% | 7 | vida maior dos comuns não muda quem morre: 66% do dano recebido é de contato |
+
 ## Rodada de 10/11/2026: intensidade da horda, efeitos e performance
 
 Mais de 200 partidas simuladas nesta rodada. Tudo abaixo foi medido com o bot; onde o bot não serve de régua, está dito.

@@ -476,6 +476,10 @@ export const DIF = {
   hordaEnche: 0.8,
   hordaRepor: 0.4,
   hordaChegando: 2,
+  // classes de alvo único contra a multidão: quantos inimigos o tiro do Caçador atravessa e o raio da explosão do tiro do totem
+  // do Xamã (0 = sem área). Escolhidos por simulação (docs/EQUILIBRIO_SIMULACOES.md)
+  cacadorPerfura: 1,
+  totemArea: 0,
   hordaVida: 0.62,
   hordaDano: 0.8,
   hordaXp: 0.62,
@@ -1276,7 +1280,7 @@ export function ataqueBasico(s: Selo, a: Atributos, el: Elemento, cor: string) {
           el,
           cor,
           vida: 1.2,
-          perf: SIN.cacadores >= 3 ? 3 : 1,
+          perf: SIN.cacadores >= 3 ? Math.max(3, DIF.cacadorPerfura) : DIF.cacadorPerfura,
           r: 2
         });
       }

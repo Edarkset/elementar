@@ -678,7 +678,8 @@ function passoCriasZonas(dt, P) {
           cor: t.cor,
           vida: 1,
           perf: 1,
-          r: 2
+          r: 2,
+          explode: DIF.totemArea || undefined
         });
       }
       t.cd = 0.8;

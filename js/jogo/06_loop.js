@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/06_loop.ts. Edite o .ts, não este arquivo.
 // Elementar · entrada (toque, teclado) e laço principal do jogo
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./05_arte.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -155,7 +156,6 @@ export function usarDespertar() {
   parar(0.15);
   texto(J.jogador.x, J.jogador.y - 24, "Despertar Elemental!", "#ffd34a", 24);
 }
-
 // ================================================================ loop
 export let ultimoT = 0;
 // qualidade automática: mede o tempo de cada quadro e, se o aparelho não der conta, reduz primeiro o que menos se nota

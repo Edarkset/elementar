@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/08e_conquistas.ts. Edite o .ts, não este arquivo.
 // Elementar · conquistas: eventos, Insígnias, murais e telas
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./08d_poderes.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -117,7 +118,6 @@ export function telaConquistas() {
   $("telaMenu").classList.remove("ativa");
   const tot = CONQ().length,
     feitas = Object.keys(META.conq).length;
-  /** @type {Carta[]} */
   const cartas = [
     {
       titulo: `Insígnias: ${feitas}/${tot}`,
@@ -157,7 +157,6 @@ export function telaConquistas() {
 export function telaMural(uid) {
   const u = UNIV[uid],
     l = D.lendas.find(x => x.universo === uid);
-  /** @type {Carta[]} */
   const cartas = CONQ()
     .filter(c => c.universo === uid)
     .map(c => {
@@ -188,7 +187,6 @@ export function telaMural(uid) {
   mostrarCartas(u.nome, "Mural de Ladrilhos", cartas);
 }
 export function telaGlobais() {
-  /** @type {Carta[]} */
   const cartas = CONQ()
     .filter(c => c.categoria !== "mapa")
     .map(c => {

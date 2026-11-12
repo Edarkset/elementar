@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/05_arte.ts. Edite o .ts, não este arquivo.
 // Elementar · artes importadas: manifesto, carregamento sob demanda, recortes e animações dos monstros
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./04_ambiente.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -509,7 +510,7 @@ export function folhaRecolorida(anim, base, alvo, celula) {
 // folhas que a conversão antiga achatou: originais em 3:2 (1536x1024) foram forçados ao tamanho antigo, e o desenho ficou
 // 25% mais baixo (ou 33% mais largo). Reconhecidas pelo caminho E pelo tamanho exato da conversão antiga: uma arte
 // reconvertida com a proporção certa tem outro tamanho e não é esticada. Medido comparando escudos redondos e corpos.
-/** padrão do nome e tamanho do arquivo achatado @type {[RegExp,number,number][]} */
+/** padrão do nome e tamanho do arquivo achatado */
 export const ARTE_ACHATADA = [
   [/^arte\/monstros\/.*__anim_\d+\.png$/, 384, 192],
   [/^arte\/monstros\/.*__(base|epico|lendario)\.png$/, 256, 128],

@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/01_nucleo.ts. Edite o .ts, não este arquivo.
 // Elementar · utilidades, som, save, sprites procedurais, estado da run, sinergias e Santuário
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import { anel, DIF, emArea, ferir, MOD, particulas, PRESSAGIOS, texto, tremor } from "./02_combate.js";
@@ -14,7 +15,6 @@ export const $ = id => document.getElementById(id);
 // cada quadro enche o console). grave=true é erro de regra do jogo ou de save (aparece como erro e a verificação automática acusa);
 // sem grave é um recurso do navegador que faltou e o jogo segue com o plano B (aparece como aviso)
 export const RELATADOS = new Set();
-/** @param {string} onde @param {unknown} erro @param {boolean} [grave] */
 export function relatar(onde, erro, grave) {
   if (RELATADOS.has(onde)) return;
   RELATADOS.add(onde);
@@ -37,17 +37,15 @@ export const dist2 = (a, b) => {
 };
 // fronteira entre o conteúdo (js/dados.js, ainda sem esquema) e as formas do jogo: os dados entram como "desconhecido" e saem tipados.
 // Na etapa 3 do plano (dados em JSON com esquema) esta conversão vira validação de verdade
-export const LINHAS = /** @type {Linha[]} */ (/** @type {unknown} */ (D.linhas)),
-  ANCESTRAIS = /** @type {Linha[]} */ (/** @type {unknown} */ (D.ancestrais || []));
-/** @type {Record<string,Linha>} */
+export const LINHAS = D.linhas,
+  ANCESTRAIS = D.ancestrais || [];
 export const LINHA = Object.fromEntries([...LINHAS, ...ANCESTRAIS].map(l => [l.id, l]));
-/** @type {Record<string,Universo>} */
-export const UNIV = Object.fromEntries(/** @type {Universo[]} */ (/** @type {unknown} */ (D.universos)).map(u => [u.id, u]));
+export const UNIV = Object.fromEntries(D.universos.map(u => [u.id, u]));
 export const REAC = {};
 D.reacoes.forEach(r => {
   REAC[[r.a, r.b].sort().join("|")] = r;
 });
-export const ELS = /** @type {Elemento[]} */ (Object.keys(D.elementos)),
+export const ELS = Object.keys(D.elementos),
   COR = Object.fromEntries(ELS.map(k => [k, D.elementos[k].cor])),
   NOME_EL = k => D.elementos[k].nome;
 export const NIV = [1, 4, 9, 15]; // protótipo (jogo final: 1, 5, 12, 20)
@@ -82,7 +80,6 @@ export function mistura(a, b, t) {
     y = hexRgb(b);
   return hex(x.map((v, i) => v + (y[i] - v) * t));
 }
-
 // ================================================================ som: efeitos sintetizados na hora (sem arquivos de áudio)
 // O navegador só libera o som depois do primeiro toque; o volume e o mudo ficam no save (META.som).
 export const SOM = { ctx: null, mestre: null, ult: {} };
@@ -259,7 +256,6 @@ export function liberadosIniciais() {
   );
   return [...ini];
 }
-/** @type {Meta} */
 export let META = Object.assign({ essencia: 0, recorde: 0, liberados: liberadosIniciais() }, salvo.meta || {});
 // saves de antes do Bestiário: os filhotes já liberados entram como vistos (sem avisos nem presentes por eles)
 if (!META.dex) {
@@ -268,7 +264,6 @@ if (!META.dex) {
   META.dexMarco = Math.floor(META.liberados.length / 10);
 }
 export let RUN_SALVA = salvo.run || null;
-
 // ================================================================ sprites procedurais (placeholders da arte final)
 export const cacheSpr = new Map();
 if (document.fonts && document.fonts.load) {
@@ -562,9 +557,8 @@ export function spriteOvo(el, rar) {
   cacheSpr.set(k, c);
   return c;
 }
-
 // ================================================================ estado
-export const cv = /** @type {HTMLCanvasElement} */ ($("tela")),
+export const cv = $("tela"),
   ctx = cv.getContext("2d"),
   lo = document.createElement("canvas"),
   lg = lo.getContext("2d");
@@ -619,9 +613,9 @@ export function medirHud() {
   $("combo").style.top = HUD_BAIXO + 4 + "px";
 }
 if (typeof ResizeObserver === "function") new ResizeObserver(medirHud).observe($("hud"));
-/** a run em andamento (null no menu) @type {Run} */
+/** a run em andamento (null no menu) */
 export let R = null;
-/** o mapa em andamento (null fora do jogo) @type {Mapa} */
+/** o mapa em andamento (null fora do jogo) */
 export let J = null;
 export let rodando = false,
   pausado = false;
@@ -630,7 +624,6 @@ export let rodando = false,
 // cada caso; com a arte chegando em momentos diferentes, a mesma semente dava partidas diferentes. O que existe no mapa (marcos,
 // construções) é decidido pela lista de artes, não pela imagem, então os obstáculos são os mesmos do jogo normal
 export const SIM = { ativo: false, entrada: null, aoDerrota: null, semEspeciais: false, semArte: false };
-/** @type {FonteDano} */
 export let FONTE = "basico"; // origem do dano corrente (básico, habilidade, especial, combinado, despertar, reação, ambiente)
 export function agendar(seg, fn) {
   J.agenda.push({ t: J.t + seg, fn });
@@ -661,7 +654,6 @@ export function novoSt() {
 }
 export const filaRamo = [],
   filaEsp = [];
-
 export function novoSelo() {
   return { nivel: 1, pod: { b: 1, h1: 0, h2: 0 }, mod: { h1: null, h2: null }, esp: null, mon: null, trocaCd: 0 };
 }
@@ -728,7 +720,6 @@ export function ramoObj(s) {
   const r = ramoAtual(s);
   return est(s) >= 2 && r != null ? L(s).ramos[r] : null;
 }
-/** @param {Selo} s @returns {Elemento} */
 export function elementoDe(s) {
   const r = ramoObj(s);
   return r ? r.elemento : L(s).elemento;
@@ -764,9 +755,7 @@ export function poolPacto() {
   const p = META.liberados.filter(id => R.pacto.includes(LINHA[id].elemento));
   return p.length ? p : LINHAS.filter(l => R.pacto.includes(l.elemento)).map(l => l.id);
 }
-
 // ================================================================ sinergias e atributos
-/** @type {Sinergia} */
 export let SIN = { dano: 1, vida: 1, cad: 1, reac: 1, chips: [], rm: {} };
 // ================================================================ Santuário: melhorias permanentes compradas com a Essência das runs
 export const LOJA = [
@@ -1169,34 +1158,33 @@ export function atrib(s) {
 }
 export const fNivel = lv => 1 + 0.25 * Math.max(0, lv - 1),
   fRecarga = lv => 1 - 0.06 * Math.max(0, lv - 1);
-
 // ================================================================ escrita vinda de outros módulos
 // Um módulo lê as variáveis de outro direto (J.vida, R.selos...), mas só o módulo dono pode atribuir nelas. Quem precisa trocar o
 // valor inteiro (começar um mapa, pausar, marcar a fonte do dano) chama uma destas funções: toda troca tem um nome e um lugar só.
-/** @param {FonteDano} v */ export function defFonte(v) {
+export function defFonte(v) {
   return (FONTE = v);
 }
-/** @param {boolean} v */ export function defPausado(v) {
+export function defPausado(v) {
   return (pausado = v);
 }
-/** @param {boolean} v */ export function defRodando(v) {
+export function defRodando(v) {
   return (rodando = v);
 }
-/** @param {AindaSemTipo} v a run guardada para "Continuar" */ export function defRunSalva(v) {
+/** @param v a run guardada para "Continuar" */ export function defRunSalva(v) {
   return (RUN_SALVA = v);
 }
-/** @param {number} v */ export function defMapaSeg(v) {
+export function defMapaSeg(v) {
   return (MAPA_SEG = v);
 }
-/** @param {number} v */ export function defMiniSeg(v) {
+export function defMiniSeg(v) {
   return (MINI_SEG = v);
 }
-/** @param {Mapa} v */ export function defJ(v) {
+export function defJ(v) {
   return (J = v);
 }
-/** @param {Run} v */ export function defR(v) {
+export function defR(v) {
   return (R = v);
 }
-/** @param {Meta} v */ export function defMeta(v) {
+export function defMeta(v) {
   return (META = v);
 }

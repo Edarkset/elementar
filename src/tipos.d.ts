@@ -3,7 +3,7 @@
 // Regra: campo novo em R (a run), J (o mapa), num Selo ou num inimigo entra aqui primeiro. Se o código usar um
 // campo que não está listado, o verificador acusa: é assim que erro de digitação e campo esquecido aparecem antes de publicar.
 
-/** Dívida de tipagem contada: estrutura que ainda não foi descrita. `grep -c AindaSemTipo js/tipos.d.ts` diz quanto falta. */
+/** Dívida de tipagem contada: estrutura que ainda não foi descrita. `grep -o AindaSemTipo src/tipos.d.ts | wc -l` diz quanto falta. */
 type AindaSemTipo = any;
 
 type Elemento = "fogo" | "agua" | "terra" | "ar" | "raio" | "natureza" | "luz" | "sombra";
@@ -588,6 +588,58 @@ interface Mapa {
   lendaVfx?: AindaSemTipo;
   domCd?: number;
   queima?: number;
+}
+
+/** ganchos de simulação e teste (01_nucleo.ts); no jogo normal ficam desligados */
+interface Simulacao {
+  ativo: boolean;
+  /** entrada do robô no lugar do toque e do teclado */ entrada:
+    (() => { x: number; y: number; esquivar?: boolean; despertar?: boolean; combinado?: boolean }) | null;
+  aoDerrota: (() => void) | null;
+  semEspeciais: boolean;
+  /** simula sem estado de arte (partida reproduzível) */ semArte: boolean;
+  /** testes que querem esses sistemas ligados mesmo simulando */ dex?: boolean;
+  conquistas?: boolean;
+  semTalismas?: boolean;
+  tudoLiberado?: boolean;
+}
+/** objeto físico do cenário (vaso, barril, marco, estátua...), criado por novoProp */
+interface PropCena extends Ponto {
+  ehProp: true;
+  tipo: string;
+  mat: AindaSemTipo;
+  vx: number;
+  vy: number;
+  r: number;
+  m: number;
+  esc: number;
+  hp: number;
+  max: number;
+  morto: boolean;
+  /** marcos e luzes: célula da folha */ idx?: number;
+  /** estátua de inimigo derrotado */ spriteFixo?: HTMLCanvasElement;
+  ouro?: boolean;
+  [estado: string]: AindaSemTipo;
+}
+/** partícula do clima (neve, chuva, folhas, brasas...), criada por particulaAr */
+interface ParticulaAr extends Ponto {
+  k: string;
+  z: number;
+  vx: number;
+  vy: number;
+  vz: number;
+  vida: number;
+  max: number;
+  fase: number;
+  cor: string | null;
+  tam: number;
+  /** brilha (soma luz) */ luz?: boolean;
+}
+/** opções das telas de escolha */
+interface OpcoesCartas {
+  /** arte de fundo (ui__...) */ fundo?: string;
+  grade?: boolean;
+  /** cartas entram viradas e se revelam */ revelar?: boolean;
 }
 
 /** uma carta das telas de escolha (mostrarCartas) */

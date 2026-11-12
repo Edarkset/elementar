@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/03_progressao.ts. Edite o .ts, não este arquivo.
 // Elementar · níveis, telas de escolha, ovos, Ovo Ancestral, missões, Bestiário, captura, cenas, baús, portais e especiais
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./02_combate.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -164,7 +165,6 @@ export function textoCondicao(r) {
   if (c.tipo === "alianca") return `Aliança: aliado ${D.classes[c.classe].nome} (vira classe dupla)`;
   return `Regional: ${D.eras[c.era].nome} ou mapa de ${NOME_EL(c.elemento)} (vira ${NOME_EL(c.elemento)})`;
 }
-
 // ================================================================ telas de escolha
 export function mostrarCartas(titulo, sub, cartas, op = {}) {
   defPausado(true);
@@ -181,7 +181,7 @@ export function mostrarCartas(titulo, sub, cartas, op = {}) {
   box.className = "cartas" + (op.grade ? " grade" : "");
   $("cartasRodape").innerHTML = "";
   {
-    const rl = /** @type {HTMLElement} */ ($("telaCartas").querySelector(".rolagem"));
+    const rl = $("telaCartas").querySelector(".rolagem");
     if (rl && rl.dataset.t !== titulo) {
       rl.scrollTop = 0;
       rl.dataset.t = titulo;
@@ -240,7 +240,7 @@ export function mostrarCartas(titulo, sub, cartas, op = {}) {
   });
   box.classList.toggle("revelar", !!op.revelar);
   $("telaCartas").classList.add("ativa");
-  /** @type {HTMLElement} */ (box.querySelector("button:not([disabled])"))?.focus();
+  box.querySelector("button:not([disabled])")?.focus();
 }
 export function fechar() {
   $("telaCartas").classList.remove("ativa");
@@ -250,9 +250,7 @@ export let animRet = null;
 export function animarRetratos() {
   if (animRet) return;
   const passo = t => {
-    const cs = [.../** @type {NodeListOf<HTMLCanvasElement>} */ (document.querySelectorAll("#cartas canvas.anim-retrato"))].filter(
-      c => c._quadros
-    );
+    const cs = [...document.querySelectorAll("#cartas canvas.anim-retrato")].filter(c => c._quadros);
     if (!cs.length || !$("telaCartas").classList.contains("ativa")) {
       animRet = null;
       return;
@@ -466,15 +464,15 @@ export const ASCENSAO = {
 export function cartasNivel() {
   const eq = ativos(),
     maxN = Math.max(...eq.map(s => s.nivel)),
-    /** @type {CartaNivel[]} */ cand = [],
-    caminhos = /** @type {("d"|"c"|"v")[]} */ (embaralhar(Object.keys(ASCENSAO)));
+    cand = [],
+    caminhos = embaralhar(Object.keys(ASCENSAO));
   for (const s of eq) {
     const c = D.classes[L(s).classe],
-      lib = /** @type {[ChavePoder,string,string][]} */ ([
+      lib = [
         ["b", "Ataque básico", `${c.basico} +20% de dano e +5% de cadência.`],
         ["h1", c.h1.nome, c.h1.desc],
         ...(est(s) >= 1 || estBase(s) >= 1 ? [["h2", c.h2.nome, c.h2.desc]] : [])
-      ]);
+      ];
     const peso = 1 + (maxN - s.nivel) * 0.35;
     let algum = false;
     for (const [k, nome, desc] of lib) {
@@ -567,7 +565,6 @@ export function aplicarCartaNivel(c) {
 export function abrirNivel() {
   if (R.rerolagens == null) R.rerolagens = 2 + nivelLoja("oraculo");
   const sorteadas = cartasNivel();
-  /** @type {Carta[]} */
   const cartas = sorteadas.map(c => ({
     titulo: c.titulo,
     sprite: spriteSelo(c.s),
@@ -641,7 +638,6 @@ export function escolherMod(s, k) {
     }))
   );
 }
-
 // ================================================================ ovos, filhotes, reserva, troca
 export function sortearRaridade() {
   const r = Math.random(),
@@ -797,7 +793,6 @@ export function chocar(ov) {
 export function abrirEquipe(seloIdx) {
   if (!J || J.fim) return;
   const s = R.selos[seloIdx];
-  /** @type {Carta[]} */
   const cartas = R.reserva.map((m, i) => ({
     titulo: `${LINHA[m.id].filhote} (${RAR_NOME[m.rar]})`,
     sprite: spriteLinha(m.id, m.rar),
@@ -857,7 +852,6 @@ export function trocar(si, ri) {
 export function abrirBolsa() {
   if (!J || J.fim || pausado) return;
   const ks = Object.keys(D.itens);
-  /** @type {Carta[]} */
   const cartas = ks.map(k => ({
     titulo: `${D.itens[k].nome} ×${R.itens[k]}`,
     texto: D.itens[k].efeito,
@@ -910,7 +904,6 @@ export function usarItem(k) {
     );
   }
 }
-
 // ================================================================ missões do dia: 3 objetivos sorteados pela data, Essência por missão e sequência de dias
 export const TIPOS_DIARIA = {
   abates: { txt: n => `Derrote ${n} inimigos`, alvos: [300, 500, 800] },
@@ -1109,7 +1102,6 @@ export function telaDexLinha(l) {
     { grade: true, fundo: "ui__livro" }
   );
 }
-
 // ================================================================ captura com suspense e choco animado
 // o filhote é selado num sigilo que balança três vezes; incomum e acima podem escapar (e fugir mais rápido; dá para tentar de novo)
 export function tentarCaptura(f) {
@@ -1319,7 +1311,6 @@ export function cenaChefe(e, nome, guardiao) {
     2600
   );
 }
-
 // ================================================================ moedas, baús e a roleta de prêmios
 export function soltarMoedas(x, y, n) {
   if (!J || n <= 0) return;
@@ -1742,7 +1733,7 @@ export function abrirBau(b) {
     };
     setTimeout(girar, 60);
   });
-  /** @type {HTMLElement} */ (tela.querySelector(".bau-coletar")).onclick = () => {
+  tela.querySelector(".bau-coletar").onclick = () => {
     if (!tela.classList.contains("pronto")) return;
     premios.forEach(p => p.aplicar());
     tela.classList.remove("vis");
@@ -1767,7 +1758,6 @@ export function chuvaMoedas(el, n) {
     setTimeout(() => m.remove(), 1800);
   }
 }
-
 // ================================================================ fim de mapa, portais, derrota
 export function vencerChefe(e) {
   diaria("chefes");
@@ -1999,11 +1989,11 @@ export function carregarRun(s) {
 }
 // resumo da run na tela de fim: de onde veio o dano, a reação mais usada e o que mais machucou (com uma dica para a próxima)
 export function resumoRun() {
-  const st = R.st || /** @type {Partial<EstatisticasRun>} */ ({}),
+  const st = R.st || {},
     pf = st.porFonte || {},
     tot = Object.values(pf).reduce((a, b) => a + b, 0);
   if (!(tot > 0)) return "";
-  /** nome e cor de cada fonte de dano @type {Record<string,[string,string]>} */
+  /** nome e cor de cada fonte de dano */
   const N = {
     reliquia: ["Relíquias", "#e8c070"],
     lenda: ["Lenda", "#ffe6a6"],
@@ -2016,7 +2006,7 @@ export function resumoRun() {
     ambiente: ["Ambiente", "#9ff07a"]
   };
   const linhas = Object.entries(pf)
-    .map(([k, v]) => /** @type {[string,number]} */ ([k, (v / tot) * 100]))
+    .map(([k, v]) => [k, (v / tot) * 100])
     .filter(([, q]) => q >= 2)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
@@ -2083,7 +2073,6 @@ export function derrota() {
     { fundo: recorde ? "ui__vitoria" : "ui__derrota" }
   );
 }
-
 // ================================================================ especial individual (escolhido pelo jogador, dispara sozinho)
 export function recargaEspecial(s) {
   const r = D.especial_regras;

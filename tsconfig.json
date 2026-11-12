@@ -1,6 +1,6 @@
 {
-  // Verificador de tipos sobre o JavaScript do jogo. Não gera arquivos: o navegador continua carregando o que está no repositório.
-  // Rodar: npm run tipos
+  // Verificador de tipos (npm run tipos). Não gera arquivos: quem gera js/jogo/*.js é ferramentas/compilar.js (npm run compilar).
+  // Fonte do jogo: src/jogo/*.ts. Os outros scripts da página (dados, plataforma, app) continuam JavaScript e são conferidos junto.
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,
@@ -9,16 +9,16 @@
     "module": "ES2022",
     "moduleResolution": "bundler",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
     // "strict" liga todas as regras rígidas de uma vez; aqui elas entram uma a uma, cada uma só depois de zerar os erros dela.
-    // Já ligadas (zero erros): as seis abaixo. Faltam noImplicitAny (2.122 erros hoje) e strictNullChecks (2.750): etapa 2 do plano.
+    // Faltam noImplicitAny e strictNullChecks (etapa 2 do plano, em andamento).
     "strict": false,
     "noImplicitThis": true,
     "strictFunctionTypes": true,
     "alwaysStrict": true,
     "useUnknownInCatchVariables": true,
     "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "skipLibCheck": true
+    "noUnusedLocals": true
   },
-  "include": ["js/tipos.d.ts", "js/plataforma.js", "js/dados.js", "js/jogo/*.js", "js/app.js"]
+  "include": ["src/tipos.d.ts", "src/jogo/*.ts", "js/plataforma.js", "js/dados.js", "js/app.js"]
 }

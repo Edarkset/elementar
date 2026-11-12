@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/07d_estrutura.ts. Edite o .ts, não este arquivo.
 // Elementar · estrutura do mapa: abismos, pontes, lagos, praças, construções, fauna e cena de abertura
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./07c_cenario_arte.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -27,7 +28,6 @@ export function zonaPeca(zx, zy) {
   const E = estruturaU(),
     Z = E.zona || 320,
     r = semente(R.universo + "z" + k + "#" + R.profundidade);
-  /** @type {PecaCenario} */
   let f = null;
   const x = zx * Z + Z / 2 + (r() - 0.5) * Z * 0.3,
     y = zy * Z + Z / 2 + (r() - 0.5) * Z * 0.3,
@@ -759,7 +759,6 @@ export function desenharQuedasAbismo(ox, oy) {
   }
   lg.globalAlpha = 1;
 }
-
 // ---------------------------------------------------------------- fauna: bichos de ambiente que reagem a quem passa
 export function quadroFauna(row, col, tam) {
   const img = folhaU("fauna");
@@ -998,7 +997,6 @@ export function desenharFauna(ox, oy, camada) {
     }
   }
 }
-
 // ---------------------------------------------------------------- cena de abertura: a arte-conceito do reino como cena de cinema
 // faixas de cinema, câmera lenta, raios de luz e brasas na cor do elemento, título letra a letra e saída em íris revelando o mapa.
 // O HUD e o aviso do mapa só aparecem quando ela termina. Se a arte ainda está chegando, espera até 2,5 s com a tela escura.

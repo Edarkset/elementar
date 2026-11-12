@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/02_combate.ts. Edite o .ts, não este arquivo.
 // Elementar · mapa, modificadores da run (Presságio e Cartas Proibidas), impacto, dano, reações, mortes e ataques
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./01_nucleo.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -364,9 +365,9 @@ export function telaPressagio() {
     })),
     { revelar: true }
   );
-  /** @type {NodeListOf<HTMLElement>} */ ($("telaCartas").querySelectorAll(".carta.pressagio")).forEach((b, i) =>
-    b.style.setProperty("--rar", ops[i].cor)
-  );
+  $("telaCartas")
+    .querySelectorAll(".carta.pressagio")
+    .forEach((b, i) => b.style.setProperty("--rar", ops[i].cor));
 }
 export const MALDICOES = [
   {
@@ -492,7 +493,6 @@ export const rampa = () => 1 + DIF.rampa * (1 - Math.exp(-R.profundidade / DIF.r
 export const dificuldade = () => Math.pow(DIF.vida, R.profundidade) * rampa() * (1 + R.ciclo * 1.5);
 export const danoDif = () => Math.pow(DIF.dano, R.profundidade) * rampa() * (1 + R.ciclo * 1.5);
 export const xpPara = n => Math.round(DIF.xpA + DIF.xpB * n + DIF.xpC * n * n);
-
 export function spawnInimigo(kForcado) {
   const u = UNIV[R.universo],
     k = kForcado ?? (Math.random() < 0.45 ? 0 : Math.random() < 0.6 ? 1 : 2);
@@ -709,7 +709,6 @@ export function pontoDenso(o, alc) {
   }
   return best;
 }
-
 // ================================================================ efeitos de impacto
 export function tremor(v) {
   v = v >= 10 ? v * 0.7 : Math.min(4, v * 0.45);
@@ -776,7 +775,6 @@ export function texto(x, y, t, cor, tam) {
   if (J.textos.length > 12) J.textos.shift();
   J.textos.push({ x, y, t, cor, tam: tam || 16, vida: 1.1 });
 }
-
 // sombra de contato: elipse com borda macia (imagem pronta, escalada), mais escura no centro
 export let SOMBRA_IMG = null;
 export function sombraContato(x, y, w, a) {
@@ -1226,7 +1224,6 @@ export function darItem(k, e) {
     anel(e.x, e.y, 30, "#ffd34a", 0.6);
   }
 }
-
 // ================================================================ ataques: básico + habilidades por classe
 export function ataqueBasico(s, a, el, cor) {
   const cls = L(s).classe;

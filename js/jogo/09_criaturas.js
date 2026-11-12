@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/09_criaturas.ts. Edite o .ts, não este arquivo.
 // Elementar · criaturas: inimigos comuns e mini-chefes (corpo, passo, golpe, derrota e desenho)
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./08h_interface.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -40,7 +41,6 @@ import { MULTIDAO } from "./10_desenho.js";
 // Cada inimigo vem de dados/fonte_combate.py: corpo, jeito de andar, golpe, derrota, mania e detalhes.
 // Os sprites são pintados pixel a pixel por tipo de corpo, com quadros de caminhada, ataque, dor e piscada.
 // Quando a folha de arte do universo for importada, ela substitui o sprite pintado (mesma ordem de quadros).
-
 export const cacheCri = new Map();
 export function spriteCriatura(def, tam, cor, q, pose, semente) {
   const det = def.detalhes || [],
@@ -865,7 +865,6 @@ export function spriteCriatura(def, tam, cor, q, pose, semente) {
   cacheCri.set(k, c);
   return c;
 }
-
 // ---------------------------------------------------------------- arte importada (folhas 8x6 de inimigos, 6x4 de mini, 6x5 de chefe, 6x6 de Guardião)
 export function arteCriatura(e, pose, q) {
   const u = UNIV[R.universo];

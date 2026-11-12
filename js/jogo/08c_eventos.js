@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/08c_eventos.ts. Edite o .ts, não este arquivo.
 // Elementar · eventos no meio do mapa (meteoros, fugitivo dourado, altar, chuva de cristais) e textos de reação
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./08b_efeitos.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos

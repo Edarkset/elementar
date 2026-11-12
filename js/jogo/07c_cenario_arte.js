@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/07c_cenario_arte.ts. Edite o .ts, não este arquivo.
 // Elementar · arte de cenário importada: chão, superfícies, marcos, objetos, efeitos de chefe e a camada em alta resolução
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./07b_cenario_desenho.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -223,44 +224,40 @@ export function versaoHi(c, K) {
 {
   const desenhoOriginal = lg.drawImage.bind(lg);
   // o tipo do navegador descreve as três formas de chamar drawImage; esta função atende as três e troca a imagem pela versão nítida
-  lg.drawImage = /** @type {CanvasRenderingContext2D["drawImage"]} */ (
-    /** @type {unknown} */ (
-      function (img, a, b, c, d, e, f, g2, h2) {
-        if (img && img._suave && !lg.imageSmoothingEnabled) {
-          lg.imageSmoothingEnabled = true;
-          desenhoOriginal.apply(null, arguments);
-          lg.imageSmoothingEnabled = false;
-          return;
-        }
-        if (img && img._hi && Q > 1) {
-          const hi = img._hi,
-            kx = hi.width / img.width,
-            ky = hi.height / img.height,
-            n = arguments.length,
-            suave = lg.imageSmoothingEnabled;
-          lg.imageSmoothingEnabled = true;
-          if (n <= 3) desenhoOriginal(hi, a, b, img.width, img.height);
-          else if (n <= 5) desenhoOriginal(hi, a, b, c, d);
-          else desenhoOriginal(hi, a * kx, b * ky, c * kx, d * ky, e, f, g2, h2);
-          lg.imageSmoothingEnabled = suave;
-          return;
-        }
-        if (Q <= 1 || !img || !img._src) return desenhoOriginal.apply(null, arguments);
-        const hi = versaoHi(img, Q * 1.25);
-        if (!hi) return desenhoOriginal.apply(null, arguments);
-        const suave = lg.imageSmoothingEnabled;
-        lg.imageSmoothingEnabled = true;
-        lg.imageSmoothingQuality = "high";
-        const kx = hi.width / img.width,
-          ky = hi.height / img.height,
-          n = arguments.length;
-        if (n <= 3) desenhoOriginal(hi, a, b, img.width, img.height);
-        else if (n <= 5) desenhoOriginal(hi, a, b, c, d);
-        else desenhoOriginal(hi, a * kx, b * ky, c * kx, d * ky, e, f, g2, h2);
-        lg.imageSmoothingEnabled = suave;
-      }
-    )
-  );
+  lg.drawImage = function (img, a, b, c, d, e, f, g2, h2) {
+    if (img && img._suave && !lg.imageSmoothingEnabled) {
+      lg.imageSmoothingEnabled = true;
+      desenhoOriginal.apply(null, arguments);
+      lg.imageSmoothingEnabled = false;
+      return;
+    }
+    if (img && img._hi && Q > 1) {
+      const hi = img._hi,
+        kx = hi.width / img.width,
+        ky = hi.height / img.height,
+        n = arguments.length,
+        suave = lg.imageSmoothingEnabled;
+      lg.imageSmoothingEnabled = true;
+      if (n <= 3) desenhoOriginal(hi, a, b, img.width, img.height);
+      else if (n <= 5) desenhoOriginal(hi, a, b, c, d);
+      else desenhoOriginal(hi, a * kx, b * ky, c * kx, d * ky, e, f, g2, h2);
+      lg.imageSmoothingEnabled = suave;
+      return;
+    }
+    if (Q <= 1 || !img || !img._src) return desenhoOriginal.apply(null, arguments);
+    const hi = versaoHi(img, Q * 1.25);
+    if (!hi) return desenhoOriginal.apply(null, arguments);
+    const suave = lg.imageSmoothingEnabled;
+    lg.imageSmoothingEnabled = true;
+    lg.imageSmoothingQuality = "high";
+    const kx = hi.width / img.width,
+      ky = hi.height / img.height,
+      n = arguments.length;
+    if (n <= 3) desenhoOriginal(hi, a, b, img.width, img.height);
+    else if (n <= 5) desenhoOriginal(hi, a, b, c, d);
+    else desenhoOriginal(hi, a * kx, b * ky, c * kx, d * ky, e, f, g2, h2);
+    lg.imageSmoothingEnabled = suave;
+  };
 }
 // área desenhada de uma célula (para encaixar o monstro pelo desenho visível, não pela célula)
 export const cacheBB = new Map();
@@ -380,7 +377,6 @@ export function arteCarregou(ns) {
     J.cena.sprites.clear();
   }
 }
-
 // ---------------------------------------------------------------- chão: 8 peças sorteadas lado a lado (16 px no mundo cada)
 // piso jogável grande (1024 px da folha = 512 px no mundo); emendas pequenas são escondidas misturando uma cópia deslocada perto das bordas
 export const TAM_PISO = 220; // o piso de 512 px cobre 220 px de mundo (antes 300: as peças do piso ficavam enormes perto dos personagens)
@@ -547,7 +543,6 @@ export function detalhesArte(r) {
   }
   return out;
 }
-
 // ---------------------------------------------------------------- marcos, luzes e peças de primeiro plano (folha 4x2)
 export function sortearMarcos(cx, cy, r, out) {
   if (!temArteU("props")) return;
@@ -591,7 +586,6 @@ export function spriteMarco(p) {
   cacheCel.set(k, c);
   return c;
 }
-
 // ---------------------------------------------------------------- objetos físicos (folha 8xN: intacto, trincado, quebrado, estado especial, 4 cacos)
 export const TAM_OBJ = {
   vaso: 13,
@@ -637,7 +631,6 @@ export function cacoArte(p) {
   const u = UNIV[R.universo];
   return celulaArte(img, 8, u.objetos.length, 4 + Math.floor(Math.random() * 4), lin, 6, 6, 1);
 }
-
 // ---------------------------------------------------------------- efeitos dos golpes dos chefes (8x2 por chefe, 8x3 por Guardião)
 export function folhaEfeitos(e) {
   const u = UNIV[R.universo];

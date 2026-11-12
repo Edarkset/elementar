@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/08b_efeitos.ts. Edite o .ts, não este arquivo.
 // Elementar · efeitos dos poderes: partículas por elemento, círculos de invocação, golpes básicos, projéteis, especiais, reações, combinados e habilidades
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./08_horda.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -251,7 +252,6 @@ export function desenharVfx(ox, oy, camada) {
   lg.globalAlpha = 1;
   lg.lineWidth = 1;
 }
-
 // ---------------------------------------------------------------- ataques básicos por classe
 export function vfxCorte(s, el, r) {
   const K = VFX_K;
@@ -434,7 +434,6 @@ export function vfxSelo(x0, y0, el, r) {
     }
   });
 }
-
 // ---------------------------------------------------------------- projéteis com forma e rastro
 // projéteis: forma suave por elemento + halo de luz + rastro afinando (desenhado em modo aditivo)
 export function desenharProjetil(p, ox, oy) {
@@ -611,7 +610,6 @@ export function desenharProjetil(p, ox, oy) {
   lg.lineCap = "butt";
   lg.lineJoin = "miter";
 }
-
 // ---------------------------------------------------------------- especiais, reações e combinados (usa as folhas quando importadas)
 export function tocarFolha(caminho, cols, x, y, tam, dur) {
   const img = folhaArte(caminho);

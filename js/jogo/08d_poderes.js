@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/08d_poderes.ts. Edite o .ts, não este arquivo.
 // Elementar · árvore de poderes: Talismãs, Poderes Despertos e Uniões
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./08c_eventos.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -177,7 +178,6 @@ export function atribPoder(a, s, k) {
   const f = fatorPoder(s, k) * tal.dano() * fatorSozinho(s);
   return f === 1 ? a : Object.assign({}, a, { dano: a.dano * f });
 }
-
 // Uniões a meio caminho: a equipe tem um Desperto do par e um monstro da classe do outro Desperto (devolve o Talismã que falta)
 export function paresPendentes() {
   const tem = despertosAtivos(),
@@ -193,7 +193,6 @@ export function paresPendentes() {
     }
   return out;
 }
-
 // ---------------------------------------------------------------- comportamentos dos Despertos (rodam junto com o poder, quando ele dispara)
 export const _P = (s, a, el, cor, dano, extra) =>
   Object.assign({ fonte: FONTE, x: s.x, y: s.y, dano, el, cor, vida: 1.3, perf: 1, r: 2 }, extra);

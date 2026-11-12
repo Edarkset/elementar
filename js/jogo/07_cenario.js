@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/07_cenario.ts. Edite o .ts, não este arquivo.
 // Elementar · cenário vivo: vento, vegetação, objetos físicos, destroços, pegadas, clima, redemoinhos e relâmpagos
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./06_loop.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -33,9 +34,7 @@ export const GRAV = 140,
   VREF = 110,
   K_EMPURRA = 200,
   CH = 96;
-
 // Os kits de cada universo (vento, vegetação, clima, objetos) estão em dados/fonte_cenario.py
-
 // Materiais. m = massa (kg); mu = atrito de deslizamento; rola = resistência ao rolamento (bem menor que o atrito);
 // e = restituição (quique); fragil = velocidade de impacto (px/s) a partir da qual o objeto começa a trincar;
 // hp em "inimigos comuns" (escala com a profundidade); res = multiplicador de dano por elemento.
@@ -50,7 +49,6 @@ export const VEG = {
   trigo: { cores: ["#8a6a2a", "#c8a04a", "#ffe9a0"], n: [2, 4], L: [5, 7], k: 55, c: 4, cabeca: true, solta: "polen" },
   cogumelo: { cogu: true, k: 90, c: 2.2, solta: "esporos" }
 };
-
 // ---------------------------------------------------------------- vento
 export const VT = { x: 0, y: 0 };
 export function vento(x, y) {
@@ -99,7 +97,6 @@ export function sustentacao(x, y) {
   }
   return s;
 }
-
 // ---------------------------------------------------------------- início do mapa
 export function iniciarCena(u) {
   const kit = JSON.parse(JSON.stringify(u.kit)); // cópia: a segunda fase dos chefes muda o kit durante a luta
@@ -207,7 +204,6 @@ export function gerarCausticas() {
   }
   return fr;
 }
-
 // ---------------------------------------------------------------- objetos: geração por pedaço do mapa
 export function pesoAleatorio(r, pesos) {
   let tot = 0;
@@ -289,7 +285,6 @@ export function carregarProps(ox, oy) {
       for (const p of C.props.get(cx + ":" + cy)) if (!p.morto) C.lista.push(p);
     }
 }
-
 // ---------------------------------------------------------------- objetos: física
 export function atritoSolo(t) {
   return t === "gelo" ? 0.15 : t === "agua" ? 0.6 : t === "lama" ? 1.6 : t === "areia" ? 1.2 : 1;
@@ -789,7 +784,6 @@ export function explodir(x, y, R) {
       }
     }
 }
-
 // ---------------------------------------------------------------- destroços (lascas com gravidade, quique e atrito)
 export const COR_FRAG = {
   ceramica: null,
@@ -889,7 +883,6 @@ export function atualizarDestrocos(dt) {
   }
   C.destrocos = C.destrocos.filter(g => g.vida > 0);
 }
-
 // ---------------------------------------------------------------- vegetação: balanço com o vento + mola amortecida quando é tocada
 export function tufoInfo(cx, cy) {
   const C = J.cena,
@@ -1065,7 +1058,6 @@ export function atualizarTufos(dt) {
     tocarTufos(e.x, e.y, e.r * 0.8, e.vx || 0, e.vy || 0, dt * 2, true);
   }
 }
-
 // ---------------------------------------------------------------- pegadas e ondas na água
 export function rastroDe(o, x, y, dist, r) {
   const C = J.cena;
@@ -1141,12 +1133,24 @@ export function atualizarPegadas(dt) {
     if (v > 6) rastroDe(e, e.x, e.y + e.r * 0.6, v * dt, e.r);
   }
 }
-
 // ---------------------------------------------------------------- clima: partículas do ar
 export function particulaAr(k, x, y, z, vx, vy) {
   const C = J.cena;
   if (C.ar.length > 300) C.ar.shift();
-  const p = { k, x, y, z: z ?? 0, vx: vx ?? 0, vy: vy ?? 0, vz: 0, vida: 3, max: 3, fase: Math.random() * 6.28, cor: null, tam: 1 };
+  const p = {
+    k,
+    x,
+    y,
+    z: z ?? 0,
+    vx: vx ?? 0,
+    vy: vy ?? 0,
+    vz: 0,
+    vida: 3,
+    max: 3,
+    fase: Math.random() * 6.28,
+    cor: null,
+    tam: 1
+  };
   switch (k) {
     case "neve":
       p.vz = -rnd(14, 20);
@@ -1497,7 +1501,6 @@ export function respingo(x, y) {
   // chuva apaga fogo aos poucos e molha os objetos
   if (t === "fogo" && Math.random() < 0.04) aplicarElementoNoSolo(x, y, "agua");
 }
-
 // ---------------------------------------------------------------- redemoinhos de poeira e de fogo
 export function atualizarVortices(dt, ox, oy) {
   const C = J.cena,
@@ -1586,7 +1589,6 @@ export function atualizarVortices(dt, ox, oy) {
   }
   C.vort = C.vort.filter(w => w.vida > 0);
 }
-
 // ---------------------------------------------------------------- relâmpagos: preferem o que é alto e condutor (para-raios)
 export function atualizarRaios(dt) {
   const C = J.cena,
@@ -1676,7 +1678,6 @@ export function cairRaio(x, y, alvo) {
     texto(P.x, P.y - 14, "Raio!", "#e8f0ff", 14);
   }
 }
-
 // ---------------------------------------------------------------- passo do cenário (chamado uma vez por quadro)
 export function atualizarCena(dt) {
   const C = J.cena;

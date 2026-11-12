@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/04_ambiente.ts. Edite o .ts, não este arquivo.
 // Elementar · física do ambiente: o chão reage aos elementos
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./03_progressao.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -618,7 +619,7 @@ export const cacheSolo = new Map(),
 export const SOLO_DES = {
   /** estado da última montagem */ es: null,
   /** grade de tipos de solo */ G: null,
-  /** @type {Float32Array} grade de força de cada célula */ F: null
+  F: null
 };
 export function desenharSolo(ox, oy) {
   const A = SOLO_FOLGA,

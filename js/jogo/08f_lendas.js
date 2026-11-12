@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/08f_lendas.ts. Edite o .ts, não este arquivo.
 // Elementar · Lendas jogáveis e Panteão (deuses jogáveis)
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./08e_conquistas.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -152,8 +153,8 @@ export function atualizarLenda(dt) {
   const p = l.poder,
     nv = R.lendaNv || 1,
     P = J.jogador,
-    el = /** @type {Elemento} */ (l.elementos[0]),
-    el2 = /** @type {Elemento} */ (l.elementos[1]),
+    el = l.elementos[0],
+    el2 = l.elementos[1],
     cor = COR[el];
   const base =
     (ativos().reduce((t, s) => t + atrib(s).dano, 0) / Math.max(1, ativos().length)) *
@@ -621,7 +622,6 @@ export function conferirProvacoes(e) {
 }
 export function telaPanteao() {
   const ds = metaDeuses();
-  /** @type {Carta[]} */
   const cartas = D.panteao.map(g => {
     const livre = ds.includes(g.id),
       aberta = META.lendas.includes(g.provacao.universo);

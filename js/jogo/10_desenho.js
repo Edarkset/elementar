@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/10_desenho.ts. Edite o .ts, não este arquivo.
 // Elementar · desenho de cada quadro, herói e HUD
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./09b_chefes.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -100,7 +101,7 @@ export function gerarChao(u) {
   }
   chao = { cv: c, u };
 }
-/** valor mínimo do cristal e a cor dele @type {[number,string][]} */
+/** valor mínimo do cristal e a cor dele */
 export const CORES_GEMA = [
   [0, "#6ab0ff"],
   [3, "#5fe08a"],
@@ -394,11 +395,11 @@ export function desenhar(dt) {
         pts.push([f.x + (f.x2 - f.x) * t - ox + rnd(-3.5, 3.5), f.y + (f.y2 - f.y) * t - oy + rnd(-3.5, 3.5)]);
       }
       pts.push([f.x2 - ox, f.y2 - oy]);
-      for (const [lw, al, cor] of /** @type {[number,number,string][]} */ ([
+      for (const [lw, al, cor] of [
         [3.5, 0.25, f.cor],
         [1.3, 0.9, f.cor],
         [0.5, 1, "#ffffff"]
-      ])) {
+      ]) {
         lg.globalAlpha = a * al;
         lg.strokeStyle = cor;
         lg.lineWidth = lw;
@@ -1179,8 +1180,7 @@ export function toast(h) {
   clearTimeout(toastT);
   toastT = setTimeout(() => t.classList.remove("vis"), 2400);
 }
-
-/** troca o chão do mapa (quem monta o piso é o cenário) @param {AindaSemTipo} v */
+/** troca o chão do mapa (quem monta o piso é o cenário) */
 export function defChao(v) {
   return (chao = v);
 }

@@ -1,6 +1,7 @@
 # conteúdo do jogo: precisa continuar sendo JSON válido depois de "const D = " (vira JSON com esquema na etapa 3 do plano)
 js/dados.js
-# gerados e de terceiros
+# gerados (js/jogo/ sai de src/jogo/ por npm run compilar, já formatado; a verificação confere que bate) e de terceiros
+js/jogo/
 node_modules/
 desktop/jogo/
 desktop/dist/

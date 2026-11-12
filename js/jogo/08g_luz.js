@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/08g_luz.ts. Edite o .ts, não este arquivo.
 // Elementar · luz: tom de cada universo, crepúsculo, escuridão com poças de luz e sombras
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./08f_lendas.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -243,7 +244,6 @@ export function desenharLuzAmbiente(ox, oy) {
   lg.globalCompositeOperation = "source-over";
   lg.globalAlpha = 1;
 }
-
 // quanto a camada de arte em alta resolução deve escurecer (mesma conta da luz ambiente)
 export function escurecimentoArte() {
   const u = UNIV[R.universo];

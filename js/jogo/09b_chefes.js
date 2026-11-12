@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/09b_chefes.ts. Edite o .ts, não este arquivo.
 // Elementar · chefes: inteligência, golpes, perigos anunciados e segunda fase
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./09_criaturas.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -162,7 +163,6 @@ export function empurrarProps(x, y, r, forca) {
       }
     }
 }
-
 // ---------------------------------------------------------------- inteligência do chefe
 // cansaço: depois de 75 s de luta o chefe recebe cada vez mais dano (2x aos 105 s, 3x aos 135 s); evita lutas intermináveis em encontros desfavoráveis
 export function fadigaChefe(e) {
@@ -308,7 +308,6 @@ export function iaChefe(e, dt, P) {
   }
   return true;
 }
-
 // ---------------------------------------------------------------- as primitivas dos golpes
 export function executarGolpe(e, g, P) {
   const cor = corG(e, g),
@@ -1413,7 +1412,6 @@ export function executarGolpe(e, g, P) {
   }
   return 0.5;
 }
-
 export function impactoChuva(e, g, x, y, r) {
   const P = J.jogador,
     el = elG(e, g),
@@ -1555,7 +1553,6 @@ export function constricao(e, P, r) {
     }
   });
 }
-
 // ---------------------------------------------------------------- segunda fase: o cenário muda
 export function faseDois(e, f) {
   const P = J.jogador,
@@ -1805,7 +1802,6 @@ export function aoQuebrarProp(p) {
     }
   }
 }
-
 // ---------------------------------------------------------------- atualização e desenho do sistema de perigos
 export function atualizarPerigos(dt) {
   if (!J.perigos) return;

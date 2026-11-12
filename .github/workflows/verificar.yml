@@ -29,6 +29,8 @@ jobs:
         run: npm run tipos
       - name: Formato
         run: npm run formato
+      - name: O JavaScript gravado corresponde ao TypeScript
+        run: npm run compilar -- --conferir
       - name: Instalar o navegador de teste
         # o Playwright fica fora do package.json de propósito: quem roda os testes na própria máquina usa o que já tem instalado
         run: |

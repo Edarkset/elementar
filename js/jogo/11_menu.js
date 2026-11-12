@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/11_menu.ts. Edite o .ts, não este arquivo.
 // Elementar · menu, Pacto, pausa e modo moderador; começa o jogo
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./10_desenho.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
@@ -201,7 +202,7 @@ export function menu() {
       ["Conquistas", "♛"],
       ["Modo moderador", "⚙"]
     ];
-    for (const b of /** @type {HTMLCollectionOf<HTMLElement>} */ (box.children)) {
+    for (const b of box.children) {
       const ic = IC.find(([t]) => b.textContent.startsWith(t));
       b.dataset.icone = ic ? ic[1] : "✦";
     }
@@ -419,12 +420,12 @@ export function telaTesteDragao() {
           mostrarCartas(
             l.filhote || l.id,
             "Em qual forma?",
-            /** @type {[string,number][]} */ ([
+            [
               ["Filhote", 1],
               ["Jovem", NIV[1]],
               ["Adulto", NIV[2]],
               ["Supremo", NIV[3]]
-            ]).map(([n, nv]) => ({
+            ].map(([n, nv]) => ({
               titulo: n,
               texto: `Nível ${nv}`,
               acao: () => {

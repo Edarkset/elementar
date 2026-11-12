@@ -1,3 +1,4 @@
+// GERADO por "npm run compilar" a partir de src/jogo/ponte_teste.ts. Edite o .ts, não este arquivo.
 // Elementar · ponte de teste. Só é carregada com ?teste ou ?moderador no endereço (ver principal.js).
 // Publica na página (window) todos os nomes exportados pelos módulos do jogo, para o robô (testes/bot.js), a verificação
 // automática (testes/verificar.js) e o console do navegador. A leitura é sempre ao vivo; a escrita só existe para as variáveis
@@ -24,7 +25,6 @@ import * as m18 from "./09_criaturas.js";
 import * as m19 from "./09b_chefes.js";
 import * as m20 from "./10_desenho.js";
 import * as m21 from "./11_menu.js";
-
 /** variável → função de escrita no módulo dono */
 const ESCRITA = {
   FONTE: "defFonte",

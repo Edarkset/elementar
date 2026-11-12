@@ -158,7 +158,7 @@ export let SOMBRA_SUAVE = null;
 export function gerarBolha() {
   const c = document.createElement("canvas");
   c.width = c.height = 64;
-  const g = c.getContext("2d"),
+  const g = c.getContext("2d")!,
     gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
   gr.addColorStop(0, "rgba(255,255,255,1)");
   gr.addColorStop(0.6, "rgba(255,255,255,.55)");
@@ -173,7 +173,7 @@ export function bolhaCor(cor: string | CanvasGradient | CanvasPattern) {
   if (C.sprites.has(k)) return C.sprites.get(k);
   const c = document.createElement("canvas");
   c.width = c.height = 64;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   g.drawImage(SOMBRA_SUAVE, 0, 0);
   g.globalCompositeOperation = "source-in";
   g.fillStyle = cor;
@@ -187,7 +187,7 @@ export function gerarCausticas() {
   for (let f = 0; f < 8; f++) {
     const c = document.createElement("canvas");
     c.width = c.height = 64;
-    const g = c.getContext("2d"),
+    const g = c.getContext("2d")!,
       im = g.createImageData(64, 64),
       ph = (f / 8) * Math.PI * 2;
     for (let y = 0; y < 64; y++)

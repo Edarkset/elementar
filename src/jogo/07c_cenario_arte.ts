@@ -43,7 +43,7 @@ export function faixasFolha(img: Imagem, rows: number) {
     const c = document.createElement("canvas");
     c.width = img.width;
     c.height = img.height;
-    const g = c.getContext("2d");
+    const g = c.getContext("2d")!;
     g.drawImage(img, 0, 0);
     const d = g.getImageData(0, 0, c.width, c.height).data,
       W = c.width,
@@ -75,7 +75,7 @@ export function faixasFolha(img: Imagem, rows: number) {
 // o que está acima é de outra pose e sai
 export function limparTopoSolto(c: HTMLCanvasElement) {
   try {
-    const g = c.getContext("2d"),
+    const g = c.getContext("2d")!,
       W = c.width,
       H = c.height,
       d = g.getImageData(0, 0, W, H).data,
@@ -151,7 +151,7 @@ export function celulaArte(img: Imagem, cols: number, rows: number, col: number,
     c = document.createElement("canvas");
   c.width = w;
   c.height = h;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   g.imageSmoothingEnabled = false;
   // a célula entra inteira mantendo a proporção (folhas exportadas com outra proporção não ficam esticadas); a linha de apoio
   // (base) continua no mesmo ponto do quadro, então os pés não mudam de lugar
@@ -191,7 +191,7 @@ export function versaoHi(c: Imagem, K?: number) {
   const h = document.createElement("canvas");
   h.width = Math.max(1, Math.round(c.width * K));
   h.height = Math.max(1, Math.round(c.height * K));
-  const g = h.getContext("2d"),
+  const g = h.getContext("2d")!,
     s = c._src,
     d = s.dest || [0, 0, 1, 1],
     dx = d[0] * h.width,
@@ -209,7 +209,7 @@ export function versaoHi(c: Imagem, K?: number) {
     const t = document.createElement("canvas");
     t.width = Math.round(s.sw * Math.min(m, 4));
     t.height = Math.round(s.sh * Math.min(m, 4));
-    const gt = t.getContext("2d");
+    const gt = t.getContext("2d")!;
     gt.imageSmoothingEnabled = false;
     gt.drawImage(s.img, s.sx, s.sy, s.sw, s.sh, 0, 0, t.width, t.height);
     g.drawImage(t, dx, dy, dw, dh);
@@ -267,7 +267,7 @@ export function bboxCelula(img: Imagem, sx: number, sy: number, sw: number, sh: 
   const c = document.createElement("canvas");
   c.width = Math.max(1, Math.round(sw));
   c.height = Math.max(1, Math.round(sh));
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   g.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
   let x0 = c.width,
     y0 = c.height,
@@ -307,7 +307,7 @@ export function encaixarArte(img: Imagem, sx: number, sy: number, sw: number, sh
     h = Math.max(1, Math.round(bb.h * ky * k));
   const c = document.createElement("canvas");
   c.width = c.height = alvo;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   g.imageSmoothingEnabled = true;
   const ox = Math.round((alvo - w) / 2),
     oy = alvo - h;
@@ -333,7 +333,7 @@ export function desenharCamadaArte() {
     cvArte.width = W;
     cvArte.height = H;
   }
-  const g = cvArte.getContext("2d");
+  const g = cvArte.getContext("2d")!;
   g.setTransform(1, 0, 0, 1, 0, 0);
   g.clearRect(0, 0, W, H);
   g.imageSmoothingEnabled = true;
@@ -384,7 +384,7 @@ export const TAM_PISO = 220; // o piso de 512 px cobre 220 px de mundo (antes 30
 export function nitidez(c: HTMLCanvasElement, k: number) {
   if (SIM.ativo) return c;
   try {
-    const g = c.getContext("2d"),
+    const g = c.getContext("2d")!,
       w = c.width,
       h = c.height,
       im = g.getImageData(0, 0, w, h),
@@ -415,7 +415,7 @@ export function nitidez(c: HTMLCanvasElement, k: number) {
 export function acalmarPiso(c: HTMLCanvasElement) {
   if (SIM.ativo) return c;
   try {
-    const g = c.getContext("2d"),
+    const g = c.getContext("2d")!,
       im = g.getImageData(0, 0, c.width, c.height),
       d = im.data;
     let soma = 0,
@@ -470,7 +470,7 @@ export function emendaNasBordas(g: CanvasRenderingContext2D, T: number) {
 export function tornarContinuo(img: CanvasImageSource, T: number) {
   const c = document.createElement("canvas");
   c.width = c.height = T;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   g.imageSmoothingEnabled = false;
   g.drawImage(img, 0, 0, T, T);
   if (emendaNasBordas(g, T)) return c;
@@ -478,7 +478,7 @@ export function tornarContinuo(img: CanvasImageSource, T: number) {
     h2 = T2 / 2,
     e = document.createElement("canvas");
   e.width = e.height = T2;
-  const ge = e.getContext("2d");
+  const ge = e.getContext("2d")!;
   ge.imageSmoothingEnabled = true;
   ge.imageSmoothingQuality = "high";
   for (const [sx, sy] of [
@@ -509,7 +509,7 @@ export function chaoArte(u: Universo) {
   if (!img || !img.pronta) return false;
   const c = document.createElement("canvas");
   c.width = c.height = 128;
-  const g = c.getContext("2d"),
+  const g = c.getContext("2d")!,
     r = semente(u.id + "chao");
   g.imageSmoothingEnabled = false;
   for (let y = 0; y < 8; y++)
@@ -578,7 +578,7 @@ export function spriteMarco(p: PropCena) {
     c = document.createElement("canvas");
   c.width = w;
   c.height = h;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   g.imageSmoothingEnabled = true;
   g.imageSmoothingQuality = "high";
   g.drawImage(img, bb.x, bb.y, bb.w, bb.h, 0, 0, w, h);

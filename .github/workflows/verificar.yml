@@ -29,6 +29,8 @@ jobs:
         run: npm run tipos_dados -- --conferir
       - name: Tipos
         run: npm run tipos
+      - name: Catraca das regras rígidas (pendências só podem diminuir)
+        run: npm run catraca
       - name: Formato
         run: npm run formato
       - name: O JavaScript gravado corresponde ao TypeScript

@@ -293,7 +293,7 @@ export function gerarSprite(seed: string, n: number, base: string, op: { olhos?:
     cv = document.createElement("canvas");
   cv.width = W;
   cv.height = W;
-  const g = cv.getContext("2d");
+  const g = cv.getContext("2d")!;
   let cb = base;
   if (op.rar === "epico") {
     const c = hexRgb(base);
@@ -323,7 +323,7 @@ export function gerarSprite(seed: string, n: number, base: string, op: { olhos?:
   const c2 = document.createElement("canvas");
   c2.width = W;
   c2.height = W;
-  const g2 = c2.getContext("2d");
+  const g2 = c2.getContext("2d")!;
   g2.fillStyle = "#120e1a";
   for (let y = 0; y < W; y++)
     for (let x = 0; x < W; x++)
@@ -347,7 +347,7 @@ export function branco(spr: HTMLCanvasElement) {
     c = document.createElement("canvas");
   c.width = b.width;
   c.height = b.height;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   g.drawImage(b, 0, 0);
   g.globalCompositeOperation = "source-in";
   g.fillStyle = "#ffffff";
@@ -368,7 +368,7 @@ export function spriteOvo(el: Elemento, rar: string) {
     c = document.createElement("canvas");
   c.width = W;
   c.height = H;
-  const g = c.getContext("2d"),
+  const g = c.getContext("2d")!,
     cor = COR[el] || "#ffd34a",
     corC = tom(cor, 1.45),
     corE = tom(cor, 0.6);
@@ -561,9 +561,9 @@ export function spriteOvo(el: Elemento, rar: string) {
 
 // ================================================================ estado
 export const cv = $("tela") as HTMLCanvasElement,
-  ctx = cv.getContext("2d"),
+  ctx = cv.getContext("2d")!,
   lo = document.createElement("canvas"),
-  lg = lo.getContext("2d");
+  lg = lo.getContext("2d")!;
 export let W = 0,
   H = 0,
   S = 2,

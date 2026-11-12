@@ -856,7 +856,7 @@ export function spriteCriatura(def, tam: number, cor: string, q: number, pose: s
   const c = document.createElement("canvas");
   c.width = W;
   c.height = H;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   for (let i = 0; i < fim.length; i++) {
     if (!fim[i]) continue;
     g.fillStyle = fim[i];

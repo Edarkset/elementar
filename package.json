@@ -9,7 +9,8 @@
     "formatar": "prettier --write src js testes \"ferramentas/*.js\"",
     "formato": "prettier --check src js testes \"ferramentas/*.js\"",
     "verificar": "node testes/verificar.js",
-    "reproduzir": "node testes/reproduzir.js"
+    "reproduzir": "node testes/reproduzir.js",
+    "catraca": "node ferramentas/catraca.js"
   },
   "devDependencies": {
     "prettier": "3.10.0",

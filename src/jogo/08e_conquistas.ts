@@ -213,7 +213,7 @@ export function muralSprite(uid: string, n: number) {
     c = document.createElement("canvas");
   c.width = 24;
   c.height = 36;
-  const g = c.getContext("2d"),
+  const g = c.getContext("2d")!,
     img = folhaArte(`arte/lendas/${l.id}__retrato.png`);
   for (let i = 0; i < 6; i++) {
     const x = (i % 2) * 12,

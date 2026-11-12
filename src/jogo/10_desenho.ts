@@ -81,7 +81,7 @@ export function gerarChao(u: Universo) {
   if (chaoArte(u)) return;
   const c = document.createElement("canvas");
   c.width = c.height = 64;
-  const g = c.getContext("2d"),
+  const g = c.getContext("2d")!,
     r = semente(u.id),
     base = COR[u.elemento];
   g.fillStyle = tom(base, 0.26);
@@ -887,7 +887,7 @@ export function quadroHeroi(pernas, bob, pisca, corGema) {
     c = document.createElement("canvas");
   c.width = W;
   c.height = H;
-  const g = c.getContext("2d"),
+  const g = c.getContext("2d")!,
     px = (x, y: number, ch) => {
       const cor = ch === "X" ? corGema : HEROI.pal[ch];
       if (!cor) return;
@@ -962,7 +962,7 @@ export function sobreposicao(cor: string, aLuz, aVin) {
     c = (SOBRE && SOBRE.c) || document.createElement("canvas");
   c.width = w;
   c.height = h;
-  const g = c.getContext("2d"),
+  const g = c.getContext("2d")!,
     m = Math.min(w, h),
     [r, gg, b] = hexRgb(cor);
   const vg = g.createRadialGradient(w / 2, h / 2, m * 0.3, w / 2, h / 2, Math.max(w, h) * 0.75);
@@ -1000,8 +1000,8 @@ export function aplicarBloom() {
     BL2.width = w2;
     BL2.height = h2;
   }
-  const g1 = BL1.getContext("2d"),
-    g2 = BL2.getContext("2d");
+  const g1 = BL1.getContext("2d")!,
+    g2 = BL2.getContext("2d")!;
   g1.globalCompositeOperation = "copy";
   g1.imageSmoothingEnabled = true;
   g1.drawImage(cv, 0, 0, w1, h1);
@@ -1116,7 +1116,7 @@ export function desenharEquipe() {
       const spr = spriteUI(spriteSelo(s));
       c.width = spr.width;
       c.height = spr.height;
-      c.getContext("2d").drawImage(spr, 0, 0);
+      c.getContext("2d")!.drawImage(spr, 0, 0);
       if (spr.hi === undefined && spr !== spriteSelo(s)) c.style.imageRendering = "auto";
       if (spr !== spriteSelo(s)) c.style.imageRendering = "auto";
       b.appendChild(c);
@@ -1151,7 +1151,7 @@ export function desenharNinho() {
     const s = spriteOvo(A.el, "lendario");
     c.width = s.width;
     c.height = s.height;
-    c.getContext("2d").drawImage(s, 0, 0);
+    c.getContext("2d")!.drawImage(s, 0, 0);
     d.appendChild(c);
     d.insertAdjacentHTML("beforeend", `<i><b style="width:${Math.min(100, (A.prog / A.alvo) * 100)}%;background:#ffd34a"></b></i>`);
     box.appendChild(d);
@@ -1164,7 +1164,7 @@ export function desenharNinho() {
     const s = spriteOvo(LINHA[o.id].elemento, o.rar);
     c.width = s.width;
     c.height = s.height;
-    c.getContext("2d").drawImage(s, 0, 0);
+    c.getContext("2d")!.drawImage(s, 0, 0);
     d.appendChild(c);
     d.insertAdjacentHTML("beforeend", `<i><b style="width:${Math.min(100, (o.prog / o.alvo) * 100)}%"></b></i>`);
     box.appendChild(d);

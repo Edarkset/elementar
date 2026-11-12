@@ -141,7 +141,7 @@ export function artCirculo(el: Elemento) {
   const N = 160,
     c = document.createElement("canvas");
   c.width = c.height = N;
-  const g = c.getContext("2d"),
+  const g = c.getContext("2d")!,
     cor = COR[el] || "#ffd34a",
     R = N / 2 - 4;
   g.translate(N / 2, N / 2);

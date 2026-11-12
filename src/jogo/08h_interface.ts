@@ -14,7 +14,7 @@ export function recortarBotao(img: Imagem, row: number) {
     c = document.createElement("canvas");
   c.width = cw;
   c.height = ch;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   g.drawImage(img, 0, row * ch, cw, ch, 0, 0, cw, ch);
   let y0 = ch,
     y1 = 0;
@@ -36,7 +36,7 @@ export function recortarBotao(img: Imagem, row: number) {
       const o = document.createElement("canvas");
       o.width = Math.round((x1 - x0) * k);
       o.height = h;
-      o.getContext("2d").drawImage(c, Math.round(x0 * k), y0, o.width, h, 0, 0, o.width, h);
+      o.getContext("2d")!.drawImage(c, Math.round(x0 * k), y0, o.width, h, 0, 0, o.width, h);
       return `url(${o.toDataURL()})`;
     };
   return { esq: corte(0, 38), meio: corte(38, 46), cen: corte(44, 84), dir: corte(90, 128) };
@@ -63,7 +63,7 @@ export function aplicarArteBotoes() {
         const o = document.createElement("canvas");
         o.width = cw;
         o.height = ch;
-        o.getContext("2d").drawImage(A, i * cw, r * ch, cw, ch, 0, 0, cw, ch);
+        o.getContext("2d")!.drawImage(A, i * cw, r * ch, cw, ch, 0, 0, cw, ch);
         st.setProperty(`--acao${i}-${r}`, `url(${o.toDataURL()})`);
       }
     document.documentElement.classList.add("ui-acao");
@@ -143,7 +143,7 @@ export function insigniaSprite(c, ok: boolean) {
   if (cacheArte.has(k)) return cacheArte.get(k);
   const cv = document.createElement("canvas");
   cv.width = cv.height = 64;
-  const g = cv.getContext("2d");
+  const g = cv.getContext("2d")!;
   g.imageSmoothingEnabled = true;
   const quadro = { bronze: 0, prata: 1, ouro: 2, secreta: 3 }[c.insignia] ?? 0,
     tipo = c.categoria === "mapa" ? c.id.split(":")[1] : null;

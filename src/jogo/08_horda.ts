@@ -276,7 +276,7 @@ export function luminancia(r: number, g: number, b: number) {
 }
 export function lumMedia(cv: HTMLCanvasElement, passo: number) {
   try {
-    const d = cv.getContext("2d").getImageData(0, 0, cv.width, cv.height).data;
+    const d = cv.getContext("2d")!.getImageData(0, 0, cv.width, cv.height).data;
     let r = 0,
       g = 0,
       b = 0,

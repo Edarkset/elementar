@@ -651,7 +651,7 @@ export function retratoPequeno(caminho: string) {
   const c = document.createElement("canvas");
   c.width = 48;
   c.height = 48;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   const s = Math.min(img.width, img.height * 0.66);
   g.drawImage(img, (img.width - s) / 2, 0, s, s, 0, 0, 48, 48);
   return c;

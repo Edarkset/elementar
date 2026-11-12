@@ -52,7 +52,7 @@ export function desenharMapaLuz(ox: number, oy: number) {
     LMAP = document.createElement("canvas");
     FURO = document.createElement("canvas");
     FURO.width = FURO.height = 64;
-    const fg = FURO.getContext("2d"),
+    const fg = FURO.getContext("2d")!,
       gr = fg.createRadialGradient(32, 32, 0, 32, 32, 32);
     gr.addColorStop(0, "rgba(255,255,255,1)");
     gr.addColorStop(0.45, "rgba(255,255,255,.7)");
@@ -64,7 +64,7 @@ export function desenharMapaLuz(ox: number, oy: number) {
     LMAP.width = w;
     LMAP.height = h;
   }
-  const g = LMAP.getContext("2d"),
+  const g = LMAP.getContext("2d")!,
     L = (UNIV[R.universo] || {}).luz || {},
     c = crepusculo();
   g.globalCompositeOperation = "source-over";

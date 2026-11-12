@@ -42,7 +42,7 @@ export function spriteCena(
   const c = document.createElement("canvas");
   c.width = w;
   c.height = h;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   fn(g, (x, y, cor) => {
     g.fillStyle = cor;
     g.fillRect(x, y, 1, 1);
@@ -467,7 +467,7 @@ export function silhuetaMundo(spr: HTMLCanvasElement, cor: string) {
   const c = document.createElement("canvas");
   c.width = spr.width;
   c.height = spr.height;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   g.drawImage(spr, 0, 0);
   g.globalCompositeOperation = "source-in";
   g.fillStyle = cor;
@@ -492,7 +492,7 @@ export function silhueta(spr: HTMLCanvasElement, cor: string) {
     c = document.createElement("canvas");
   c.width = b.width;
   c.height = b.height;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   g.drawImage(b, 0, 0);
   g.globalCompositeOperation = "source-in";
   g.fillStyle = cor;
@@ -512,7 +512,7 @@ export function detalhePedaco(cx: number, cy: number) {
   }
   const c = document.createElement("canvas");
   c.width = c.height = CH;
-  const g = c.getContext("2d"),
+  const g = c.getContext("2d")!,
     r = semente(C.u.id + "d" + k),
     base = COR[C.u.elemento];
   const px = (x: number, y: number, cor: string, w?: number, h?: number) => {
@@ -1179,7 +1179,7 @@ export function desenharNuvens(ox: number, oy: number, soCriar?: boolean) {
     const T = 128,
       c = document.createElement("canvas");
     c.width = c.height = T;
-    const g = c.getContext("2d"),
+    const g = c.getContext("2d")!,
       r = semente("nuvens");
     // manchas macias espalhadas, repetidas nas bordas para emendar
     for (let i = 0; i < 22; i++) {

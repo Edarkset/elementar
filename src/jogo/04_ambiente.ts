@@ -340,7 +340,7 @@ export function texturaSolo(t: string) {
     N = TEX_N,
     c = document.createElement("canvas");
   c.width = c.height = N * TEX_K;
-  const g = c.getContext("2d"),
+  const g = c.getContext("2d")!,
     r = semente("solo:" + t);
   g.scale(TEX_K, TEX_K);
   g.globalAlpha = BASE_TEX[t] ?? 1;
@@ -557,7 +557,7 @@ export function texturaBrilho() {
   const N = TEX_N,
     c = document.createElement("canvas");
   c.width = c.height = N * TEX_K;
-  const g = c.getContext("2d"),
+  const g = c.getContext("2d")!,
     r = semente("brilho");
   g.scale(TEX_K, TEX_K);
   g.lineCap = "round";
@@ -759,7 +759,7 @@ export function montarSolo(c0: number, r0: number, W2: number, H2: number, UK: n
         ent.u = document.createElement("canvas");
         ent.u.width = uw;
         ent.u.height = uh;
-        ent.ug = ent.u.getContext("2d");
+        ent.ug = ent.u.getContext("2d")!;
         ent.id = ent.ug.createImageData(uw, uh);
       }
       const d = ent.id.data,
@@ -832,7 +832,7 @@ export function montarSolo(c0: number, r0: number, W2: number, H2: number, UK: n
         ent.b = document.createElement("canvas");
         ent.b.width = bw;
         ent.b.height = bh;
-        ent.bg = ent.b.getContext("2d");
+        ent.bg = ent.b.getContext("2d")!;
       }
       const g = ent.bg;
       g.setTransform(1, 0, 0, 1, 0, 0);
@@ -862,7 +862,7 @@ export function montarSolo(c0: number, r0: number, W2: number, H2: number, UK: n
           ent.b2.width = bw;
           ent.b2.height = bh;
         }
-        const g2 = ent.b2.getContext("2d");
+        const g2 = ent.b2.getContext("2d")!;
         g2.setTransform(1, 0, 0, 1, 0, 0);
         g2.globalCompositeOperation = "source-over";
         g2.clearRect(0, 0, bw, bh);
@@ -884,7 +884,7 @@ export function montarSolo(c0: number, r0: number, W2: number, H2: number, UK: n
           ent.s.width = uw;
           ent.s.height = uh;
         }
-        const gs = ent.s.getContext("2d");
+        const gs = ent.s.getContext("2d")!;
         gs.globalCompositeOperation = "source-over";
         gs.clearRect(0, 0, uw, uh);
         gs.drawImage(ent.u, 0, 0);

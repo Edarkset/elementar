@@ -258,7 +258,7 @@ export function fundoAbismo() {
   if (C.fundoProc) return C.fundoProc;
   const c = document.createElement("canvas");
   c.width = c.height = 128;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   g.fillStyle = "#cfdcea";
   g.fillRect(0, 0, 128, 128);
   for (let i = 0; i < 26; i++) {
@@ -290,7 +290,7 @@ export function faixaParedao(img) {
     t = document.createElement("canvas");
   t.width = img.width;
   t.height = img.height;
-  const tg = t.getContext("2d");
+  const tg = t.getContext("2d")!;
   tg.drawImage(img, 0, 0);
   let d;
   try {
@@ -330,7 +330,7 @@ export function faixaParedao(img) {
     quedas.reduce((a, b) => a + b.sw, 0)
   );
   c.height = H * 2;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   let x = 0;
   for (const b of rochas) {
     g.drawImage(img, b.sx, b.sy, b.sw, H, x, 0, b.sw, H);
@@ -357,7 +357,7 @@ export function faixaPonte(pec) {
   const t = document.createElement("canvas");
   t.width = Math.max(1, Math.round(bb.w));
   t.height = Math.max(1, Math.round(bb.h));
-  const g = t.getContext("2d");
+  const g = t.getContext("2d")!;
   g.drawImage(pec, bb.x, bb.y, bb.w, bb.h, 0, 0, t.width, t.height);
   let shDeck = bb.h;
   try {
@@ -384,7 +384,7 @@ export function nevoaAbismo(fundo) {
   try {
     const c = document.createElement("canvas");
     c.width = c.height = 8;
-    const gc = c.getContext("2d");
+    const gc = c.getContext("2d")!;
     gc.drawImage(fundo, 0, 0, 8, 8);
     const d = gc.getImageData(0, 0, 8, 8).data;
     r = g = b = 0;
@@ -402,7 +402,7 @@ export function nevoaAbismo(fundo) {
   const n = document.createElement("canvas");
   n.width = 1;
   n.height = 64;
-  const gn = n.getContext("2d"),
+  const gn = n.getContext("2d")!,
     gr = gn.createLinearGradient(0, 0, 0, 64);
   gr.addColorStop(0, `rgba(${r | 0},${g | 0},${b | 0},0)`);
   gr.addColorStop(0.55, `rgba(${r | 0},${g | 0},${b | 0},.75)`);
@@ -1080,7 +1080,7 @@ export function desenharAbertura() {
     CV_INTRO.width = cv.width;
     CV_INTRO.height = cv.height;
   }
-  const g = CV_INTRO.getContext("2d");
+  const g = CV_INTRO.getContext("2d")!;
   g.setTransform(cv.width / W, 0, 0, cv.height / H, 0, 0);
   g.globalCompositeOperation = "source-over";
   g.globalAlpha = 1;
@@ -1097,7 +1097,7 @@ export function desenharAbertura() {
       const b = document.createElement("canvas");
       b.width = 48;
       b.height = Math.max(1, Math.round((48 * img.height) / img.width));
-      const gb = b.getContext("2d");
+      const gb = b.getContext("2d")!;
       gb.imageSmoothingEnabled = true;
       gb.drawImage(img, 0, 0, b.width, b.height);
       I.borrada = b;
@@ -1116,7 +1116,7 @@ export function desenharAbertura() {
       rc.width = Math.ceil(W);
       rc.height = Math.ceil(H);
     }
-    const gr2 = rc.getContext("2d");
+    const gr2 = rc.getContext("2d")!;
     gr2.setTransform(1, 0, 0, 1, 0, 0);
     gr2.globalCompositeOperation = "source-over";
     gr2.clearRect(0, 0, rc.width, rc.height);

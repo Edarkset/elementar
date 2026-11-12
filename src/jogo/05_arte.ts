@@ -49,7 +49,7 @@ export function limparFundo(nome: string, img: Imagem) {
     const c = document.createElement("canvas");
     c.width = img.width;
     c.height = img.height;
-    const g = c.getContext("2d");
+    const g = c.getContext("2d")!;
     g.drawImage(img, 0, 0);
     const im = g.getImageData(0, 0, c.width, c.height),
       d = im.data;
@@ -251,7 +251,7 @@ export const alfaDe = (img: Imagem) => {
   const c = document.createElement("canvas");
   c.width = img.width;
   c.height = img.height;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   g.drawImage(img, 0, 0);
   return g.getImageData(0, 0, c.width, c.height).data;
 };
@@ -408,7 +408,7 @@ export function folhaRecolorida(anim: Imagem, base: Imagem, alvo: Imagem, celula
         c = document.createElement("canvas");
       c.width = 64;
       c.height = 64;
-      const g = c.getContext("2d");
+      const g = c.getContext("2d")!;
       g.imageSmoothingEnabled = false;
       g.drawImage(im, (celula % 4) * cw, Math.floor(celula / 4) * ch, cw, ch, 0, 0, 64, 64);
       return g.getImageData(0, 0, 64, 64).data;
@@ -480,7 +480,7 @@ export function folhaRecolorida(anim: Imagem, base: Imagem, alvo: Imagem, celula
     const c = document.createElement("canvas");
     c.width = anim.width;
     c.height = anim.height;
-    const g = c.getContext("2d");
+    const g = c.getContext("2d")!;
     g.drawImage(anim, 0, 0);
     const im = g.getImageData(0, 0, c.width, c.height),
       d = im.data;
@@ -557,7 +557,7 @@ export function quadroAnim(img: Imagem, row: number, i: number, alvo: number, co
   }
   const c = document.createElement("canvas");
   c.width = c.height = A;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   g.imageSmoothingEnabled = true;
   g.imageSmoothingQuality = "high";
   g.drawImage(fo, q.x0, q.y0, q.x1 - q.x0, q.y1 - q.y0, dx, dy, dw, dh);

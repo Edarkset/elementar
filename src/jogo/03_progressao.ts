@@ -199,7 +199,7 @@ export function mostrarCartas(titulo: string, sub: string, cartas: Carta[], op: 
       cc.width = q0.width;
       cc.height = q0.height;
       cc.className = (c.classe === "medio" ? "retrato-medio" : "retrato-grande") + " anim-retrato";
-      cc.getContext("2d").drawImage(q0, 0, 0);
+      cc.getContext("2d")!.drawImage(q0, 0, 0);
       cc._quadros = c.quadros;
       if (c.quadros.geo) {
         cc._geo = c.quadros.geo;
@@ -212,7 +212,7 @@ export function mostrarCartas(titulo: string, sub: string, cartas: Carta[], op: 
         cc = document.createElement("canvas");
       cc.width = sp.width;
       cc.height = sp.height;
-      cc.getContext("2d").drawImage(sp, 0, 0);
+      cc.getContext("2d")!.drawImage(sp, 0, 0);
       if (c.suave || sp !== c.sprite) cc.style.imageRendering = "auto";
       if (c.classe === "grande") cc.className = "retrato-grande";
       b.appendChild(cc);
@@ -262,7 +262,7 @@ export function animarRetratos() {
         continue;
       }
       const q = c._quadros[f % c._quadros.length],
-        g = c.getContext("2d");
+        g = c.getContext("2d")!;
       g.clearRect(0, 0, c.width, c.height);
       g.drawImage(q, 0, 0);
     }
@@ -303,7 +303,7 @@ export function quadrosForma(id: string, e: number, ramo: number, rar: string) {
   const qs = L.qs.map(q => {
     const c = document.createElement("canvas");
     c.width = c.height = C;
-    const g = c.getContext("2d");
+    const g = c.getContext("2d")!;
     const sg = g.createRadialGradient(C / 2, peY, 0, C / 2, peY, w * K * 0.55);
     sg.addColorStop(0, "rgba(0,0,0,.45)");
     sg.addColorStop(1, "rgba(0,0,0,0)");
@@ -349,7 +349,7 @@ export function desenharRetrato(c: HTMLCanvasElement, geo, i: number) {
     c.width = c.height = T;
   }
   const C = c.width,
-    g = c.getContext("2d");
+    g = c.getContext("2d")!;
   g.clearRect(0, 0, C, C);
   const k = Math.max(1, Math.floor(C / geo.lado)),
     o = Math.round((C - geo.lado * k) / 2),
@@ -1482,7 +1482,7 @@ export function iconeHud(nome: string) {
       const c = document.createElement("canvas");
       c.width = cw;
       c.height = ch;
-      c.getContext("2d").drawImage(img, (i % 6) * cw, Math.floor(i / 6) * ch, cw, ch, 0, 0, cw, ch);
+      c.getContext("2d")!.drawImage(img, (i % 6) * cw, Math.floor(i / 6) * ch, cw, ch, 0, 0, cw, ch);
       ICONES_URL[k] = c.toDataURL();
     }
   }
@@ -1840,7 +1840,7 @@ export function capaReino(u: Universo) {
   const c = document.createElement("canvas");
   c.width = 240;
   c.height = 150;
-  const g = c.getContext("2d"),
+  const g = c.getContext("2d")!,
     e = Math.max(c.width / img.width, c.height / img.height);
   g.imageSmoothingEnabled = true;
   g.imageSmoothingQuality = "high";

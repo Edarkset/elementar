@@ -530,7 +530,7 @@ export function emblemaElemento(el: Elemento, ativo: boolean) {
   const N = 96,
     c = document.createElement("canvas");
   c.width = c.height = N;
-  const g = c.getContext("2d"),
+  const g = c.getContext("2d")!,
     cor = COR[el] || "#ffffff",
     [r, gg, b] = hexRgb(cor);
   g.translate(N / 2, N / 2);

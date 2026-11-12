@@ -784,7 +784,7 @@ export function sombraContato(x: number, y: number, w: number, a: number) {
     SOMBRA_IMG = document.createElement("canvas");
     SOMBRA_IMG.width = 64;
     SOMBRA_IMG.height = 64;
-    const g = SOMBRA_IMG.getContext("2d"),
+    const g = SOMBRA_IMG.getContext("2d")!,
       gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
     gr.addColorStop(0, "rgba(0,0,0,1)");
     gr.addColorStop(0.45, "rgba(0,0,0,.75)");

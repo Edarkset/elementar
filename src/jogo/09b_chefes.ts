@@ -2084,7 +2084,7 @@ export function silhuetaBrilho(spr: HTMLCanvasElement, cor: string) {
     o = document.createElement("canvas");
   o.width = c.width;
   o.height = c.height;
-  const g = o.getContext("2d");
+  const g = o.getContext("2d")!;
   g.drawImage(c, 0, 0);
   try {
     const im = g.getImageData(0, 0, o.width, o.height),
@@ -2132,7 +2132,7 @@ export function desenharEscuridao(ox: number, oy: number) {
     ESCURO.width = VW;
     ESCURO.height = VH;
   }
-  const g = ESCURO.getContext("2d");
+  const g = ESCURO.getContext("2d")!;
   g.globalCompositeOperation = "source-over";
   g.clearRect(0, 0, VW, VH);
   g.fillStyle = `rgba(6,4,14,${J.escuro})`;

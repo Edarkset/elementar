@@ -34,7 +34,7 @@ O código que se edita fica em `src/jogo/*.ts`. O `js/jogo/*.js` é gerado por `
 | `09b_chefes` | chefes: inteligência, escolha do golpe, perigos anunciados, segunda fase |
 | `09c_golpes` | **um golpe por função** (leque, espiral, chuva, investida...) e a tabela `GOLPES` |
 | `10_desenho` | desenho de cada quadro (`desenhar`), herói e HUD |
-| `11_menu` | menu, Pacto, pausa, modo moderador |
+| `11_menu` | menu, Aliança (no código ainda `pacto`: `R.pacto`, `telaPacto`), pausa, modo moderador |
 
 ## Um quadro do jogo
 

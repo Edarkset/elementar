@@ -100,8 +100,8 @@ export function telaInvocador(pacto: Elemento[], id: string, esperou?: boolean) 
         texto:
           `<span style="color:${COR[l.elementos[0]]}">${NOME_EL(l.elementos[0])}</span> e <span style="color:${COR[l.elementos[1]]}">${NOME_EL(l.elementos[1])}</span> · ${l.poder.nome} · ${l.dom ? `Dom: ${l.dom.nome} · Fardo: ${l.fardo}` : l.passiva.nome}<br>` +
           (n
-            ? `<span class='bom'>Combina com o seu Pacto</span>: cada monstro de ${l.elementos.map(NOME_EL).join(" ou ")} na equipe dá ★ (mais dano e poder).`
-            : `Sem elemento em comum com o Pacto: pouca afinidade.`) +
+            ? `<span class='bom'>Combina com a sua Aliança</span>: cada monstro de ${l.elementos.map(NOME_EL).join(" ou ")} na equipe dá ★ (mais dano e poder).`
+            : `Sem elemento em comum com a Aliança: pouca afinidade.`) +
           (l.universo ? ` Terra Natal: ${UNIV[l.universo] ? UNIV[l.universo].nome : ""}.` : ""),
         acao: () => ir(l.id),
         _n: n

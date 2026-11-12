@@ -374,7 +374,7 @@ export function telaPressagio() {
 export const MALDICOES = [
   {
     id: "sangue",
-    nome: "Pacto de Sangue",
+    nome: "Preço de Sangue",
     texto: "<span class='bom'>+35% de dano</span> para sempre nesta run. <span class='custo'>Vida máxima -25%.</span>",
     mods: { dano: 0.35, vida: -0.25 }
   },

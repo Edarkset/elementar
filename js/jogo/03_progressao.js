@@ -1218,7 +1218,7 @@ export function cenaDescoberta(mon) {
   }
   cenaTocar(
     `<div class="cine-raios" style="--cor:${cor}"></div><div class="cine-descoberta" style="--cor:${cor}"><img src="${url}" alt=""></div><div class="cine-clarao descoberta"></div>
-    <div class="cine-texto descoberta"><small>Novo monstro descoberto!</small><b style="color:${cor}">${l.filhote}</b><i>${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome} · ${D.linhagens[l.linhagem].nome}</i><em>Agora ele aparece no Pacto, nos ovos e nos filhotes.</em></div>`,
+    <div class="cine-texto descoberta"><small>Novo monstro descoberto!</small><b style="color:${cor}">${l.filhote}</b><i>${NOME_EL(l.elemento)} · ${D.classes[l.classe].nome} · ${D.linhagens[l.linhagem].nome}</i><em>Agora ele aparece na Aliança, nos ovos e nos filhotes.</em></div>`,
     "evolucao descoberta",
     3400
   );
@@ -1953,7 +1953,7 @@ export function aplicarPortal(u, rec) {
   const pool = embaralhar(poolPacto()).slice(0, 3);
   mostrarCartas(
     "Recrutar",
-    "Escolha um monstro Raro do seu Pacto.",
+    "Escolha um monstro Raro da sua Aliança.",
     pool.map(id => {
       const l = LINHA[id];
       return {
@@ -2106,7 +2106,7 @@ export function derrota() {
             }
           ]
         : []),
-      { titulo: "Nova run", raridade: podem.length ? "comum" : "raro", texto: "Fechar um novo Pacto agora.", acao: () => telaPacto() },
+      { titulo: "Nova run", raridade: podem.length ? "comum" : "raro", texto: "Formar uma nova Aliança agora.", acao: () => telaPacto() },
       { titulo: "Voltar ao Nexo", texto: "Ir para o menu.", acao: () => menu() }
     ],
     { fundo: recorde ? "ui__vitoria" : "ui__derrota" }

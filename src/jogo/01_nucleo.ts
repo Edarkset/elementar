@@ -1089,7 +1089,7 @@ export function calcularSinergia() {
   const pb = D.pacto.bonus[R.pacto.length];
   if (pb && pb.dano > 1) {
     dano *= pb.dano;
-    chips.push("Pacto Duplo");
+    chips.push("Aliança Dupla");
   }
   R.elos.forEach(e => chips.push(e));
   const af = afinidadeLenda(eq);

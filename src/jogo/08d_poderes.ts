@@ -32,7 +32,7 @@ import { iconeTalisma } from "./08h_interface.js";
 // ================================================================ árvore de poderes: Talismãs (passivos), Poderes Despertos (evoluções) e Uniões
 // Regras e números em dados/fonte_poderes.py. Desperto: poder no nível 5 + Talismã par + monstro Adulto -> baú de mini-chefe ou chefe.
 export const PD = () => D.poderes;
-export function nivTal(id) {
+export function nivTal(id: string) {
   return (R.talismas && R.talismas[id]) || 0;
 }
 export function valTal(efeito: string) {
@@ -153,7 +153,7 @@ export function checarUnioes() {
     }
 }
 // força de um poder: Desperto e União multiplicam o dano daquele poder (o Desperto substitui o poder, não soma)
-export function fatorPoder(s, k) {
+export function fatorPoder(s: Selo, k: string) {
   if (!(s.desp && s.desp[k])) return 1;
   let f = PD().forca_desperto;
   const d = despertoDe(s, k);
@@ -168,12 +168,12 @@ export function fatorPoder(s, k) {
   return f;
 }
 // Proteção do Pacto: enquanto a equipe tem um só monstro, ele bate mais forte (o dobro nas classes de suporte), para nenhum começo ficar travado
-export function fatorSozinho(s) {
+export function fatorSozinho(s: Selo) {
   if (ativos().length !== 1) return 1;
   const c = L(s).classe;
   return c === "mistico" || c === "guardiao" ? 2 : 1.4;
 }
-export function atribPoder(a, s: Selo, k: string) {
+export function atribPoder(a: Atributos, s: Selo, k: string) {
   const f = fatorPoder(s, k) * tal.dano() * fatorSozinho(s);
   return f === 1 ? a : Object.assign({}, a, { dano: a.dano * f });
 }
@@ -195,7 +195,7 @@ export function paresPendentes() {
 }
 
 // ---------------------------------------------------------------- comportamentos dos Despertos (rodam junto com o poder, quando ele dispara)
-export const _P = (s, a, el, cor, dano: number, extra) =>
+export const _P = (s: Selo, a: Atributos, el: Elemento, cor: string, dano: number, extra) =>
   Object.assign({ fonte: FONTE, x: s.x, y: s.y, dano, el, cor, vida: 1.3, perf: 1, r: 2 }, extra);
 export function puxar(cx: number, cy: number, r: number, forca: number) {
   for (const e of J.inimigos) {
@@ -211,14 +211,14 @@ export function puxar(cx: number, cy: number, r: number, forca: number) {
 }
 export const COMPORTAMENTO = {
   guardiao: {
-    b(s: Selo | Inimigo, a, el: string) {
+    b(s: Selo | Inimigo, a: Atributos, el: string) {
       const v = (J.danoRec || 0) * 0.25;
       if (v > 0) {
         vfxOnda(s, el, 40);
-        emArea(s.x, s.y, 40, e => ferir(e, v, el));
+        emArea(s.x, s.y, 40, (e: PropCena) => ferir(e, v, el));
       }
     },
-    h1(s: Inimigo, a, el) {
+    h1(s: Inimigo, a: Atributos, el: Elemento) {
       let n = 0;
       for (const e of J.inimigos) {
         if (e.hp <= 0 || e.chefe || dist2(e, s) > 70 * 70) continue;
@@ -231,9 +231,9 @@ export const COMPORTAMENTO = {
       }
       curar(J.vidaMax * 0.003 * n);
     },
-    h2(s: Selo | Inimigo, a, el: string) {
+    h2(s: Selo | Inimigo, a: Inimigo, el: string) {
       vfxOnda(s, el, 47);
-      emArea(s.x, s.y, 47, e => {
+      emArea(s.x, s.y, 47, (e: Ponto) => {
         ferir(e, a.dano * 0.6, el);
         const dx = e.x - s.x,
           dy = e.y - s.y,
@@ -244,24 +244,24 @@ export const COMPORTAMENTO = {
     }
   },
   guerreiro: {
-    b(s, a, el: string) {
+    b(s: Selo, a: Inimigo, el: string) {
       puxar(s.x, s.y, 44, 6);
-      emArea(s.x, s.y, 28, e => ferir(e, a.dano * 0.4, el));
+      emArea(s.x, s.y, 28, (e: Ponto) => ferir(e, a.dano * 0.4, el));
     },
-    h1(s: Selo | Inimigo, a, el: string) {
+    h1(s: Selo | Inimigo, a: Inimigo, el: string) {
       for (const f of [0.5, 1])
         agendar(0.15 * f, () => {
           if (!J) return;
           vfxOnda(s, el, 22);
-          emArea(s.x, s.y, 22, e => ferir(e, a.dano * 0.8, el));
+          emArea(s.x, s.y, 22, (e: Ponto) => ferir(e, a.dano * 0.8, el));
         });
     },
-    h2(s, a, el) {
+    h2(s: Selo, a: Atributos, el: Elemento) {
       s.berserk = 6;
     }
   },
   assassino: {
-    b(s, a, el, cor) {
+    b(s, a: Atributos, el: Elemento, cor: string) {
       for (let i = 0; i < 2; i++) {
         const e = maisProximo(s, 110, o => Math.random() < 0.7);
         if (!e) break;
@@ -269,7 +269,7 @@ export const COMPORTAMENTO = {
         J.proj.push(_P(s, a, el, cor, a.dano * 0.7, { vx: Math.cos(g) * 180, vy: Math.sin(g) * 180, ric: 2, perf: 2 }));
       }
     },
-    h1(s, a, el: string) {
+    h1(s, a: Atributos, el: string) {
       const vistos = new Set();
       for (let i = 0; i < 3; i++) {
         const e = maisProximo(s, 60, o => !vistos.has(o));
@@ -279,7 +279,7 @@ export const COMPORTAMENTO = {
         ferir(e, a.dano, el);
       }
     },
-    h2(s: Inimigo, a) {
+    h2(s: Inimigo, a: Atributos) {
       let n = 0;
       for (const e of J.inimigos) {
         if (e.hp <= 0 || dist2(e, s) > 60 * 60) continue;
@@ -289,7 +289,7 @@ export const COMPORTAMENTO = {
     }
   },
   cacador: {
-    b(s, a, el: string) {
+    b(s, a: Inimigo, el: string) {
       const e = maisProximo(s, 140);
       if (e)
         agendar(0.35, () => {
@@ -298,25 +298,25 @@ export const COMPORTAMENTO = {
           emArea(e.x, e.y, 18, o => ferir(o, a.dano * 0.5, el));
         });
     },
-    h1(s, a, el, cor) {
+    h1(s: Selo, a: Atributos, el: Elemento, cor: string) {
       for (let i = 0; i < 8; i++) {
         const g = (i / 8) * Math.PI * 2 + J.t;
         J.proj.push(_P(s, a, el, cor, a.dano * 0.5, { vx: Math.cos(g) * 150, vy: Math.sin(g) * 150 }));
       }
     },
-    h2(s, a, el, cor) {
+    h2(s: Selo, a: Atributos, el: Elemento, cor: string) {
       J.armadilhas.push({ fonte: FONTE, x: s.x + rnd(-30, 30), y: s.y + rnd(-30, 30), dano: a.dano * 3, el, cor, raiz: false, vida: 12 });
     }
   },
   mago: {
-    b(s, a, el, cor) {
+    b(s, a: Atributos, el: Elemento, cor: string) {
       for (let i = 0; i < 2; i++) {
         const e = maisProximo(s, 130);
         if (!e) break;
         J.proj.push(_P(s, a, el, cor, a.dano * 0.6, { alvo: e, vel: 110, vida: 2.2, r: 3, explode: 16 }));
       }
     },
-    h1(s, a, el: string) {
+    h1(s, a: Inimigo, el: string) {
       const p = pontoDenso(s, 150);
       if (p)
         agendar(0.3, () => {
@@ -325,7 +325,7 @@ export const COMPORTAMENTO = {
           emArea(p.x, p.y, 30, o => ferir(o, a.dano * 1.2, el));
         });
     },
-    h2(s, a, el: string) {
+    h2(s: Selo, a: Inimigo, el: string) {
       const P = J.jogador;
       vfxSelo(P.x, P.y, el, 35);
       emArea(P.x, P.y, 35, o => {
@@ -344,17 +344,17 @@ export const COMPORTAMENTO = {
         }
       }
     },
-    h1(s, a, el, cor) {
+    h1(s: Selo, a: Atributos, el: Elemento, cor: string) {
       J.crias.push({ fonte: FONTE, x: s.x + rnd(-6, 6), y: s.y + rnd(-6, 6), dano: a.dano * 0.7, el, cor, vida: 7, cd: 0 });
     },
-    h2(s, a, el, cor) {
+    h2(s, a: Atributos, el: Elemento, cor: string) {
       const p = pontoDenso(s, 150) || s;
       for (let i = 0; i < 2; i++)
         J.crias.push({ fonte: FONTE, x: p.x + rnd(-10, 10), y: p.y + rnd(-10, 10), dano: a.dano * 0.6, el, cor, vida: 8, cd: 0 });
     }
   },
   mistico: {
-    b(s, a, el: string) {
+    b(s, a: Atributos, el: string) {
       const vistos = new Set();
       let o = maisProximo(s, 110);
       for (let i = 0; i < 2 && o; i++) {
@@ -367,7 +367,7 @@ export const COMPORTAMENTO = {
       }
       curar(J.vidaMax * 0.01);
     },
-    h1(s, a, el) {
+    h1(s: Selo, a: Atributos, el: Elemento) {
       const P = J.jogador;
       emArea(P.x, P.y, 40, o => {
         o.lenta = Math.max(o.lenta || 0, 2);
@@ -384,7 +384,7 @@ export const COMPORTAMENTO = {
     h1() {
       J.cantoGuerra = 4;
     },
-    h2(s, a, el) {
+    h2(s, a: Atributos, el: Elemento) {
       const P = J.jogador;
       for (const g of J.gemas)
         if (dist2(g, P) < 110 * 110) {
@@ -396,7 +396,7 @@ export const COMPORTAMENTO = {
     }
   }
 };
-export function aoDisparar(s: Selo, k: string, a, el: string, cor: string) {
+export function aoDisparar(s: Selo, k: string, a: Atributos, el: string, cor: string) {
   if (k !== "b" && !SIM.ativo) circuloInvocacao(s.x, s.y + 3, el, 10 + est(s) * 2.5, 0.6, false); // habilidade: círculo pequeno sob o monstro
   if (!(s.desp && s.desp[k])) return;
   const f = (COMPORTAMENTO[L(s).classe] || {})[k];

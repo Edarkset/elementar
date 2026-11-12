@@ -146,7 +146,7 @@ export function propsEm(x: number, y: number, r: number, fn) {
   }
 }
 export function empurrarProps(x: number, y: number, r: number, forca: number) {
-  propsEm(x, y, r, (p, d: number) => {
+  propsEm(x, y, r, (p: PropCena, d: number) => {
     if (p.mat.fixo) return;
     const dv = Math.min(300, forca / p.m);
     p.vx += ((p.x - x) / d) * dv;
@@ -172,7 +172,7 @@ export function fadigaChefe(e) {
 export function anunciar(e, txt: string, sub?: string) {
   J.anuncio = { txt, sub: sub || "", vida: sub ? 3.2 : 1.8, cor: COR[e.el] || "#ffd34a" };
 }
-export function iaChefe(e: Inimigo, dt: number, P) {
+export function iaChefe(e: Inimigo, dt: number, P: Ponto) {
   const def = e.def;
   if (!def || !def.golpes) {
     return false;
@@ -280,8 +280,8 @@ export function iaChefe(e: Inimigo, dt: number, P) {
     return true;
   }
   // o Orochi persegue os barris de saquê quando existem
-  if (J.cena && J.cena.lista.some(p => p.saque && !p.morto) && Math.random() < dt * 0.4) {
-    const b = J.cena.lista.find(p => p.saque && !p.morto);
+  if (J.cena && J.cena.lista.some((p: PropCena) => p.saque && !p.morto) && Math.random() < dt * 0.4) {
+    const b = J.cena.lista.find((p: PropCena) => p.saque && !p.morto);
     const a = Math.atan2(b.y - e.y, b.x - e.x);
     e.dash = { vx: Math.cos(a) * 130, vy: Math.sin(a) * 130, t: Math.hypot(b.x - e.x, b.y - e.y) / 130 + 0.1, g: {} };
   }
@@ -1040,7 +1040,7 @@ export function executarGolpe(e: Inimigo, g, P) {
       if (g.metal) {
         const metais = C ? C.lista.filter(p => !p.morto && p.mat.condutor && dist2(p, e) < 170 * 170) : [];
         if (!metais.length) return -1;
-        metais.forEach((p, i: number) =>
+        metais.forEach((p: PropCena, i: number) =>
           agendar(i * 0.2, () => {
             if (p.morto) return;
             raio(p.x, p.y - p.r, e.x, e.y, "#9fe0ff");
@@ -1068,7 +1068,7 @@ export function executarGolpe(e: Inimigo, g, P) {
     case "transmutar": {
       const r = g.r || 60;
       anel(e.x, e.y, r, "#ffd34a", 0.7);
-      propsEm(e.x, e.y, r, p => transmutarProp(p));
+      propsEm(e.x, e.y, r, (p: Projetil) => transmutarProp(p));
       if (g.solo) pintarSolo(e.x, e.y, r * 0.8, g.solo);
       tremor(2);
       return 1.0;
@@ -1466,7 +1466,7 @@ export function impactoSalto(e, g, x: number, y: number, r: number) {
     agendar(0.4, () => pintarSolo(x, y, r, "eletrico", 6));
   } else if (g.solo) pintarSolo(x, y, r * 0.8, g.solo);
 }
-export function executarFissuraCurta(x, y, a: number, L: number, cor: string) {
+export function executarFissuraCurta(x: number, y: number, a: number, L: number, cor: string) {
   const pts = [[x, y]];
   let cx = x,
     cy = y;
@@ -1477,7 +1477,7 @@ export function executarFissuraCurta(x, y, a: number, L: number, cor: string) {
   }
   J.golpes.push({
     t: 0,
-    atualizar(dt) {
+    atualizar(dt: number) {
       this.t += dt;
       return this.t < 4;
     },
@@ -1507,7 +1507,7 @@ export function transmutarProp(p) {
   particulas(p.x, p.y, "#ffd34a", 8, 50);
 }
 // Jörmungandr: o corpo se enrola em volta e aperta; escape pela fresta ou com a esquiva
-export function constricao(e, P, r: number) {
+export function constricao(e: Inimigo, P: Ponto, r: number) {
   const cx = P.x,
     cy = P.y,
     gap = Math.random() * 6.283;
@@ -1646,7 +1646,7 @@ export function faseDois(e: Inimigo, f) {
           });
       break;
     case "transmutar":
-      if (C) C.lista.forEach((p, i: number) => agendar(i * 0.04, () => transmutarProp(p)));
+      if (C) C.lista.forEach((p: Projetil, i: number) => agendar(i * 0.04, () => transmutarProp(p)));
       anel(e.x, e.y, 200, "#ffd34a", 1);
       break;
     case "tempestade":
@@ -2063,7 +2063,7 @@ export function desenharBala(b: Bala, ox: number, oy: number) {
 export let ESCURO = null;
 // silhueta para o brilho: corta o fundo quase transparente de algumas artes (virava um quadrado aceso em volta do bicho)
 export const cacheSilB = new WeakMap();
-export function silhuetaBrilho(spr, cor) {
+export function silhuetaBrilho(spr: HTMLCanvasElement, cor: string) {
   let m = cacheSilB.get(spr);
   if (!m) {
     m = {};

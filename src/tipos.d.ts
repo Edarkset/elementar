@@ -250,6 +250,13 @@ interface Meta {
   dicaReacao?: boolean;
   diarias?: AindaSemTipo;
 }
+/** atributos de um monstro na hora (atrib e atribPoder): dano por golpe, golpes por segundo, vida e cura */
+interface Atributos {
+  dano: number;
+  cad: number;
+  vida: number;
+  cura: number;
+}
 /** resultado de calcularSinergia(): multiplicadores da equipe */
 interface Sinergia {
   dano: number;

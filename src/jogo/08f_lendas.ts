@@ -50,7 +50,7 @@ export function arteHeroiLenda(l) {
   if (!img || !fatiarFolha(img, 6, 3).valida) return null;
   return quadroAnim(img, 0, 0, 64);
 }
-export function telaInvocador(pacto, id, esperou?: boolean) {
+export function telaInvocador(pacto: Elemento[], id: string, esperou?: boolean) {
   metaConq();
   const livres = [...D.panteao.filter(g => (META.deuses || []).includes(g.id)), ...D.lendas.filter(l => META.lendas.includes(l.universo))];
   if (!livres.length) {
@@ -78,7 +78,7 @@ export function telaInvocador(pacto, id, esperou?: boolean) {
     iniciarMapa();
   };
   const total = D.lendas.length + D.panteao.length,
-    estrelas = l => pacto.filter(el => l.elementos.includes(el)).length;
+    estrelas = l => pacto.filter((el: Elemento) => l.elementos.includes(el)).length;
   const cartas = livres
     .map(l => {
       const n = estrelas(l),
@@ -141,7 +141,7 @@ export const TIPOS_LENDA_TXT = {
   drenar: "rouba vida",
   dardos: "disparos rápidos"
 };
-export function atualizarLenda(dt) {
+export function atualizarLenda(dt: number) {
   const l = LENDA();
   if (!l || !J || J.fim) return;
   if (J.lendaPose) {
@@ -173,7 +173,7 @@ export function atualizarLenda(dt) {
         const a = J.lendaAng + (i / p.n) * Math.PI * 2,
           x = P.x + Math.cos(a) * p.r,
           y = P.y + Math.sin(a) * p.r * 0.8;
-        emArea(x, y, 12, e => ferir(e, base, i % 2 ? el2 : el));
+        emArea(x, y, 12, (e: PropCena) => ferir(e, base, i % 2 ? el2 : el));
       }
     }
     if (!J.lendaVfx) {
@@ -257,7 +257,7 @@ export function atualizarLenda(dt) {
       break;
     case "onda":
       vfxOnda(P, el, p.r);
-      emArea(P.x, P.y, p.r, e => {
+      emArea(P.x, P.y, p.r, (e: PropCena) => {
         ferir(e, base, el);
         const dx = e.x - P.x,
           dy = e.y - P.y,
@@ -311,7 +311,7 @@ export function atualizarLenda(dt) {
             vfxOnda({ x, y }, "fogo", p.r);
             particulasEl(x, y, "fogo", 14, 90);
             luzFlash(x, y, "#ffb060", 60, 0.4);
-            emArea(x, y, p.r, e => {
+            emArea(x, y, p.r, (e: PropCena) => {
               if (!e.ehProp) ferir(e, base, "fogo");
             });
             tremor(3);
@@ -326,7 +326,7 @@ export function atualizarLenda(dt) {
       /* avança na direção da horda */ for (let k = 1; k <= 5; k++) {
         const x = P.x + Math.cos(a) * k * 14,
           y = P.y + Math.sin(a) * k * 14;
-        emArea(x, y, 12, e => ferir(e, base, k % 2 ? el : el2));
+        emArea(x, y, 12, (e: PropCena) => ferir(e, base, k % 2 ? el : el2));
         particulasEl(x, y, el, 3, 40);
       }
       vfxCorte(P, el, 40);
@@ -335,7 +335,7 @@ export function atualizarLenda(dt) {
     case "area":
       if (denso) {
         vfxSelo(denso.x, denso.y, el, p.r);
-        emArea(denso.x, denso.y, p.r, e => {
+        emArea(denso.x, denso.y, p.r, (e: PropCena) => {
           ferir(e, base, el);
           if (p.prende) e.lenta = Math.max(e.lenta || 0, 2);
         });
@@ -419,7 +419,7 @@ export function metaDeuses() {
   return META.deuses;
 }
 // Dom Divino: golpe final com recarga longa, lançado sozinho quando a tela enche ou quando o chefe está vivo
-export function atualizarDom(dt) {
+export function atualizarDom(dt: number) {
   const g = DEUS();
   if (!g || !J || J.fim) return;
   for (const e of J.inimigos)
@@ -475,7 +475,7 @@ export function atualizarDom(dt) {
       for (let k = 1; k <= 14; k++) {
         const x = P.x + Math.cos(a) * k * 16,
           y = P.y + Math.sin(a) * k * 16;
-        emArea(x, y, 14, e => ferir(e, (base * d.dano) / 3, k % 2 ? el : el2));
+        emArea(x, y, 14, (e: PropCena) => ferir(e, (base * d.dano) / 3, k % 2 ? el : el2));
         particulasEl(x, y, el, 2, 30);
       }
       vfxCorte(P, el, 60);
@@ -549,7 +549,7 @@ export function atualizarDom(dt) {
       agendar(0.3, () => {
         if (!J) return;
         vfxOnda(c, "ar", 50);
-        emArea(c.x, c.y, 50, e => ferir(e, base * d.dano, "raio"));
+        emArea(c.x, c.y, 50, (e: PropCena) => ferir(e, base * d.dano, "raio"));
       });
       break;
     }

@@ -142,7 +142,7 @@ export function desenharMapaLuz(ox: number, oy: number) {
   lg.imageSmoothingQuality = "high";
 }
 // sombra projetada no chão (luz vinda de cima à esquerda): silhueta escura, achatada e inclinada a partir dos pés
-export function sombraProjetada(spr, x: number, yPe: number, w: number, h: number, virar: boolean, forca: number) {
+export function sombraProjetada(spr: HTMLCanvasElement, x: number, yPe: number, w: number, h: number, virar: boolean, forca: number) {
   if (!spr || QUAL === 0 || SIM.ativo) return;
   const A = nivelEscuro(),
     a = (0.36 - A * 0.3) * (forca || 1);

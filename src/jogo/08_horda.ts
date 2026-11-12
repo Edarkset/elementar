@@ -298,7 +298,7 @@ export function lumChao() {
   if (chao.lum == null) chao.lum = lumMedia(chao.cv, 7);
   return chao.lum;
 }
-export function lumSprite(spr) {
+export function lumSprite(spr: HTMLCanvasElement) {
   let L = LUM_SPR.get(spr);
   if (L == null) {
     L = lumMedia(spr, 1);
@@ -307,7 +307,7 @@ export function lumSprite(spr) {
   return L;
 }
 // devolve a cor do contorno (claro em chão escuro, escuro em chão claro) ou null quando o contraste já é bom
-export function contornoLeitura(spr) {
+export function contornoLeitura(spr: HTMLCanvasElement) {
   const Lc = lumChao(),
     Ls = lumSprite(spr),
     c = (Math.max(Lc, Ls) + 0.05) / (Math.min(Lc, Ls) + 0.05);

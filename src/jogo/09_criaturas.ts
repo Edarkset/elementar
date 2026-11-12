@@ -42,7 +42,7 @@ import { MULTIDAO } from "./10_desenho.js";
 // Quando a folha de arte do universo for importada, ela substitui o sprite pintado (mesma ordem de quadros).
 
 export const cacheCri = new Map();
-export function spriteCriatura(def, tam, cor: string, q, pose: string, semente: number) {
+export function spriteCriatura(def, tam, cor: string, q: number, pose: string, semente: number) {
   const det = def.detalhes || [],
     k = def.nome + "|" + tam + "|" + cor + "|" + q + "|" + pose + "|" + (semente || 0);
   if (cacheCri.has(k)) return cacheCri.get(k);
@@ -55,7 +55,7 @@ export function spriteCriatura(def, tam, cor: string, q, pose: string, semente: 
     oy = 2,
     tem = (d: string) => det.includes(d),
     u = Math.max(1, s / 16);
-  const px = (x: number, y: number, c) => {
+  const px = (x: number, y: number, c: string) => {
     x = Math.round(x) + ox;
     y = Math.round(y) + oy;
     if (x >= 0 && y >= 0 && x < W && y < H && c) buf[y * W + x] = c;
@@ -66,7 +66,7 @@ export function spriteCriatura(def, tam, cor: string, q, pose: string, semente: 
     esc = tom(base, 0.62),
     cont = "#140f1c";
   const sombreado = (dx: number, dy: number, c: string) => (dx + dy < -0.45 ? tom(c, 1.28) : dx + dy > 0.5 ? tom(c, 0.66) : c);
-  const elipse = (cx: number, cy: number, rx: number, ry: number, c, plano?: boolean) => {
+  const elipse = (cx: number, cy: number, rx: number, ry: number, c: string, plano?: boolean) => {
     for (let y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y++)
       for (let x = Math.floor(cx - rx); x <= Math.ceil(cx + rx); x++) {
         const dx = (x - cx) / Math.max(0.5, rx),
@@ -74,10 +74,10 @@ export function spriteCriatura(def, tam, cor: string, q, pose: string, semente: 
         if (dx * dx + dy * dy <= 1.05) px(x, y, plano ? c : sombreado(dx, dy, c));
       }
   };
-  const ret = (x: number, y: number, w: number, h: number, c) => {
+  const ret = (x: number, y: number, w: number, h: number, c: string) => {
     for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) px(x + i, y + j, c);
   };
-  const linha = (x0: number, y0: number, x1: number, y1: number, c, g?: number) => {
+  const linha = (x0: number, y0: number, x1: number, y1: number, c: string, g?: number) => {
     const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0)));
     for (let i = 0; i <= n; i++) {
       const t = i / n,
@@ -928,7 +928,7 @@ export function arteCriatura(e, pose: string, q: number) {
   return celulaArte(img, 8, 6, col, row, tam, tam, 0.85);
 } // grade simples: o recorte inteligente trazia pedaços de outras poses nestas folhas (ver docs/ARTES_PARA_REFAZER.md)
 // ---------------------------------------------------------------- nascimento, passo e animação
-export function defInimigo(k) {
+export function defInimigo(k: number) {
   const u = UNIV[R.universo];
   return (
     (u.combate && u.combate.inimigos[k]) || {
@@ -962,7 +962,7 @@ export function prepararCriatura(e: Inimigo, def, tam: number) {
 export function pctMax(o: Inimigo, p: number) {
   return o.chefe || o.mini ? Math.min(o.max, DIF.hp * dificuldade() * 6) * p : o.max * p;
 }
-export function fala(e: Inimigo, txt, cor: string) {
+export function fala(e: Inimigo, txt: string, cor: string) {
   J.falas = J.falas || [];
   J.ultFala = J.ultFala || {};
   if (J.t - (J.ultFala[txt] ?? -9) < 8 || J.t - (J.ultFalaG ?? -9) < 2.5 || J.falas.length >= 2) return;
@@ -1321,7 +1321,7 @@ export function passoCriatura(e: Inimigo, dt: number, P) {
   if (e.piscaT > 0) e.piscaT -= dt;
   return PASSO;
 }
-export function golpeCriatura(e, P, dist: number) {
+export function golpeCriatura(e: Inimigo, P: Ponto, dist: number) {
   const d = e.def,
     g = d.golpe;
   if (g === "bote") {
@@ -1368,7 +1368,7 @@ export function maisProximoInimigo(o, alc: number) {
   }
   return best;
 }
-export function projCuspe(e) {
+export function projCuspe(e: Inimigo) {
   const d = e.def,
     el = e.el;
   if (d.detalhes.includes("lanterna")) return "chama";
@@ -1531,7 +1531,7 @@ export function aoMorrerCriatura(e) {
       break;
   }
 }
-export function criarEstatua(x, y, spr: HTMLCanvasElement, material: string) {
+export function criarEstatua(x: number, y: number, spr: HTMLCanvasElement, material: string) {
   if (!J.cena) return;
   const p = criarProp(material === "metal" ? "metal" : "rocha", x, y);
   if (!p) return;
@@ -1596,7 +1596,7 @@ export function atualizarCriaturas(dt: number) {
       }
 }
 // ---------------------------------------------------------------- desenho
-export function poseDe(e) {
+export function poseDe(e: Inimigo) {
   if (e.ia && e.ia.trocaFase > 0) return "fase";
   if (e.caido > 0 || (e.flash > 0 && J.t - (e.dorT ?? -9) < 0.15)) return "dor";
   /* pose de dor no máximo a cada 0,6 s: com golpes seguidos o inimigo ficava sempre agachado */ if (
@@ -1609,7 +1609,7 @@ export function poseDe(e) {
   if (e.piscaT > 0) return "pisca";
   return "anda";
 }
-export function desenharInimigo(e: Inimigo, ox: number, oy: number, P) {
+export function desenharInimigo(e: Inimigo, ox: number, oy: number, P: Ponto) {
   const x = e.x - ox,
     y = e.y - oy;
   if (x < -40 || y < -50 || x > VW + 40 || y > VH + 40) return;

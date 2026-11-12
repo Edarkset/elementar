@@ -39,7 +39,7 @@ export const ARTE_IMG = new Proxy(
 export let ARTE_PEND = 0;
 // algumas folhas vieram com um fundo quase transparente em cada célula (vira quadrado cinza no chão): zera o alfa muito baixo.
 // Só em enfeites, fauna, inimigos, objetos e marcos; brilhos e névoa (efeitos, paredão) ficam como estão
-export function limparFundo(nome, img) {
+export function limparFundo(nome: string, img: Imagem) {
   const forte = /__(tiles|fauna|inimigos|objetos|props|mini)\.png$/.test(nome);
   // ruído da compressão: pixels com alfa 1 a 11 em volta dos desenhos (invisíveis sozinhos, mas viram retângulos em silhuetas,
   // contornos e brilhos somados). Zera em toda folha de personagem e cenário; efeitos, telas e pisos ficam como estão.
@@ -89,7 +89,7 @@ export function registrarArte(nome: string, src: string) {
 // de cada imagem, então nada precisa ser apagado; só o chão e os enfeites do mapa, que foram montados sem a arte, são refeitos
 export let artesNovas = [],
   tArtes = null;
-export function novaArte(nome) {
+export function novaArte(nome: string) {
   artesNovas.push(nome);
   if (tArtes) return;
   tArtes = setTimeout(() => {
@@ -104,9 +104,9 @@ export function novaArte(nome) {
 export function preCarregar(nomes) {
   return Promise.all(
     nomes
-      .filter(n => MANIFESTO && MANIFESTO[n])
+      .filter((n: number) => MANIFESTO && MANIFESTO[n])
       .map(
-        n =>
+        (n: number) =>
           new Promise<void>(ok => {
             const img = ARTE_IMG[n];
             if (!img || img.pronta || img.falhou || img.complete) return ok();
@@ -199,7 +199,7 @@ if (window.ARTE_MANIFESTO) {
     }, 1800);
   })();
 }
-export function arteMonstro(id: string, e: number, ramo, rar: string) {
+export function arteMonstro(id: string, e: number, ramo: number, rar: string) {
   const l = LINHA[id];
   if (!l) return null;
   if (l.ancestral) {
@@ -568,7 +568,7 @@ export function quadroAnim(img, row, i, alvo, cor?, rows?, folga?) {
   return c;
 }
 // folha de animação da forma atual (com as cores da raridade), ou null
-export function folhaAnimMonstro(id, e: number, ramo, rar: string) {
+export function folhaAnimMonstro(id: string, e: number, ramo: number, rar: string) {
   const l = LINHA[id];
   if (!l) return null;
   if (l.ancestral) {
@@ -601,7 +601,7 @@ export function resetAnimSelo(s: Selo) {
   s._vira = 0;
 }
 // estado de movimento de um Selo (velocidade suavizada, ataque, direção): usado pela animação e pelos efeitos de corpo
-export function movSelo(s) {
+export function movSelo(s: Selo) {
   const dtA = J.t - (s._at ?? J.t),
     dx = s._ax == null ? 0 : s.x - s._ax,
     dy = s._ay == null ? 0 : s.y - s._ay,

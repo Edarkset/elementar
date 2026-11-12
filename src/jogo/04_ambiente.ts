@@ -149,7 +149,7 @@ export function soloNatural(cx: number, cy: number) {
   } // só guarda com o cenário pronto (lagos e abismos já definidos)
   return t;
 }
-export function soloEm(cx, cy) {
+export function soloEm(cx: number, cy: number) {
   if (!J.solo.size) return soloNatural(cx, cy);
   const k = cx + "," + cy,
     m = J.solo.get(k);
@@ -252,10 +252,10 @@ export function fatorVentoFogo(dx: number, dy: number) {
     d = dx * C.dx + dy * C.dy;
   return Math.max(0.2, 1 + d * m);
 }
-export function efeitoSoloInimigo(e, dt) {
+export function efeitoSoloInimigo(e: Inimigo, dt: number) {
   const t = soloEm(Math.floor(e.x / CEL), Math.floor(e.y / CEL));
   const r = { vel: 1, gelo: false };
-  const marcar = el => {
+  const marcar = (el: Elemento) => {
     if (!e.status || J.t - e.status.t > 3) e.status = { el, t: J.t };
   };
   switch (t) {
@@ -348,7 +348,7 @@ export function texturaSolo(t: string) {
   g.fillRect(0, 0, N, N);
   g.globalAlpha = 1;
   // desenha com repetição nas bordas para a textura emendar sem costura
-  const rep = fn => {
+  const rep = (fn: () => void) => {
     for (const dx of [-N, 0, N])
       for (const dy of [-N, 0, N]) {
         g.save();

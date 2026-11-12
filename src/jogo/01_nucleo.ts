@@ -284,7 +284,7 @@ export function semente(s: string) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-export function gerarSprite(seed: string, n, base: string, op: { olhos?: string; rar?: string } = {}) {
+export function gerarSprite(seed: string, n: number, base: string, op: { olhos?: string; rar?: string } = {}) {
   const k = seed + "|" + n + "|" + base + "|" + (op.olhos || "") + "|" + (op.rar || "");
   if (cacheSpr.has(k)) return cacheSpr.get(k);
   const r = semente(seed),
@@ -341,7 +341,7 @@ export const cacheBranco = new WeakMap();
 export function baseHi(spr) {
   return (spr && spr._src && typeof Q !== "undefined" && Q > 1 && typeof versaoHi === "function" && versaoHi(spr, Q * 1.25)) || spr;
 }
-export function branco(spr) {
+export function branco(spr: HTMLCanvasElement) {
   if (cacheBranco.has(spr)) return cacheBranco.get(spr);
   const b = baseHi(spr),
     c = document.createElement("canvas");
@@ -693,7 +693,7 @@ export function novaRun(pacto, inicial) {
 }
 export const ativos = () => R.selos.filter(s => s.mon);
 export const L = s => LINHA[s.mon.id];
-export function ramoAtual(s) {
+export function ramoAtual(s: Selo) {
   return s.mon.ramo ?? (J && J.desp > 0 ? s.tmpRamo : null);
 }
 export function estBase(s: Selo) {
@@ -920,7 +920,7 @@ export function atualizarReliquias(dt: number) {
       const f = FONTE;
       FONTE = "reliquia";
       const dm = danoMedioEquipe() * 1.5;
-      emArea(P.x, P.y, 75, e => {
+      emArea(P.x, P.y, 75, (e: PropCena) => {
         const dx = e.x - P.x,
           dy = e.y - P.y,
           d = Math.hypot(dx, dy) || 1;
@@ -971,7 +971,7 @@ export function atualizarReliquias(dt: number) {
       const f = FONTE;
       FONTE = "reliquia";
       const dm = danoMedioEquipe() * 3;
-      emArea(P.x, P.y, 32, e => ferir(e, dm, "luz"));
+      emArea(P.x, P.y, 32, (e: PropCena) => ferir(e, dm, "luz"));
       FONTE = f;
       anel(P.x, P.y, 32, "#e8f4ff", 0.6);
     } else if (J.tEsp <= 0) J._drEsp = dr;
@@ -1109,7 +1109,7 @@ export const AJUSTE_CLASSE = {
   mistico: 0.96
 };
 export const ASC0 = { d: 0, c: 0, v: 0 };
-export function atrib(s: Selo) {
+export function atrib(s: Selo): Atributos {
   const l = L(s),
     b = D.classes[l.classe].base,
     e = est(s),

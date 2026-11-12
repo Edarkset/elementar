@@ -646,7 +646,12 @@ export function maisProximo(o, alc: number, f?) {
   if (!best && !f && J.cena) {
     // Koschei imortal: a equipe mira no carvalho (e depois no ovo) em vez de bater num chefe que não morre
     const ch = J.chefeVivo,
-      k = ch && ch.imortal ? (ch.carvalho && !ch.carvalho.morto ? ch.carvalho : J.cena.lista.find(p => p.ovoMorte && !p.morto)) : null;
+      k =
+        ch && ch.imortal
+          ? ch.carvalho && !ch.carvalho.morto
+            ? ch.carvalho
+            : J.cena.lista.find((p: PropCena) => p.ovoMorte && !p.morto)
+          : null;
     best = k && dist2(o, k) < alc * alc ? k : propMaisProximo(o, Math.min(alc, 55));
   }
   return best;
@@ -742,10 +747,10 @@ export function particulas(x: number, y: number, cor: string, n: number, vel: nu
 export function anel(x: number, y: number, r: number, cor, dur: number) {
   J.efeitos.push({ x, y, r, cor, vida: dur || 0.35, max: dur || 0.35 });
 }
-export function raio(x1: number, y1: number, x2: number, y2: number, cor) {
+export function raio(x1: number, y1: number, x2: number, y2: number, cor: string) {
   J.efeitos.push({ x: x1, y: y1, x2, y2, cor, vida: 0.22, max: 0.22, linha: true });
 }
-export function numero(x: number, y: number, v: number, cor: string, tam: number, alvo) {
+export function numero(x: number, y: number, v: number, cor: string, tam: number, alvo: Ponto) {
   // golpes seguidos no mesmo inimigo somam no mesmo número (menos poluição na tela)
   if (alvo) {
     const n = J.nums.find(k => k.alvo === alvo && k.cor === cor && k.vida > 0.35);
@@ -804,7 +809,7 @@ export function sombraContato(x: number, y: number, w: number, a: number) {
 }
 // faísca de impacto: clarão branco no ponto do golpe, riscos que saem na cor do elemento e um anel fino (crítico maior).
 // No máximo uma a cada 0,07 s por inimigo, para não virar borrão quando muitos golpes acertam juntos.
-export function faiscaImpacto(e, el, crit: boolean, sup: boolean) {
+export function faiscaImpacto(e, el: string, crit: boolean, sup: boolean) {
   if (SIM.ativo || QUAL === 0) return;
   if (J.t - (e._faisca ?? -9) < 0.07) return;
   e._faisca = J.t;
@@ -931,7 +936,7 @@ export function danoSimples(e: Inimigo, d: number) {
   e.flash = 0.06;
   if (e.hp <= 0) morrer(e);
 }
-export function reagir(e, a, b, dano: number) {
+export function reagir(e: Ponto, a, b, dano: number) {
   const r = REAC[[a, b].sort().join("|")];
   if (!r) return;
   const fonteAnt = FONTE;
@@ -1175,7 +1180,7 @@ export function curar(v: number) {
 }
 // item na hora certa: cada item ganha peso pelo quanto serve agora (Pedra perto de virar Adulto, Mel perto de evoluir,
 // Incenso com Selo vazio, Pena com reserva e troca em recarga); o que não serviria para nada quase não cai
-export function utilItem(k) {
+export function utilItem(k: string) {
   const at = ativos();
   if (!R || !at.length) return 1;
   switch (k) {
@@ -1214,7 +1219,7 @@ export function itemUsavelAgora() {
     (I.pena > 0 && R.reserva.length && R.selos.some(s => s.trocaCd > 3))
   );
 }
-export function darItem(k: string, e) {
+export function darItem(k: string, e: Ponto) {
   R.itens[k]++;
   const lend = k === "chamado";
   texto(e.x, e.y - 16, D.itens[k].nome, lend ? "#ffd34a" : "#9fd6d0", lend ? 16 : 13);
@@ -1228,11 +1233,11 @@ export function darItem(k: string, e) {
 }
 
 // ================================================================ ataques: básico + habilidades por classe
-export function ataqueBasico(s, a, el, cor) {
+export function ataqueBasico(s, a: Atributos, el, cor: string) {
   const cls = L(s).classe;
   switch (cls) {
     case "guardiao":
-      emArea(s.x, s.y, 26, e => {
+      emArea(s.x, s.y, 26, (e: Ponto) => {
         ferir(e, a.dano, el);
         const dx = e.x - s.x,
           dy = e.y - s.y,
@@ -1243,7 +1248,7 @@ export function ataqueBasico(s, a, el, cor) {
       vfxOnda(s, el, 26);
       break;
     case "guerreiro":
-      emArea(s.x, s.y, 24, e => ferir(e, a.dano, el));
+      emArea(s.x, s.y, 24, (e: Ponto) => ferir(e, a.dano, el));
       vfxCorte(s, el, 24);
       break;
     case "assassino": {
@@ -1333,8 +1338,8 @@ export const HAB = {
   guardiao: {
     h1: {
       cd: 7,
-      f(s, a, el, cor, lv, mod: number) {
-        emArea(s.x, s.y, 60, e => {
+      f(s, a: Inimigo, el, cor: string, lv, mod: number) {
+        emArea(s.x, s.y, 60, (e: Ponto) => {
           e.x += (s.x - e.x) * 0.5;
           e.y += (s.y - e.y) * 0.5;
           if (mod === 0) ferir(e, a.dano * 2 * fNivel(lv), el);
@@ -1348,9 +1353,9 @@ export const HAB = {
     },
     h2: {
       cd: 10,
-      f(s, a, el, cor, lv, mod: number) {
+      f(s, a: Inimigo, el, cor: string, lv, mod: number) {
         const rr = mod === 0 ? 65 : 50;
-        emArea(s.x, s.y, rr, e => {
+        emArea(s.x, s.y, rr, (e: PropCena) => {
           ferir(e, a.dano * 2 * fNivel(lv), el);
           const dx = e.x - s.x,
             dy = e.y - s.y,
@@ -1364,7 +1369,7 @@ export const HAB = {
         efImpactoChao(s.x, s.y, rr * 0.7, el);
         if (mod === 1)
           agendar(1, () => {
-            emArea(s.x, s.y, 55, e => ferir(e, a.dano * 4 * fNivel(lv), el));
+            emArea(s.x, s.y, 55, (e: Ponto) => ferir(e, a.dano * 4 * fNivel(lv), el));
             efExplosao(s.x, s.y, 55, el, true);
             tremor(4);
           });
@@ -1374,7 +1379,7 @@ export const HAB = {
   guerreiro: {
     h1: {
       cd: 5,
-      f(s: Selo, a, el, cor, lv, mod: number) {
+      f(s: Selo, a: Inimigo, el, cor: string, lv, mod: number) {
         const e = pontoDenso(s, 90) || maisProximo(s, 90);
         if (!e) return false;
         J.fantasmas.push({ x: s.x, y: s.y, spr: spriteSelo(s), vida: 0.25 });
@@ -1393,7 +1398,7 @@ export const HAB = {
     },
     h2: {
       cd: 12,
-      f(s, a, el, cor, lv: number, mod) {
+      f(s: Selo, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         s.furia = 4 + lv * 0.5;
         s.furiaMod = mod;
         anel(s.x, s.y, 18, "#ff5a4a", 0.5);
@@ -1406,7 +1411,7 @@ export const HAB = {
   assassino: {
     h1: {
       cd: 4,
-      f(s: Selo, a, el, cor, lv, mod: number) {
+      f(s: Selo, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         const alvos = [maisForte(s, 120)];
         if (mod === 0) alvos.push(maisForte(s, 120));
         let ok = false;
@@ -1430,7 +1435,7 @@ export const HAB = {
     },
     h2: {
       cd: 8,
-      f(s, a, el, cor, lv, mod: number) {
+      f(s, a, el: Elemento, cor: string, lv, mod: number) {
         let n = 0;
         for (const e of embaralhar(J.inimigos)) {
           if (e.hp <= 0 || dist2(s, e) > 110 * 110) continue;
@@ -1446,7 +1451,7 @@ export const HAB = {
   cacador: {
     h1: {
       cd: 4,
-      f(s, a, el, cor, lv, mod: number) {
+      f(s, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         const e = maisProximo(s, 150);
         if (!e) return false;
         const base = Math.atan2(e.y - s.y, e.x - s.x);
@@ -1472,7 +1477,7 @@ export const HAB = {
     },
     h2: {
       cd: 9,
-      f(s, a, el, cor, lv, mod: number) {
+      f(s: Selo, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         vfxSelo(s.x, s.y, el, 26);
         for (let i = 0; i < 3; i++)
           J.armadilhas.push({
@@ -1491,7 +1496,7 @@ export const HAB = {
   mago: {
     h1: {
       cd: 6,
-      f(s, a, el, cor, lv, mod: number) {
+      f(s, a: Inimigo, el, cor: string, lv, mod: number) {
         const e = pontoDenso(s, 140);
         if (!e) return false;
         if (mod === 0) {
@@ -1517,7 +1522,7 @@ export const HAB = {
     },
     h2: {
       cd: 12,
-      f(s, a, el, cor, lv: number, mod: number) {
+      f(s: Selo, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         J.zonas.push({
           fonte: FONTE,
           tipo: "circulo",
@@ -1536,7 +1541,7 @@ export const HAB = {
   invocador: {
     h1: {
       cd: 7,
-      f(s, a, el, cor, lv, mod: number) {
+      f(s: Selo, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         for (let i = 0; i < 4; i++)
           J.crias.push({
             fonte: FONTE,
@@ -1555,7 +1560,7 @@ export const HAB = {
     },
     h2: {
       cd: 14,
-      f(s, a, el, cor, lv, mod: number) {
+      f(s: Selo, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         const pos = [{ x: s.x + 20, y: s.y }];
         if (mod === 0) pos.push({ x: s.x - 20, y: s.y });
         if (mod === 1) {
@@ -1589,7 +1594,7 @@ export const HAB = {
   mistico: {
     h1: {
       cd: 8,
-      f(s, a, el, cor, lv, mod: number) {
+      f(s: Selo, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         J.regen = 4;
         J.regenV = 0.03 * fNivel(lv);
         J.regenMod = mod;
@@ -1609,12 +1614,12 @@ export const HAB = {
   xama: {
     h1: {
       cd: 8,
-      f(s, a, el, cor, lv, mod: number) {
+      f(s: Selo, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         J.canto = 5;
         if (mod === 0) J.fervor = 5;
         efCanto(46, el);
         if (mod === 1)
-          emArea(J.jogador.x, J.jogador.y, 45, e => {
+          emArea(J.jogador.x, J.jogador.y, 45, (e: PropCena) => {
             const dx = e.x - J.jogador.x,
               dy = e.y - J.jogador.y,
               d = Math.hypot(dx, dy) || 1;
@@ -1625,7 +1630,7 @@ export const HAB = {
     },
     h2: {
       cd: 10,
-      f(s, a, el, cor, lv, mod) {
+      f(s: Selo, a, el, cor: string, lv, mod) {
         J.zonas.push({
           fonte: FONTE,
           tipo: "espirito",

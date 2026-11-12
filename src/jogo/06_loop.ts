@@ -110,7 +110,7 @@ cv.addEventListener("pointermove", e => {
     toque.y = e.clientY;
   }
 });
-export const soltar = e => {
+export const soltar = (e: PointerEvent) => {
   if (toque && e.pointerId === toque.id) toque = null;
 };
 cv.addEventListener("pointerup", soltar);
@@ -593,7 +593,7 @@ export function atualizar(dt) {
       const a = J.t * 3 + J.crias.indexOf(c);
       c.x += (P.x + Math.cos(a) * 16 - c.x) * Math.min(1, dt * 5);
       c.y += (P.y + Math.sin(a) * 16 - c.y) * Math.min(1, dt * 5);
-      emArea(c.x, c.y, 6, e => {
+      emArea(c.x, c.y, 6, (e: PropCena) => {
         if (c.cd <= 0) {
           ferir(e, c.dano, c.el);
           c.cd = 0.4;
@@ -681,7 +681,7 @@ export function atualizar(dt) {
     z.vida -= dt;
     defFonte(z.fonte || "habilidade");
     if (z.tipo === "circulo" && z.puxa)
-      emArea(z.x, z.y, z.r, e => {
+      emArea(z.x, z.y, z.r, (e: PropCena) => {
         e.x += (z.x - e.x) * dt * 1.5;
         e.y += (z.y - e.y) * dt * 1.5;
       });
@@ -693,7 +693,7 @@ export function atualizar(dt) {
       z.cd -= dt;
       if (z.cd <= 0) {
         z.cd = 0.25;
-        emArea(z.x, z.y, z.r, e => ferir(e, z.dano, z.el));
+        emArea(z.x, z.y, z.r, (e: PropCena) => ferir(e, z.dano, z.el));
         for (let i = 0; i < 3; i++) {
           const a = Math.random() * Math.PI * 2,
             r = Math.random() * z.r;
@@ -714,7 +714,7 @@ export function atualizar(dt) {
       z.cd = (z.cd || 0) - dt;
       if (z.cd <= 0) {
         z.cd = 0.5;
-        emArea(z.x, z.y, z.r, e => ferir(e, z.dano, z.el));
+        emArea(z.x, z.y, z.r, (e: PropCena) => ferir(e, z.dano, z.el));
       }
     }
     if (z.tipo === "portal") {
@@ -732,7 +732,7 @@ export function atualizar(dt) {
       z.cd -= dt;
       if (z.cd <= 0) {
         z.cd = 0.35;
-        emArea(z.x, z.y, 10, e => {
+        emArea(z.x, z.y, 10, (e: PropCena) => {
           ferir(e, z.dano, z.el);
           if (z.el2) ferir(e, z.dano * 0.5, z.el2);
         });
@@ -740,7 +740,7 @@ export function atualizar(dt) {
           const ts = J.totens;
           for (let i = 0; i < ts.length - 1; i++) {
             raio(ts[i].x, ts[i].y - 4, ts[i + 1].x, ts[i + 1].y - 4, z.cor);
-            emArea((ts[i].x + ts[i + 1].x) / 2, (ts[i].y + ts[i + 1].y) / 2, 14, e => ferir(e, z.dano * 0.5, z.el));
+            emArea((ts[i].x + ts[i + 1].x) / 2, (ts[i].y + ts[i + 1].y) / 2, 14, (e: PropCena) => ferir(e, z.dano * 0.5, z.el));
           }
         }
       }
@@ -875,7 +875,7 @@ export function atualizar(dt) {
       tremor(8);
       toast("Renascer!");
       if (mod === 0) {
-        emArea(P.x, P.y, 70, e => ferir(e, atrib(mi).dano * 8, elementoDe(mi)));
+        emArea(P.x, P.y, 70, (e: PropCena) => ferir(e, atrib(mi).dano * 8, elementoDe(mi)));
         anel(P.x, P.y, 70, "#ff8a3d", 0.7);
         efExplosao(P.x, P.y, 70, "fogo", true);
         particulas(P.x, P.y, "#ff8a3d", 24, 150, 2);
@@ -936,7 +936,7 @@ export function ganharXp(v: number) {
     }
     const P = J.jogador;
     anel(P.x, P.y, 50, "#ffd34a", 0.6);
-    emArea(P.x, P.y, 50, e => {
+    emArea(P.x, P.y, 50, (e: PropCena) => {
       const dx = e.x - P.x,
         dy = e.y - P.y,
         d = Math.hypot(dx, dy) || 1;

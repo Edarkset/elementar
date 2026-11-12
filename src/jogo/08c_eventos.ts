@@ -57,7 +57,7 @@ export function atualizarEventos(dt) {
           fim: () => {
             if (!J) return;
             defFonte("ambiente");
-            emArea(x, y, r + 4, e => {
+            emArea(x, y, r + 4, (e: PropCena) => {
               if (!e.ehProp) ferir(e, DIF.hp * dificuldade() * 0.9, "fogo");
             });
             defFonte("basico");
@@ -158,7 +158,7 @@ export function desenharAltar(ox: number, oy: number) {
   lg.lineWidth = 1;
 }
 // ---------------------------------------------------------------- textos: o nome de uma reação só aparece grande na primeira vez da partida
-export function textoUnico(chave: string, x: number, y: number, t: string, cor, tam: number) {
+export function textoUnico(chave: string, x: number, y: number, t: string, cor: string, tam: number) {
   R.vistos = R.vistos || {};
   if (R.vistos[chave]) return false;
   R.vistos[chave] = 1;

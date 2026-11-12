@@ -136,7 +136,7 @@ export function desenharParticula(p: Particula, ox: number, oy: number) {
 // Desenho do círculo (anel duplo, runas, estrela de 6 pontas e marcas) feito uma vez por elemento num canvas; no jogo ele
 // é achatado em perspectiva, gira, cresce ao abrir e some com brilho. Usado ao invocar um monstro e ao lançar habilidades
 export const cacheCirculo = new Map();
-export function artCirculo(el) {
+export function artCirculo(el: string) {
   if (cacheCirculo.has(el)) return cacheCirculo.get(el);
   const N = 160,
     c = document.createElement("canvas");
@@ -380,7 +380,7 @@ export function vfxFeixe(s, e: Inimigo, el: string) {
   });
   particulasEl(e.x, e.y, el, 4, 50);
 }
-export function vfxX(e, el: string) {
+export function vfxX(e: Inimigo, el: string) {
   const v = vEl(el),
     x0 = e.x,
     y0 = e.y,
@@ -735,7 +735,7 @@ export function efPilar(x0: number, y0: number, el: string, dur: number, larg: n
       forma: "estrela"
     });
 }
-export function efCupula(x0: number, y0: number, r: number, el, dur: number) {
+export function efCupula(x0: number, y0: number, r: number, el: string, dur: number) {
   if (SIM.ativo) return;
   const v = vEl(el);
   vfx({
@@ -783,7 +783,7 @@ export function efCupula(x0: number, y0: number, r: number, el, dur: number) {
     }
   });
 }
-export function efCortes(x0: number, y0: number, r: number, el, n: number) {
+export function efCortes(x0: number, y0: number, r: number, el: string, n: number) {
   if (SIM.ativo) return;
   const v = vEl(el);
   for (let i = 0; i < n; i++) {
@@ -881,7 +881,7 @@ export function efImpactoChao(x0, y0, r, el) {
     });
   }
 }
-export function efChuva(x0: number, y0: number, r: number, el) {
+export function efChuva(x0: number, y0: number, r: number, el: string) {
   if (SIM.ativo) return;
   const v = vEl(el);
   for (let i = 0; i < 14; i++) {
@@ -992,7 +992,7 @@ export function efExplosao(x0: number, y0: number, r: number, el: string, forte?
   if (forte) rajada(x0, y0, r * 1.4, 1.2);
 }
 // meteoro: um risco cai do céu e termina no ponto de impacto, com a marca crescendo no chão (avisa onde vai cair)
-export function efQueda(x0: number, y0: number, el, atraso: number) {
+export function efQueda(x0: number, y0: number, el: string, atraso: number) {
   if (semVfx()) return;
   const v = vEl(el),
     dur = 0.2,
@@ -1035,7 +1035,7 @@ export function efQueda(x0: number, y0: number, el, atraso: number) {
   });
 }
 // puxão: anéis que fecham para o centro e riscos correndo para dentro
-export function efPuxao(x0: number, y0: number, r: number, el) {
+export function efPuxao(x0: number, y0: number, r: number, el: string) {
   if (semVfx()) return;
   const v = vEl(el),
     nR = QUAL > 0 ? 14 : 8,
@@ -1078,7 +1078,7 @@ export function efPuxao(x0: number, y0: number, r: number, el) {
   });
 }
 // muralha: pilares do elemento sobem em roda e seguram por um instante
-export function efMuralha(x0: number, y0: number, r: number, el, dur: number) {
+export function efMuralha(x0: number, y0: number, r: number, el: string, dur: number) {
   if (semVfx()) return;
   const v = vEl(el),
     N = QUAL > 0 ? 16 : 10;
@@ -1117,7 +1117,7 @@ export function efMuralha(x0: number, y0: number, r: number, el, dur: number) {
   });
 }
 // salto: risco de luz do ponto de partida até o alvo, que encurta e some
-export function efRastroSalto(x1: number, y1: number, x2: number, y2: number, el) {
+export function efRastroSalto(x1: number, y1: number, x2: number, y2: number, el: string) {
   if (semVfx()) return;
   const v = vEl(el);
   vfx({
@@ -1147,7 +1147,7 @@ export function efRastroSalto(x1: number, y1: number, x2: number, y2: number, el
   });
 }
 // leque: clarão de disparo abrindo na direção do tiro
-export function efLeque(x0: number, y0: number, ang: number, el) {
+export function efLeque(x0: number, y0: number, ang: number, el: Elemento) {
   if (semVfx()) return;
   const v = vEl(el);
   vfx({
@@ -1177,7 +1177,7 @@ export function efLeque(x0: number, y0: number, ang: number, el) {
   });
 }
 // ondas de som: três anéis saindo um atrás do outro (acompanham o herói)
-export function efCanto(r: number, el) {
+export function efCanto(r: number, el: Elemento) {
   if (semVfx()) return;
   const v = vEl(el);
   vfx({
@@ -1240,7 +1240,7 @@ export function efCura(r: number) {
     });
 }
 // marca do Assassino: mira que fecha sobre o inimigo e fica nele
-export function efMarca(e) {
+export function efMarca(e: Inimigo) {
   if (semVfx()) return;
   vfx({
     max: 0.35,
@@ -1425,7 +1425,7 @@ export function desenharEspirito(z, ox: number, oy: number) {
   lg.fill();
   lg.globalAlpha = 1;
 }
-export function vfxEspecial(s, alvo, cls, op, el) {
+export function vfxEspecial(s: Selo, alvo: Inimigo, cls, op, el) {
   const v = vEl(el),
     centro = ["guardiao", "mistico", "invocador", "xama"].includes(cls) ? s : alvo;
   luzFlash(centro.x, centro.y, v.c1, 90, 0.45);
@@ -1471,7 +1471,7 @@ export function vfxEspecial(s, alvo, cls, op, el) {
   }
   particulasEl(x0, y0, el, 14, 110);
 }
-export function nomeArqReacao(a, b) {
+export function nomeArqReacao(a: Inimigo, b: HTMLButtonElement) {
   for (const [x, y] of [
     [a, b],
     [b, a]

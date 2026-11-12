@@ -530,7 +530,7 @@ export function desenhar(dt: number) {
 }
 // monstro da equipe: quadro da folha (ou imagem fixa) + "corpo" por código: antecipação e esticada no ataque,
 // investida na direção do alvo, inclinação ao andar, virada suave, pulinho/respiração sem folha e pulo de tamanho ao evoluir
-export function desenharSelo(s, ox: number, oy: number, sombra) {
+export function desenharSelo(s: Selo, ox: number, oy: number, sombra) {
   movSelo(s);
   const anim = quadroAnimSelo(s),
     spr = anim || spriteSelo(s),
@@ -888,7 +888,7 @@ export function quadroHeroi(pernas, bob, pisca, corGema) {
   c.width = W;
   c.height = H;
   const g = c.getContext("2d"),
-    px = (x, y, ch) => {
+    px = (x, y: number, ch) => {
       const cor = ch === "X" ? corGema : HEROI.pal[ch];
       if (!cor) return;
       g.fillStyle = cor;

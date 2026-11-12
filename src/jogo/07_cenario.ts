@@ -209,7 +209,7 @@ export function gerarCausticas() {
 }
 
 // ---------------------------------------------------------------- objetos: geração por pedaço do mapa
-export function pesoAleatorio(r, pesos) {
+export function pesoAleatorio(r: () => number, pesos) {
   let tot = 0;
   for (const k in pesos) tot += pesos[k];
   let x = r() * tot;
@@ -219,7 +219,7 @@ export function pesoAleatorio(r, pesos) {
   }
   return Object.keys(pesos)[0];
 }
-export function gerarPedaco(cx, cy) {
+export function gerarPedaco(cx: number, cy: number) {
   const C = J.cena,
     k = cx + ":" + cy;
   if (C.props.has(k)) return;
@@ -243,7 +243,7 @@ export function gerarPedaco(cx, cy) {
   sortearMarcos(cx, cy, r, out);
   C.props.set(k, out);
 }
-export function novoProp(tipo: string, x: number, y: number, r): PropCena {
+export function novoProp(tipo: string, x: number, y: number, r: () => number): PropCena {
   const M = MAT[tipo],
     hp = M.indestrutivel ? Infinity : M.hp * DIF.hp * dificuldade();
   return {
@@ -377,7 +377,7 @@ export function colidirProps(a, b) {
     if (!p.mat.indestrutivel && vn > p.mat.fragil * (p.congela > 0 ? 0.6 : 1))
       danificarProp(p, p.max * (vn / p.mat.fragil - 0.7) * 1.2, null);
 }
-export function atualizarProps(dt) {
+export function atualizarProps(dt: number) {
   const C = J.cena,
     L0 = C.lista,
     P = J.jogador;
@@ -543,7 +543,7 @@ export function atualizarProps(dt) {
       }
     }
   }
-  C.lista = L0.filter(p => !p.morto);
+  C.lista = L0.filter((p: PropCena) => !p.morto);
   // explosões em cadeia: a pólvora vizinha não explode no mesmo instante
   for (const x of C.filaExp) x.t -= dt;
   const prontas = C.filaExp.filter(x => x.t <= 0);
@@ -582,7 +582,7 @@ export function derreter(p, q: number) {
     quebrar(p);
   }
 }
-export function afundar(p) {
+export function afundar(p: PropCena) {
   p.morto = true;
   for (let i = 0; i < 3; i++) J.cena.ondas.push({ x: p.x, y: p.y, r: 1 + i * 3, vida: 1 });
   particulas(p.x, p.y, "#bfe6ff", 8, 50);
@@ -594,7 +594,7 @@ export function conduzir(p, dano: number, alc: number) {
   let n = 0,
     o = p;
   for (let i = 0; i < 4; i++) {
-    const alvo = maisProximo(o, alc, e => !vistos.has(e));
+    const alvo = maisProximo(o, alc, (e: Ponto) => !vistos.has(e));
     if (!alvo) break;
     vistos.add(alvo);
     raio(o.x, o.y - (o === p ? p.r : 0), alvo.x, alvo.y, "#bfe0ff");
@@ -841,7 +841,7 @@ export function lascas(p, n: number, quebra: boolean) {
     });
   }
 }
-export function gota(x, y) {
+export function gota(x: number, y: number) {
   return { x, y, z: rnd(1, 4), vx: rnd(-5, 5), vy: rnd(-5, 5), vz: 0, cor: "#bfe6ff", tam: 1, vida: 0.6, leve: false };
 }
 export function atualizarDestrocos(dt: number) {
@@ -1122,7 +1122,7 @@ export function atualizarPegadas(dt: number) {
   const apaga = 1 + C.Wm / 45;
   const corAreia = C.corAreia || (C.corAreia = tom(COR_SOLO.areia[0], 0.75)); // antes a cor era recalculada para cada pegada, a cada quadro
   for (const p of C.pegadas) p.vida -= dt * (p.cor === corAreia ? apaga : 1);
-  C.pegadas = C.pegadas.filter(p => p.vida > 0);
+  C.pegadas = C.pegadas.filter((p: Particula) => p.vida > 0);
   for (const o of C.ondas) {
     o.vida -= dt;
     o.r += dt * 14;
@@ -1288,7 +1288,7 @@ export function atualizarAr(dt: number, ox: number, oy: number) {
     q = QUAL === 0 ? 0.4 : QUAL === 1 ? 0.7 : 1;
   for (const tipo of k.part) {
     let n = taxa[tipo] * dt * (1 - ocupado) * q;
-    if (tipo === "vagalumes" && C.ar.filter(p => p.k === "vagalumes").length > 14) n = 0;
+    if (tipo === "vagalumes" && C.ar.filter((p: PropCena) => p.k === "vagalumes").length > 14) n = 0;
     while (n > 0) {
       if (Math.random() >= n) {
         break;
@@ -1448,7 +1448,7 @@ export function atualizarAr(dt: number, ox: number, oy: number) {
     p.y += p.vy * dt;
     if (p.x < ox - 80 || p.x > ox + VW + 80 || p.y < oy - 80 || p.y > oy + VH + 120) p.vida = 0;
   }
-  C.ar = C.ar.filter(p => p.vida > 0);
+  C.ar = C.ar.filter((p: Particula) => p.vida > 0);
   for (const f of C.fumaca) {
     f.vida -= dt;
     const w = vento(f.x, f.y);
@@ -1490,7 +1490,7 @@ export function atualizarAr(dt: number, ox: number, oy: number) {
   }
   if (C.luzes) {
     for (const l of C.luzes) l.vida -= dt;
-    C.luzes = C.luzes.filter(l => l.vida > 0);
+    C.luzes = C.luzes.filter((l: Linha) => l.vida > 0);
   }
 }
 export function envolver(n, ox: number, oy: number, r: number) {

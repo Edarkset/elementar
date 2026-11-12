@@ -452,7 +452,7 @@ export const cacheSil = new WeakMap(),
   cacheSilM = new WeakMap();
 // silhueta com o tamanho do sprite (para virar o próprio sprite: estátua, ouro...). A silhueta comum é feita em alta resolução
 // e por isso é bem maior: usada no lugar do sprite, o inimigo aparecia como um borrão cinza gigante cobrindo a tela.
-export function silhuetaMundo(spr, cor) {
+export function silhuetaMundo(spr: HTMLCanvasElement, cor: string) {
   let m = cacheSilM.get(spr);
   if (!m) {
     m = {};
@@ -475,7 +475,7 @@ export function silhuetaMundo(spr, cor) {
   m[cor] = c;
   return c;
 }
-export function silhueta(spr, cor) {
+export function silhueta(spr: HTMLCanvasElement, cor: string) {
   const k = cor;
   let m = cacheSil.get(spr);
   if (!m) {
@@ -497,7 +497,7 @@ export function silhueta(spr, cor) {
   return c;
 }
 // detalhes do chão desenhados uma vez por pedaço (pedrinhas, rachaduras, flores, lajotas...)
-export function detalhePedaco(cx, cy) {
+export function detalhePedaco(cx: number, cy: number) {
   const C = J.cena,
     k = cx + ":" + cy;
   if (C.detalhes.has(k)) return C.detalhes.get(k);
@@ -510,7 +510,7 @@ export function detalhePedaco(cx, cy) {
   const g = c.getContext("2d"),
     r = semente(C.u.id + "d" + k),
     base = COR[C.u.elemento];
-  const px = (x: number, y: number, cor, w?: number, h?: number) => {
+  const px = (x: number, y: number, cor: string, w?: number, h?: number) => {
     g.fillStyle = cor;
     g.fillRect(Math.floor(x), Math.floor(y), w || 1, h || 1);
   };
@@ -858,7 +858,7 @@ export function desenharCenaChao(ox: number, oy: number) {
   }
   lg.globalAlpha = 1;
 }
-export function desenharCenaObjetos(ox: number, oy: number, fila) {
+export function desenharCenaObjetos(ox: number, oy: number, fila: Selo[]) {
   const C = J.cena;
   if (!C) return;
   desenharProps(ox, oy, fila);
@@ -1076,12 +1076,12 @@ export function desenharCenaLuz(ox: number, oy: number) {
     lg.strokeStyle = "#ffffff";
     lg.lineWidth = 1;
     lg.beginPath();
-    r.pts.forEach(([x, y], i) => (i ? lg.lineTo(x - ox, y - oy) : lg.moveTo(x - ox, y - oy)));
+    r.pts.forEach(([x, y], i: number) => (i ? lg.lineTo(x - ox, y - oy) : lg.moveTo(x - ox, y - oy)));
     lg.stroke();
     lg.strokeStyle = "#9fc0ff";
     lg.globalAlpha *= 0.5;
     lg.beginPath();
-    r.pts.forEach(([x, y], i) => (i ? lg.lineTo(x - ox + 1, y - oy) : lg.moveTo(x - ox + 1, y - oy)));
+    r.pts.forEach(([x, y], i: number) => (i ? lg.lineTo(x - ox + 1, y - oy) : lg.moveTo(x - ox + 1, y - oy)));
     lg.stroke();
   }
   lg.globalAlpha = 1;
@@ -1140,7 +1140,7 @@ export function desenharCenaBrilho(ox: number, oy: number) {
 export const SEM_CEU = new Set(["centro_terra", "mar_profundo", "atlantida", "laboratorio", "xibalba"]);
 export let NUVENS = null;
 // desenha as sombras de nuvem num contexto qualquer (k = pixels por pixel de mundo); usado dentro da camada de luz (sem passada extra)
-export function nuvensEm(g, ox: number, oy: number, k: number) {
+export function nuvensEm(g: CanvasRenderingContext2D, ox: number, oy: number, k: number) {
   const u = UNIV[R.universo];
   if (QUAL < 1 || SIM.ativo || !u || SEM_CEU.has(u.id) || (u.luz && u.luz.noite)) return;
   const A = 0.13 * (1 - crepusculo() * 0.6);

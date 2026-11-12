@@ -35,7 +35,7 @@ export function novoIdImg() {
 // faixas de desenho de uma folha: algumas folhas foram exportadas com as linhas deslocadas da grade (uma faixa vazia em cima,
 // poses mais baixas), e o corte pela grade pegava pedaço da pose vizinha. Se a folha tem exatamente 'rows' faixas separadas
 // por linhas vazias, cada linha usa a sua faixa; senão, a grade comum
-export function faixasFolha(img, rows) {
+export function faixasFolha(img: Imagem, rows: number) {
   const k = "_faixas" + rows;
   if (img[k] !== undefined) return img[k];
   img[k] = null;
@@ -140,7 +140,7 @@ export function limparTopoSolto(c: HTMLCanvasElement) {
     relatar("cenário: bordas da célula não puderam ser lidas", e);
   }
 }
-export function celulaArte(img, cols, rows, col, row, w, h, base?: number) {
+export function celulaArte(img: Imagem, cols: number, rows: number, col: number, row: number, w: number, h: number, base?: number) {
   if (!img) return null;
   if (!img._id) img._id = ++ID_IMG;
   const k = img._id + "|" + cols + "|" + rows + "|" + col + "|" + row + "|" + w + "|" + h;
@@ -184,7 +184,7 @@ export function celulaArte(img, cols, rows, col, row, w, h, base?: number) {
 export const CAMADA_ARTE = [];
 export let cvArte = null;
 // versão da célula em K pixels por pixel de mundo, recortada do arquivo original com suavização de alta qualidade
-export function versaoHi(c, K?: number) {
+export function versaoHi(c: Carta, K?: number) {
   if (!c || !c._src) return null;
   K = Math.max(1, Math.min(8, Math.ceil(K || 4)));
   if (c.hi && c.hiK === K) return c.hi;
@@ -223,7 +223,7 @@ export function versaoHi(c, K?: number) {
 {
   const desenhoOriginal = lg.drawImage.bind(lg);
   // o tipo do navegador descreve as três formas de chamar drawImage; esta função atende as três e troca a imagem pela versão nítida
-  lg.drawImage = function (img, a: number, b: number, c: number, d: number, e, f, g2, h2) {
+  lg.drawImage = function (img, a: number, b: number, c: number, d: number, e: PropCena, f: number, g2, h2) {
     if (img && img._suave && !lg.imageSmoothingEnabled) {
       lg.imageSmoothingEnabled = true;
       desenhoOriginal.apply(null, arguments);
@@ -260,7 +260,7 @@ export function versaoHi(c, K?: number) {
 }
 // área desenhada de uma célula (para encaixar o monstro pelo desenho visível, não pela célula)
 export const cacheBB = new Map();
-export function bboxCelula(img, sx, sy, sw, sh) {
+export function bboxCelula(img: Imagem, sx: number, sy: number, sw: number, sh: number) {
   if (!img._id) img._id = ++ID_IMG;
   const k = img._id + "|" + sx + "|" + sy;
   if (cacheBB.has(k)) return cacheBB.get(k);
@@ -299,7 +299,7 @@ export function bboxCelula(img, sx, sy, sw, sh) {
   return bb;
 }
 export const ALVO_ARTE = [18, 21, 24, 28]; // altura do monstro com arte, por estágio (pixels de mundo). Antes 24 a 44: os evoluídos ficavam maiores que o herói e cobriam tudo
-export function encaixarArte(img, sx: number, sy: number, sw: number, sh: number, alvo: number) {
+export function encaixarArte(img: Imagem, sx: number, sy: number, sw: number, sh: number, alvo: number) {
   const bb = bboxCelula(img, sx, sy, sw, sh),
     ky = correcaoAltura(img),
     k = Math.min(alvo / bb.w, alvo / (bb.h * ky)),
@@ -317,7 +317,7 @@ export function encaixarArte(img, sx: number, sy: number, sw: number, sh: number
 }
 // Com a tela interna em alta resolução (Q>1) a arte vai direto para o mundo: fica na ordem certa com
 // efeitos e recebe a luz do mapa. A camada separada só é usada se a tela interna estiver em baixa resolução.
-export function desenharSprite(spr, dx, dy, dw, dh) {
+export function desenharSprite(spr, dx: number, dy: number, dw: number, dh: number) {
   const hi = !SIM.ativo && Q <= 1 && spr && spr._src ? versaoHi(spr) : null;
   if (!hi) {
     lg.drawImage(spr, dx, dy, dw, dh);
@@ -412,7 +412,7 @@ export function nitidez(c: HTMLCanvasElement, k: number) {
 }
 // piso pintado mais calmo: a arte do chão tem muito contraste e detalhe (flores, trepadeiras, ladrilhos) e competia com
 // monstros e inimigos; tira 20% do contraste, 25% da saturação e escurece um pouco, uma vez só quando o mapa começa
-export function acalmarPiso(c) {
+export function acalmarPiso(c: HTMLCanvasElement) {
   if (SIM.ativo) return c;
   try {
     const g = c.getContext("2d"),
@@ -497,7 +497,7 @@ export function tornarContinuo(img: CanvasImageSource, T: number) {
   return e;
 }
 // o piso é guardado na resolução do arquivo (até 2048 px) e desenhado com 512 px de mundo
-export function chaoArte(u) {
+export function chaoArte(u: Universo) {
   const piso = ARTE_IMG[`arte/reinos/${u.era}/${u.id}__piso.png`];
   if (piso && piso.pronta) {
     const T = SIM.ativo ? 512 : Math.max(512, Math.min(2048, piso.width));
@@ -521,7 +521,7 @@ export function chaoArte(u) {
   return true;
 }
 // manchas (linha 2) e enfeites (linha 3) espalhados em cada pedaço de 96 px
-export function detalhesArte(r) {
+export function detalhesArte(r: () => number) {
   const img = folhaU("tiles");
   if (!img) return null;
   const out = [];
@@ -545,7 +545,7 @@ export function detalhesArte(r) {
 }
 
 // ---------------------------------------------------------------- marcos, luzes e peças de primeiro plano (folha 4x2)
-export function sortearMarcos(cx: number, cy: number, r, out: PropCena[]) {
+export function sortearMarcos(cx: number, cy: number, r: () => number, out: PropCena[]) {
   if (!temArteU("props")) return;
   const x = cx * CH + 10 + r() * 76,
     y = cy * CH + 10 + r() * 76;
@@ -625,7 +625,7 @@ export function spriteObjetoArte(p) {
   const tam = Math.round((TAM_OBJ[t] || 14) * 1.8 * (p.carvalho ? 1.4 : 1));
   /* antes 1,35: vaso e caixote saíam menores que a cabeça do herói */ return celulaArte(img, 8, rows, col, lin, tam, tam, 0.85);
 }
-export function cacoArte(p) {
+export function cacoArte(p: Ponto) {
   const img = folhaU("objetos");
   if (!img) return null;
   const lin = linhaObjeto(p);
@@ -652,7 +652,7 @@ export function impactoArte(e, x: number, y: number, tam: number) {
   if (!quadroEfeito(e, linha, 4, tam)) return;
   J.golpes.push({
     t: 0,
-    atualizar(dt) {
+    atualizar(dt: number) {
       this.t += dt;
       return this.t < 0.4;
     },

@@ -8,7 +8,7 @@ import { celulaArte, folhaArte } from "./07c_cenario_arte.js";
 export const UI_ARQ = (n: string) => folhaArte(`arte/ui/${n}.png`);
 // botões desenhados (folhas 1x3: normal, apertado, desativado): cortados em ponta esquerda, faixa, ornamento do meio e ponta direita,
 // para esticar na largura do botão sem deformar os enfeites
-export function recortarBotao(img, row) {
+export function recortarBotao(img: Imagem, row: number) {
   const cw = img.width,
     ch = img.height / 3,
     c = document.createElement("canvas");
@@ -48,7 +48,7 @@ export function aplicarArteBotoes() {
     A = UI_ARQ("ui__botoes_acao");
   if (!P || !Sx) return;
   const st = document.documentElement.style,
-    def = (pref: string, img) =>
+    def = (pref: string, img: Imagem) =>
       [0, 1, 2].forEach(r => {
         const b = recortarBotao(img, r);
         for (const k in b) st.setProperty(`--${pref}${r}-${k}`, b[k]);
@@ -127,7 +127,7 @@ export function aplicarArteUI() {
   }
 }
 // ícone de um Talismã (folha 4x3, na ordem de dados/fonte_poderes.py)
-export function iconeTalisma(id) {
+export function iconeTalisma(id: string) {
   const img = folhaArte("arte/ui/talismas.png");
   if (!img) return null;
   const i = Object.keys(D.poderes.talismas).indexOf(id);

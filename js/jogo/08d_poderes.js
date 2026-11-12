@@ -1,7 +1,6 @@
 // GERADO por "npm run compilar" a partir de src/jogo/08d_poderes.ts. Edite o .ts, não este arquivo.
 // Elementar · árvore de poderes: Talismãs, Poderes Despertos e Uniões
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./08c_eventos.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./08c_eventos.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   agendar,
   ativos,

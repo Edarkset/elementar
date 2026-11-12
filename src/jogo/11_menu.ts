@@ -1,6 +1,5 @@
 // Elementar · menu, Pacto, pausa e modo moderador; começa o jogo
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./10_desenho.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./10_desenho.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { textoSave } from "./00_save.js";
 import {
   $,

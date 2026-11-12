@@ -1,6 +1,5 @@
 // Elementar · luz: tom de cada universo, crepúsculo, escuridão com poças de luz e sombras
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./08f_lendas.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./08f_lendas.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { ativos, COR, elementoDe, J, lg, MAPA_SEG, mistura, R, SIM, tom, UNIV, VH, VW } from "./01_nucleo.js";
 import { CEL } from "./04_ambiente.js";
 import { QUAL } from "./06_loop.js";

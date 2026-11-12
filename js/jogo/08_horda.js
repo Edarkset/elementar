@@ -1,7 +1,6 @@
 // GERADO por "npm run compilar" a partir de src/jogo/08_horda.ts. Edite o .ts, não este arquivo.
 // Elementar · diretor de horda (ritmo, ondas, ameaça) e contorno de leitura dos inimigos
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./07d_estrutura.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./07d_estrutura.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { agendar, ctx, H, J, R, rnd, VH, VW, W } from "./01_nucleo.js";
 import { DIF, hordaF, hordaK, MOD, ondaCerco, particulas, spawnInimigo } from "./02_combate.js";
 import { abismoEm, estruturaU, pecasPerto } from "./07d_estrutura.js";

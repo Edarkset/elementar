@@ -1,7 +1,6 @@
 // GERADO por "npm run compilar" a partir de src/jogo/08b_efeitos.ts. Edite o .ts, não este arquivo.
 // Elementar · efeitos dos poderes: partículas por elemento, círculos de invocação, golpes básicos, projéteis, especiais, reações, combinados e habilidades
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./08_horda.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./08_horda.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { ativos, COR, elementoDe, J, lg, mistura, rnd, SIM, tom, VH, VW } from "./01_nucleo.js";
 import { maisProximo, tremor, VFX_K } from "./02_combate.js";
 import { QUAL } from "./06_loop.js";

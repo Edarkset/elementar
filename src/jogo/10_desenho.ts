@@ -1,6 +1,5 @@
 // Elementar · desenho de cada quadro, herói e HUD
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./09b_chefes.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./09c_golpes.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   $,
   ativos,

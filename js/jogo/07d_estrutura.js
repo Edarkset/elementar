@@ -1,7 +1,6 @@
 // GERADO por "npm run compilar" a partir de src/jogo/07d_estrutura.ts. Edite o .ts, não este arquivo.
 // Elementar · estrutura do mapa: abismos, pontes, lagos, praças, construções, fauna e cena de abertura
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./07c_cenario_arte.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./07c_cenario_arte.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { $, COR, ctx, cv, H, hexRgb, J, lg, mistura, R, relatar, rnd, semente, SIM, UNIV, VH, VW, W } from "./01_nucleo.js";
 import { morrer, texto } from "./02_combate.js";
 import { CEL, frio, hash2, soloEm } from "./04_ambiente.js";

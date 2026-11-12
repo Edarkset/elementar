@@ -1,6 +1,5 @@
 // Elementar · níveis, telas de escolha, ovos, Ovo Ancestral, missões, Bestiário, captura, cenas, baús, portais e especiais
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./02_combate.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./02_combate.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import {
   $,
   agendar,

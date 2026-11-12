@@ -1,7 +1,6 @@
 // GERADO por "npm run compilar" a partir de src/jogo/07c_cenario_arte.ts. Edite o .ts, não este arquivo.
 // Elementar · arte de cenário importada: chão, superfícies, marcos, objetos, efeitos de chefe e a camada em alta resolução
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./07b_cenario_desenho.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import "./07b_cenario_desenho.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { ctx, H, J, lg, Q, R, relatar, S, semente, SIM, UNIV, W } from "./01_nucleo.js";
 import { ARTE_IMG, correcaoAltura, MANIFESTO } from "./05_arte.js";
 import { CH, novoProp } from "./07_cenario.js";

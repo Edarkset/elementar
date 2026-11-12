@@ -1,6 +1,6 @@
 // Elementar · utilidades, som, save, sprites procedurais, estado da run, sinergias e Santuário
-// Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
-import "./00_save.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+// Mapa dos módulos, do laço principal e de onde mora cada estado: docs/ARQUITETURA.md
+import "./00_save.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
 import { catalogoDe, juntarRecuperacao, lerTextoSave, textoSave } from "./00_save.js";
 import { anel, DIF, emArea, ferir, MOD, particulas, PRESSAGIOS, texto, tremor } from "./02_combate.js";
 import { ASCENSAO, mostrarCartas, ramosElegiveis, registrarDex } from "./03_progressao.js";

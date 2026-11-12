@@ -284,6 +284,14 @@ interface SaveLido {
   /** true quando o texto não era um save (nada foi aproveitado) */
   ilegivel: boolean;
 }
+/** golpe de chefe ou mini-chefe (D.eras[...].combate.golpes, kits dos mapas e golpes montados no código). Cada tipo usa campos
+ * próprios (n, ondas, arco, vel, proj, dur, deixa...): o conjunto completo ainda não está descrito, por isso o índice aberto. */
+interface Golpe {
+  tipo: string;
+  nome?: string;
+  el?: Elemento | "multi";
+  [campo: string]: AindaSemTipo;
+}
 /** atributos de um monstro na hora (atrib e atribPoder): dano por golpe, golpes por segundo, vida e cura */
 interface Atributos {
   dano: number;

@@ -465,8 +465,9 @@ export const DIF = {
   // até o pico perto do chefe. alvo = ini + (pico - ini) * u^hordaCurva, com u indo de 0 a 1 em hordaSobe do tempo do mapa;
   // ini e pico crescem a cada mapa (pico até hordaMax). Os nascimentos completam o que falta para o alvo (hordaEnche por inimigo
   // que falta, por segundo) mais uma reposição constante (hordaRepor). hordaVida, hordaDano e hordaXp valem só para inimigos comuns
-  // e entram aos poucos até hordaRampa mapas (mais inimigos, cada um mais fraco). Valores escolhidos por simulação
-  // (docs/EQUILIBRIO_SIMULACOES.md)
+  // e entram aos poucos até hordaRampa mapas. Com a horda gradual há menos inimigos na tela, então cada comum bate mais forte
+  // (hordaDano 1,4: 60% do dano recebido é de contato) e dá um pouco mais de XP. Valores escolhidos por simulação
+  // (docs/EQUILIBRIO_SIMULACOES.md, rodada de 12/11/2026): mesma dificuldade de antes, com a tela crescendo aos poucos
   hordaIni: 6,
   hordaIniProf: 1.2,
   hordaPico: 40,
@@ -481,9 +482,9 @@ export const DIF = {
   // do Xamã (0 = sem área). Escolhidos por simulação (docs/EQUILIBRIO_SIMULACOES.md)
   cacadorPerfura: 1,
   totemArea: 0,
-  hordaVida: 0.62,
-  hordaDano: 0.8,
-  hordaXp: 0.62,
+  hordaVida: 0.9,
+  hordaDano: 1.4,
+  hordaXp: 0.8,
   hordaRampa: 2
 };
 // intensidade da horda neste mapa: cada fator vai de 1 (primeiro mapa) até o valor de DIF

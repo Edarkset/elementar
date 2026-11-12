@@ -18,6 +18,10 @@ Comparações sempre com 28 a 32 partidas por versão, até o mapa 10. O robô a
 | 3 | 7,7 · 12,1 · 21,9 · 40,7 | 3-9% | 6 | forma certa; picos de até 240 depois das ondas |
 | 4 | 6,7 · 10,7 · 19,2 · 35,7 | 5-9% | 7 | picos menores (118 a 192); ficou fácil |
 | 5 | 6,6 · 10,8 · 19,8 · 35,0 | 5-9% | 7 | vida maior dos comuns não muda quem morre: 66% do dano recebido é de contato |
+| **6 (adotada)** | 6,8 · 10,8 · 19,5 · 34,2 | 4-9% | **5** | dano dos comuns 1,4 (era 0,8), vida 0,9 (era 0,62), XP 0,8 (era 0,62): mesma dificuldade de antes |
+
+**Resultado:** a tela cresce aos poucos em todo mapa (mapa 8: 12,0 · 16,4 · 24,1 · 40,8 · 44,5) e não há mais o salto dos 15-30 s. Os picos antes do chefe caíram de 140-322 para 122-199, a tela vazia ficou em 4-9% e o ritmo de níveis por mapa ficou o mesmo (mapa 2: 10,4; antes 10,1). A dificuldade também ficou a mesma: profundidade mediana de 5 mapas, com as mortes espalhadas do mapa 3 ao 10.
+
 
 ## Rodada de 10/11/2026: intensidade da horda, efeitos e performance
 

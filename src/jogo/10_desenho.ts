@@ -330,7 +330,7 @@ export function desenhar(dt: number) {
   // totens entram na fila de profundidade junto com o resto (abaixo)
   // profundidade (2,5D): marcos, objetos, inimigos, equipe, Invocador e Lenda desenhados do fundo para a frente pelo pé
   desenharAltar(ox, oy);
-  const fila = [];
+  const fila: { y: number; f: () => unknown }[] = [];
   desenharCenaObjetos(ox, oy, fila);
   for (const e of J.inimigos) fila.push({ y: e.y + (e.tam || 8) * 0.63 - (e.z || 0) * 0, f: () => desenharInimigo(e, ox, oy, P) });
   for (const c of J.crias) fila.push({ y: c.y + 2, f: () => desenharCria(c, ox, oy) }); // servos entram na ordem de profundidade (antes ficavam embaixo de tudo)
@@ -954,7 +954,7 @@ export function desenharInvocador(x: number, y: number) {
   lg.fillRect(gx - 5, gy - 5, 10, 10);
   lg.globalCompositeOperation = "source-over";
 }
-export let SOBRE = null;
+export let SOBRE: { k: string; c: HTMLCanvasElement } | null = null;
 export function sobreposicao(cor: string, aLuz, aVin) {
   const k = cor + "|" + aLuz + "|" + aVin + "|" + W + "x" + H;
   if (SOBRE && SOBRE.k === k) return SOBRE.c;
@@ -983,8 +983,8 @@ export function sobreposicao(cor: string, aLuz, aVin) {
 }
 // brilho (bloom): reduz a tela, guarda só o que é claro (multiplicar a imagem por ela mesma) e soma de volta, borrado.
 // Custa pouco (imagens pequenas) e some sozinho quando o aparelho está lento (QUAL<2).
-export let BL1 = null,
-  BL2 = null;
+export let BL1: HTMLCanvasElement | null = null,
+  BL2: HTMLCanvasElement | null = null;
 export function aplicarBloom() {
   if (QUAL < 2 || SIM.ativo) return; // também no celular: é barato e o jogo desliga sozinho (QUAL<2) se ficar lento
   const w1 = Math.max(8, Math.round(W / 4)),
@@ -1093,7 +1093,7 @@ export function preCarregarEquipe() {
   const ids = new Set<string>();
   R.selos.forEach(s => s.mon && ids.add(s.mon.id));
   (R.ninho || []).forEach(o => ids.add(o.id));
-  const nomes = [];
+  const nomes: string[] = [];
   for (const id of ids) {
     const l = LINHA[id];
     if (!l) continue;
@@ -1171,7 +1171,7 @@ export function desenharNinho() {
     box.appendChild(d);
   });
 }
-export let toastT = null;
+export let toastT: number | null = null;
 export function toast(h: string) {
   if (SIM.ativo) return;
   const t = $("toast");

@@ -677,7 +677,7 @@ export const RODA_PACTO = {
 export function telaPacto() {
   $("telaMenu").classList.remove("ativa");
   const sel = new Set<Elemento>();
-  let foco = null;
+  let foco: Elemento | null = null;
   const roda = UI_ARQ("ui__pacto");
   const render = () => {
     if (!roda) {

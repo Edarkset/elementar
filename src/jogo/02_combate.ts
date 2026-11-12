@@ -647,7 +647,7 @@ export function spawnChefe(mini: boolean) {
   else cenaChefe(e, nome, J.eraChefe);
 }
 export function maisProximo(o: Ponto | Selo, alc: number, f?: (e: Inimigo) => boolean): Inimigo | null {
-  let best = null,
+  let best: Inimigo | null = null,
     bd = alc * alc;
   for (const e of J.inimigos) {
     if (e.hp <= 0 || e.oculto || (e.imortal && e.hp <= 1) || (f && !f(e))) continue;
@@ -666,7 +666,7 @@ export function maisProximo(o: Ponto | Selo, alc: number, f?: (e: Inimigo) => bo
   return best;
 }
 export function maisForte(o: Ponto | Selo, alc: number): Inimigo | null {
-  let best = null,
+  let best: Inimigo | null = null,
     bh = -1;
   for (const e of J.inimigos) {
     if (e.hp <= 0 || dist2(o, e) > alc * alc) continue;
@@ -710,7 +710,7 @@ export function emArea(x: number, y: number, r: number, fn: (e: Alvo) => void) {
     }
 }
 export function pontoDenso(o: Ponto | Selo, alc: number): Inimigo | null {
-  let best = null,
+  let best: Inimigo | null = null,
     bn = 0;
   for (const e of J.inimigos) {
     if (e.hp <= 0 || dist2(o, e) > alc * alc) continue;
@@ -792,7 +792,7 @@ export function texto(x: number, y: number, t: string, cor: string, tam: number)
 }
 
 // sombra de contato: elipse com borda macia (imagem pronta, escalada), mais escura no centro
-export let SOMBRA_IMG = null;
+export let SOMBRA_IMG: HTMLCanvasElement | null = null;
 export function sombraContato(x: number, y: number, w: number, a: number) {
   if (!SOMBRA_IMG) {
     SOMBRA_IMG = document.createElement("canvas");
@@ -828,7 +828,7 @@ export function faiscaImpacto(e: Inimigo, el: Elemento, crit: boolean, sup: bool
     n = crit ? 7 : sup ? 5 : 3,
     base = Math.random() * 6.28,
     tam = crit ? 1.6 : 1;
-  const riscos = [];
+  const riscos: { a: number; l: number }[] = [];
   for (let i = 0; i < n; i++) riscos.push({ a: base + (i / n) * 6.28 + rnd(-0.3, 0.3), l: rnd(5, 9) * tam });
   vfx({
     max: crit ? 0.22 : 0.16,

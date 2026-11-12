@@ -452,7 +452,7 @@ export function golpeInvocar(e: Inimigo, g: Golpe, P: Ponto, cor: string, el: El
 export function golpeMuralha(e: Inimigo, g: Golpe, _P: Ponto, cor: string, el: Elemento, C: Cena | undefined): number {
   const P = J.jogador,
     r = g.r || 50,
-    pts = [];
+    pts: number[][] = [];
   if (g.mat === "escama") {
     constricao(e, P, r);
     return 4.2;
@@ -891,7 +891,7 @@ export function golpeTempestade(e: Inimigo, g: Golpe, P: Ponto, cor: string, el:
       const P = J.jogador;
       let x = P.x + rnd(-24, 24),
         y = P.y + rnd(-24, 24),
-        alvo = null;
+        alvo: PropCena | null = null;
       if (C)
         for (const p of C.lista)
           if (p.mat.condutor && !p.morto && Math.hypot(p.x - x, p.y - y) < 60) {

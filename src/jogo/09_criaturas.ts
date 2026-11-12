@@ -100,7 +100,7 @@ export function spriteCriatura(def, tam: number, cor: string, q: number, pose: s
     bx = s * 0.5,
     by = s * 0.58,
     br = s * 0.22,
-    boca = null,
+    boca: number[] | null = null,
     olhos = [];
   const dd = dor ? 1 : 0;
   switch (def.corpo) {
@@ -1207,7 +1207,7 @@ export function passoCriatura(e: Inimigo, dt: number, P: Ponto) {
         PASSO.m = -1.5;
         break;
       }
-      let g = null,
+      let g: Gema | null = null,
         bd = 90 * 90;
       for (const x of J.gemas) {
         const dd2 = dist2(x, e);
@@ -1355,7 +1355,7 @@ export function golpeCriatura(e: Inimigo, P: Ponto, dist: number) {
   }
 }
 export function maisProximoInimigo(o: Ponto | Selo, alc: number) {
-  let best = null,
+  let best: Inimigo | null = null,
     bd = alc * alc;
   for (const e of J.inimigos) {
     if (e === o || e.hp <= 0) continue;

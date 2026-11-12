@@ -247,7 +247,7 @@ export function fechar() {
   $("telaCartas").classList.remove("ativa");
 }
 // retratos animados nas cartas (quadros "parado" da folha de animação), enquanto a tela estiver aberta
-export let animRet = null;
+export let animRet: number | null = null;
 export function animarRetratos() {
   if (animRet) return;
   const passo = (t: number) => {
@@ -504,7 +504,7 @@ export function cartasNivel() {
       });
     }
   }
-  const sorteio = [],
+  const sorteio: CartaNivel[] = [],
     pool = cand.slice();
   while (sorteio.length < 3 && pool.length) {
     const tot = pool.reduce((t, c) => t + c.peso, 0);
@@ -927,7 +927,7 @@ export function diarias() {
   if (!D2 || D2.dia !== hoje) {
     const r = semente("diaria" + hoje),
       tipos = Object.keys(TIPOS_DIARIA),
-      lista = [];
+      lista: { t: string; alvo: number; prog: number; feito: boolean }[] = [];
     while (lista.length < 3) {
       const t = tipos[Math.floor(r() * tipos.length)];
       if (lista.some(x => x.t === t)) continue;
@@ -1228,7 +1228,7 @@ export function cenaDescoberta(mon: Monstro) {
   );
   som("jackpot");
 }
-export const CINE = { ativa: false, fila: [] };
+export const CINE = { ativa: false, fila: [] as { html: string; classe: string; dur: number; aoFim: (() => void) | undefined }[] };
 export function cenaTocar(html: string, classe: string, dur: number, aoFim?: () => void) {
   if (SIM.ativo) return;
   CINE.fila.push({ html, classe, dur, aoFim });
@@ -1481,7 +1481,7 @@ export function desenharMoedasBaus(ox: number, oy: number) {
 }
 // ---- prêmios
 export const ICONE_HUD = { estrela: 7, gema: 6, coracao: 8, ampulheta: 4, bolsa: 0, trofeu: 10, fogo: 5, livro: 11, mapa: 3 };
-export let ICONES_URL = null;
+export let ICONES_URL: {} | null = null;
 export function iconeHud(nome: string) {
   const img = UI_ARQ("ui__hud_icones");
   if (!img) return null;

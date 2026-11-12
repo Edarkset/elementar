@@ -47,7 +47,7 @@ export function faixasFolha(img: Imagem, rows: number) {
     const d = g.getImageData(0, 0, c.width, c.height).data,
       W = c.width,
       H = c.height;
-    const bandas = [];
+    const bandas: number[][] = [];
     let on = false,
       y0 = 0;
     for (let y = 0; y < H; y++) {
@@ -181,8 +181,8 @@ export function celulaArte(img: Imagem, cols: number, rows: number, col: number,
 // ---------------------------------------------------------------- camada de arte em alta resolução
 // O mundo é desenhado em baixa resolução (estilo pixel art) e ampliado para a tela. Arte pintada (monstros, inimigos, chefes,
 // Lendas) reduzida a 20-40 px vira borrão; por isso ela é desenhada por cima, na resolução real da tela, a partir do original.
-export const CAMADA_ARTE = [];
-export let cvArte = null;
+export const CAMADA_ARTE: { hi: HTMLCanvasElement; t: DOMMatrix; dx: number; dy: number; dw: number; dh: number; al: number }[] = [];
+export let cvArte: HTMLCanvasElement | null = null;
 // versão da célula em K pixels por pixel de mundo, recortada do arquivo original com suavização de alta qualidade
 export function versaoHi(c: Imagem, K?: number) {
   if (!c || !c._src) return null;

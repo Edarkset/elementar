@@ -84,7 +84,7 @@ export function mistura(a: string, b: string, t: number) {
 
 // ================================================================ som: efeitos sintetizados na hora (sem arquivos de áudio)
 // O navegador só libera o som depois do primeiro toque; o volume e o mudo ficam no save (META.som).
-export const SOM = { ctx: null, mestre: null, ult: {} as Record<string, number> };
+export const SOM = { ctx: null as AudioContext | null, mestre: null, ult: {} as Record<string, number> };
 export function somLigar() {
   if (SOM.ctx) {
     if (SOM.ctx.state === "suspended") SOM.ctx.resume();
@@ -105,7 +105,7 @@ export function somLigar() {
 }
 addEventListener("pointerdown", somLigar, { passive: true });
 addEventListener("keydown", somLigar);
-export function somNota(f: number, dur: number, tipo: string, vol: number, atraso?: number, f2?: number) {
+export function somNota(f: number, dur: number, tipo: OscillatorType, vol: number, atraso?: number, f2?: number) {
   const c = SOM.ctx,
     t = c.currentTime + (atraso || 0),
     o = c.createOscillator(),
@@ -872,7 +872,7 @@ export function relMods() {
     reac: 1,
     regen: 0,
     reviver: 0,
-    nucleo: [],
+    nucleo: [] as string[],
     curaTroca: false,
     danoRec: 1,
     ess: 1,
@@ -1021,7 +1021,7 @@ export function afinidadeLenda(eq: Selo[]) {
 export function calcularSinergia() {
   const rg = D.regras,
     eq = ativos(),
-    chips = [];
+    chips: string[] = [];
   let dano = 1,
     vida = 1,
     reac = 1;

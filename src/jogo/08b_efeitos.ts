@@ -344,7 +344,7 @@ export function vfxOnda(s: Ponto | Selo, el: Elemento, r: number) {
 export function vfxFeixe(s, e: Inimigo, el: Elemento) {
   const v = vEl(el),
     K = VFX_K,
-    pts = [];
+    pts: number[][] = [];
   const n = 6;
   for (let i = 0; i <= n; i++) {
     const t = i / n;

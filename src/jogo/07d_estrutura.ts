@@ -334,7 +334,7 @@ export function faixaParedao(img) {
     g.drawImage(img, b.sx, b.sy, b.sw, H, x, 0, b.sw, H);
     x += b.sw;
   }
-  const qs = [];
+  const qs: { x: number; w: number }[] = [];
   x = 0;
   for (const b of quedas) {
     g.drawImage(img, b.sx, b.sy, b.sw, H, x, H, b.sw, H);
@@ -467,7 +467,7 @@ export function desenharEstrutura(ox: number, oy: number) {
     };
     // borda de cima (para o paredão): y mais alto de cada x, dos pontos da metade de cima
     const topo = (wx: number) => {
-      let best = null;
+      let best: number | null = null;
       for (let i = 0; i < NP; i++) {
         const [ax, ay] = f.pts[i],
           [bx, by] = f.pts[(i + 1) % NP];
@@ -1005,7 +1005,7 @@ export function iniciarAbertura() {
   const img = ARTE_IMG[`arte/reinos/${u.era}/${u.id}__keyart.png`];
   if (!img || img.falhou) return;
   const r = semente(u.id + "intro"),
-    motes = [];
+    motes: { x: number; y: number; v: number; a: number; s: number; b: number }[] = [];
   for (let i = 0; i < 46; i++) motes.push({ x: r(), y: r(), v: 0.03 + r() * 0.08, a: r() * 6.28, s: 0.6 + r() * 1.8, b: 0.3 + r() * 0.7 });
   J.intro = { t: 0, dur: 4.6, img, u, espera: 0, motes, depois: [], cor: COR[u.elemento] || "#ffd890" };
   $("hud").style.display = "none";
@@ -1046,7 +1046,7 @@ export function pularAbertura() {
 }
 export const suaveIO = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x)),
   suaveO = (x: number) => 1 - Math.pow(1 - Math.max(0, Math.min(1, x)), 3);
-export let CV_INTRO = null;
+export let CV_INTRO: HTMLCanvasElement | null = null;
 export function desenharAbertura() {
   const I = J && J.intro;
   if (!I) return;

@@ -889,7 +889,7 @@ export function desenharCenaChao(ox: number, oy: number) {
   }
   lg.globalAlpha = 1;
 }
-export function desenharCenaObjetos(ox: number, oy: number, fila: Selo[]) {
+export function desenharCenaObjetos(ox: number, oy: number, fila: { y: number; f: () => unknown }[]) {
   const C = J.cena;
   if (!C) return;
   desenharProps(C, ox, oy, fila);

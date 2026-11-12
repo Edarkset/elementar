@@ -89,8 +89,8 @@ export function registrarArte(nome: string, src: string) {
 }
 // avisa o jogo das artes que chegaram, em lote (no máximo umas 4 vezes por segundo): os recortes guardados usam o número
 // de cada imagem, então nada precisa ser apagado; só o chão e os enfeites do mapa, que foram montados sem a arte, são refeitos
-export let artesNovas = [],
-  tArtes = null;
+export let artesNovas: string[] = [],
+  tArtes: number | null = null;
 export function novaArte(nome: string) {
   artesNovas.push(nome);
   if (tArtes) return;
@@ -165,7 +165,7 @@ export function artesDoMapa(u: Universo) {
     };
     return i(a) - i(b);
   });
-  const equipe = [];
+  const equipe: string[] = [];
   if (R)
     for (const s of R.selos) {
       if (!s.mon) continue;
@@ -298,7 +298,7 @@ export function fatiarFolha(img: Imagem, cols: number, rows: number, rigido?: bo
     H = img.height,
     cw = W / cols,
     ch = H / rows;
-  let d = null;
+  let d: ImageDataArray | null = null;
   try {
     d = alfaDe(img);
   } catch (e) {
@@ -363,7 +363,19 @@ export function fatiarFolha(img: Imagem, cols: number, rows: number, rigido?: bo
         d && !rigido ? melhorCorte(col, c * cw, Math.max(cx[c - 1] + cw * 0.4, c * cw - cw * 0.35), c * cw + cw * 0.35) : Math.round(c * cw)
       );
     cx.push(W);
-    const qs = [];
+    const qs: {
+      c: number;
+      x0: number;
+      x1: number;
+      y0: number;
+      y1: number;
+      bx: number;
+      by: number;
+      bw: number;
+      bh: number;
+      n: number;
+      ref: number;
+    }[] = [];
     for (let c = 0; c < cols; c++) {
       const x0 = cx[c],
         x1 = cx[c + 1];
@@ -421,7 +433,7 @@ export const cacheRecor = new Map();
 export function folhaRecolorida(anim: Imagem, base: Imagem, alvo: Imagem, celula: number) {
   const k = (anim._id || (anim._id = novoIdImg())) + "|" + (alvo._id || (alvo._id = novoIdImg())) + "|" + celula;
   if (cacheRecor.has(k)) return cacheRecor.get(k);
-  let out = null;
+  let out: HTMLCanvasElement | null = null;
   try {
     const cel = (im: Imagem) => {
       const cw = im.width / 4,

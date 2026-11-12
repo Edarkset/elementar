@@ -84,7 +84,7 @@ import { chao, desenhar, desenharEquipe, desenharNinho, hud, quadroHeroi, toast 
 import { pausar } from "./11_menu.js";
 // ================================================================ entrada
 export const teclas = new Set();
-export let toque = null,
+export let toque: { ox: number; oy: number; x: number; y: number; id: number } | null = null,
   ultimoToque = 0;
 addEventListener("pointerdown", () => pularAbertura());
 addEventListener("keydown", e => {

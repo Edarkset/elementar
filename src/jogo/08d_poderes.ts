@@ -119,7 +119,7 @@ export function podeDespertar(s: Selo, k: ChavePoder) {
   return !!d && !(s.desp && s.desp[k]) && s.pod[k] >= 5 && nivTal(d.talisma) > 0 && estBase(s) >= 2;
 }
 export function bauDesperto(x: number, y: number) {
-  const cand = [];
+  const cand: [Selo, ChavePoder][] = [];
   for (const s of ativos()) for (const k of ["b", "h1", "h2"] as ChavePoder[]) if (podeDespertar(s, k)) cand.push([s, k]);
   if (!cand.length) return false;
   const [s, k] = escolha(cand),
@@ -188,7 +188,7 @@ export function atribPoder(a: Atributos, s: Selo, k: ChavePoder) {
 // Uniões a meio caminho: a equipe tem um Desperto do par e um monstro da classe do outro Desperto (devolve o Talismã que falta)
 export function paresPendentes() {
   const tem = despertosAtivos(),
-    out = [];
+    out: { talisma: string; uniao: string }[] = [];
   for (const u of PD().unioes)
     for (const [x, y] of [
       [u.a, u.b],

@@ -971,7 +971,7 @@ export function desenharBala(b: Bala, ox: number, oy: number) {
   }
 }
 // escuridão: só a equipe, o fogo e os objetos em chamas iluminam
-export let ESCURO = null;
+export let ESCURO: HTMLCanvasElement | null = null;
 // silhueta para o brilho: corta o fundo quase transparente de algumas artes (virava um quadrado aceso em volta do bicho)
 export const cacheSilB = new WeakMap();
 export function silhuetaBrilho(spr: HTMLCanvasElement, cor: string) {
@@ -1083,7 +1083,7 @@ export function desenharAnuncio(y?: number) {
       ctx.font = `13px "Nunito", system-ui, sans-serif`;
       ctx.fillStyle = "#f2e7c9";
       const pal = a.sub.split(" "),
-        linhas = [];
+        linhas: string[] = [];
       let l = "";
       for (const p of pal) {
         if ((l + " " + p).length > 44) {

@@ -38,8 +38,8 @@ export function pisoEscuroK() {
   const l = typeof lumChao === "function" ? lumChao() : 0.2;
   return l < 0.08 ? 0.5 : l < 0.15 ? 0.7 : 1;
 }
-export let LMAP = null,
-  FURO = null;
+export let LMAP: HTMLCanvasElement | null = null,
+  FURO: HTMLCanvasElement | null = null;
 export function desenharMapaLuz(ox: number, oy: number) {
   if (QUAL === 0 || SIM.ativo || J.escuro > 0.05) return;
   const A = nivelEscuro();

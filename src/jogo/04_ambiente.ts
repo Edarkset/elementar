@@ -212,7 +212,7 @@ export function atualizarSolo(dt: number) {
   J.tFogo -= dt;
   if (J.tFogo <= 0) {
     J.tFogo = 0.5;
-    const fogos = [];
+    const fogos: string[] = [];
     J.solo.forEach((m, k) => {
       if (m.t === "fogo" && m.ate > J.t) fogos.push(k);
     });
@@ -550,7 +550,7 @@ export function texturaSolo(t: string) {
   return c;
 }
 // reflexos do chão molhado (camada somada por cima, só onde está molhado)
-export let TEX_BRILHO = null;
+export let TEX_BRILHO: HTMLCanvasElement | null = null;
 export function texturaBrilho() {
   if (TEX_BRILHO) return TEX_BRILHO;
   const N = TEX_N,

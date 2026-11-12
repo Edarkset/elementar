@@ -133,8 +133,8 @@ export function iniciarCena(u: Universo) {
     tRaio: rnd(6, 10),
     tVort: rnd(8, 14),
     tPart: 0,
-    nevoa: [],
-    nuvens: [],
+    nevoa: [] as { x: number; y: number; r: number; a: number; f: number }[],
+    nuvens: [] as { x: number; y: number; r: number; a: number }[],
     detalhes: new Map(),
     sprites: new Map(),
     tSolo: 0,
@@ -153,7 +153,7 @@ export function iniciarCena(u: Universo) {
   if (kit.submerso) J.cena.causticas = gerarCausticas();
   if (!SOMBRA_SUAVE) SOMBRA_SUAVE = gerarBolha();
 }
-export let SOMBRA_SUAVE = null;
+export let SOMBRA_SUAVE: HTMLCanvasElement | null = null;
 export function gerarBolha() {
   const c = document.createElement("canvas");
   c.width = c.height = 64;
@@ -182,7 +182,7 @@ export function bolhaCor(C: Cena, cor: string | CanvasGradient | CanvasPattern) 
 }
 // luz que atravessa a superfície ondulada da água e se concentra no fundo (cáusticas)
 export function gerarCausticas() {
-  const fr = [];
+  const fr: HTMLCanvasElement[] = [];
   for (let f = 0; f < 8; f++) {
     const c = document.createElement("canvas");
     c.width = c.height = 64;
@@ -1594,7 +1594,7 @@ export function atualizarRaios(C: Cena, dt: number) {
         d = rnd(30, 100);
       let x = P.x + Math.cos(a) * d,
         y = P.y + Math.sin(a) * d,
-        alvo = null,
+        alvo: PropCena | null = null,
         bd = 140 * 140;
       for (const p of C.lista)
         if (p.mat.condutor) {
@@ -1625,7 +1625,7 @@ export function atualizarRaios(C: Cena, dt: number) {
 }
 export function cairRaio(C: Cena, x: number, y: number, alvo: PropCena) {
   const P = J.jogador;
-  const pts = [];
+  const pts: number[][] = [];
   let px = x + rnd(-20, 20),
     py = y - VH;
   for (let i = 0; i <= 10; i++) {
@@ -1721,7 +1721,7 @@ export function propNoPonto(x: number, y: number, r: number) {
 export function propMaisProximo(o: Ponto | Selo, alc: number) {
   const C = J.cena;
   if (!C) return null;
-  let best = null,
+  let best: PropCena | null = null,
     bd = alc * alc;
   for (const p of C.lista) {
     if (p.morto || p.mat.indestrutivel) continue;

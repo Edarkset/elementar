@@ -179,6 +179,8 @@ interface OvoNinho {
 }
 interface EstatisticasRun {
   porFonte: Partial<Record<FonteDano, number>>;
+  /** dano por monstro (id da linha): o que cada um causou com básico, habilidade, especial e reações */
+  porMonstro?: Record<string, number>;
   especiais: number;
   combinados: number;
   transformacoes: number;
@@ -361,6 +363,8 @@ interface Projetil extends Ponto {
   perf: number;
   r: number;
   fonte?: FonteDano;
+  /** monstro que criou (resumo de fim de run) */
+  autor?: string | null;
   alvo?: Inimigo | null;
   vel?: number;
   explode?: number;
@@ -375,6 +379,8 @@ interface ZonaBase extends Ponto {
   cor: string;
   vida: number;
   fonte?: FonteDano;
+  /** monstro que criou (resumo de fim de run) */
+  autor?: string | null;
   el?: Elemento;
   dano?: number;
   cd?: number;
@@ -392,6 +398,8 @@ interface Cria extends Ponto {
   vida: number;
   cd: number;
   fonte?: FonteDano;
+  /** monstro que criou (resumo de fim de run) */
+  autor?: string | null;
   kami?: boolean;
   guarda?: boolean;
   gigante?: boolean;
@@ -405,6 +413,8 @@ interface Armadilha extends Ponto {
   raiz: boolean;
   vida: number;
   fonte?: FonteDano;
+  /** monstro que criou (resumo de fim de run) */
+  autor?: string | null;
 }
 interface Totem extends Ponto {
   dono: Selo;

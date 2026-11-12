@@ -5,6 +5,7 @@ import {
   agendar,
   ativos,
   atrib,
+  AUTOR,
   COR,
   dist2,
   elementoDe,
@@ -199,7 +200,7 @@ export function paresPendentes() {
 }
 // ---------------------------------------------------------------- comportamentos dos Despertos (rodam junto com o poder, quando ele dispara)
 export const _P = (s, a, el, cor, dano, extra) =>
-  Object.assign({ fonte: FONTE, x: s.x, y: s.y, dano, el, cor, vida: 1.3, perf: 1, r: 2 }, extra);
+  Object.assign({ fonte: FONTE, autor: AUTOR, x: s.x, y: s.y, dano, el, cor, vida: 1.3, perf: 1, r: 2 }, extra);
 export function puxar(cx, cy, r, forca) {
   for (const e of J.inimigos) {
     if (e.hp <= 0 || e.chefe) continue;
@@ -308,7 +309,17 @@ export const COMPORTAMENTO = {
       }
     },
     h2(s, a, el, cor) {
-      J.armadilhas.push({ fonte: FONTE, x: s.x + rnd(-30, 30), y: s.y + rnd(-30, 30), dano: a.dano * 3, el, cor, raiz: false, vida: 12 });
+      J.armadilhas.push({
+        fonte: FONTE,
+        autor: AUTOR,
+        x: s.x + rnd(-30, 30),
+        y: s.y + rnd(-30, 30),
+        dano: a.dano * 3,
+        el,
+        cor,
+        raiz: false,
+        vida: 12
+      });
     }
   },
   mago: {
@@ -348,12 +359,22 @@ export const COMPORTAMENTO = {
       }
     },
     h1(s, a, el, cor) {
-      J.crias.push({ fonte: FONTE, x: s.x + rnd(-6, 6), y: s.y + rnd(-6, 6), dano: a.dano * 0.7, el, cor, vida: 7, cd: 0 });
+      J.crias.push({ fonte: FONTE, autor: AUTOR, x: s.x + rnd(-6, 6), y: s.y + rnd(-6, 6), dano: a.dano * 0.7, el, cor, vida: 7, cd: 0 });
     },
     h2(s, a, el, cor) {
       const p = pontoDenso(s, 150) || s;
       for (let i = 0; i < 2; i++)
-        J.crias.push({ fonte: FONTE, x: p.x + rnd(-10, 10), y: p.y + rnd(-10, 10), dano: a.dano * 0.6, el, cor, vida: 8, cd: 0 });
+        J.crias.push({
+          fonte: FONTE,
+          autor: AUTOR,
+          x: p.x + rnd(-10, 10),
+          y: p.y + rnd(-10, 10),
+          dano: a.dano * 0.6,
+          el,
+          cor,
+          vida: 8,
+          cd: 0
+        });
     }
   },
   mistico: {

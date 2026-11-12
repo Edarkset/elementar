@@ -645,6 +645,9 @@ export let rodando = false,
 // construções) é decidido pela lista de artes, não pela imagem, então os obstáculos são os mesmos do jogo normal
 export const SIM: Simulacao = { ativo: false, entrada: null, aoDerrota: null, semEspeciais: false, semArte: false };
 export let FONTE: FonteDano = "basico"; // origem do dano corrente (básico, habilidade, especial, combinado, despertar, reação, ambiente)
+// monstro que está causando o dano agora (id da linha); null para dano da equipe toda (Lenda, Despertar, combinado) ou do ambiente.
+// Projéteis, crias, armadilhas e zonas guardam o autor de quando nasceram. Serve só para o resumo de fim de run ("quem carregou")
+export let AUTOR: string | null = null;
 export function agendar(seg: number, fn) {
   J.agenda.push({ t: J.t + seg, fn });
 }
@@ -1186,6 +1189,9 @@ export const fNivel = (lv: number) => 1 + 0.25 * Math.max(0, lv - 1),
 // valor inteiro (começar um mapa, pausar, marcar a fonte do dano) chama uma destas funções: toda troca tem um nome e um lugar só.
 export function defFonte(v: FonteDano) {
   return (FONTE = v);
+}
+export function defAutor(v: string | null | undefined) {
+  return (AUTOR = v ?? null);
 }
 export function defPausado(v: boolean) {
   return (pausado = v);

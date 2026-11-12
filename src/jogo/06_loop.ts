@@ -6,9 +6,11 @@ import {
   ativos,
   atrib,
   atualizarReliquias,
+  AUTOR,
   calcularSinergia,
   COR,
   cv,
+  defAutor,
   defFonte,
   dist2,
   elementoDe,
@@ -218,6 +220,7 @@ export function tick(dt: number) {
 export function atualizar(dt: number) {
   if (J.intro && passoAbertura(dt)) return;
   J.t += dt;
+  defAutor(null);
   const P = J.jogador,
     rm = SIN.rm;
   if (!passoRelogios(dt)) return;
@@ -226,7 +229,9 @@ export function atualizar(dt: number) {
   passoSurgimentos(dt);
   if (!passoInimigos(dt, P)) return;
   passoProjeteis(dt);
+  defAutor(null);
   passoCriasZonas(dt, P);
+  defAutor(null);
   passoOvosSelvagens(dt, P);
   passoCristais(dt, P, rm);
   passoParticulas(dt);
@@ -343,7 +348,9 @@ function passoFormacao(dt: number, P: Ponto, rm: Sinergia["rm"]) {
     else if (dxF > 1) s.esq = false;
     s.x += dxF * Math.min(1, dt * 5);
     s.y += (P.y + form[i][1] - s.y) * Math.min(1, dt * 5);
+    defAutor(s.mon ? s.mon.id : null);
     agirSelo(s, dt);
+    defAutor(null);
   });
   if (rm.regen) curar(J.vidaMax * rm.regen * dt);
   if (J.regen > 0) curar(J.vidaMax * J.regenV * dt);
@@ -536,6 +543,7 @@ function passoInimigos(dt: number, P: Ponto): boolean {
 function passoProjeteis(dt: number) {
   for (const p of J.proj) {
     defFonte(p.fonte || "basico");
+    defAutor(p.autor);
     if (p.alvo) {
       if (p.alvo.hp <= 0) p.alvo = maisProximo(p, 130);
       if (p.alvo) {
@@ -614,6 +622,7 @@ function passoCriasZonas(dt: number, P: Ponto) {
     c.vida -= dt;
     c.cd -= dt;
     defFonte(c.fonte || "basico");
+    defAutor(c.autor);
     if (c.guarda) {
       const a = J.t * 3 + J.crias.indexOf(c);
       c.x += (P.x + Math.cos(a) * 16 - c.x) * Math.min(1, dt * 5);
@@ -660,6 +669,7 @@ function passoCriasZonas(dt: number, P: Ponto) {
     t.vida -= dt;
     t.cd -= dt;
     defFonte("basico");
+    defAutor(t.dono && t.dono.mon ? t.dono.mon.id : null);
     if (t.cd <= 0) {
       const e = maisProximo(t, 80);
       if (e) {
@@ -668,6 +678,7 @@ function passoCriasZonas(dt: number, P: Ponto) {
           d = Math.hypot(dx, dy) || 1;
         J.proj.push({
           fonte: FONTE,
+          autor: AUTOR,
           alvoProp: e.ehProp ? e : null,
           x: t.x,
           y: t.y - 4,
@@ -689,6 +700,7 @@ function passoCriasZonas(dt: number, P: Ponto) {
   for (const a of J.armadilhas) {
     a.vida -= dt;
     defFonte(a.fonte || "habilidade");
+    defAutor(a.autor);
     const e = maisProximo(a, 8);
     if (e) {
       a.vida = 0;
@@ -706,6 +718,7 @@ function passoCriasZonas(dt: number, P: Ponto) {
   for (const z of J.zonas) {
     z.vida -= dt;
     defFonte(z.fonte || "habilidade");
+    defAutor(z.autor);
     if (z.tipo === "circulo" && z.puxa)
       emArea(z.x, z.y, z.r, e => {
         e.x += (z.x - e.x) * dt * 1.5;
@@ -747,7 +760,7 @@ function passoCriasZonas(dt: number, P: Ponto) {
       z.cd -= dt;
       if (z.cd <= 0) {
         z.cd = 0.6;
-        J.crias.push({ fonte: FONTE, x: z.x, y: z.y, dano: z.dano, el: z.el, cor: z.cor, vida: 4, cd: 0 });
+        J.crias.push({ fonte: FONTE, autor: AUTOR, x: z.x, y: z.y, dano: z.dano, el: z.el, cor: z.cor, vida: 4, cd: 0 });
         particulas(z.x, z.y, z.cor, 4, 40);
       }
     }

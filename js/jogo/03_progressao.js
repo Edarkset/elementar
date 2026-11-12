@@ -7,6 +7,7 @@ import {
   ANCESTRAIS,
   ativos,
   atrib,
+  AUTOR,
   bonusLoja,
   calcularSinergia,
   classeExtraDe,
@@ -2035,7 +2036,36 @@ export function resumoRun() {
         : pc < 0.4
           ? "A maior parte do dano que você levou veio de <b>golpes e projéteis</b>: saia das marcas no chão antes do golpe."
           : "Você levou dano tanto da horda quanto dos golpes: troque de lugar antes de ficar cercado.";
-  return `<div class="resumo-dano"><div class="rd-titulo">De onde veio o seu dano</div>${linhas}${re ? `<div class="rd-nota">Reação mais usada: <b>${re[0]}</b> (${re[1]}×)</div>` : ""}${dica ? `<div class="rd-nota">${dica}</div>` : ""}</div>`;
+  return `<div class="resumo-dano"><div class="rd-titulo">De onde veio o seu dano</div>${linhas}${re ? `<div class="rd-nota">Reação mais usada: <b>${re[0]}</b> (${re[1]}×)</div>` : ""}${dica ? `<div class="rd-nota">${dica}</div>` : ""}${quemCarregou(st)}</div>`;
+}
+// quem carregou a run: os três monstros que mais causaram dano (básico, habilidades, especiais e as reações que dispararam),
+// com o nome da forma em que terminaram a run. Monstro que saiu da equipe aparece pelo nome da linha
+export function quemCarregou(st) {
+  const pm = st.porMonstro || {},
+    tot = Object.values(pm).reduce((a, b) => a + b, 0);
+  if (!(tot > 0)) return "";
+  const nome = id => {
+    const s = R.selos.find(x => x.mon && x.mon.id === id);
+    return s ? nomeForma(s) : LINHA[id] ? LINHA[id].filhote : id;
+  };
+  const top = Object.entries(pm)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+  const barras = top
+    .map(([id, v]) => {
+      const q = (v / tot) * 100,
+        cor = LINHA[id] ? COR[LINHA[id].elemento] : "#c8d0e0";
+      return `<div class="rd-linha"><span>${nome(id)}</span><i><b style="width:${Math.max(3, Math.round(q))}%;background:${cor}"></b></i><em>${Math.round(q)}%</em></div>`;
+    })
+    .join("");
+  const [lider, vLider] = top[0];
+  const nota =
+    vLider / tot >= 0.5
+      ? `<b>${nome(lider)}</b> carregou a run sozinho: mais da metade do dano da equipe.`
+      : top.length > 1 && vLider / tot < 0.4
+        ? "Dano bem dividido: a equipe inteira trabalhou."
+        : `<b>${nome(lider)}</b> foi quem mais causou dano.`;
+  return `<div class="rd-titulo">Quem carregou a run</div>${barras}<div class="rd-nota">${nota}</div>`;
 }
 export function derrota() {
   defRodando(false);
@@ -2177,7 +2207,7 @@ export function dispararEspecial(s, a, el, cor) {
       });
       break;
     case "cacador0":
-      J.zonas.push({ fonte: FONTE, tipo: "chuva", x: alvo.x, y: alvo.y, r: 60, cor, el, dano: d * 1.2, vida: 4, cd: 0 });
+      J.zonas.push({ fonte: FONTE, autor: AUTOR, tipo: "chuva", x: alvo.x, y: alvo.y, r: 60, cor, el, dano: d * 1.2, vida: 4, cd: 0 });
       break;
     case "cacador1": {
       const ang = Math.atan2(alvo.y - s.y, alvo.x - s.x),
@@ -2211,10 +2241,10 @@ export function dispararEspecial(s, a, el, cor) {
       break;
     case "invocador0":
       for (let i = 0; i < 10; i++)
-        J.crias.push({ fonte: FONTE, x: s.x + rnd(-12, 12), y: s.y + rnd(-12, 12), dano: d * 0.8, el, cor, vida: 6, cd: 0 });
+        J.crias.push({ fonte: FONTE, autor: AUTOR, x: s.x + rnd(-12, 12), y: s.y + rnd(-12, 12), dano: d * 0.8, el, cor, vida: 6, cd: 0 });
       break;
     case "invocador1":
-      J.crias.push({ fonte: FONTE, x: s.x, y: s.y, dano: d * 6, el, cor, vida: 10, cd: 0, gigante: true });
+      J.crias.push({ fonte: FONTE, autor: AUTOR, x: s.x, y: s.y, dano: d * 6, el, cor, vida: 10, cd: 0, gigante: true });
       anel(s.x, s.y, 24, cor, 0.6);
       break;
     case "mistico0":
@@ -2227,7 +2257,20 @@ export function dispararEspecial(s, a, el, cor) {
       J.flash = { vida: 0.25, cor: "#fff3c4" };
       break;
     case "xama0":
-      J.zonas.push({ fonte: FONTE, tipo: "chuva", x: P.x, y: P.y, r: 75, cor, el, dano: d * 1.5, vida: 5, cd: 0, segue: true });
+      J.zonas.push({
+        fonte: FONTE,
+        autor: AUTOR,
+        tipo: "chuva",
+        x: P.x,
+        y: P.y,
+        r: 75,
+        cor,
+        el,
+        dano: d * 1.5,
+        vida: 5,
+        cd: 0,
+        segue: true
+      });
       break;
     case "xama1":
       J.totemAnc = 12;
@@ -2316,6 +2359,7 @@ export function usarCombinado() {
           for (let i = 0; i < 8; i++)
             J.crias.push({
               fonte: FONTE,
+              autor: AUTOR,
               x: P.x + rnd(-30, 30),
               y: P.y + rnd(-30, 30),
               dano: total * 0.02,
@@ -2329,7 +2373,7 @@ export function usarCombinado() {
         gigantes: () => naTela(e => (e.congela = 2.5)),
         pequeninos: () => {
           for (let i = 0; i < 12; i++)
-            J.crias.push({ fonte: FONTE, x: P.x, y: P.y, dano: total * 0.015, el: els[0], cor: "#ffd34a", vida: 8, cd: 0 });
+            J.crias.push({ fonte: FONTE, autor: AUTOR, x: P.x, y: P.y, dano: total * 0.015, el: els[0], cor: "#ffd34a", vida: 8, cd: 0 });
         },
         marinhos: () => {
           naTela(e => {

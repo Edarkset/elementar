@@ -5,6 +5,7 @@ import {
   agendar,
   ativos,
   atrib,
+  AUTOR,
   calcularSinergia,
   COR,
   defFonte,
@@ -884,6 +885,7 @@ export function ferir(e: Alvo, dano: number, el: Elemento, o: { crit?: boolean }
     dano * ef * (crit ? 1.8 : 1) * (e.vulner > 0 ? 1.2 : 1) * (e.bebado > 0 ? 1.5 : 1) * fadigaChefe(e) * multDanoLenda(e) * relDano(e);
   for (const z of J.zonas) if (z.tipo === "circulo" && dist2(z, e) < z.r * z.r) d *= z.amp;
   R.st.porFonte[FONTE] = (R.st.porFonte[FONTE] || 0) + Math.min(d, Math.max(0, e.hp));
+  contarAutor(Math.min(d, Math.max(0, e.hp)));
   e.hp -= d;
   e.flash = 0.08;
   e.golpeT = J.t;
@@ -930,6 +932,14 @@ export function ferir(e: Alvo, dano: number, el: Elemento, o: { crit?: boolean }
   e.status = { el, t: J.t };
   if (e.hp <= 0) morrer(e);
 }
+/** dano por monstro, para o resumo de fim de run: só o que um monstro causou (básico, habilidade, especial e as reações que ele disparou) */
+const FONTES_DE_MONSTRO = new Set<FonteDano>(["basico", "habilidade", "especial", "reacao"]);
+export function contarAutor(d: number) {
+  const st = R.st;
+  if (!AUTOR || !st || !FONTES_DE_MONSTRO.has(FONTE)) return;
+  const pm = (st.porMonstro = st.porMonstro || {});
+  pm[AUTOR] = (pm[AUTOR] || 0) + d;
+}
 export function danoSimples(e: Alvo, d: number) {
   if (e.ehProp === true) {
     danificarProp(e, d, null);
@@ -937,6 +947,7 @@ export function danoSimples(e: Alvo, d: number) {
   }
   if (e.hp <= 0 || e.oculto) return;
   R.st.porFonte[FONTE] = (R.st.porFonte[FONTE] || 0) + Math.min(d, Math.max(0, e.hp));
+  contarAutor(Math.min(d, Math.max(0, e.hp)));
   e.hp -= d;
   e.flash = 0.06;
   if (e.hp <= 0) morrer(e);
@@ -1275,6 +1286,7 @@ export function ataqueBasico(s: Selo, a: Atributos, el: Elemento, cor: string) {
         const ang = Math.atan2(e.y - s.y, e.x - s.x) + (i - (n - 1) / 2) * 0.18;
         J.proj.push({
           fonte: FONTE,
+          autor: AUTOR,
           alvoProp: e.ehProp ? e : null,
           x: s.x,
           y: s.y,
@@ -1295,6 +1307,7 @@ export function ataqueBasico(s: Selo, a: Atributos, el: Elemento, cor: string) {
       if (!e) return 0.2;
       J.proj.push({
         fonte: FONTE,
+        autor: AUTOR,
         x: s.x,
         y: s.y,
         vx: 0,
@@ -1315,7 +1328,7 @@ export function ataqueBasico(s: Selo, a: Atributos, el: Elemento, cor: string) {
       vfxSelo(s.x, s.y, el, 9);
       const n = 2 + (SIN.invocadores >= 2 ? 1 : 0) + tal.projeteis();
       for (let i = 0; i < n; i++)
-        J.crias.push({ fonte: FONTE, x: s.x + rnd(-6, 6), y: s.y + rnd(-6, 6), dano: a.dano * 0.6, el, cor, vida: 6, cd: 0 });
+        J.crias.push({ fonte: FONTE, autor: AUTOR, x: s.x + rnd(-6, 6), y: s.y + rnd(-6, 6), dano: a.dano * 0.6, el, cor, vida: 6, cd: 0 });
       return 2.5;
     }
     case "mistico": {
@@ -1418,7 +1431,18 @@ export const HAB = {
         efImpactoChao(e.x, e.y, r, el);
         efExplosao(e.x, e.y, r * 0.8, el, mod === 1);
         if (mod === 0)
-          J.zonas.push({ fonte: FONTE, tipo: "rastro", x: (x0 + e.x) / 2, y: (y0 + e.y) / 2, r: 22, el, cor, dano: a.dano * 0.8, vida: 3 });
+          J.zonas.push({
+            fonte: FONTE,
+            autor: AUTOR,
+            tipo: "rastro",
+            x: (x0 + e.x) / 2,
+            y: (y0 + e.y) / 2,
+            r: 22,
+            el,
+            cor,
+            dano: a.dano * 0.8,
+            vida: 3
+          });
       }
     },
     h2: {
@@ -1485,6 +1509,7 @@ export const HAB = {
           const ang = base + (i - 2) * 0.2;
           J.proj.push({
             fonte: FONTE,
+            autor: AUTOR,
             x: s.x,
             y: s.y,
             vx: Math.cos(ang) * 190,
@@ -1507,6 +1532,7 @@ export const HAB = {
         for (let i = 0; i < 3; i++)
           J.armadilhas.push({
             fonte: FONTE,
+            autor: AUTOR,
             x: s.x + rnd(-30, 30),
             y: s.y + rnd(-30, 30),
             dano: a.dano * (mod === 1 ? 6 : 4.5) * fNivel(lv),
@@ -1550,6 +1576,7 @@ export const HAB = {
       f(s: Selo, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         J.zonas.push({
           fonte: FONTE,
+          autor: AUTOR,
           tipo: "circulo",
           el,
           x: J.jogador.x,
@@ -1570,6 +1597,7 @@ export const HAB = {
         for (let i = 0; i < 4; i++)
           J.crias.push({
             fonte: FONTE,
+            autor: AUTOR,
             x: s.x + rnd(-8, 8),
             y: s.y + rnd(-8, 8),
             dano: a.dano * 0.7 * fNivel(lv),
@@ -1589,7 +1617,18 @@ export const HAB = {
         const pos = [{ x: s.x + 20, y: s.y }];
         if (mod === 0) pos.push({ x: s.x - 20, y: s.y });
         if (mod === 1) {
-          J.crias.push({ fonte: FONTE, x: s.x, y: s.y, dano: a.dano * 4 * fNivel(lv), el, cor, vida: 9, cd: 0, gigante: true });
+          J.crias.push({
+            fonte: FONTE,
+            autor: AUTOR,
+            x: s.x,
+            y: s.y,
+            dano: a.dano * 4 * fNivel(lv),
+            el,
+            cor,
+            vida: 9,
+            cd: 0,
+            gigante: true
+          });
           anel(s.x, s.y, 20, cor, 0.5);
           circuloInvocacao(s.x, s.y + 3, el, 22, 0.9, true);
           efPilar(s.x, s.y + 4, el, 0.6, 7);
@@ -1602,6 +1641,7 @@ export const HAB = {
         pos.forEach(p =>
           J.zonas.push({
             fonte: FONTE,
+            autor: AUTOR,
             tipo: "portal",
             x: p.x,
             y: p.y,
@@ -1658,6 +1698,7 @@ export const HAB = {
       f(s: Selo, a, el, cor: string, lv, mod) {
         J.zonas.push({
           fonte: FONTE,
+          autor: AUTOR,
           tipo: "espirito",
           x: J.jogador.x,
           y: J.jogador.y,

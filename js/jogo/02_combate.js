@@ -486,6 +486,9 @@ export const DIF = {
   // Místico: multiplicador do Raio Vital e quantos inimigos próximos o raio alcança depois do primeiro (com 60% do dano)
   misticoMult: 1.4,
   misticoSaltos: 2,
+  // poderes: até que nível cada um sobe (o Desperto continua abrindo no 5) e quanto vale cada nível além do 5 (0,5 = metade)
+  poderMax: 5,
+  poderAlem: 0.5,
   hordaVida: 0.9,
   hordaDano: 1.4,
   hordaXp: 0.8,

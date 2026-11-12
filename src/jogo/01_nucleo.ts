@@ -707,7 +707,7 @@ export function novaRun(pacto, inicial) {
   if (typeof registrarDex === "function") registrarDex(inicial, 0, null, "comum");
   for (let i = 0; i < nivelLoja("heranca"); i++) {
     R.selos[0].nivel++;
-    R.selos[0].pod.b = Math.min(5, R.selos[0].pod.b + 1);
+    R.selos[0].pod.b = Math.min(DIF.poderMax, R.selos[0].pod.b + 1);
   } // Herança do Santuário
   R.reviverMeta = nivelLoja("chance");
   R.recordeAntes = META.recorde;
@@ -1158,7 +1158,7 @@ export function atrib(s: Selo): Atributos {
       fd *
       rar *
       ad *
-      (1 + 0.2 * (s.pod.b - 1)) *
+      (1 + 0.2 * (nivelEf(s.pod.b) - 1)) *
       SIN.dano *
       elo *
       (desp ? D.despertar.dano : 1) *
@@ -1169,7 +1169,7 @@ export function atrib(s: Selo): Atributos {
     cad:
       b.cadencia *
       ac *
-      (1 + 0.05 * (s.pod.b - 1)) *
+      (1 + 0.05 * (nivelEf(s.pod.b) - 1)) *
       SIN.cad *
       elo *
       (desp ? D.despertar.cadencia : 1) *
@@ -1181,8 +1181,10 @@ export function atrib(s: Selo): Atributos {
     cura: (b.cura || 0) * md * rar
   };
 }
-export const fNivel = (lv: number) => 1 + 0.25 * Math.max(0, lv - 1),
-  fRecarga = (lv: number) => 1 - 0.06 * Math.max(0, lv - 1);
+// nível efetivo de um poder: até o 5 é o próprio nível; além dele cada nível vale DIF.poderAlem (ganho menor, e a recarga não some)
+export const nivelEf = (lv: number) => (lv <= 5 ? lv : 5 + (lv - 5) * DIF.poderAlem);
+export const fNivel = (lv: number) => 1 + 0.25 * Math.max(0, nivelEf(lv) - 1),
+  fRecarga = (lv: number) => 1 - 0.06 * Math.max(0, nivelEf(lv) - 1);
 
 // ================================================================ escrita vinda de outros módulos
 // Um módulo lê as variáveis de outro direto (J.vida, R.selos...), mas só o módulo dono pode atribuir nelas. Quem precisa trocar o

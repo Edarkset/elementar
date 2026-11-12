@@ -22,7 +22,7 @@ import {
   SIM,
   SIN
 } from "./01_nucleo.js";
-import { curar, emArea, ferir, maisProximo, MOD, pontoDenso, texto, tremor } from "./02_combate.js";
+import { curar, DIF, emArea, ferir, maisProximo, MOD, pontoDenso, texto, tremor } from "./02_combate.js";
 import { proximaEscolha } from "./03_progressao.js";
 import { aplicarElementoNoSolo } from "./04_ambiente.js";
 import { circuloInvocacao, vfxFeixe, vfxOnda, vfxSelo, vfxX } from "./08b_efeitos.js";
@@ -74,7 +74,7 @@ export function efeitoTalismaTxt(t, lv) {
 /** true quando nenhum monstro da equipe tem poder para subir (todos no 5; a habilidade 2 só conta depois da primeira evolução):
  * daí em diante as escolhas de nível seriam quase só Ascensão */
 export function equipeSemPoder() {
-  return ativos().every(s => ["b", "h1", "h2"].every(k => s.pod[k] >= 5 || (k === "h2" && est(s) < 1 && estBase(s) < 1)));
+  return ativos().every(s => ["b", "h1", "h2"].every(k => s.pod[k] >= DIF.poderMax || (k === "h2" && est(s) < 1 && estBase(s) < 1)));
 }
 export function cartaTalisma() {
   const chance = equipeSemPoder() ? PD().chance_carta_sem_poder : PD().chance_carta;

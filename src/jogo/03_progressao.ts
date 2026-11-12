@@ -41,6 +41,7 @@ import {
   MAPAS_POR_ERA,
   META,
   NIV,
+  nivelEf,
   nivelLoja,
   NOME_EL,
   nomeForma,
@@ -434,15 +435,15 @@ export function resumoPoderes(s: Selo) {
 // a carta mostra o que muda de verdade: dano por golpe antes -> depois e a recarga, e bolinhas do nível do poder
 export function pipsPoder(lv: number, prox: number) {
   let h = "<span class='pips'>";
-  for (let i = 1; i <= 5; i++) h += `<i class='${i <= lv ? "tem" : i <= prox ? "novo" : ""}'></i>`;
+  for (let i = 1; i <= DIF.poderMax; i++) h += `<i class='${i <= lv ? "tem" : i <= prox ? "novo" : ""}'></i>`;
   return h + "</span>";
 }
 export function numerosPoder(s: Selo, k: ChavePoder, lv: number, prox: number) {
   try {
     const base = atrib(s).dano * tal.dano();
     if (k === "b") {
-      const f0 = 1 + 0.2 * (Math.max(1, lv) - 1),
-        f1 = 1 + 0.2 * (prox - 1);
+      const f0 = 1 + 0.2 * (nivelEf(Math.max(1, lv)) - 1),
+        f1 = 1 + 0.2 * (nivelEf(prox) - 1);
       return ` <span class='bom'>Dano ${Math.round(base)} → ${Math.round((base * f1) / f0)}</span>`;
     }
     const d0 = lv ? Math.round(base * fNivel(lv)) : 0,
@@ -477,16 +478,16 @@ export function cartasNivel() {
     let algum = false;
     for (const [k, nome, desc] of lib) {
       const lv = s.pod[k];
-      if (lv >= 5) continue;
+      if (lv >= DIF.poderMax) continue;
       algum = true;
       const prox = lv + 1;
       cand.push({
         peso,
         s,
         k,
-        raridade: prox === 5 ? "lendario" : prox === 3 && k !== "b" ? "epico" : prox >= 2 ? "raro" : "incomum",
+        raridade: prox === DIF.poderMax ? "lendario" : (prox === 3 && k !== "b") || prox === 5 ? "epico" : prox >= 2 ? "raro" : "incomum",
         titulo: `${nome} ${lv ? `${lv} → ${prox}` : "(novo)"}`,
-        texto: `${pipsPoder(lv, prox)}<b style="color:${COR[elementoDe(s)]}">${nomeForma(s)}</b> · nível ${s.nivel}. ${desc}${numerosPoder(s, k, lv, prox)}${k !== "b" && prox === 3 ? " Libera um modificador." : ""}${prox === 5 ? " Nível máximo!" : ""}`
+        texto: `${pipsPoder(lv, prox)}<b style="color:${COR[elementoDe(s)]}">${nomeForma(s)}</b> · nível ${s.nivel}. ${desc}${numerosPoder(s, k, lv, prox)}${k !== "b" && prox === 3 ? " Libera um modificador." : ""}${prox === DIF.poderMax ? " Nível máximo!" : prox === 5 ? " Abre o Desperto (com o Talismã da classe)." : ""}`
       });
     }
     if (!algum) {
@@ -1610,7 +1611,7 @@ export function sortearPremios(tipo: string) {
 }
 export function premioNivel(s: Selo) {
   if (!s || !s.mon) return;
-  const lib = (["b", "h1", ...(est(s) >= 1 || estBase(s) >= 1 ? ["h2"] : [])] as ChavePoder[]).filter(k => s.pod[k] < 5);
+  const lib = (["b", "h1", ...(est(s) >= 1 || estBase(s) >= 1 ? ["h2"] : [])] as ChavePoder[]).filter(k => s.pod[k] < DIF.poderMax);
   if (lib.length) {
     const k = lib.sort((a, b) => s.pod[a] - s.pod[b])[0];
     s.pod[k]++;

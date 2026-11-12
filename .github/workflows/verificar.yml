@@ -1,0 +1,65 @@
+# Verificação automática a cada envio: conteúdo, tipos, save, telas, mecânicas, reinos e a repetição exata das partidas simuladas.
+# Não publica nada: o jogo continua sendo servido pelo GitHub Pages direto dos arquivos do repositório.
+name: Verificar
+
+on:
+  push:              # todo envio, em qualquer ramo (um pull request mostra o resultado do último envio do ramo)
+  workflow_dispatch:  # e à mão, pela aba Actions
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verificar-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Instalar o verificador de tipos e o formatador (versões fixas)
+        run: npm ci
+      - name: O tipo do conteúdo corresponde aos dados
+        run: npm run tipos_dados -- --conferir
+      - name: As referências do conteúdo existem
+        run: npm run dados
+      - name: Tipos
+        run: npm run tipos
+      - name: Catraca das regras rígidas (pendências só podem diminuir)
+        run: npm run catraca
+      - name: Formato
+        run: npm run formato
+      - name: O JavaScript gravado corresponde ao TypeScript
+        run: npm run compilar -- --conferir
+      - name: Save (saves antigos abrem; save estragado é corrigido sem perder o original)
+        run: npm run save
+      - name: Instalar o navegador de teste
+        # o Playwright fica fora do package.json de propósito: quem roda os testes na própria máquina usa o que já tem instalado
+        run: |
+          npm install --no-save playwright@1.63.0
+          npx playwright install chromium   # sem --with-deps: a máquina do GitHub já tem as bibliotecas, e instalar pacotes do sistema falha quando o servidor do Ubuntu oscila
+      - name: Arquivos, telas e mecânicas
+        run: |
+          node testes/verificar.js --so carga
+          node testes/verificar.js --so telas
+          node testes/verificar.js --so save
+          node testes/verificar.js --so mecanicas
+      - name: Os 34 reinos
+        run: node testes/verificar.js --so jogo --seg 20
+      - name: Regressão do jogo (as partidas de referência continuam iguais)
+        # testes/assinatura.json: mudança de equilíbrio de propósito regrava no mesmo commit (npm run regressao:gravar);
+        # qualquer outra diferença é regressão. O navegador é fixo (Playwright acima), então a conta é a mesma em todo envio.
+        run: npm run regressao
+      - name: Relatório
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio
+          path: testes/relatorio.md
+          if-no-files-found: ignore

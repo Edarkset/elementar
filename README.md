@@ -34,28 +34,41 @@ Celular (instalar como app), versão de computador/Steam, modo moderador, resolu
 elementar/
 ├── index.html            # página do jogo (HUD e telas)
 ├── css/
-│   └── estilo.css        # visual da interface
+│   ├── estilo.css        # visual da interface
+│   └── fontes.css        # as duas fontes do jogo (Cinzel e Nunito), servidas junto com ele
+├── fontes/               # arquivos das fontes e as licenças delas (SIL Open Font License)
+├── src/                  # código-fonte em TypeScript (é aqui que se edita)
+│   ├── tipos.d.ts        # formas centrais do jogo: run, mapa, Selo, inimigo, carta...
+│   └── jogo/*.ts         # a lógica do jogo, um módulo por assunto (os mesmos nomes da lista abaixo)
 ├── js/
 │   ├── dados.js          # conteúdo do jogo: elementos, reações, classes, linhagens,
 │   │                     # 51 monstros, 8 ancestrais, 34 universos, poderes,
 │   │                     # conquistas, 34 Lendas e Panteão (13 deuses)
 │   ├── plataforma.js     # save e recursos do navegador ou do app de computador
-│   ├── jogo/             # lógica do jogo, em partes carregadas em ordem pelo index.html
-│   │   ├── 01_nucleo.js      # utilidades, som, save, estado da run, sinergias, Santuário
-│   │   ├── 02_combate.js     # mapa, dificuldade (DIF), Presságio, dano, reações, ataques
-│   │   ├── 03_progressao.js  # níveis, escolhas, ovos, Bestiário, baús, portais, especiais
-│   │   ├── 04_ambiente.js    # o chão reage aos elementos (fogo, água, gelo...)
-│   │   ├── 05_arte.js        # artes importadas: carregamento, recortes, animações
-│   │   ├── 06_loop.js        # entrada (toque e teclado) e laço principal
-│   │   ├── 07_cenario.js     # cenário vivo, piso, abismos, pontes e lagos
-│   │   ├── 08_sistemas.js    # horda, poderes, Talismãs, conquistas, Lendas, Panteão, luz
-│   │   ├── 09_criaturas.js   # inimigos, mini-chefes e chefes
-│   │   ├── 10_desenho.js     # desenho de cada quadro, herói e HUD
-│   │   └── 11_menu.js        # menu, pausa e modo moderador; começa o jogo
+│   ├── jogo/             # GERADO a partir de src/jogo/ (npm run compilar): é o que o navegador carrega
+│   │   ├── principal.js      # entrada: puxa todas as partes na ordem dos nomes e, com ?teste, a ponte de teste
+│   │   ├── ponte_teste.js    # publica os nomes do jogo na página para o robô e a verificação (só com ?teste ou ?moderador)
+│   │   ├── 00_save.js          # save: versão, migração e conferência na leitura (não importa nada do jogo)
+│   │   ├── 01_nucleo.js        # utilidades, som, save, estado da run, sinergias, Santuário
+│   │   ├── 02_combate.js       # mapa, dificuldade (DIF), Presságio, dano, reações, ataques
+│   │   ├── 03_progressao.js    # níveis, escolhas, ovos, Bestiário, baús, portais, especiais
+│   │   ├── 04_ambiente.js      # o chão reage aos elementos (fogo, água, gelo...)
+│   │   ├── 05_arte.js          # artes importadas: carregamento, recortes, animações
+│   │   ├── 06_loop.js          # entrada (toque e teclado) e laço principal
+│   │   ├── 07_cenario.js       # cenário vivo: vento, vegetação, objetos físicos, clima
+│   │   ├── 07b_cenario_desenho.js · 07c_cenario_arte.js · 07d_estrutura.js (abismos, lagos, fauna, abertura)
+│   │   ├── 08_horda.js         # diretor de horda
+│   │   ├── 08b_efeitos.js … 08h_interface.js   # efeitos, eventos, poderes, conquistas, Lendas e Panteão, luz, interface
+│   │   ├── 09_criaturas.js     # inimigos e mini-chefes
+│   │   ├── 09b_chefes.js       # chefes: golpes, perigos anunciados, segunda fase
+│   │   ├── 10_desenho.js       # desenho de cada quadro, herói e HUD
+│   │   └── 11_menu.js          # menu, pausa e modo moderador; começa o jogo
 │   └── app.js            # service worker, tela acesa e save persistente
 ├── testes/
-│   ├── verificar.js      # verificação automática: telas, jogo, mecânicas e imagem
+│   ├── verificar.js      # verificação automática: telas, save, jogo, mecânicas e imagem
+│   ├── save.js           # testes do save, sem navegador (usa os saves de verdade de testes/saves/)
 │   ├── bot.js            # robô que joga sozinho (usado pelos testes e pelo equilíbrio)
+│   ├── reproduzir.js     # prova de "mesmo comportamento": a mesma semente dá a mesma partida
 │   └── rodar_bot.js      # várias partidas do robô em paralelo, com estatísticas
 └── arte/
     ├── manifesto.json    # lista de artes: nome usado no código → arquivo
@@ -93,12 +106,77 @@ node testes/verificar.js            # tudo (uns 20 minutos)
 node testes/verificar.js --so telas # só uma parte: carga, telas, jogo, tela, mecanicas, visual
 ```
 
-O resultado fica em `testes/relatorio.md` (com `--fotos`, as fotos ficam em `testes/fotos/`). O código usa o escopo global: uma parte de `js/jogo/` pode usar funções das outras, desde que o uso aconteça durante o jogo e não no carregamento da página.
+## Editar o código
+
+O jogo é escrito em TypeScript, em `src/jogo/`. O navegador carrega `js/jogo/`, que é gerado a partir dele e fica gravado no repositório (assim o GitHub Pages publica sem etapa de compilação). Depois de mexer num `.ts`:
+
+```bash
+npm ci                                              # uma vez: instala TypeScript e Prettier (só ferramentas, o jogo não usa)
+npm run tipos                                       # confere os tipos (não gera arquivos)
+npm run compilar                                    # gera js/jogo/*.js a partir de src/jogo/*.ts
+npm run formatar                                    # formata o código (npm run formato só confere)
+npm run catraca                                     # pendências das regras rígidas: só podem diminuir (--gravar depois de reduzir)
+npm run tipos_dados                                 # depois de mexer em js/dados.js: refaz o tipo do conteúdo (src/dados.d.ts)
+npm run dados                                       # confere as referências do conteúdo (classe, universo, elemento... existem)
+npm run save                                        # testes do save (saves antigos abrem; save estragado é corrigido)
+npm run regressao                                   # as partidas de referência continuam iguais (testes/assinatura.json)
+node ferramentas/reimportar.js                      # depois de mover uma função de arquivo: refaz os imports de todos os módulos
+```
+
+Grave o `.ts` e o `.js` gerado juntos. A verificação do GitHub recompila e falha se os dois não baterem.
+
+### Rede de testes (rode antes de cada envio)
+
+```bash
+npm run testar                                      # tudo que não precisa de tela: conteúdo, tipos, catraca, formato, .ts = .js, save e regressão
+node testes/verificar.js                            # no navegador: telas, saves estragados, 34 reinos, mecânicas e imagem (~15 min)
+```
+
+| O que pode quebrar | O que pega |
+|---|---|
+| Regra ou equilíbrio mudou sem querer | `npm run regressao`: 4 partidas do robô comparadas com `testes/assinatura.json` (abates, sorteios, tempo de chefe e nível por mapa, estado segundo a segundo). Uma mudança de 0,75% na vida dos inimigos já falha |
+| Mudança de equilíbrio de propósito | `npm run regressao:gravar` no mesmo commit: a assinatura nova fica no histórico, junto com o porquê |
+| Save velho ou estragado | `npm run save` (saves reais de cada versão em `testes/saves/`) e `verificar.js --so save` no navegador |
+| Conteúdo citando o que não existe | `npm run dados` |
+| Tipo errado, nulo novo | `npm run tipos` e `npm run catraca` |
+| Tela quebrada, erro no console, pedido a servidor de fora | `verificar.js` (telas, jogo, imagem) |
+
+A verificação do GitHub roda tudo isso a cada envio. O robô não escolhe Presságio nem joga com Lenda: mudança só nesses caminhos aparece nas mecânicas e telas, não na assinatura.
+
+Prova de que uma mudança de estrutura não alterou o jogo:
+
+```bash
+node testes/reproduzir.js                           # cada semente roda duas vezes e tem de dar a mesma partida
+node testes/reproduzir.js --gravar antes.json       # antes de reorganizar código
+node testes/reproduzir.js --conferir antes.json     # depois: tudo igual = o jogo se comporta igual
+```
+
+A cada envio o GitHub roda as referências do conteúdo, tipos, a catraca, formato, a correspondência entre dados e tipo e entre `.ts` e `.js`, os testes do save, telas, saves estragados no navegador, mecânicas, os 34 reinos e a regressão do jogo contra as partidas de referência (`.github/workflows/verificar.yml`). O plano do código está em [docs/PLANO_CODIGO.md](docs/PLANO_CODIGO.md).
+
+O resultado da verificação fica em `testes/relatorio.md` (com `--fotos`, as fotos ficam em `testes/fotos/`). A lógica são módulos: cada parte importa o que usa das outras e exporta o que oferece, e nada do jogo fica no escopo global. Para o robô, a verificação e o console do navegador enxergarem os nomes do jogo (`J`, `R`, `novaRun`...), abra com `?teste` ou `?moderador` no endereço.
+
+### Simular partidas (equilíbrio)
+
+O robô joga partidas inteiras sozinho e mede profundidade, tempo de chefe, dano por fonte e a horda (inimigos na tela, abates por minuto, níveis por mapa):
+
+```bash
+python3 -m http.server 8765 &
+node testes/rodar_bot.js --n 24 --paralelo 4 --mapas 9 --saida testes/res.json
+python3 testes/resumo.py testes/res.json
+# testar outra intensidade de horda sem mexer no código:
+node testes/rodar_bot.js --n 24 --saida testes/res2.json --dif '{"horda":2.4,"hordaVida":0.42,"hordaXp":0.42}'
+```
+
+A intensidade da horda fica em `DIF` (`js/jogo/02_combate.js`). Resultados e decisões: [docs/EQUILIBRIO_SIMULACOES.md](docs/EQUILIBRIO_SIMULACOES.md).
 
 ## Save
 
-O progresso fica no navegador (`localStorage`, chave `elementar_proto_v2`). Cada endereço onde o jogo roda tem o seu próprio save.
+O progresso fica no navegador (`localStorage`, chave `elementar_proto_v2`; no computador, num arquivo). Cada endereço onde o jogo roda tem o seu próprio save.
+
+O save é gravado com número de versão e conferido na leitura (`src/jogo/00_save.ts`): um campo estragado volta ao valor padrão, um monstro, Lenda ou talismã que o conteúdo não tem mais sai da lista, e uma run salva que não dá para continuar é descartada sem levar junto o progresso permanente. Sempre que algo é corrigido, o texto original fica guardado intacto na chave `elementar_proto_v2_recuperacao` (o primeiro e os dois mais recentes). Quando o formato mudar, suba `VERSAO_SAVE`, escreva a migração e grave um save novo em `testes/saves/`: os antigos continuam lá e precisam continuar abrindo.
 
 ## Licença
 
 Todos os direitos reservados. Código e artes não podem ser reutilizados sem autorização.
+
+As fontes em `fontes/` (Cinzel e Nunito) são de terceiros, sob a SIL Open Font License 1.1; as licenças estão junto dos arquivos.

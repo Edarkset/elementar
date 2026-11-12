@@ -1,0 +1,24 @@
+{
+  "name": "elementar",
+  "private": true,
+  "description": "Ferramentas de desenvolvimento do Elementar. O jogo não tem dependências: o navegador carrega os arquivos como estão.",
+  "scripts": {
+    "tipos_dados": "node ferramentas/tipos_dados.js",
+    "dados": "node ferramentas/validar_dados.js",
+    "compilar": "node ferramentas/compilar.js",
+    "tipos": "tsc -p tsconfig.json",
+    "formatar": "prettier --write src js testes \"ferramentas/*.js\"",
+    "formato": "prettier --check src js testes \"ferramentas/*.js\"",
+    "verificar": "node testes/verificar.js",
+    "save": "node testes/save.js",
+    "reproduzir": "node testes/reproduzir.js",
+    "regressao": "node testes/reproduzir.js --conferir testes/assinatura.json",
+    "regressao:gravar": "node testes/reproduzir.js --sementes 2,3,9,13 --mapas 4 --gravar testes/assinatura.json",
+    "catraca": "node ferramentas/catraca.js",
+    "testar": "npm run tipos_dados -- --conferir && npm run dados && npm run tipos && npm run catraca && npm run formato && npm run compilar -- --conferir && npm run save && npm run regressao"
+  },
+  "devDependencies": {
+    "prettier": "3.10.0",
+    "typescript": "5.9.3"
+  }
+}

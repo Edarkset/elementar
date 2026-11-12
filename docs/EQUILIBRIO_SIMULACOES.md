@@ -1,5 +1,117 @@
 # Equilíbrio: testes por simulação
 
+## Rodada de 10/11/2026: intensidade da horda, efeitos e performance
+
+Mais de 200 partidas simuladas nesta rodada. Tudo abaixo foi medido com o bot; onde o bot não serve de régua, está dito.
+
+### 1. O que estava errado na medição
+
+- **Dano por fonte:** `ferir()` não somava em `R.st.porFonte`; só o dano de efeito (reações, dano no tempo) era contado. O resumo dizia "reação 95%". Corrigido, a divisão real é: reações 31%, habilidades 28%, ataque básico 15%, Despertar 14%, especiais 8%, combinado 3%, ambiente 1%.
+- **O jogo estava mais difícil do que este documento dizia.** A tabela abaixo ("Versão atual: 8,0 mapas") foi medida antes do ajuste "hordas começam pequenas, inimigos mais perigosos". No código que estava no repositório, 40 partidas dão **4,7 mapas** de média, com mortes do mapa 4 ao 8. Se a intenção era deixar mais difícil, funcionou; se a meta ainda é o bot chegar ao mapa 8, o jogo está ~3 mapas acima da meta.
+
+O bot agora mede também, por mapa: inimigos na tela (média e pico), abates por minuto, níveis ganhos, tempo com a vida abaixo de 35% e tempo com a tela quase vazia (menos de 6 inimigos). `rodar_bot.js` grava a cada partida, então uma bateria interrompida não se perde.
+
+### 2. Intensidade da horda
+
+A intensidade virou parâmetro em `DIF` (`js/jogo/02_combate.js`): `horda` multiplica o alvo do diretor e os nascimentos; `hordaVida`, `hordaDano` e `hordaXp` ajustam cada inimigo comum. Assim dá para comparar "poucos e fortes" com "muitos e fracos" mantendo a mesma massa de vida e de experiência.
+
+Varredura (mesmas sementes, até 8 mapas, código antes dos outros ajustes desta rodada):
+
+| Horda | Partidas | Profundidade | Mortes até o mapa 3 | Inimigos na tela | Abates/min | Níveis por mapa | Tela vazia |
+|---|---|---|---|---|---|---|---|
+| 0,6× com inimigos 1,67× mais fortes | 20 | 4,8 ± 0,3 | 0 | 22 | 640 | 9,6 | 11% |
+| 1,0× (como estava) | 23 | 4,8 ± 0,4 | 2 | 29 | 1.050 | 9,3 | 8% |
+| **1,6× com inimigos a 62% de vida** | 20 | 5,6 ± 0,5 | 2 | 43 | 2.100 | 9,4 | 7% |
+| 2,4× com inimigos a 42% de vida | 9 (interrompida) | 4,5 ± 1,1 | 2 | 47 | 1.770 | 9,0 | 6% |
+
+Leitura:
+- **De 1,0× para 1,6× os abates por minuto dobram** e o ritmo de níveis não muda. É a parte "gostosa" do gênero (muita coisa morrendo) sem mexer na progressão.
+- **Acima de 1,6× não há ganho:** a 2,4× a equipe já mata no limite, os abates não sobem, a tela bate no teto de inimigos e aparecem mortes no primeiro mapa.
+- **Abaixo (0,6×)** a tela fica vazia 11% do tempo e os abates caem 40%: joga-se mais tempo andando do que lutando.
+- A profundidade não muda de forma mensurável entre as opções (as diferenças são menores que o erro). Ou seja: a intensidade muda a sensação, não a dificuldade, desde que a vida de cada inimigo acompanhe.
+
+**Armadilha encontrada na validação.** Com a horda 1,6× já no mapa 1, quem começa com Caçador ou Xamã (ataque de alvo único: um tiro mata um inimigo, não importa quão fraco) não limpa a tela, não sobe de nível e cai no primeiro mapa: 3 de 24 partidas, que com a horda antiga iam ao mapa 4–6. Por isso a densidade **entra aos poucos** (`DIF.hordaRampa: 2`): mapa 1 igual ao de antes, metade no mapa 2, cheia do mapa 3 em diante, quando a equipe já tem habilidades em área.
+
+**Valores adotados:** `horda 1.6, hordaVida 0.62, hordaDano 0.8, hordaXp 0.62, hordaMax 190, hordaRampa 2`. Moedas, Essência por abate, carga do Despertar e progresso do ovo ancestral acompanham `hordaXp`, para a economia não inflar com mais abates. O Presságio Enxame e a carta Fome do Enxame agora aumentam também o alvo do diretor (antes ele desfazia o efeito em poucos segundos).
+
+Validação no código final (24 partidas cada, mesmas sementes, até 9 mapas):
+
+| Configuração | Profundidade | Mortes até o mapa 3 | Inimigos na tela | Abates/min | Vida mínima nos mapas 4–6 |
+|---|---|---|---|---|---|
+| Controle: horda antiga (1,0×) | 4,6 ± 0,3 | 1 | 30 | 1.040 | 54% |
+| 1,6× desde o mapa 1 | 4,4 ± 0,5 | 4 | 44 | 1.690 | 56% |
+| 1,6× com rampa + Ascensão com caminho (+5% / +3% / +6%) | 6,3 ± 0,5 (9 das 24 chegaram ao limite da bateria) | 1 | 40 | 1.570 | 66% |
+| **Adotada:** 1,6× com rampa + Ascensão reduzida (+3% / +2% / +4%), bateria até 12 mapas | 5,8 ± 0,6 | 1 | 40 | 1.880 | 68% |
+
+- A densidade sozinha não muda a profundidade (4,4 contra 4,6, dentro do erro), mas sem rampa mata no começo.
+- Com rampa, as mortes no começo voltam ao nível do controle. Nos mapas 4 a 7 a tela passa de 33–41 para 42–60 inimigos e os abates por minuto de 1.380–1.720 para 2.070–2.970.
+- **A Ascensão com caminho deixou a run mais fácil do que estava**: com os primeiros valores o bot foi 1,7 ± 0,5 mapa mais fundo que o controle. Como a dificuldade tinha sido aumentada de propósito, os bônus foram reduzidos. **Mesmo assim a versão adotada fica ~1 mapa mais fácil que o controle** (1,0 ± 0,5 na comparação por semente): metade das partidas ainda cai nos mapas 4 a 6, mas um terço agora chega aos mapas 9 a 11. Para voltar exatamente à dificuldade anterior, baixar mais `ASCENSAO` (`js/jogo/03_progressao.js`) ou subir `DIF.vida`.
+- **Caçador continua a pior classe inicial** (4,0 mapas nas duas versões, 6 partidas cada), enquanto as outras subiram. Ver proposta 6.
+
+### 3. Escolhas de nível acabavam cedo (o maior achado para o "só mais uma")
+
+Nas 40 partidas de base, a carta escolhida a cada nível:
+
+| Nível da equipe | Escolhas que eram "Ascensão" (+1 nível genérico) |
+|---|---|
+| 20–29 | 11% |
+| 30–39 | 62% |
+| 40 em diante | ~90% |
+
+A árvore tem ~13 melhorias por monstro; por volta do mapa 3 tudo está no máximo e o resto da run é a mesma carta. Agora a **Ascensão tem caminho**: Fúria (+5% de dano), Ímpeto (+3% de cadência) ou Vigor (+6% de vida), acumulando, e monstros diferentes oferecem caminhos diferentes na mesma tela. O texto antigo dizia "+6% em todos os atributos"; o código dá +3% (`DIF.nivelAtrib`), e o texto agora mostra o valor real.
+
+### 4. Efeitos dos poderes (por código)
+
+As habilidades usavam todas o mesmo anel, e os objetos no mapa eram quadradinhos. Em `js/jogo/08_sistemas.js`:
+
+| Antes | Agora |
+|---|---|
+| Rajada do Mago: anel | explosão com núcleo, anel e raios; a Chuva vira meteoros que caem com marca no chão (0,18 s de aviso) |
+| Muralha e Provocar do Guardião: anel | pilares do elemento subindo em roda; anéis fechando para o centro e cúpula no herói |
+| Salto do Guerreiro e do Assassino: anel | rastro de luz até o alvo, rachadura no chão, cortes; Fúria com aura de brasas |
+| Marca do Assassino: um pixel | mira que fecha e gira sobre o inimigo |
+| Servos do Invocador: quadrado de 3 px | espíritos em forma de chama, com olhos, na ordem de profundidade |
+| Armadilhas: quadrado de 3 px | mina com luz piscando ou rede, com explosão ao disparar |
+| Portal, círculo do Mago, rastro, chuva: disco chapado | portal em espiral, círculo de runas girando, línguas de fogo, borda tracejada |
+| Espírito do Xamã: quadrado | orbe com cauda; Canto com três ondas de som; cura com anel subindo e "+" |
+
+Nada disso roda na simulação, e com o aparelho lento (`QUAL 0`) os enfeites extras são cortados. As folhas de arte de reação continuam sendo usadas quando existem.
+
+### 5. Performance
+
+Medido com perfil da CPU numa cena de mapa 6 com 200–250 inimigos.
+
+- **Lógica: de ~3,0 ms para ~2,3 ms por quadro (−25%).** Um terço do tempo ia em interações de cenário feitas por inimigo, todo quadro. O solo natural de cada célula agora fica guardado por mapa; capim, borda de abismo e cristais são conferidos em quadros alternados (e nem isso quando não há abismo por perto); os servos guardam o alvo por 0,2 s; o HUD é atualizado 20 vezes por segundo em vez de 60.
+- **Desenho na multidão: 850 → 535 cópias de imagem por quadro (−37%)** numa cena com 178 inimigos. Com mais de 110 inimigos vivos, cada inimigo comum é desenhado com uma imagem só (sem o quadro intermediário do passo e sem o véu escuro de 16%).
+- **O que não deu para medir aqui:** o custo real de desenho no celular. O navegador de teste desenha sem placa de vídeo, então o tempo de cada cópia de tela cheia não vale como régua. O que sobra de custo é quase todo preenchimento de tela (piso, luz, vinheta, brilho), e isso só se mede no aparelho.
+
+### 6. Tela de fim de run
+
+Mostra agora de onde veio o dano (barras por fonte), a reação mais usada e uma dica do que mais machucou (horda encostando ou golpes e projéteis).
+
+### 7. Limites do bot (para ler os números com cuidado)
+
+- Ele foge de tudo que chega perto, inclusive do chefe. Com equipe de corpo a corpo o chefe fica fora de alcance e a luta se arrasta: 14% das lutas de chefe passam de 100 s e 7% passam de 150 s, e isso é em boa parte do bot, não necessariamente do jogo. Vale ensinar o bot a ficar no alcance da equipe antes de usar o tempo de chefe como medida.
+- Ele escolhe cartas ao acaso. Uma pessoa escolhe melhor e desvia pior.
+- Com 24 partidas o erro da profundidade é ~0,4 mapa; diferenças menores que 1 mapa são ruído.
+- Nas baterias desta rodada a mesma semente dava o mesmo Pacto, o mesmo monstro inicial e o mesmo primeiro mapa, e depois divergia. As comparações "com as mesmas sementes" valem como amostras parecidas, não como repetição exata. Duas causas foram corrigidas no fim da rodada (o laço normal do jogo voltava a rodar junto com o bot a cada mapa novo, e a tela de portais esperava a arte em tempo real mesmo na simulação); agora a mesma semente repete de 2 a 4 mapas idênticos. Falta fechar o resto: os marcos e construções do cenário só existem depois que a arte carrega, então dependem da velocidade de carga.
+
+### 8. Propostas que não dependem de arte nova
+
+Por ordem do que mais deve pesar para a pessoa querer jogar de novo:
+
+1. **Baú e prêmios do fim da run sem graça.** No mapa 6 o baú dourado entrega três vezes "+1 nível". Com tudo no máximo, o baú podia dar relíquia, Talismã, rerrolagem ou um caminho de Ascensão à escolha.
+2. **Chefe sem horda.** Durante o chefe os nascimentos param: a luta fica parada e sem experiência. Ondas pequenas a cada 15–20 s manteriam cristais e abates.
+3. **Equipe e sinergias são parede de texto** (pausa e "Equipe e reserva"). Retratos, barras de dano, cadência e vida, e os poderes em bolinhas resolveriam.
+4. **Dano por monstro.** O resumo novo mostra dano por fonte; por monstro ("quem carregou a run") exige marcar o autor de cada golpe e é o próximo passo natural.
+5. **Missões do dia de abates** (300, 500, 800) ficam mais fáceis com o dobro de abates a partir do mapa 3; subir para algo como 450, 750 e 1.200.
+6. **Caçador e Xamã contra multidão.** São as classes que mais sofrem com horda densa. Perfuração de 2 no tiro básico do Caçador ou um totem com dano em área deixariam as duas menos dependentes de sorte no começo.
+7. **Meta de dificuldade.** Decidir se o alvo é o bot morrer por volta do mapa 5 (como está) ou do mapa 8 (como este documento registrava). Para voltar ao mapa 8 basta baixar `DIF.dano` e `DIF.rampa`; a horda não precisa mudar.
+
+---
+
+## Rodadas anteriores
+
 O bot do repositório (`testes/rodar_bot.js`) joga partidas inteiras sozinho, acelerado, com escolhas aleatórias e com semente (dá para repetir). Cada bateria abaixo tem 40 partidas, até 12 mapas.
 
 ```

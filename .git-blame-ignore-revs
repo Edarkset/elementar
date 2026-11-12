@@ -1,0 +1,5 @@
+# Commits que só mudam a forma do código. O GitHub já pula estes ao mostrar quem escreveu cada linha;
+# no computador: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# formatação automática de js/ e testes/ (Prettier)
+fe096c1256c552b990480e09ee4e65343375fd27

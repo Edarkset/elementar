@@ -19,3 +19,12 @@ for arq in sys.argv[1:]:
         for k,v in (r.get('porFonte') or {}).items(): fontes[k]=fontes.get(k,0)+v
     tot=sum(fontes.values()) or 1
     print("   dano por fonte:", ", ".join(f"{k} {v/tot*100:.0f}%" for k,v in sorted(fontes.items(),key=lambda x:-x[1])))
+    # horda: quantos inimigos na tela, abates por minuto, níveis por mapa, tempo com a vida baixa e com a tela vazia
+    H={}
+    for r in R:
+        for h in r.get('horda') or []: H.setdefault(h['mapa'],[]).append(h)
+    for m in sorted(H):
+        L=H[m]; seg=sum(h['seg'] for h in L) or 1
+        print(f"   horda mapa {m}: {st.mean(h['tela'] for h in L):5.1f} na tela (pico {max(h['picoTela'] for h in L)}, total {max(h['picoTotal'] for h in L)}) · {sum(h['abates'] for h in L)/seg*60:5.0f} abates/min · {st.mean(h['niveis'] for h in L):4.1f} níveis · vida baixa {st.mean(h['vidaBaixa'] for h in L)*100:3.0f}% · tela vazia {st.mean(h['telaVazia'] for h in L)*100:3.0f}%")
+    rc=sum(r.get('recContato',0) for r in R); rb=sum(r.get('recBala',0) for r in R)
+    if rc+rb: print(f"   dano recebido: contato {rc/(rc+rb)*100:.0f}% · golpes e projéteis {rb/(rc+rb)*100:.0f}%")

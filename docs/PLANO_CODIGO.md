@@ -98,10 +98,15 @@ Versão de computador (`desktop/`, Electron 33) testada em 12/11/2026 sob tela v
 
 O caminho para as duas regras: começar pelos parâmetros das funções mais chamadas (que espalham tipo para o resto pela inferência) e, para os nulos, separar o código que só roda durante o jogo (onde `J` sempre existe) do que roda no menu, em vez de encher o código de `J!`.
 
-### Etapa 3. Dados e save
+### Etapa 3. Dados e save — em andamento
 
-- `dados.js` vira JSON com esquema. O esquema gera os tipos e valida o conteúdo na verificação automática: monstro que cita classe inexistente ou reação sem par passa a ser erro antes de publicar.
-- Save com versão e validação na leitura. Hoje o texto do `localStorage` entra direto em `R` e `META`; um save antigo ou corrompido pode quebrar o jogo. Com validação e migração por versão, save velho continua abrindo daqui a anos.
+| Item | Situação |
+|---|---|
+| Tipo do conteúdo | Feito: `src/dados.d.ts` é gerado do próprio `js/dados.js` (`npm run tipos_dados`); a verificação falha se os dois não baterem. O `dados.js` continua sendo o arquivo editado (virar JSON puro não traria ganho que o tipo gerado já não dê). |
+| Referências do conteúdo | Feito em 12/11/2026: `ferramentas/validar_dados.js` (`npm run dados`) confere que classe, linhagem, universo, era e elemento citados existem, que cada reação liga dois elementos diferentes sem par repetido, que elos ligam monstros que existem, que conquistas dão talismãs que existem, e que nenhum id se repete (Lendas e deuses juntos: a run guarda só o id e o jogo procura primeiro nas Lendas). O conteúdo atual passa sem nenhum problema; erros plantados de propósito são pegos. |
+| Save com versão | Feito em 12/11/2026: `src/jogo/00_save.ts`, sem importar nada do jogo e sem sortear nada. O save passa a ser gravado com `v: 1`; save sem versão é a versão 0, que tem o mesmo formato. Na leitura, cada campo do progresso é conferido: tipo errado volta ao padrão, id que o conteúdo não tem mais sai da lista (monstros incluem os Dragões Ancestrais), campos que esta versão não conhece ficam (um save mais novo não perde nada). A run salva ou abre como foi salva ou é descartada inteira, com o progresso permanente mantido. O texto original de todo save corrigido fica guardado intacto (`elementar_proto_v2_recuperacao`: o primeiro e os dois mais recentes). Se a run salva passar na conferência e mesmo assim não abrir, o jogador volta ao menu com o progresso, em vez de travar. |
+| Prova do save | `testes/save.js` (28 testes, no Node) com saves de verdade gravados pelo jogo antes e depois da mudança (`testes/saves/`), que precisam abrir sem nenhuma correção para sempre. No navegador (`verificar.js --so save`), 7 saves velhos, estragados ou mexidos abrem menu, Pacto, Bestiário, conquistas, missões, Santuário e Panteão sem erro. Comparado com a versão anterior: um monstro desconhecido na coleção travava o Pacto, uma lista de Lendas com tipo errado travava as Lendas, e um save corrompido era sobrescrito e perdido; agora os três abrem e o original fica guardado. |
+| Achado | A primeira versão da conferência só conhecia as linhas de monstros e teria descartado uma run com Dragão Ancestral na equipe; o teste no navegador pegou antes de publicar. Hoje o jogo e o teste montam o catálogo pela mesma função (`catalogoDe`). |
 
 ### Etapa 4. Desenho (aqui estão a performance e a qualidade gráfica)
 
@@ -113,7 +118,7 @@ O caminho para as duas regras: começar pelos parâmetros das funções mais cha
 
 - A política de conteúdo (CSP) já impede script de fora e `eval`. Manter.
 - `innerHTML` (18 pontos): hoje só recebe texto dos próprios arquivos do jogo. Com tipos, um auxiliar único monta o HTML e escapa qualquer valor que venha do save.
-- Fontes carregadas do Google Fonts: hospedar junto com o jogo. Remove a única dependência externa em tempo de execução (privacidade, funcionamento offline e durabilidade).
+- Fontes: feito em 12/11/2026. Cinzel e Nunito ficam em `fontes/` (115 KB, licença OFL junto) com as mesmas regras que o Google Fonts entregava; o texto sai idêntico pixel a pixel (menu, Pacto, conquistas e Santuário comparados). A política de conteúdo agora só permite fonte e estilo do próprio jogo, e a verificação acusa qualquer pedido a servidor de fora: o jogo não depende de terceiros para rodar.
 - Dependências de compilação fixadas em versão exata e conferidas pelo arquivo de trava.
 
 ## Durabilidade

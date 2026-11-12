@@ -1988,7 +1988,7 @@ export function salvarRun() {
   );
   gravar();
 }
-export function carregarRun(s: Selo) {
+export function carregarRun(s: Run) {
   defR(JSON.parse(JSON.stringify(s)));
   R.st = R.st || novoSt();
 }

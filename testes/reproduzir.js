@@ -75,7 +75,6 @@ function resumo(txt) {
     const ctx = await b.newContext({ viewport: { width: 900, height: 600 } }),
       p = await ctx.newPage();
     p.on("pageerror", e => erros.push(`semente ${sem}: ${e.message}`));
-    await p.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
     await p.goto(base + "?teste");
     await p.waitForFunction(() => typeof novaRun === "function" && typeof MANIFESTO !== "undefined" && MANIFESTO);
     await p.addScriptTag({ url: base + "testes/bot.js" });

@@ -7,10 +7,10 @@
 // Suba VERSAO sempre que trocar artes: as artes ficam guardadas no aparelho e só a versão nova do cache as apaga.
 // v2: artes refeitas (ambiente, Fênix, enfeites de chão, dragão Árvore).
 const VERSAO = "v2";
-// o código tem a própria versão: subir esta não apaga as artes guardadas (v3: lógica dividida em js/jogo/; v4: partes viram módulos, entrada em js/jogo/principal.js)
-const CODIGO = "elementar-codigo-v4";
+// o código tem a própria versão: subir esta não apaga as artes guardadas (v3: lógica dividida em js/jogo/; v4: partes viram módulos, entrada em js/jogo/principal.js; v5: save conferido na leitura, js/jogo/00_save.js, e fontes servidas junto com o jogo)
+const CODIGO = "elementar-codigo-v5";
 const ARTES = `elementar-artes-${VERSAO}`;
-const BASICO = ["./", "index.html", "css/estilo.css", "js/dados.js", "js/jogo/01_nucleo.js", "js/jogo/02_combate.js", "js/jogo/03_progressao.js", "js/jogo/04_ambiente.js", "js/jogo/05_arte.js", "js/jogo/06_loop.js", "js/jogo/07_cenario.js", "js/jogo/07b_cenario_desenho.js", "js/jogo/07c_cenario_arte.js", "js/jogo/07d_estrutura.js", "js/jogo/08_horda.js", "js/jogo/08b_efeitos.js", "js/jogo/08c_eventos.js", "js/jogo/08d_poderes.js", "js/jogo/08e_conquistas.js", "js/jogo/08f_lendas.js", "js/jogo/08g_luz.js", "js/jogo/08h_interface.js", "js/jogo/09_criaturas.js", "js/jogo/09b_chefes.js", "js/jogo/10_desenho.js", "js/jogo/11_menu.js", "js/jogo/principal.js", "js/plataforma.js", "js/app.js",
+const BASICO = ["./", "index.html", "css/estilo.css", "css/fontes.css", "fontes/cinzel-latin.woff2", "fontes/cinzel-latin-ext.woff2", "fontes/nunito-latin.woff2", "fontes/nunito-latin-ext.woff2", "js/dados.js", "js/jogo/00_save.js", "js/jogo/01_nucleo.js", "js/jogo/02_combate.js", "js/jogo/03_progressao.js", "js/jogo/04_ambiente.js", "js/jogo/05_arte.js", "js/jogo/06_loop.js", "js/jogo/07_cenario.js", "js/jogo/07b_cenario_desenho.js", "js/jogo/07c_cenario_arte.js", "js/jogo/07d_estrutura.js", "js/jogo/08_horda.js", "js/jogo/08b_efeitos.js", "js/jogo/08c_eventos.js", "js/jogo/08d_poderes.js", "js/jogo/08e_conquistas.js", "js/jogo/08f_lendas.js", "js/jogo/08g_luz.js", "js/jogo/08h_interface.js", "js/jogo/09_criaturas.js", "js/jogo/09b_chefes.js", "js/jogo/10_desenho.js", "js/jogo/11_menu.js", "js/jogo/principal.js", "js/plataforma.js", "js/app.js",
   "manifest.webmanifest", "app/icones/icone-192.png", "app/icones/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
@@ -46,10 +46,9 @@ self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
-  const fonte = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
-  if (url.origin !== location.origin && !fonte) return;
+  if (url.origin !== location.origin) return;
   const caminho = url.pathname;
   if (caminho.endsWith("/arte/manifesto.json")) return e.respondWith(redePrimeiro(req, ARTES));
-  if (fonte || caminho.includes("/arte/") || caminho.includes("/app/icones/")) return e.respondWith(guardadoPrimeiro(req, ARTES, e));
+  if (caminho.includes("/arte/") || caminho.includes("/app/icones/")) return e.respondWith(guardadoPrimeiro(req, ARTES, e));
   e.respondWith(redePrimeiro(req, CODIGO));
 });

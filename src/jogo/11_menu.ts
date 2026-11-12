@@ -1,6 +1,7 @@
 // Elementar · menu, Pacto, pausa e modo moderador; começa o jogo
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
 import "./10_desenho.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import { textoSave } from "./00_save.js";
 import {
   $,
   ativos,
@@ -16,9 +17,11 @@ import {
   embaralhar,
   estBase,
   gravar,
+  guardarOriginal,
   hexRgb,
   J,
   L,
+  lerSave,
   liberadosIniciais,
   LINHA,
   linhagemDe,
@@ -33,6 +36,7 @@ import {
   PLAT,
   R,
   redimensionar,
+  relatar,
   RUN_SALVA,
   SIN,
   som,
@@ -142,8 +146,19 @@ export function menu() {
     b.textContent = `Continuar run (mapa ${RUN_SALVA.profundidade + 1})`;
     b.onclick = () => {
       $("telaMenu").classList.remove("ativa");
-      carregarRun(RUN_SALVA);
-      iniciarMapa();
+      try {
+        carregarRun(RUN_SALVA);
+        iniciarMapa();
+      } catch (e) {
+        // a run salva passou na conferência mas não abriu: o texto fica guardado à parte e o jogador volta ao menu com o progresso
+        relatar("save: a run salva não abriu", e, true);
+        guardarOriginal(textoSave(META, RUN_SALVA));
+        defRodando(false);
+        defRunSalva(null);
+        gravar();
+        menu();
+        toast("A run salva não pôde ser aberta. O progresso permanente foi mantido.");
+      }
     };
     box.appendChild(b);
   }
@@ -322,13 +337,11 @@ export function telaModerador() {
       manter: true,
       acao: () => {
         if (!confirm("Voltar ao save de antes do modo moderador? O que foi liberado aqui some.")) return;
-        try {
-          const s = JSON.parse(PLAT.lerSave(CHAVE_BACKUP));
-          defMeta(Object.assign({ essencia: 0, recorde: 0, liberados: liberadosIniciais() }, s.meta || {}));
-          defRunSalva(s.run || null);
-        } catch (e) {
-          return toast("Backup ilegível");
-        }
+        const t = PLAT.lerSave(CHAVE_BACKUP),
+          s = lerSave(t);
+        if (!t || s.ilegivel) return toast("Backup ilegível"); // vazio também: restaurar "nada" apagaria o progresso
+        defMeta(Object.assign({ essencia: 0, recorde: 0, liberados: liberadosIniciais() }, s.meta));
+        defRunSalva(s.run);
         META.moderador = true;
         PLAT.gravarSave(CHAVE_BACKUP, "");
         feito("Save restaurado");

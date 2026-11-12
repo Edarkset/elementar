@@ -2,7 +2,7 @@
 // confere regras do jogo e analisa as imagens da tela. Sai com código 1 se achar algum problema.
 //
 //   node testes/verificar.js                 (tudo)
-//   node testes/verificar.js --so telas      (só uma parte: carga, telas, jogo, tela)
+//   node testes/verificar.js --so telas      (só uma parte: carga, telas, save, jogo, tela, mecanicas)
 //   node testes/verificar.js --seg 40        (segundos simulados por reino; padrão 30)
 //
 // Grava testes/relatorio.md (resumo) e, com --fotos, as fotos em testes/fotos/.
@@ -60,21 +60,25 @@ function servidor() {
   });
 }
 
-// erros de página, console e rede ficam presos a cada página aberta
+// erros de página, console e rede ficam presos a cada página aberta. O jogo não depende de servidor de terceiros (as fontes vêm
+// junto com ele): qualquer pedido para fora do servidor local é problema.
 function vigiar(p, onde) {
+  p.on("request", r => {
+    const u = r.url();
+    if (/^https?:/.test(u) && !/^https?:\/\/localhost[:/]/.test(u)) nota("rede", onde, "pedido a servidor de fora: " + u.slice(0, 120));
+  });
   p.on("pageerror", e => nota("erro", onde, (e.stack || e.message).split("\n").slice(0, 2).join(" | ")));
   p.on("console", m => {
     if (m.type() === "error" && !/ERR_FAILED/.test(m.text())) nota("console", onde, m.text().slice(0, 200));
   });
   p.on("response", r => {
-    if (r.status() >= 400 && !/fonts\.g/.test(r.url())) nota("rede", onde, r.status() + " " + r.url().replace(/^https?:\/\/[^/]+/, ""));
+    if (r.status() >= 400) nota("rede", onde, r.status() + " " + r.url().replace(/^https?:\/\/[^/]+/, ""));
   });
 }
 async function abrir(b, base, cfg, onde) {
   const ctx = await b.newContext({ ...cfg, bypassCSP: true });
   const p = await ctx.newPage();
   vigiar(p, onde); // o teste injeta código na página
-  await p.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort()); // sem internet nos testes: as fontes caem no padrão
   await p.goto(base + "?moderador");
   await p.waitForFunction(() => typeof novaRun === "function" && typeof MANIFESTO !== "undefined" && MANIFESTO);
   await p.evaluate(() => {
@@ -92,11 +96,17 @@ function verificarArquivos() {
   for (const [k, v] of Object.entries(man))
     if (!fs.existsSync(path.join(RAIZ, v))) nota("arquivos", "manifesto", `${k} aponta para ${v}, que não existe`);
   const sw = fs.readFileSync(path.join(RAIZ, "sw.js"), "utf8"),
-    lista = (sw.match(/BASICO=\[([^\]]*)\]/) || [])[1] || "";
+    lista = (sw.match(/BASICO\s*=\s*\[([^\]]*)\]/) || [])[1] || "";
+  if (!lista) nota("arquivos", "sw.js", "lista BASICO não encontrada");
   for (const f of lista.match(/"[^"]+"/g) || []) {
     const n = f.slice(1, -1);
     if (n !== "./" && !fs.existsSync(path.join(RAIZ, n))) nota("arquivos", "sw.js", `${n} está na lista do service worker e não existe`);
   }
+  // tudo que as folhas de estilo pedem (fontes, imagens) existe
+  for (const css of fs.readdirSync(path.join(RAIZ, "css")).filter(f => f.endsWith(".css")))
+    for (const m of fs.readFileSync(path.join(RAIZ, "css", css), "utf8").matchAll(/url\(["']?([^"')]+)["']?\)/g))
+      if (!/^(data:|https?:)/.test(m[1]) && !fs.existsSync(path.join(RAIZ, "css", m[1])))
+        nota("arquivos", "css/" + css, `${m[1]} não existe`);
   const html = fs.readFileSync(path.join(RAIZ, "index.html"), "utf8");
   for (const m of html.matchAll(/(?:src|href)="([^"#:]+)"/g))
     if (!fs.existsSync(path.join(RAIZ, m[1]))) nota("arquivos", "index.html", `${m[1]} não existe`);
@@ -242,6 +252,95 @@ async function verificarTelas(b, base) {
       } catch (e) {
         nota("erro", `${nv} · ${nt}`, "a tela não abriu: " + e.message.split("\n")[0]);
       }
+    }
+    await ctx.close();
+  }
+}
+
+// ---------------------------------------------------------------- 2b. save: o jogo abre com save velho, estragado ou mexido
+// Cada caso grava um texto no localStorage antes de a página carregar e confere que o menu, as telas de coleção e o Pacto abrem
+// sem erro. Quando o save foi corrigido, o texto original precisa estar guardado intacto à parte (CHAVE_RECUPERACAO).
+async function verificarSave(b, base) {
+  const exemplo = n => fs.readFileSync(path.join(__dirname, "saves", n), "utf8");
+  const v1 = JSON.parse(exemplo("v1_mapa1.json"));
+  const casos = [
+    { nome: "save antigo, sem versão", texto: exemplo("v0_mapa1.json"), continua: true },
+    { nome: "save atual", texto: exemplo("v1_mapa1.json"), continua: true },
+    {
+      nome: "Dragão Ancestral na equipe",
+      texto: JSON.stringify({
+        ...v1,
+        run: {
+          ...v1.run,
+          selos: v1.run.selos.map((s, i) => (i === 1 ? { ...s, mon: { id: "dragao_vulcanico", rar: "lendario", ramo: null } } : s))
+        }
+      }),
+      continua: true
+    },
+    { nome: "texto corrompido", texto: '{"meta":{"essencia":3', corrigido: true },
+    {
+      nome: "monstro, Lenda e mapa que não existem",
+      texto: JSON.stringify({
+        v: 1,
+        meta: { ...v1.meta, liberados: [...v1.meta.liberados, "monstro_sumido"], lendas: ["reino_sumido"] },
+        run: { ...v1.run, universo: "mapa_sumido" }
+      }),
+      corrigido: true
+    },
+    {
+      nome: "campos com tipo errado",
+      texto: JSON.stringify({
+        v: 1,
+        meta: { essencia: "x", liberados: 5, cont: [], conq: "y", lendas: 5, deuses: {}, talismas: null, dex: 7, som: "alto", diarias: 3 },
+        run: "z"
+      }),
+      corrigido: true
+    },
+    { nome: "save de versão mais nova", texto: JSON.stringify({ ...v1, v: 99, novidade: { a: 1 } }), continua: true, corrigido: true }
+  ];
+  for (const c of casos) {
+    const onde = "save/" + c.nome;
+    const ctx = await b.newContext({ viewport: { width: 1280, height: 800 }, bypassCSP: true });
+    await ctx.addInitScript(t => {
+      if (!sessionStorage.getItem("semeado")) {
+        localStorage.setItem("elementar_proto_v2", t);
+        sessionStorage.setItem("semeado", "1");
+      }
+    }, c.texto);
+    const p = await ctx.newPage();
+    vigiar(p, onde);
+    try {
+      await p.goto(base + "?teste");
+      await p.waitForFunction(() => typeof telaPacto === "function" && document.querySelectorAll("#menuBotoes button").length > 0);
+      const r = await p.evaluate(() => ({
+        continuar: /Continuar run/.test(document.getElementById("menuBotoes").textContent),
+        recuperacao: JSON.parse(localStorage.getItem(CHAVE_RECUPERACAO) || "[]").map(e => e.texto),
+        liberadosOk: META.liberados.every(id => LINHA[id]),
+        essencia: META.essencia
+      }));
+      if (r.continuar !== !!c.continua) nota("save", onde, c.continua ? "a run salva sumiu" : "a run salva estragada apareceu no menu");
+      if (c.corrigido && !r.recuperacao.includes(c.texto)) nota("save", onde, "o texto original não ficou guardado à parte");
+      if (!c.corrigido && r.recuperacao.length) nota("save", onde, "um save bom foi tratado como estragado");
+      if (!r.liberadosOk) nota("save", onde, "a coleção tem monstro que não existe");
+      if (typeof r.essencia !== "number") nota("save", onde, "Essência não é número");
+      // as telas que leem o progresso abrem (cada uma com o menu de volta)
+      for (const t of ["telaPacto()", "telaBestiario()", "telaConquistas()", "telaDiarias()", "telaSantuario()", "telaPanteao()"]) {
+        await p.evaluate(t => {
+          menu();
+          eval(t);
+        }, t);
+        await p.waitForTimeout(250);
+      }
+      if (c.continua) {
+        await p.evaluate(() => {
+          menu();
+          [...document.querySelectorAll("#menuBotoes button")].find(b => /Continuar run/.test(b.textContent)).click();
+        });
+        await p.waitForTimeout(2500);
+        if (!(await p.evaluate(() => rodando && !!J && J.inimigos !== undefined))) nota("save", onde, "a run salva não começou");
+      }
+    } catch (e) {
+      nota("save", onde, "falhou: " + e.message.split("\n")[0]);
     }
     await ctx.close();
   }
@@ -761,6 +860,7 @@ async function verificarVisual(b, base) {
   const partes = {
     carga: verificarArquivos,
     telas: () => verificarTelas(b, base),
+    save: () => verificarSave(b, base),
     jogo: () => verificarJogo(b, base),
     tela: () => verificarImagem(b, base),
     mecanicas: () => verificarMecanicas(b, base),

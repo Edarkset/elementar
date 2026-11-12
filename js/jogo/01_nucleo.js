@@ -1,6 +1,8 @@
 // GERADO por "npm run compilar" a partir de src/jogo/01_nucleo.ts. Edite o .ts, não este arquivo.
 // Elementar · utilidades, som, save, sprites procedurais, estado da run, sinergias e Santuário
 // Módulo da lógica do jogo: importa o que usa dos outros e exporta o que oferece. Entrada: js/jogo/principal.js; a avaliação segue a ordem dos nomes dos arquivos.
+import "./00_save.js"; // ordem de carga: cada módulo puxa o anterior primeiro, então a avaliação segue a ordem dos nomes dos arquivos
+import { catalogoDe, juntarRecuperacao, lerTextoSave, textoSave } from "./00_save.js";
 import { anel, DIF, emArea, ferir, MOD, particulas, PRESSAGIOS, texto, tremor } from "./02_combate.js";
 import { ASCENSAO, mostrarCartas, ramosElegiveis, registrarDex } from "./03_progressao.js";
 import { arteMonstro } from "./05_arte.js";
@@ -228,22 +230,38 @@ export const PLAT = window.Plataforma || {
   },
   conquista() {}
 };
-export function lerSave() {
+// o save é conferido na leitura (js/jogo/00_save.js): campo estragado volta ao padrão e id que o conteúdo não tem mais sai da lista,
+// em vez de travar o menu ou o Pacto. Quando algo é corrigido, o texto original fica guardado à parte, intacto (o primeiro e os dois mais recentes).
+export const CHAVE_RECUPERACAO = CHAVE + "_recuperacao";
+export function guardarOriginal(texto) {
   try {
-    const s = PLAT.lerSave(CHAVE);
-    return s ? JSON.parse(s) : null;
+    PLAT.gravarSave(CHAVE_RECUPERACAO, juntarRecuperacao(PLAT.lerSave(CHAVE_RECUPERACAO), texto, new Date().toISOString()));
   } catch (e) {
-    return null;
+    relatar("save: não foi possível guardar o original", e, true);
   }
+}
+export function lerSave(texto = PLAT.lerSave(CHAVE)) {
+  let lido;
+  try {
+    lido = lerTextoSave(texto, catalogoDe(D));
+  } catch (e) {
+    relatar("save: falha ao conferir o save", e, true);
+    lido = { meta: {}, run: null, avisos: ["falha ao conferir"], ilegivel: true };
+  }
+  if (lido.avisos.length && texto) {
+    relatar("save: corrigido na leitura (o original está guardado em " + CHAVE_RECUPERACAO + ")", lido.avisos);
+    guardarOriginal(texto);
+  }
+  return lido;
 }
 export function gravar() {
   try {
-    PLAT.gravarSave(CHAVE, JSON.stringify({ meta: META, run: RUN_SALVA }));
+    PLAT.gravarSave(CHAVE, textoSave(META, RUN_SALVA));
   } catch (e) {
     relatar("save: não foi possível gravar o progresso", e, true);
   }
 }
-export const salvo = lerSave() || {};
+export const salvo = lerSave();
 export function liberadosIniciais() {
   const ini = new Set(
     D.linhas.filter(l => D.universos.find(u => u.id === l.universo).era === "berco" || l.universo === "amazonia").map(l => l.id)
@@ -256,14 +274,14 @@ export function liberadosIniciais() {
   );
   return [...ini];
 }
-export let META = Object.assign({ essencia: 0, recorde: 0, liberados: liberadosIniciais() }, salvo.meta || {});
+export let META = Object.assign({ essencia: 0, recorde: 0, liberados: liberadosIniciais() }, salvo.meta);
 // saves de antes do Bestiário: os filhotes já liberados entram como vistos (sem avisos nem presentes por eles)
 if (!META.dex) {
   META.dex = {};
   for (const id of META.liberados) META.dex[id] = { f: 1, r: ["comum"] };
   META.dexMarco = Math.floor(META.liberados.length / 10);
 }
-export let RUN_SALVA = salvo.run || null;
+export let RUN_SALVA = salvo.run;
 // ================================================================ sprites procedurais (placeholders da arte final)
 export const cacheSpr = new Map();
 if (document.fonts && document.fonts.load) {

@@ -262,6 +262,26 @@ interface Meta {
   dicaReacao?: boolean;
   diarias?: AindaSemTipo;
 }
+// ---------------------------------------------------------------- save conferido na leitura (00_save.js)
+/** ids que o conteúdo atual tem, para conferir as listas do save */
+interface Catalogo {
+  linhas: ReadonlySet<string>;
+  universos: ReadonlySet<string>;
+  /** Lendas são guardadas pelo universo de onde vêm */
+  lendas: ReadonlySet<string>;
+  deuses: ReadonlySet<string>;
+  talismas: ReadonlySet<string>;
+  elementos: ReadonlySet<string>;
+}
+interface SaveLido {
+  /** campos conferidos do progresso permanente (os que faltarem usam o padrão do jogo) */
+  meta: Partial<Meta> & Record<string, unknown>;
+  run: Run | null;
+  /** o que foi corrigido; vazio quando o save estava bom */
+  avisos: string[];
+  /** true quando o texto não era um save (nada foi aproveitado) */
+  ilegivel: boolean;
+}
 /** atributos de um monstro na hora (atrib e atribPoder): dano por golpe, golpes por segundo, vida e cura */
 interface Atributos {
   dano: number;

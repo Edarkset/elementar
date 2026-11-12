@@ -5,7 +5,7 @@ const path = require("path");
 
 const raiz = path.resolve(__dirname, "..");
 const destino = path.join(__dirname, "jogo");
-const itens = ["index.html", "manifest.webmanifest", "css", "js", "arte", "app"];
+const itens = ["index.html", "manifest.webmanifest", "css", "fontes", "js", "arte", "app"];
 
 fs.rmSync(destino, { recursive: true, force: true });
 fs.mkdirSync(destino, { recursive: true });

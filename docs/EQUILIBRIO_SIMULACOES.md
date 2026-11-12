@@ -53,7 +53,15 @@ A C corta o primeiro chefe para menos da metade e aproxima os níveis do mapa 1 
 
 O robô escolhe uma carta ao acaso, então pega o Talismã só 1 vez em 3 mesmo quando ele aparece. Para quem joga, o que conta é a oferta: depois que os poderes acabam, há uma escolha de verdade em 85% das subidas de nível, contra 35% antes. O jogo ficou um pouco mais fácil (+0,5 mapa, perto do ruído).
 
-**O que ainda falta (decisão de design):** mesmo assim a Ascensão segue maioria, porque cada poder vai só até o nível 5 e a equipe chega lá em dois mapas. As saídas são mais níveis de poder (até 8, com ganho menor por nível), poderes novos no meio da run, ou subir de nível mais devagar.
+**Poderes até o nível 8:** cada poder sobe até 8 (`DIF.poderMax`), e cada nível além do 5 vale metade (`nivelEf`, para a recarga não sumir). O Desperto continua abrindo no 5, e a carta do 5 avisa isso. Como a equipe fica mais forte, os inimigos ganham um pouco mais de vida por mapa (`DIF.vida` de 1,33 para 1,36: +14% de vida no mapa 6).
+
+| 28 partidas, mesmas sementes | Ascensão (mapas 2 · 3 · 4 · 5) | Profundidade (média · mediana) |
+|---|---|---|
+| antes de hoje (poderes até 5, Talismã 35%) | 67% · 84% · 89% · 87% | 5,68 · 5 |
+| poderes até 8, sem compensação | 10% · 58% · 71% · 75% | 6,68 · 6,5 |
+| **poderes até 8 e vida 1,36 (adotada)** | 14% · 58% · 67% · 76% | 6,00 · 6 |
+
+As escolhas de verdade duram cerca de dois mapas a mais, com a dificuldade praticamente igual (+0,3 mapa na média, dentro do ruído). Do mapa 6 em diante a Ascensão ainda passa de 90%. O próximo passo, se quiser ir além, seriam poderes novos no meio da run.
 
 ### 4. Chefe dos Andes (falso alarme)
 

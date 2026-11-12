@@ -437,7 +437,7 @@ export function dicaVantagem(el: Elemento) {
 }
 // Curva de dificuldade (calibrada com o bot: testes/bot.js + testes/rodar_bot.js; ver docs/ANALISE_EQUILIBRIO.md)
 export const DIF = {
-  vida: 1.33,
+  vida: 1.36,
   dano: 1.48,
   danoBase: 11,
   hp: 38,
@@ -486,7 +486,7 @@ export const DIF = {
   misticoMult: 1.4,
   misticoSaltos: 2,
   // poderes: até que nível cada um sobe (o Desperto continua abrindo no 5) e quanto vale cada nível além do 5 (0,5 = metade)
-  poderMax: 5,
+  poderMax: 8,
   poderAlem: 0.5,
   hordaVida: 0.9,
   hordaDano: 1.4,

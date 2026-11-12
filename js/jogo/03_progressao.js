@@ -487,7 +487,7 @@ export function cartasNivel() {
         k,
         raridade: prox === DIF.poderMax ? "lendario" : (prox === 3 && k !== "b") || prox === 5 ? "epico" : prox >= 2 ? "raro" : "incomum",
         titulo: `${nome} ${lv ? `${lv} → ${prox}` : "(novo)"}`,
-        texto: `${pipsPoder(lv, prox)}<b style="color:${COR[elementoDe(s)]}">${nomeForma(s)}</b> · nível ${s.nivel}. ${desc}${numerosPoder(s, k, lv, prox)}${k !== "b" && prox === 3 ? " Libera um modificador." : ""}${prox === DIF.poderMax ? " Nível máximo!" : prox === 5 ? " Abre o Desperto (com o Talismã da classe)." : ""}`
+        texto: `${pipsPoder(lv, prox)}<b style="color:${COR[elementoDe(s)]}">${nomeForma(s)}</b> · nível ${s.nivel}. ${desc}${numerosPoder(s, k, lv, prox)}${k !== "b" && prox === 3 ? " Libera um modificador." : ""}${prox === DIF.poderMax ? " · <b>Nível máximo!</b>" : prox === 5 ? " · Abre o Desperto (com o Talismã da classe)." : ""}`
       });
     }
     if (!algum) {

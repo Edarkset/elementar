@@ -69,7 +69,7 @@ import { artesDoMapa, liberarMemoria, preCarregar, resetAnimSelo } from "./05_ar
 import { QUAL } from "./06_loop.js";
 import { bolhaCor, danificarProp, iniciarCena, propMaisProximo, rajada } from "./07_cenario.js";
 import { aposAbertura, iniciarAbertura } from "./07d_estrutura.js";
-import { fatorXPDiretor } from "./08_horda.js";
+import { escalaOnda, fatorXPDiretor } from "./08_horda.js";
 import {
   circuloInvocacao,
   efCanto,
@@ -440,9 +440,6 @@ export const DIF = {
   dano: 1.48,
   danoBase: 11,
   hp: 38,
-  spawn: 0.15,
-  base: 1.6,
-  cresc: 0.1,
   onda: 22,
   ondaN: 20,
   max: 280,
@@ -463,19 +460,21 @@ export const DIF = {
   chefeQueda: 0.12,
   rampa: 2.0,
   rampaK: 2.2,
-  // horda: quantos inimigos o diretor quer na tela = (hordaBase + mapa*hordaProf + segundos*(hordaT + mapa*hordaTProf)) * horda, até hordaMax.
-  // horda é a intensidade geral (também multiplica os nascimentos); hordaVida, hordaDano e hordaXp valem só para inimigos comuns
-  // Valores escolhidos por simulação (docs/EQUILIBRIO_SIMULACOES.md): 1,6x mais inimigos, cada um com 62% da vida, 80% do dano e 62% das
-  // recompensas. A "massa" da horda e o ritmo de níveis ficam iguais, os abates por minuto dobram e a tela fica menos tempo vazia.
-  // Acima disso (2,4x) os abates não sobem mais e aparecem mortes no primeiro mapa.
-  // hordaRampa: a intensidade entra aos poucos (mapa 1 sem mudança, cheia depois de hordaRampa mapas). Com a horda densa desde o começo,
-  // quem começa com ataque de alvo único (Caçador, Xamã) não limpava a tela, não subia de nível e caía no primeiro mapa
-  horda: 1.6,
-  hordaBase: 7,
-  hordaProf: 7,
-  hordaT: 0.3,
-  hordaTProf: 0.04,
-  hordaMax: 190,
+  // horda: quantos inimigos o jogo quer na tela, como no Vampire Survivors: poucos no começo de cada mapa e crescendo aos poucos
+  // até o pico perto do chefe. alvo = ini + (pico - ini) * u^hordaCurva, com u indo de 0 a 1 em hordaSobe do tempo do mapa;
+  // ini e pico crescem a cada mapa (pico até hordaMax). Os nascimentos completam o que falta para o alvo (hordaEnche por inimigo
+  // que falta, por segundo) mais uma reposição constante (hordaRepor). hordaVida, hordaDano e hordaXp valem só para inimigos comuns
+  // e entram aos poucos até hordaRampa mapas (mais inimigos, cada um mais fraco). Valores escolhidos por simulação
+  // (docs/EQUILIBRIO_SIMULACOES.md)
+  hordaIni: 5,
+  hordaIniProf: 1.5,
+  hordaPico: 38,
+  hordaPicoProf: 9,
+  hordaMax: 130,
+  hordaCurva: 1.3,
+  hordaSobe: 0.85,
+  hordaEnche: 1,
+  hordaRepor: 0.4,
   hordaVida: 0.62,
   hordaDano: 0.8,
   hordaXp: 0.62,
@@ -483,7 +482,7 @@ export const DIF = {
 };
 // intensidade da horda neste mapa: cada fator vai de 1 (primeiro mapa) até o valor de DIF
 export const hordaK = () => (DIF.hordaRampa > 0 ? Math.min(1, R.profundidade / DIF.hordaRampa) : 1);
-export const hordaF = (k: "horda" | "hordaVida" | "hordaDano" | "hordaXp") =>
+export const hordaF = (k: "hordaVida" | "hordaDano" | "hordaXp") =>
   1 + (DIF[k] - 1) * hordaK(); /* mais difícil (o jogo estava fácil): mais dano, mais inimigos desde o começo e rampa inicial mais forte */ // vida de mini-chefe, chefe e Guardião da Era (em inimigos comuns); o 1º chefe leva chefe1 disso
 // ameaças que crescem com a profundidade: começo suave, fim duro
 export const velRapido = () => Math.min(DIF.rapidoMax, DIF.rapido + DIF.rapidoCresc * R.profundidade);
@@ -558,7 +557,7 @@ export function spawnInimigo(kForcado?: number) {
 }
 // Onda de cerco: um anel de inimigos fecha em volta do jogador (use a esquiva para atravessar)
 export function ondaCerco() {
-  const n = Math.min(Math.round(DIF.ondaN * (1 + R.profundidade * 0.15)), Math.max(8, DIF.max + 20 - J.inimigos.length)),
+  const n = Math.min(Math.round(DIF.ondaN * escalaOnda()), Math.max(8, DIF.max + 20 - J.inimigos.length)),
     P = J.jogador,
     r = Math.min(VW, VH) * 0.42;
   for (let i = 0; i < n; i++) {

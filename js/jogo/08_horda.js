@@ -1,8 +1,8 @@
 // GERADO por "npm run compilar" a partir de src/jogo/08_horda.ts. Edite o .ts, não este arquivo.
 // Elementar · diretor de horda (ritmo, ondas, ameaça) e contorno de leitura dos inimigos
 import "./07d_estrutura.js"; // ordem de carga: o módulo anterior primeiro (docs/ARQUITETURA.md)
-import { agendar, ctx, H, J, R, rnd, VH, VW, W } from "./01_nucleo.js";
-import { DIF, hordaF, hordaK, MOD, ondaCerco, particulas, spawnInimigo } from "./02_combate.js";
+import { agendar, ctx, H, J, MAPA_SEG, R, rnd, VH, VW, W } from "./01_nucleo.js";
+import { DIF, MOD, ondaCerco, particulas, spawnInimigo } from "./02_combate.js";
 import { abismoEm, estruturaU, pecasPerto } from "./07d_estrutura.js";
 import { evento } from "./08e_conquistas.js";
 import { perigo } from "./09b_chefes.js";
@@ -12,7 +12,22 @@ import { chao } from "./10_desenho.js";
 // Dominando: aumenta a densidade e solta ondas especiais. Afogado: segura os nascimentos para você respirar.
 // A pressão-alvo cresce dentro de cada mapa e de um mapa para o outro (como no Vampire Survivors).
 export function iniciarDiretor() {
-  J.diretor = { mult: 1, tick: 0, respiro: 0, tEvento: rnd(40, 55), alvo: 20, n: 0, vida: 1, eventos: 0, ameaca: 1, tCheia: 0 };
+  const d = { ajuste: 1, tick: 0, respiro: 0, tEvento: rnd(40, 55), alvo: 0, n: 0, perto: 0, vida: 1, eventos: 0, ameaca: 1, tCheia: 0 };
+  J.diretor = d;
+  d.alvo = alvoHorda();
+  return d;
+}
+/** quantos inimigos a horda quer na tela agora (curva do mapa, sem o ajuste do diretor) */
+export function alvoHorda() {
+  const p = R.profundidade,
+    u = Math.min(1, J.t / (MAPA_SEG * DIF.hordaSobe)),
+    ini = DIF.hordaIni + p * DIF.hordaIniProf,
+    pico = Math.min(DIF.hordaMax, DIF.hordaPico + p * DIF.hordaPicoProf);
+  return (ini + (pico - ini) * Math.pow(u, DIF.hordaCurva)) * (1 + MOD("horda"));
+}
+/** tamanho das ondas especiais em relação à horda do momento (onda de 20 numa horda de 40) */
+export function escalaOnda() {
+  return Math.max(0.35, Math.min(1.8, (J.diretor ? J.diretor.alvo : alvoHorda()) / 40));
 }
 // ameaça: quem passa muito tempo com a vida cheia apanha mais forte (até +60%); quando a vida cai, volta ao normal
 // primeiro mapa da run: o dano recebido começa em 20% e chega ao normal em 80 s (antes, parado, a equipe caía em ~10 s)
@@ -22,65 +37,58 @@ export function inicioSuave() {
 export function ameacaDiretor() {
   return (J.diretor ? J.diretor.ameaca : 1) * inicioSuave();
 }
-// XP: os inimigos extras que o diretor coloca valem proporcionalmente menos, para o ritmo de níveis não disparar
+// XP: quando o diretor pede mais inimigos que a curva (equipe dominando), cada um vale proporcionalmente menos
 export function fatorXPDiretor() {
   const d = J.diretor;
-  return d && d.mult > 1 ? Math.max(0.55, 1 / Math.sqrt(d.mult)) : 1;
+  return d && d.ajuste > 1 ? 1 / Math.sqrt(d.ajuste) : 1;
 }
-export function multDiretor() {
+/** inimigos que nascem por segundo agora: completa o que falta para o alvo e repõe os que morrem; nada durante o respiro */
+export function taxaSurgimento() {
   const d = J.diretor;
-  if (!d) return 1;
-  return d.respiro > 0 ? 0.1 : d.mult;
+  if (!d || d.respiro > 0) return 0;
+  return DIF.hordaRepor + DIF.hordaEnche * Math.max(0, d.alvo - d.perto);
 }
 export function contarTela() {
   const P = J.jogador;
   let n = 0,
-    col = 0;
+    col = 0,
+    perto = 0;
   for (const e of J.inimigos) {
     if (e.hp <= 0) continue;
     const dx = Math.abs(e.x - P.x),
       dy = Math.abs(e.y - P.y);
+    if (dx < VW * 0.75 && dy < VH * 0.75) perto++;
     if (dx < VW / 2 && dy < VH / 2) {
       n++;
       if (dx < 40 && dy < 40) col++;
     }
   }
-  return [n, col];
+  return [n, col, perto];
 }
 export function atualizarDiretor(dt) {
-  if (!J.diretor) iniciarDiretor();
-  const d = J.diretor;
+  const d = J.diretor || iniciarDiretor();
   d.tick -= dt;
   if (d.tick <= 0) {
     d.tick = 0.5;
-    const [n, col] = contarTela(),
+    const [n, col, perto] = contarTela(),
       vida = J.vida / J.vidaMax;
     d.n = n;
+    d.perto = perto;
     d.vida = vida;
-    // a horda começa pequena em todo mapa (poucos inimigos, mais perigosos) e cresce aos poucos com o tempo e a profundidade
-    d.alvo =
-      Math.min(
-        120 + (DIF.hordaMax - 120) * hordaK(),
-        (DIF.hordaBase + R.profundidade * DIF.hordaProf + J.t * (DIF.hordaT + R.profundidade * DIF.hordaTProf)) *
-          hordaF("horda") *
-          (1 + MOD("horda"))
-      ) * (R.profundidade === 0 && !R.teste ? Math.min(1, 0.5 + J.t / 80) : 1);
     if (col > 22 && vida < 0.45 && d.respiro <= 0) {
       d.respiro = 3;
     } // afogado: respiro curto
-    let m = d.mult;
-    if (n > d.alvo * 1.6) m -= 0.15;
-    else if (n < d.alvo * 0.7 && vida > 0.5) m += 0.12;
-    else if (n < d.alvo) m += 0.04;
-    else m -= 0.03;
-    d.mult = Math.max(0.3, Math.min(2.6, m));
+    // ajuste do diretor sobre a curva: quem domina (vida cheia por muito tempo) recebe até 40% a mais; quem está mal, 20% a menos
+    const alvoAj = vida < 0.4 ? 0.8 : d.tCheia > 20 ? Math.min(1.4, 1 + (d.tCheia - 20) / 100) : 1;
+    d.ajuste += (alvoAj - d.ajuste) * 0.05;
+    d.alvo = alvoHorda() * d.ajuste;
     d.tCheia = vida > 0.8 ? d.tCheia + 0.5 : Math.max(0, d.tCheia - 1.5);
     const alvoA = vida < 0.55 ? 1 : 1 + Math.min(0.6, Math.max(0, d.tCheia - 15) / 60 + R.profundidade * 0.04);
     d.ameaca += (alvoA - d.ameaca) * 0.15;
   }
   if (d.respiro > 0) d.respiro -= dt;
   d.tEvento -= dt;
-  if (d.tEvento <= 0 && !J.chefeVivo && !(R.profundidade === 0 && J.t < 45)) {
+  if (d.tEvento <= 0 && !J.chefeVivo && J.t >= (R.profundidade === 0 ? 45 : 30)) {
     if (d.vida > 0.5 && d.n < d.alvo * 1.2) {
       eventoHorda();
       d.eventos++;
@@ -110,7 +118,7 @@ export function eventoHorda() {
   evento("onda");
   const P = J.jogador,
     prof = R.profundidade,
-    escala = 1 + prof * 0.15;
+    escala = escalaOnda();
   /** tipo de onda e peso no sorteio */
   const opcoes = [
     ["cerco", 3],

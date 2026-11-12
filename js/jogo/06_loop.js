@@ -39,9 +39,7 @@ import {
   dificuldade,
   emArea,
   ferir,
-  hordaF,
   maisProximo,
-  MOD,
   parar,
   particulas,
   raio,
@@ -72,7 +70,7 @@ import {
 import { aplicarElementoNoSolo, atualizarSolo, CEL, efeitoSoloInimigo, soloEm } from "./04_ambiente.js";
 import { atualizarCena, danificarProp, lascas, propNoPonto, rajada } from "./07_cenario.js";
 import { passoAbertura, pularAbertura } from "./07d_estrutura.js";
-import { ameacaDiretor, atualizarAvisos, atualizarDiretor, multDiretor } from "./08_horda.js";
+import { ameacaDiretor, atualizarAvisos, atualizarDiretor, taxaSurgimento } from "./08_horda.js";
 import { atualizarVfx, efCirculo, efExplosao, efPilar } from "./08b_efeitos.js";
 import { atualizarEventos, textoUnico } from "./08c_eventos.js";
 import { atualizarArvore, tal } from "./08d_poderes.js";
@@ -354,8 +352,7 @@ function passoFormacao(dt, P, rm) {
 function passoSurgimentos(dt) {
   if (!J.fim) {
     if (J.t < MAPA_SEG) {
-      J.spawn +=
-        dt * (DIF.base + J.t * DIF.cresc) * (1 + R.profundidade * DIF.spawn) * hordaF("horda") * multDiretor() * (1 + MOD("horda"));
+      J.spawn += dt * taxaSurgimento(); // a horda segue a curva do mapa (alvoHorda, 08_horda.js)
       while (J.spawn > 1 && J.inimigos.length < DIF.max) {
         J.spawn--;
         spawnInimigo();

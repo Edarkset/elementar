@@ -483,12 +483,17 @@ interface CartaNivel {
   dourada?: boolean;
 }
 interface DiretorHorda {
-  mult: number;
+  /** ajuste do diretor sobre a curva do mapa (0,8 a 1,4) */
+  ajuste: number;
   tick: number;
   respiro: number;
   tEvento: number;
+  /** inimigos que a horda quer na tela agora (curva do mapa vezes o ajuste) */
   alvo: number;
+  /** inimigos na tela */
   n: number;
+  /** inimigos na tela e chegando (logo além da borda, onde nascem) */
+  perto: number;
   vida: number;
   eventos: number;
   ameaca: number;

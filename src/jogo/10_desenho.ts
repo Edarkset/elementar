@@ -77,7 +77,7 @@ import {
 } from "./09b_chefes.js";
 // ================================================================ desenho
 export let chao = null;
-export function gerarChao(u) {
+export function gerarChao(u: Universo) {
   if (chaoArte(u)) return;
   const c = document.createElement("canvas");
   c.width = c.height = 64;
@@ -107,12 +107,12 @@ export const CORES_GEMA: [number, string][] = [
   [8, "#c07cff"],
   [20, "#ffd34a"]
 ];
-export function corGema(v) {
+export function corGema(v: number) {
   let c = CORES_GEMA[0][1];
   for (const [m, k] of CORES_GEMA) if (v >= m) c = k;
   return c;
 }
-export function desenharColunaNivel(ox, oy) {
+export function desenharColunaNivel(ox: number, oy: number) {
   const c = J.colunaNivel;
   if (!c) return;
   c.t += 1 / 60;
@@ -139,7 +139,7 @@ export function desenharColunaNivel(ox, oy) {
 // multidão: com mais de 110 inimigos vivos, cada inimigo comum é desenhado com uma imagem só (sem o quadro intermediário do passo e sem
 // o véu escuro de 16%, que ninguém distingue no meio da horda). Corta até dois terços das cópias de imagem nos momentos mais pesados
 export let MULTIDAO = false;
-export function desenhar(dt) {
+export function desenhar(dt: number) {
   MULTIDAO = J.inimigos.length > 110;
   const P = J.jogador;
   J.shake *= 0.86;
@@ -194,7 +194,7 @@ export function desenhar(dt) {
   desenharVfx(ox, oy, "chao");
   desenharCadaveres(ox, oy);
   desenharQuedasAbismo(ox, oy);
-  const sombra = (x, y, w) => sombraContato(x, y + 0.5, w * 1.2, 0.55);
+  const sombra = (x: number, y: number, w: number) => sombraContato(x, y + 0.5, w * 1.2, 0.55);
   // zonas no chão
   for (const z of J.zonas) if (z.tipo !== "espirito") desenharZona(z, ox, oy);
   for (const a of J.armadilhas) desenharArmadilha(a, ox, oy);
@@ -530,7 +530,7 @@ export function desenhar(dt) {
 }
 // monstro da equipe: quadro da folha (ou imagem fixa) + "corpo" por código: antecipação e esticada no ataque,
 // investida na direção do alvo, inclinação ao andar, virada suave, pulinho/respiração sem folha e pulo de tamanho ao evoluir
-export function desenharSelo(s, ox, oy, sombra) {
+export function desenharSelo(s, ox: number, oy: number, sombra) {
   movSelo(s);
   const anim = quadroAnimSelo(s),
     spr = anim || spriteSelo(s),
@@ -708,7 +708,7 @@ export function desenharSelo(s, ox, oy, sombra) {
   }
 }
 // totem do Xamã: poste de madeira esculpido com rosto, asas laterais e uma gema na cor do elemento que pulsa e ilumina o chão
-export function desenharTotem(t, ox, oy) {
+export function desenharTotem(t: Totem, ox: number, oy: number) {
   const x = t.x - ox,
     y = t.y - oy,
     tm = J.t + (t.x % 7),
@@ -894,7 +894,7 @@ export function quadroHeroi(pernas, bob, pisca, corGema) {
       g.fillStyle = cor;
       g.fillRect(x, y, 1, 1);
     };
-  HEROI.pernas[pernas].forEach((L, y) => {
+  HEROI.pernas[pernas].forEach((L, y: number) => {
     for (let x = 0; x < W; x++) if (L[x] !== ".") px(x, nc + ncp - 1 + y, L[x]);
   });
   HEROI.corpo.forEach((L, y) => {
@@ -914,7 +914,7 @@ export function quadroHeroi(pernas, bob, pisca, corGema) {
   return c;
 }
 export let LADO_INVOCADOR = 1; // para que lado o herói olhava por último (antes ficava pendurado na própria função)
-export function desenharInvocador(x, y) {
+export function desenharInvocador(x: number, y: number) {
   const vel = Math.hypot(J.pvx || 0, J.pvy || 0),
     anda = vel > 6,
     t = J.t;
@@ -954,7 +954,7 @@ export function desenharInvocador(x, y) {
   lg.globalCompositeOperation = "source-over";
 }
 export let SOBRE = null;
-export function sobreposicao(cor, aLuz, aVin) {
+export function sobreposicao(cor: string, aLuz, aVin) {
   const k = cor + "|" + aLuz + "|" + aVin + "|" + W + "x" + H;
   if (SOBRE && SOBRE.k === k) return SOBRE.c;
   const w = Math.max(16, Math.round(W / 4)),
@@ -1171,7 +1171,7 @@ export function desenharNinho() {
   });
 }
 export let toastT = null;
-export function toast(h) {
+export function toast(h: string) {
   if (SIM.ativo) return;
   const t = $("toast");
   t.innerHTML = h;

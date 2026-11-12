@@ -35,11 +35,11 @@ import { perigo, pintarSolo } from "./09b_chefes.js";
 import { quadroHeroi } from "./10_desenho.js";
 // ================================================================ Lendas jogáveis: poder próprio (até o nível 5) e passiva
 export const LENDA = () => (R && R.lenda ? D.lendas.find(l => l.id === R.lenda) || D.panteao.find(p => p.id === R.lenda) : null);
-export function passiva(ef) {
+export function passiva(ef: string) {
   const l = LENDA();
   return l && l.passiva.efeito === ef ? l.passiva.valor : 0;
 }
-export function custo(ef) {
+export function custo(ef: string) {
   const l = LENDA();
   return (l && l.passiva.custo && l.passiva.custo[ef]) || 0;
 }
@@ -50,7 +50,7 @@ export function arteHeroiLenda(l) {
   if (!img || !fatiarFolha(img, 6, 3).valida) return null;
   return quadroAnim(img, 0, 0, 64);
 }
-export function telaInvocador(pacto, id, esperou?) {
+export function telaInvocador(pacto, id, esperou?: boolean) {
   metaConq();
   const livres = [...D.panteao.filter(g => (META.deuses || []).includes(g.id)), ...D.lendas.filter(l => META.lendas.includes(l.universo))];
   if (!livres.length) {
@@ -70,7 +70,7 @@ export function telaInvocador(pacto, id, esperou?) {
     Promise.race([preCarregar(nomes), new Promise(ok => setTimeout(ok, 2500))]).then(() => telaInvocador(pacto, id, true));
     return;
   }
-  const ir = lid => {
+  const ir = (lid: string) => {
     novaRun(pacto, id);
     R.lenda = lid;
     R.lendaNv = lid ? 1 : 0;
@@ -380,7 +380,7 @@ export function multDanoLenda(e) {
 // a Lenda (ou o deus) anda junto com a equipe, na posição do jogador. Folha 6x3 (arte/lendas/<id>.png ou arte/panteao/<id>.png):
 // linha 1 parado (4), linha 2 andando (6), linha 3 lançando o poder ou o Dom Divino (6). Sem a folha, uma figura animada por código.
 // a Lenda é o herói do centro: desenhada na posição do jogador, do tamanho de um herói (devolve false sem a arte, e entra o Invocador)
-export function desenharLenda(ox, oy) {
+export function desenharLenda(ox: number, oy: number) {
   const l = LENDA();
   if (!l || !J) return false;
   const P = J.jogador,
@@ -596,7 +596,7 @@ export function atualizarDom(dt) {
   }
 }
 // Provação: na vitória sobre o chefe, confere as condições de cada deus ainda bloqueado (exige o mural do universo de origem completo)
-export function conferirProvacoes(e) {
+export function conferirProvacoes(e: Inimigo) {
   if (SIM.ativo && !SIM.conquistas) return;
   const ds = metaDeuses(),
     u = UNIV[R.universo];
@@ -641,7 +641,7 @@ export function telaPanteao() {
   cartas.push({ titulo: "Voltar", texto: "", acao: () => telaConquistas() });
   mostrarCartas("Panteão", `Deuses liberados: ${ds.length}/${D.panteao.length}`, cartas);
 }
-export function retratoPequeno(caminho) {
+export function retratoPequeno(caminho: string) {
   const img = folhaArte(caminho);
   if (!img) return null;
   const c = document.createElement("canvas");

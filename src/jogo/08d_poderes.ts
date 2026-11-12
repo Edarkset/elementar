@@ -35,7 +35,7 @@ export const PD = () => D.poderes;
 export function nivTal(id) {
   return (R.talismas && R.talismas[id]) || 0;
 }
-export function valTal(efeito) {
+export function valTal(efeito: string) {
   let v = 0;
   for (const id in R.talismas || {}) {
     const t = PD().talismas[id];
@@ -65,7 +65,7 @@ export function talismasLiberados() {
   const T = PD().talismas;
   return Object.keys(T).filter(id => T[id].inicial || (META.talismas || []).includes(id) || SIM.tudoLiberado);
 }
-export function efeitoTalismaTxt(t, lv) {
+export function efeitoTalismaTxt(t, lv: number) {
   const v = t.valor * lv * 100,
     sinal = t.efeito === "defesa" || t.efeito === "recarga" ? "−" : "+";
   return lv ? `${sinal}${v < 10 && Math.abs(v - Math.round(v)) > 0.04 ? v.toFixed(1).replace(".", ",") : Math.round(v)}%` : "0%";
@@ -104,14 +104,14 @@ export function cartaTalisma() {
     }
   };
 }
-export function despertoDe(s, k) {
+export function despertoDe(s: Selo, k: string) {
   return PD().despertos.find(d => d.classe === L(s).classe && d.poder === k);
 }
-export function podeDespertar(s, k) {
+export function podeDespertar(s: Selo, k: string) {
   const d = despertoDe(s, k);
   return !!d && !(s.desp && s.desp[k]) && s.pod[k] >= 5 && nivTal(d.talisma) > 0 && estBase(s) >= 2;
 }
-export function bauDesperto(x, y) {
+export function bauDesperto(x: number, y: number) {
   const cand = [];
   for (const s of ativos()) for (const k of ["b", "h1", "h2"]) if (podeDespertar(s, k)) cand.push([s, k]);
   if (!cand.length) return false;
@@ -173,7 +173,7 @@ export function fatorSozinho(s) {
   const c = L(s).classe;
   return c === "mistico" || c === "guardiao" ? 2 : 1.4;
 }
-export function atribPoder(a, s, k) {
+export function atribPoder(a, s: Selo, k: string) {
   const f = fatorPoder(s, k) * tal.dano() * fatorSozinho(s);
   return f === 1 ? a : Object.assign({}, a, { dano: a.dano * f });
 }
@@ -195,9 +195,9 @@ export function paresPendentes() {
 }
 
 // ---------------------------------------------------------------- comportamentos dos Despertos (rodam junto com o poder, quando ele dispara)
-export const _P = (s, a, el, cor, dano, extra) =>
+export const _P = (s, a, el, cor, dano: number, extra) =>
   Object.assign({ fonte: FONTE, x: s.x, y: s.y, dano, el, cor, vida: 1.3, perf: 1, r: 2 }, extra);
-export function puxar(cx, cy, r, forca) {
+export function puxar(cx: number, cy: number, r: number, forca: number) {
   for (const e of J.inimigos) {
     if (e.hp <= 0 || e.chefe) continue;
     const dx = cx - e.x,
@@ -211,14 +211,14 @@ export function puxar(cx, cy, r, forca) {
 }
 export const COMPORTAMENTO = {
   guardiao: {
-    b(s, a, el) {
+    b(s: Selo | Inimigo, a, el: string) {
       const v = (J.danoRec || 0) * 0.25;
       if (v > 0) {
         vfxOnda(s, el, 40);
         emArea(s.x, s.y, 40, e => ferir(e, v, el));
       }
     },
-    h1(s, a, el) {
+    h1(s: Inimigo, a, el) {
       let n = 0;
       for (const e of J.inimigos) {
         if (e.hp <= 0 || e.chefe || dist2(e, s) > 70 * 70) continue;
@@ -231,7 +231,7 @@ export const COMPORTAMENTO = {
       }
       curar(J.vidaMax * 0.003 * n);
     },
-    h2(s, a, el) {
+    h2(s: Selo | Inimigo, a, el: string) {
       vfxOnda(s, el, 47);
       emArea(s.x, s.y, 47, e => {
         ferir(e, a.dano * 0.6, el);
@@ -244,11 +244,11 @@ export const COMPORTAMENTO = {
     }
   },
   guerreiro: {
-    b(s, a, el) {
+    b(s, a, el: string) {
       puxar(s.x, s.y, 44, 6);
       emArea(s.x, s.y, 28, e => ferir(e, a.dano * 0.4, el));
     },
-    h1(s, a, el) {
+    h1(s: Selo | Inimigo, a, el: string) {
       for (const f of [0.5, 1])
         agendar(0.15 * f, () => {
           if (!J) return;
@@ -269,7 +269,7 @@ export const COMPORTAMENTO = {
         J.proj.push(_P(s, a, el, cor, a.dano * 0.7, { vx: Math.cos(g) * 180, vy: Math.sin(g) * 180, ric: 2, perf: 2 }));
       }
     },
-    h1(s, a, el) {
+    h1(s, a, el: string) {
       const vistos = new Set();
       for (let i = 0; i < 3; i++) {
         const e = maisProximo(s, 60, o => !vistos.has(o));
@@ -279,7 +279,7 @@ export const COMPORTAMENTO = {
         ferir(e, a.dano, el);
       }
     },
-    h2(s, a) {
+    h2(s: Inimigo, a) {
       let n = 0;
       for (const e of J.inimigos) {
         if (e.hp <= 0 || dist2(e, s) > 60 * 60) continue;
@@ -289,7 +289,7 @@ export const COMPORTAMENTO = {
     }
   },
   cacador: {
-    b(s, a, el) {
+    b(s, a, el: string) {
       const e = maisProximo(s, 140);
       if (e)
         agendar(0.35, () => {
@@ -316,7 +316,7 @@ export const COMPORTAMENTO = {
         J.proj.push(_P(s, a, el, cor, a.dano * 0.6, { alvo: e, vel: 110, vida: 2.2, r: 3, explode: 16 }));
       }
     },
-    h1(s, a, el) {
+    h1(s, a, el: string) {
       const p = pontoDenso(s, 150);
       if (p)
         agendar(0.3, () => {
@@ -325,7 +325,7 @@ export const COMPORTAMENTO = {
           emArea(p.x, p.y, 30, o => ferir(o, a.dano * 1.2, el));
         });
     },
-    h2(s, a, el) {
+    h2(s, a, el: string) {
       const P = J.jogador;
       vfxSelo(P.x, P.y, el, 35);
       emArea(P.x, P.y, 35, o => {
@@ -354,7 +354,7 @@ export const COMPORTAMENTO = {
     }
   },
   mistico: {
-    b(s, a, el) {
+    b(s, a, el: string) {
       const vistos = new Set();
       let o = maisProximo(s, 110);
       for (let i = 0; i < 2 && o; i++) {
@@ -377,7 +377,7 @@ export const COMPORTAMENTO = {
     h2() {}
   },
   xama: {
-    b(s) {
+    b(s: Selo) {
       const t = J.totens.filter(x => x.dono === s).pop();
       if (t) puxar(t.x, t.y, 50, 4);
     },
@@ -396,7 +396,7 @@ export const COMPORTAMENTO = {
     }
   }
 };
-export function aoDisparar(s, k, a, el, cor) {
+export function aoDisparar(s: Selo, k: string, a, el: string, cor: string) {
   if (k !== "b" && !SIM.ativo) circuloInvocacao(s.x, s.y + 3, el, 10 + est(s) * 2.5, 0.6, false); // habilidade: círculo pequeno sob o monstro
   if (!(s.desp && s.desp[k])) return;
   const f = (COMPORTAMENTO[L(s).classe] || {})[k];
@@ -408,7 +408,7 @@ export function aoDisparar(s, k, a, el, cor) {
     }
 }
 // efeitos contínuos: Fênix, Fúria Berserker, Canto de Guerra e as Uniões
-export function atualizarArvore(dt) {
+export function atualizarArvore(dt: number) {
   if (!J) return;
   J.danoRec = Math.max(0, (J.danoRec || 0) - ((J.danoRec || 0) * dt) / 3);
   if (J.cantoGuerra > 0) J.cantoGuerra -= dt;

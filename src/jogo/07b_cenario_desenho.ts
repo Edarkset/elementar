@@ -31,14 +31,14 @@ import { vEl } from "./08b_efeitos.js";
 import { crepusculo, nivelEscuro, sombraProjetada } from "./08g_luz.js";
 import { chao } from "./10_desenho.js";
 // ================================================================ desenho do cenário
-export function spriteCena(chave, w, h, fn) {
+export function spriteCena(chave: string, w: number, h: number, fn) {
   const C = J.cena;
   if (C.sprites.has(chave)) return C.sprites.get(chave);
   const c = document.createElement("canvas");
   c.width = w;
   c.height = h;
   const g = c.getContext("2d");
-  fn(g, (x, y, cor) => {
+  fn(g, (x: number, y: number, cor: string | CanvasGradient | CanvasPattern) => {
     g.fillStyle = cor;
     g.fillRect(x, y, 1, 1);
   });
@@ -214,7 +214,7 @@ export function spriteProp(p) {
       return spriteCena("cristal" + c, 10, 14, (g, px) => {
         const cla = tom(c, 1.35),
           esc = tom(c, 0.62);
-        const prisma = (x0, w, y0) => {
+        const prisma = (x0: number, w: number, y0: number) => {
           for (let x = 0; x < w; x++)
             for (let y = y0; y < 14; y++) {
               const topo = y0 + Math.abs(x - (w - 1) / 2) * 1.4;
@@ -351,14 +351,14 @@ export function desenharProps(ox, oy, fila) {
   }
 }
 // alguém da equipe (ou o Invocador) atrás de um objeto alto: o objeto fica translúcido para não esconder ninguém
-export function equipeAtras(xc, yPe, w, h) {
-  const dentro = (x, y) => y < yPe && y > yPe - h && Math.abs(x - xc) < w / 2;
+export function equipeAtras(xc: number, yPe: number, w: number, h: number) {
+  const dentro = (x: number, y: number) => y < yPe && y > yPe - h && Math.abs(x - xc) < w / 2;
   const P = J.jogador;
   if (dentro(P.x, P.y + 6)) return true;
   for (const s of R.selos) if (s.mon && s.x != null && dentro(s.x, s.y + 8)) return true;
   return false;
 }
-export function desenharFrente(p, ox, oy) {
+export function desenharFrente(p, ox: number, oy: number) {
   const s = spriteMarco(p);
   if (!s) return;
   const atras = equipeAtras(p.x, p.y, s.width, s.height * (s.base || 0.85));
@@ -378,7 +378,7 @@ export function desenharFrente(p, ox, oy) {
   lg.restore();
   lg.globalAlpha = 1;
 }
-export function desenharUmProp(p, ox, oy) {
+export function desenharUmProp(p, ox: number, oy: number) {
   const spr = p.spriteFixo || spriteProp(p);
   if (!spr) return;
   const kq = p.caindo > 0 ? p.caindo / 0.7 : 1,
@@ -510,7 +510,7 @@ export function detalhePedaco(cx, cy) {
   const g = c.getContext("2d"),
     r = semente(C.u.id + "d" + k),
     base = COR[C.u.elemento];
-  const px = (x, y, cor, w?, h?) => {
+  const px = (x: number, y: number, cor, w?: number, h?: number) => {
     g.fillStyle = cor;
     g.fillRect(Math.floor(x), Math.floor(y), w || 1, h || 1);
   };
@@ -652,7 +652,7 @@ export function detalhePedaco(cx, cy) {
   C.detalhes.set(k, c);
   return c;
 }
-export function desenharDetalhesChao(ox, oy) {
+export function desenharDetalhesChao(ox: number, oy: number) {
   const c0 = Math.floor(ox / CH),
     r0 = Math.floor(oy / CH);
   for (let cy = r0; cy <= r0 + Math.ceil(VH / CH) + 1; cy++)
@@ -670,7 +670,7 @@ export function desenharDetalhesChao(ox, oy) {
 }
 // vegetação: cada folha é uma curva fina (traço suave), curvada pelo vento e pelo contato
 export const BALDES = new Map();
-export function balde(cor, lw?) {
+export function balde(cor: string, lw?: number) {
   const k = cor + "|" + (lw || 0.8);
   let b = BALDES.get(k);
   if (!b) {
@@ -679,7 +679,7 @@ export function balde(cor, lw?) {
   }
   return b;
 }
-export function desenharTufos(ox, oy) {
+export function desenharTufos(ox: number, oy: number) {
   const C = J.cena,
     V = VEG[C.veg];
   if (!V) return;
@@ -821,7 +821,7 @@ export function desenharTufos(ox, oy) {
   lg.lineCap = "butt";
   lg.globalAlpha = 1;
 }
-export function desenharCenaChao(ox, oy) {
+export function desenharCenaChao(ox: number, oy: number) {
   const C = J.cena;
   if (!C) return;
   for (const p of C.pegadas) {
@@ -858,7 +858,7 @@ export function desenharCenaChao(ox, oy) {
   }
   lg.globalAlpha = 1;
 }
-export function desenharCenaObjetos(ox, oy, fila) {
+export function desenharCenaObjetos(ox: number, oy: number, fila) {
   const C = J.cena;
   if (!C) return;
   desenharProps(ox, oy, fila);
@@ -883,7 +883,7 @@ export function desenharCenaObjetos(ox, oy, fila) {
   }
   lg.globalAlpha = 1;
 }
-export function desenharCenaAr(ox, oy) {
+export function desenharCenaAr(ox: number, oy: number) {
   const C = J.cena;
   if (!C) return;
   // fumaça
@@ -1004,7 +1004,7 @@ export function desenharCenaAr(ox, oy) {
     lg.globalAlpha = 1;
   }
 }
-export function desenharCenaLuz(ox, oy) {
+export function desenharCenaLuz(ox: number, oy: number) {
   const C = J.cena;
   if (!C) return;
   for (const p of C.ar) {
@@ -1087,11 +1087,11 @@ export function desenharCenaLuz(ox, oy) {
   lg.globalAlpha = 1;
 }
 // brilho na tela cheia: objetos em chamas, explosões e relâmpagos iluminam o entorno
-export function desenharCenaBrilho(ox, oy) {
+export function desenharCenaBrilho(ox: number, oy: number) {
   const C = J.cena;
   if (!C) return;
   ctx.globalCompositeOperation = "lighter";
-  const luz = (x, y, r, cor, a) => {
+  const luz = (x: number, y: number, r: number, cor: string, a: number) => {
     const X = (x - ox) * S,
       Y = (y - oy) * S,
       RR = r * S,
@@ -1140,7 +1140,7 @@ export function desenharCenaBrilho(ox, oy) {
 export const SEM_CEU = new Set(["centro_terra", "mar_profundo", "atlantida", "laboratorio", "xibalba"]);
 export let NUVENS = null;
 // desenha as sombras de nuvem num contexto qualquer (k = pixels por pixel de mundo); usado dentro da camada de luz (sem passada extra)
-export function nuvensEm(g, ox, oy, k) {
+export function nuvensEm(g, ox: number, oy: number, k: number) {
   const u = UNIV[R.universo];
   if (QUAL < 1 || SIM.ativo || !u || SEM_CEU.has(u.id) || (u.luz && u.luz.noite)) return;
   const A = 0.13 * (1 - crepusculo() * 0.6);
@@ -1164,7 +1164,7 @@ export function nuvensEm(g, ox, oy, k) {
   g.fillRect(0, 0, (g.canvas.width / k + T) / esc, (g.canvas.height / k + T) / esc);
   g.restore();
 }
-export function desenharNuvens(ox, oy, soCriar?) {
+export function desenharNuvens(ox: number, oy: number, soCriar?: boolean) {
   const u = UNIV[R.universo];
   if (!soCriar && J._nuvemFeita) return;
   if (!soCriar && (QUAL < 2 || SIM.ativo || !u || SEM_CEU.has(u.id) || (u.luz && u.luz.noite))) return;

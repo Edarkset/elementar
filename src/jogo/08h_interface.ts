@@ -5,7 +5,7 @@ import { $ } from "./01_nucleo.js";
 import { cacheArte } from "./05_arte.js";
 import { celulaArte, folhaArte } from "./07c_cenario_arte.js";
 // ================================================================ arte da interface (pacote prompts/ui): tela inicial, logotipo, ícones de Talismã e Insígnias
-export const UI_ARQ = n => folhaArte(`arte/ui/${n}.png`);
+export const UI_ARQ = (n: string) => folhaArte(`arte/ui/${n}.png`);
 // botões desenhados (folhas 1x3: normal, apertado, desativado): cortados em ponta esquerda, faixa, ornamento do meio e ponta direita,
 // para esticar na largura do botão sem deformar os enfeites
 export function recortarBotao(img, row) {
@@ -32,7 +32,7 @@ export function recortarBotao(img, row) {
   }
   const h = y1 - y0 + 1,
     k = cw / 128,
-    corte = (x0, x1) => {
+    corte = (x0: number, x1: number) => {
       const o = document.createElement("canvas");
       o.width = Math.round((x1 - x0) * k);
       o.height = h;
@@ -48,7 +48,7 @@ export function aplicarArteBotoes() {
     A = UI_ARQ("ui__botoes_acao");
   if (!P || !Sx) return;
   const st = document.documentElement.style,
-    def = (pref, img) =>
+    def = (pref: string, img) =>
       [0, 1, 2].forEach(r => {
         const b = recortarBotao(img, r);
         for (const k in b) st.setProperty(`--${pref}${r}-${k}`, b[k]);
@@ -82,7 +82,7 @@ export function montarParalaxe(m) {
   m.prepend(d);
   m.style.backgroundImage = "none";
   m.classList.add("com-arte");
-  const mover = (x, y) => {
+  const mover = (x: number, y: number) => {
     d.style.setProperty("--px", Math.max(-1, Math.min(1, x)).toFixed(3));
     d.style.setProperty("--py", Math.max(-1, Math.min(1, y)).toFixed(3));
   };
@@ -136,7 +136,7 @@ export function iconeTalisma(id) {
 }
 // Insígnia: moldura do nível (linha 1) com o emblema do tipo de conquista (linha 2); conquistas globais usam a estrela
 export const EMBLEMA = { chefe: 0, desafio: 1, cenario: 2, mestria: 3, secreta: 4, chamado: 5 };
-export function insigniaSprite(c, ok) {
+export function insigniaSprite(c, ok: boolean) {
   const img = folhaArte("arte/ui/insignias.png");
   if (!img) return null;
   const k = `ins|${c.id}|${ok}`;

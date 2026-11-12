@@ -20,9 +20,9 @@ export const VFX_EL = {
   luz: { c1: "#fff8d8", c2: "#ffd34a", forma: "estrela", g: -8 },
   sombra: { c1: "#b080e0", c2: "#3a2050", forma: "fumaca", g: -24 }
 };
-export const vEl = el => VFX_EL[el] || VFX_EL.luz;
+export const vEl = (el: string) => VFX_EL[el] || VFX_EL.luz;
 // partículas com forma (usa o mesmo J.parts; "forma" e "g" são opcionais)
-export function particulasEl(x, y, el, n, vel) {
+export function particulasEl(x: number, y: number, el: string, n: number, vel: number) {
   const v = vEl(el),
     L = J.parts.length;
   if (L > 380) n = Math.ceil(n / 4);
@@ -47,7 +47,7 @@ export function particulasEl(x, y, el, n, vel) {
     });
   }
 }
-export function desenharParticula(p, ox, oy) {
+export function desenharParticula(p: Particula, ox: number, oy: number) {
   const x = p.x - ox,
     y = p.y - oy;
   if (x < -4 || y < -4 || x > VW + 4 || y > VH + 4) return;
@@ -194,14 +194,14 @@ export function artCirculo(el) {
   cacheCirculo.set(el, c);
   return c;
 }
-export function circuloInvocacao(x, y, el, r, dur, forte) {
+export function circuloInvocacao(x: number, y: number, el: string, r: number, dur: number, forte: boolean) {
   if (SIM.ativo || !J) return;
   const art = artCirculo(el),
     cor = COR[el] || "#ffd34a";
   vfx({
     max: dur || 0.9,
     camada: "chao",
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const abre = Math.min(1, q / 0.18),
         some = q > 0.7 ? (1 - q) / 0.3 : 1,
         esc = r * (0.55 + 0.45 * (1 - Math.pow(1 - abre, 3))),
@@ -233,19 +233,19 @@ export function circuloInvocacao(x, y, el, r, dur, forte) {
     }
   });
 }
-export function vfx(o) {
+export function vfx(o: Vfx) {
   J.vfx = J.vfx || [];
   if (J.vfx.length > 80) J.vfx.shift();
   o.t = 0;
   J.vfx.push(o);
   return o;
 }
-export function atualizarVfx(dt) {
+export function atualizarVfx(dt: number) {
   if (!J.vfx) return;
   for (const v of J.vfx) v.t += dt;
   J.vfx = J.vfx.filter(v => v.t < v.max);
 }
-export function desenharVfx(ox, oy, camada) {
+export function desenharVfx(ox: number, oy: number, camada: string) {
   if (!J.vfx) return;
   for (const v of J.vfx) if ((v.camada || "luz") === camada) v.desenhar(ox, oy, v.t / v.max);
   lg.globalAlpha = 1;
@@ -253,7 +253,7 @@ export function desenharVfx(ox, oy, camada) {
 }
 
 // ---------------------------------------------------------------- ataques básicos por classe
-export function vfxCorte(s, el, r) {
+export function vfxCorte(s, el: string, r: number) {
   const K = VFX_K;
   const alvo = maisProximo(s, r + 20),
     ang = alvo ? Math.atan2(alvo.y - s.y, alvo.x - s.x) : Math.atan2(J.dir.y || 0, J.dir.x || 1),
@@ -262,7 +262,7 @@ export function vfxCorte(s, el, r) {
   // lua crescente: o traço é largo no meio e fino nas pontas; brilho por baixo e fio branco por cima; a ponta corre na frente do rastro
   vfx({
     max: 0.22,
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const x = s.x - ox,
         y = s.y - oy,
         ab = 2.3,
@@ -303,7 +303,7 @@ export function vfxCorte(s, el, r) {
   }
   if (K > 1.6) luzFlash(s.x, s.y, v.c2, r * 1.2, 0.18);
 }
-export function vfxOnda(s, el, r) {
+export function vfxOnda(s, el: string, r: number) {
   const v = vEl(el),
     x0 = s.x,
     y0 = s.y,
@@ -312,7 +312,7 @@ export function vfxOnda(s, el, r) {
   vfx({
     max: 0.35,
     camada: "chao",
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       lg.globalAlpha = (1 - q) * 0.8;
       lg.strokeStyle = v.c2;
       lg.lineWidth = 2 * K;
@@ -342,7 +342,7 @@ export function vfxOnda(s, el, r) {
     particulasEl(x0 + Math.cos(a) * r, y0 + Math.sin(a) * r * 0.8, el, 1, 30 * K);
   }
 }
-export function vfxFeixe(s, e, el) {
+export function vfxFeixe(s, e: Inimigo, el: string) {
   const v = vEl(el),
     K = VFX_K,
     pts = [];
@@ -353,7 +353,7 @@ export function vfxFeixe(s, e, el) {
   }
   vfx({
     max: 0.16,
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const dx = e.x - s.x,
         dy = e.y - s.y,
         d = Math.hypot(dx, dy) || 1,
@@ -380,14 +380,14 @@ export function vfxFeixe(s, e, el) {
   });
   particulasEl(e.x, e.y, el, 4, 50);
 }
-export function vfxX(e, el) {
+export function vfxX(e, el: string) {
   const v = vEl(el),
     x0 = e.x,
     y0 = e.y,
     K = VFX_K;
   vfx({
     max: 0.22,
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const L = 9 * K * Math.min(1, q * 3);
       lg.globalAlpha = 1 - q;
       lg.strokeStyle = "#ffffff";
@@ -408,13 +408,13 @@ export function vfxX(e, el) {
     }
   });
 }
-export function vfxSelo(x0, y0, el, r) {
+export function vfxSelo(x0: number, y0: number, el: string, r: number) {
   const v = vEl(el),
     K = VFX_K;
   vfx({
     max: 0.5,
     camada: "chao",
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       lg.globalAlpha = Math.sin(q * Math.PI) * 0.8;
       lg.strokeStyle = v.c1;
       lg.lineWidth = K;
@@ -437,7 +437,7 @@ export function vfxSelo(x0, y0, el, r) {
 
 // ---------------------------------------------------------------- projéteis com forma e rastro
 // projéteis: forma suave por elemento + halo de luz + rastro afinando (desenhado em modo aditivo)
-export function desenharProjetil(p, ox, oy) {
+export function desenharProjetil(p: Projetil, ox: number, oy: number) {
   const v = vEl(p.el),
     x = p.x - ox,
     y = p.y - oy,
@@ -613,13 +613,13 @@ export function desenharProjetil(p, ox, oy) {
 }
 
 // ---------------------------------------------------------------- especiais, reações e combinados (usa as folhas quando importadas)
-export function tocarFolha(caminho, cols, x, y, tam, dur) {
+export function tocarFolha(caminho: string, cols: number, x: number, y: number, tam: number, dur: number) {
   const img = folhaArte(caminho);
   if (!img) return false;
   vfx({
     max: dur,
     camada: "frente",
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const s = celulaArte(img, cols, 1, Math.min(cols - 1, Math.floor(q * cols)), 0, tam, tam, 0.5);
       lg.globalAlpha = q > 0.85 ? (1 - q) / 0.15 : 1;
       lg.drawImage(s, Math.round(x - ox - tam / 2), Math.round(y - oy - tam / 2));
@@ -631,15 +631,15 @@ export function tocarFolha(caminho, cols, x, y, tam, dur) {
 // e mostram um personagem inteiro por cima do cenário. Até serem refeitas, os especiais usam os efeitos desenhados abaixo.
 export const USAR_FOLHAS_ESPECIAL = false;
 // ---- peças de efeito desenhadas (nítidas em qualquer resolução)
-export const curvaEf = q => (q < 0.15 ? q / 0.15 : q > 0.75 ? (1 - q) / 0.25 : 1); // entra rápido, segura, some
-export function efCirculo(x0, y0, r, el, dur, rapido?) {
+export const curvaEf = (q: number) => (q < 0.15 ? q / 0.15 : q > 0.75 ? (1 - q) / 0.25 : 1); // entra rápido, segura, some
+export function efCirculo(x0: number, y0: number, r: number, el: string, dur: number, rapido?: boolean) {
   if (SIM.ativo) return;
   const v = vEl(el),
     runas = Array.from({ length: 12 }, (_, i) => i);
   vfx({
     max: dur,
     camada: "chao",
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const x = x0 - ox,
         y = y0 - oy,
         a = curvaEf(q),
@@ -695,13 +695,13 @@ export function efCirculo(x0, y0, r, el, dur, rapido?) {
     }
   });
 }
-export function efPilar(x0, y0, el, dur, larg) {
+export function efPilar(x0: number, y0: number, el: string, dur: number, larg: number) {
   if (SIM.ativo) return;
   const v = vEl(el),
     L = larg || 10;
   vfx({
     max: dur,
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const x = x0 - ox,
         y = y0 - oy,
         a = curvaEf(q),
@@ -735,12 +735,12 @@ export function efPilar(x0, y0, el, dur, larg) {
       forma: "estrela"
     });
 }
-export function efCupula(x0, y0, r, el, dur) {
+export function efCupula(x0: number, y0: number, r: number, el, dur: number) {
   if (SIM.ativo) return;
   const v = vEl(el);
   vfx({
     max: dur,
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const x = x0 - ox,
         y = y0 - oy,
         a = curvaEf(q),
@@ -783,7 +783,7 @@ export function efCupula(x0, y0, r, el, dur) {
     }
   });
 }
-export function efCortes(x0, y0, r, el, n) {
+export function efCortes(x0: number, y0: number, r: number, el, n: number) {
   if (SIM.ativo) return;
   const v = vEl(el);
   for (let i = 0; i < n; i++) {
@@ -794,7 +794,7 @@ export function efCortes(x0, y0, r, el, n) {
       L = r * rnd(0.8, 1.2);
     vfx({
       max: 0.24 + t0,
-      desenhar(ox, oy, q0) {
+      desenhar(ox: number, oy: number, q0: number) {
         const q = (q0 * (0.24 + t0) - t0) / 0.24;
         if (q < 0) return;
         const x = cx - ox,
@@ -832,7 +832,7 @@ export function efImpactoChao(x0, y0, r, el) {
   vfx({
     max: 1.2,
     camada: "chao",
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const x = x0 - ox,
         y = y0 - oy,
         a = q < 0.7 ? 1 : (1 - q) / 0.3,
@@ -881,7 +881,7 @@ export function efImpactoChao(x0, y0, r, el) {
     });
   }
 }
-export function efChuva(x0, y0, r, el) {
+export function efChuva(x0: number, y0: number, r: number, el) {
   if (SIM.ativo) return;
   const v = vEl(el);
   for (let i = 0; i < 14; i++) {
@@ -890,7 +890,7 @@ export function efChuva(x0, y0, r, el) {
       ty = y0 + rnd(-r * 0.7, r * 0.7);
     vfx({
       max: 0.28 + t0,
-      desenhar(ox, oy, q0) {
+      desenhar(ox: number, oy: number, q0: number) {
         const q = (q0 * (0.28 + t0) - t0) / 0.28;
         if (q < 0) return;
         const x = tx - ox,
@@ -915,7 +915,7 @@ export function efChuva(x0, y0, r, el) {
     });
   }
 }
-export function efEspiral(x0, y0, r, el, dur) {
+export function efEspiral(x0: number, y0: number, r: number, el: string, dur: number) {
   if (SIM.ativo) return;
   for (let i = 0; i < 22; i++) {
     const a = (i / 22) * Math.PI * 6,
@@ -940,7 +940,7 @@ export function efEspiral(x0, y0, r, el, dur) {
 // Nada disto roda na simulação, e com o aparelho lento (QUAL 0) os enfeites extras são cortados.
 export const semVfx = () => SIM.ativo || !J || !J.cena;
 // explosão: núcleo branco, bola do elemento, anel que abre e raios curtos saindo
-export function efExplosao(x0, y0, r, el, forte?) {
+export function efExplosao(x0: number, y0: number, r: number, el: string, forte?: boolean) {
   if (semVfx()) return;
   const v = vEl(el),
     K = Math.min(2, VFX_K),
@@ -948,7 +948,7 @@ export function efExplosao(x0, y0, r, el, forte?) {
   luzFlash(x0, y0, v.c2, r * (forte ? 1.1 : 1.2), forte ? 0.3 : 0.22);
   vfx({
     max: forte ? 0.55 : 0.4,
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const x = x0 - ox,
         y = y0 - oy,
         ab = 1 - Math.pow(1 - q, 3),
@@ -992,14 +992,14 @@ export function efExplosao(x0, y0, r, el, forte?) {
   if (forte) rajada(x0, y0, r * 1.4, 1.2);
 }
 // meteoro: um risco cai do céu e termina no ponto de impacto, com a marca crescendo no chão (avisa onde vai cair)
-export function efQueda(x0, y0, el, atraso) {
+export function efQueda(x0: number, y0: number, el, atraso: number) {
   if (semVfx()) return;
   const v = vEl(el),
     dur = 0.2,
     tot = Math.max(0, atraso) + dur;
   vfx({
     max: tot,
-    desenhar(ox, oy, q0) {
+    desenhar(ox: number, oy: number, q0: number) {
       const q = (q0 * tot - (tot - dur)) / dur;
       if (q < 0) return;
       const x = x0 - ox,
@@ -1035,7 +1035,7 @@ export function efQueda(x0, y0, el, atraso) {
   });
 }
 // puxão: anéis que fecham para o centro e riscos correndo para dentro
-export function efPuxao(x0, y0, r, el) {
+export function efPuxao(x0: number, y0: number, r: number, el) {
   if (semVfx()) return;
   const v = vEl(el),
     nR = QUAL > 0 ? 14 : 8,
@@ -1043,7 +1043,7 @@ export function efPuxao(x0, y0, r, el) {
   vfx({
     max: 0.4,
     camada: "chao",
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const x = x0 - ox,
         y = y0 - oy,
         a = 1 - q,
@@ -1078,13 +1078,13 @@ export function efPuxao(x0, y0, r, el) {
   });
 }
 // muralha: pilares do elemento sobem em roda e seguram por um instante
-export function efMuralha(x0, y0, r, el, dur) {
+export function efMuralha(x0: number, y0: number, r: number, el, dur: number) {
   if (semVfx()) return;
   const v = vEl(el),
     N = QUAL > 0 ? 16 : 10;
   vfx({
     max: dur,
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const x = x0 - ox,
         y = y0 - oy,
         sobe = 1 - Math.pow(1 - Math.min(1, q * 6), 2),
@@ -1117,12 +1117,12 @@ export function efMuralha(x0, y0, r, el, dur) {
   });
 }
 // salto: risco de luz do ponto de partida até o alvo, que encurta e some
-export function efRastroSalto(x1, y1, x2, y2, el) {
+export function efRastroSalto(x1: number, y1: number, x2: number, y2: number, el) {
   if (semVfx()) return;
   const v = vEl(el);
   vfx({
     max: 0.28,
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const a = 1 - q,
         sx = x1 + (x2 - x1) * q * 0.8 - ox,
         sy = y1 + (y2 - y1) * q * 0.8 - oy;
@@ -1147,12 +1147,12 @@ export function efRastroSalto(x1, y1, x2, y2, el) {
   });
 }
 // leque: clarão de disparo abrindo na direção do tiro
-export function efLeque(x0, y0, ang, el) {
+export function efLeque(x0: number, y0: number, ang: number, el) {
   if (semVfx()) return;
   const v = vEl(el);
   vfx({
     max: 0.16,
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const x = x0 - ox,
         y = y0 - oy,
         a = 1 - q,
@@ -1177,13 +1177,13 @@ export function efLeque(x0, y0, ang, el) {
   });
 }
 // ondas de som: três anéis saindo um atrás do outro (acompanham o herói)
-export function efCanto(r, el) {
+export function efCanto(r: number, el) {
   if (semVfx()) return;
   const v = vEl(el);
   vfx({
     max: 0.9,
     camada: "chao",
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const x = J.jogador.x - ox,
         y = J.jogador.y - oy;
       lg.globalCompositeOperation = "lighter";
@@ -1203,11 +1203,11 @@ export function efCanto(r, el) {
   efEspiral(J.jogador.x, J.jogador.y, r * 0.6, el, 0.9);
 }
 // cura: anel verde que sobe pelo corpo e sinais de "+" subindo
-export function efCura(r) {
+export function efCura(r: number) {
   if (semVfx()) return;
   vfx({
     max: 0.8,
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const x = J.jogador.x - ox,
         y = J.jogador.y - oy,
         a = curvaEf(q);
@@ -1244,7 +1244,7 @@ export function efMarca(e) {
   if (semVfx()) return;
   vfx({
     max: 0.35,
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       if (e.hp <= 0) return;
       const x = e.x - ox,
         y = e.y - oy - (e.tam || 8) * 0.3,
@@ -1267,7 +1267,7 @@ export function efMarca(e) {
   });
 }
 // ---- objetos de habilidade que ficam no mapa
-export function desenharCria(c, ox, oy) {
+export function desenharCria(c: Cria, ox: number, oy: number) {
   const x = c.x - ox,
     y = c.y - oy;
   if (x < -12 || y < -12 || x > VW + 12 || y > VH + 12) return;
@@ -1301,7 +1301,7 @@ export function desenharCria(c, ox, oy) {
   }
   lg.globalAlpha = 1;
 }
-export function desenharArmadilha(a, ox, oy) {
+export function desenharArmadilha(a: Armadilha, ox: number, oy: number) {
   const x = a.x - ox,
     y = a.y - oy;
   if (x < -10 || y < -10 || x > VW + 10 || y > VH + 10) return;
@@ -1337,7 +1337,7 @@ export function desenharArmadilha(a, ox, oy) {
   } // mina com luz piscando
   lg.globalAlpha = 1;
 }
-export function desenharZona(z, ox, oy) {
+export function desenharZona(z, ox: number, oy: number) {
   const x = z.x - ox,
     y = z.y - oy,
     r = z.r;
@@ -1407,7 +1407,7 @@ export function desenharZona(z, ox, oy) {
   lg.globalAlpha = 1;
 }
 // espírito do Xamã: orbe com cauda na órbita (desenhado na passada de luz)
-export function desenharEspirito(z, ox, oy) {
+export function desenharEspirito(z, ox: number, oy: number) {
   const P = J.jogador,
     x = z.x - ox,
     y = z.y - oy;

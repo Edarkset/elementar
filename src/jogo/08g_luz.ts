@@ -10,12 +10,12 @@ import { lumChao } from "./08_horda.js";
 import { VFX_EL } from "./08b_efeitos.js";
 import { passiva } from "./08f_lendas.js";
 // ================================================================ luz: tom de cada universo, crepúsculo do fim do mapa e luzes que vêm dos poderes
-export function luzFlash(x, y, cor, r, dur) {
+export function luzFlash(x: number, y: number, cor, r: number, dur: number) {
   J.flashes = J.flashes || [];
   if (J.flashes.length > 40) J.flashes.shift();
   J.flashes.push({ x, y, cor, r, t: 0, max: dur || 0.3 });
 }
-export function atualizarLuz(dt) {
+export function atualizarLuz(dt: number) {
   if (J.flashes) {
     for (const f of J.flashes) f.t += dt;
     J.flashes = J.flashes.filter(f => f.t < f.max);
@@ -41,7 +41,7 @@ export function pisoEscuroK() {
 }
 export let LMAP = null,
   FURO = null;
-export function desenharMapaLuz(ox, oy) {
+export function desenharMapaLuz(ox: number, oy: number) {
   if (QUAL === 0 || SIM.ativo || J.escuro > 0.05) return;
   const A = nivelEscuro();
   if (A < 0.04) return;
@@ -75,7 +75,7 @@ export function desenharMapaLuz(ox, oy) {
   nuvensEm(g, ox - 1, oy - 1, k);
   J._nuvemFeita = true;
   g.globalCompositeOperation = "destination-out";
-  const furo = (x, y, r, a) => {
+  const furo = (x: number, y: number, r: number, a: number) => {
     const X = (x - ox + 1) * k,
       Y = (y - oy + 1) * k,
       R2 = r * k;
@@ -142,7 +142,7 @@ export function desenharMapaLuz(ox, oy) {
   lg.imageSmoothingQuality = "high";
 }
 // sombra projetada no chão (luz vinda de cima à esquerda): silhueta escura, achatada e inclinada a partir dos pés
-export function sombraProjetada(spr, x, yPe, w, h, virar, forca) {
+export function sombraProjetada(spr, x: number, yPe: number, w: number, h: number, virar: boolean, forca: number) {
   if (!spr || QUAL === 0 || SIM.ativo) return;
   const A = nivelEscuro(),
     a = (0.36 - A * 0.3) * (forca || 1);
@@ -159,7 +159,7 @@ export function sombraProjetada(spr, x, yPe, w, h, virar, forca) {
   lg.globalAlpha = a0;
 }
 // tom ambiente: multiplica a cena pela cor da luz do universo; perto do fim do mapa caminha para o crepúsculo
-export function desenharLuzAmbiente(ox, oy) {
+export function desenharLuzAmbiente(ox: number, oy: number) {
   const u = UNIV[R.universo];
   if (!u || !u.luz) return;
   const L = u.luz;
@@ -178,7 +178,7 @@ export function desenharLuzAmbiente(ox, oy) {
   const k = 0.35 + (L.noite ? 0.65 : 0) + crep * 0.25;
   if (k < 0.3) return;
   lg.globalCompositeOperation = "lighter";
-  const luz = (x, y, r, cor, a) => {
+  const luz = (x: number, y: number, r: number, cor: string | CanvasGradient | CanvasPattern, a: number) => {
     const X = x - ox,
       Y = y - oy;
     if (X < -r || Y < -r || X > VW + r || Y > VH + r) return;

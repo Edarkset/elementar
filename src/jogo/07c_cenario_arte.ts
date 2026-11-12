@@ -12,17 +12,17 @@ import { chao, defChao, gerarChao } from "./10_desenho.js";
 export const cacheCel = new Map();
 // O que existe no mapa é decidido pela lista de artes (o manifesto), não por a imagem já ter chegado: antes, marcos e construções só
 // eram criados se a arte estivesse carregada naquele instante, então o mesmo mapa tinha obstáculos diferentes conforme a rede
-export function temArteU(sufixo) {
+export function temArteU(sufixo: string) {
   const u = UNIV[R.universo];
   return !!(u && MANIFESTO && MANIFESTO[`arte/reinos/${u.era}/${u.id}__${sufixo}.png`]);
 }
-export function folhaU(sufixo) {
+export function folhaU(sufixo: string) {
   const u = UNIV[R.universo];
   if (!u) return null;
   const img = ARTE_IMG[`arte/reinos/${u.era}/${u.id}__${sufixo}.png`];
   return img && img.pronta ? img : null;
 }
-export function folhaArte(caminho) {
+export function folhaArte(caminho: string) {
   const img = ARTE_IMG[caminho];
   return img && img.pronta ? img : null;
 }
@@ -73,13 +73,13 @@ export function faixasFolha(img, rows) {
 }
 // pedaço da pose de cima invadindo o topo da célula: se no terço de cima existe uma linha vazia com desenho acima dela,
 // o que está acima é de outra pose e sai
-export function limparTopoSolto(c) {
+export function limparTopoSolto(c: HTMLCanvasElement) {
   try {
     const g = c.getContext("2d"),
       W = c.width,
       H = c.height,
       d = g.getImageData(0, 0, W, H).data,
-      cheia = y => {
+      cheia = (y: number) => {
         for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 30) return true;
         return false;
       };
@@ -115,7 +115,7 @@ export function limparTopoSolto(c) {
       }
     }
     // laterais: fiapo da coluna vizinha separado do corpo por uma coluna vazia, nos 15% de cada lado
-    const col = x => {
+    const col = (x: number) => {
         for (let y = 0; y < H; y++) if (d[(y * W + x) * 4 + 3] > 30) return true;
         return false;
       },
@@ -140,7 +140,7 @@ export function limparTopoSolto(c) {
     relatar("cenário: bordas da célula não puderam ser lidas", e);
   }
 }
-export function celulaArte(img, cols, rows, col, row, w, h, base?) {
+export function celulaArte(img, cols, rows, col, row, w, h, base?: number) {
   if (!img) return null;
   if (!img._id) img._id = ++ID_IMG;
   const k = img._id + "|" + cols + "|" + rows + "|" + col + "|" + row + "|" + w + "|" + h;
@@ -184,7 +184,7 @@ export function celulaArte(img, cols, rows, col, row, w, h, base?) {
 export const CAMADA_ARTE = [];
 export let cvArte = null;
 // versão da célula em K pixels por pixel de mundo, recortada do arquivo original com suavização de alta qualidade
-export function versaoHi(c, K?) {
+export function versaoHi(c, K?: number) {
   if (!c || !c._src) return null;
   K = Math.max(1, Math.min(8, Math.ceil(K || 4)));
   if (c.hi && c.hiK === K) return c.hi;
@@ -223,7 +223,7 @@ export function versaoHi(c, K?) {
 {
   const desenhoOriginal = lg.drawImage.bind(lg);
   // o tipo do navegador descreve as três formas de chamar drawImage; esta função atende as três e troca a imagem pela versão nítida
-  lg.drawImage = function (img, a, b, c, d, e, f, g2, h2) {
+  lg.drawImage = function (img, a: number, b: number, c: number, d: number, e, f, g2, h2) {
     if (img && img._suave && !lg.imageSmoothingEnabled) {
       lg.imageSmoothingEnabled = true;
       desenhoOriginal.apply(null, arguments);
@@ -299,7 +299,7 @@ export function bboxCelula(img, sx, sy, sw, sh) {
   return bb;
 }
 export const ALVO_ARTE = [18, 21, 24, 28]; // altura do monstro com arte, por estágio (pixels de mundo). Antes 24 a 44: os evoluídos ficavam maiores que o herói e cobriam tudo
-export function encaixarArte(img, sx, sy, sw, sh, alvo) {
+export function encaixarArte(img, sx: number, sy: number, sw: number, sh: number, alvo: number) {
   const bb = bboxCelula(img, sx, sy, sw, sh),
     ky = correcaoAltura(img),
     k = Math.min(alvo / bb.w, alvo / (bb.h * ky)),
@@ -381,7 +381,7 @@ export function arteCarregou(ns) {
 // piso jogável grande (1024 px da folha = 512 px no mundo); emendas pequenas são escondidas misturando uma cópia deslocada perto das bordas
 export const TAM_PISO = 220; // o piso de 512 px cobre 220 px de mundo (antes 300: as peças do piso ficavam enormes perto dos personagens)
 // realce leve de nitidez (máscara de desfoque), feito uma vez quando o piso carrega; a borda dá a volta para continuar emendando
-export function nitidez(c, k) {
+export function nitidez(c: HTMLCanvasElement, k: number) {
   if (SIM.ativo) return c;
   try {
     const g = c.getContext("2d"),
@@ -446,11 +446,11 @@ export function acalmarPiso(c) {
 // piso repetido sem costura. A maioria das artes já emenda sozinha e volta como está. As que não emendam nas bordas
 // (padrões geométricos como o da Pérsia) viram 4 cópias espelhadas, que emendam sem costura nenhuma; cada cópia cobre
 // o mesmo tamanho de mundo, então quem usa dobra o tamanho do piso (c._espelho)
-export function emendaNasBordas(g, T) {
+export function emendaNasBordas(g: CanvasRenderingContext2D, T: number) {
   try {
     const d = g.getImageData(0, 0, T, T).data,
-      px = (x, y) => (y * T + x) * 4,
-      dif = (a, b) => Math.abs(d[a] - d[b]) + Math.abs(d[a + 1] - d[b + 1]) + Math.abs(d[a + 2] - d[b + 2]);
+      px = (x: number, y: number) => (y * T + x) * 4,
+      dif = (a: number, b: number) => Math.abs(d[a] - d[b]) + Math.abs(d[a + 1] - d[b + 1]) + Math.abs(d[a + 2] - d[b + 2]);
     let meio = 0,
       ex = 0,
       ey = 0,
@@ -467,7 +467,7 @@ export function emendaNasBordas(g, T) {
     return true;
   }
 } // costura = borda bem mais diferente que pixels vizinhos do meio
-export function tornarContinuo(img, T) {
+export function tornarContinuo(img: CanvasImageSource, T: number) {
   const c = document.createElement("canvas");
   c.width = c.height = T;
   const g = c.getContext("2d");
@@ -545,7 +545,7 @@ export function detalhesArte(r) {
 }
 
 // ---------------------------------------------------------------- marcos, luzes e peças de primeiro plano (folha 4x2)
-export function sortearMarcos(cx, cy, r, out) {
+export function sortearMarcos(cx: number, cy: number, r, out: PropCena[]) {
   if (!temArteU("props")) return;
   const x = cx * CH + 10 + r() * 76,
     y = cy * CH + 10 + r() * 76;
@@ -640,14 +640,14 @@ export function folhaEfeitos(e) {
   if (!u || !(e && e.chefe)) return null;
   return e.eraChefe ? folhaArte(`arte/reinos/${u.era}/guardiao_${u.era}__efeitos.png`) : folhaU("efeitos");
 }
-export function quadroEfeito(e, linha, col, tam) {
+export function quadroEfeito(e, linha, col: number, tam: number) {
   const img = folhaEfeitos(e);
   if (!img) return null;
   const rows = e.eraChefe ? 3 : 2;
   return celulaArte(img, 8, rows, col, Math.min(rows - 1, linha || 0), tam, tam, 0.5);
 }
 // toca os quadros 5 a 8 (estouro no chão) no ponto do impacto
-export function impactoArte(e, x, y, tam) {
+export function impactoArte(e, x: number, y: number, tam: number) {
   const linha = (e && e.golpeIdx) || 0;
   if (!quadroEfeito(e, linha, 4, tam)) return;
   J.golpes.push({
@@ -656,7 +656,7 @@ export function impactoArte(e, x, y, tam) {
       this.t += dt;
       return this.t < 0.4;
     },
-    frente(ox, oy) {
+    frente(ox: number, oy: number) {
       const s = quadroEfeito(e, linha, 4 + Math.min(3, Math.floor(this.t / 0.1)), tam);
       if (s) lg.drawImage(s, Math.round(x - ox - tam / 2), Math.round(y - oy - tam / 2));
     }

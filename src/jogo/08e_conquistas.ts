@@ -18,7 +18,7 @@ export function metaConq() {
   META.lendas = META.lendas || [];
   return META;
 }
-export function evento(nome, n?) {
+export function evento(nome: string, n?: number) {
   if (!J || (SIM.ativo && !SIM.conquistas)) return;
   n = n || 1;
   metaConq();
@@ -36,7 +36,7 @@ export function evento(nome, n?) {
     } else if (META.cont[nome] >= c.n) conceder(c);
   }
 }
-export function checarGlobais(nome) {
+export function checarGlobais(nome: string) {
   for (const c of CONQ()) if (!META.conq[c.id] && c.categoria !== "mapa" && c.evento === nome && (META.cont[nome] || 0) >= c.n) conceder(c);
 }
 export function conceder(c) {
@@ -66,11 +66,11 @@ export function conceder(c) {
   }
   if (typeof gravar === "function") gravar();
 }
-export function avisoConquista(txt, sub) {
+export function avisoConquista(txt: string, sub: string) {
   J && (J.conqFila = J.conqFila || []).push({ txt, sub });
   if (!J) toast(txt);
 }
-export function atualizarConquistas(dt) {
+export function atualizarConquistas(dt: number) {
   if (!J) return;
   if (J.conqAtual) {
     J.conqAtual.vida -= dt;
@@ -103,7 +103,7 @@ export function desenharConquista() {
   ctx.globalAlpha = 1;
 }
 // eventos que dependem do fim da luta
-export function eventosVitoria(e) {
+export function eventosVitoria(e: Inimigo) {
   conferirProvacoes(e);
   evento("chefe");
   if (!J.atingidoNoChefe) evento("chefe_intocado");
@@ -153,7 +153,7 @@ export function telaConquistas() {
     { grade: true }
   );
 }
-export function telaMural(uid) {
+export function telaMural(uid: string) {
   const u = UNIV[uid],
     l = D.lendas.find(x => x.universo === uid);
   const cartas: Carta[] = CONQ()
@@ -208,7 +208,7 @@ export function telaGlobais() {
   mostrarCartas("Insígnias", "Jornada, Grimório e Segredos", cartas, { grade: true });
 }
 // mural: o retrato da Lenda (arte/lendas/<id>__retrato.png, cortado em 2x3) com os ladrilhos ainda não conquistados cobertos
-export function muralSprite(uid, n) {
+export function muralSprite(uid: string, n: number) {
   const l = D.lendas.find(x => x.universo === uid),
     c = document.createElement("canvas");
   c.width = 24;

@@ -116,7 +116,7 @@ export function atualizarEventos(dt) {
     }
   }
 }
-export function desenharAltar(ox, oy) {
+export function desenharAltar(ox: number, oy: number) {
   const a = J.altar;
   if (!a) return;
   const x = a.x - ox,
@@ -158,7 +158,7 @@ export function desenharAltar(ox, oy) {
   lg.lineWidth = 1;
 }
 // ---------------------------------------------------------------- textos: o nome de uma reação só aparece grande na primeira vez da partida
-export function textoUnico(chave, x, y, t, cor, tam) {
+export function textoUnico(chave: string, x: number, y: number, t: string, cor, tam: number) {
   R.vistos = R.vistos || {};
   if (R.vistos[chave]) return false;
   R.vistos[chave] = 1;

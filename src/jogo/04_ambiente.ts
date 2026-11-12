@@ -44,7 +44,7 @@ Object.assign(INTER, {
 });
 // formas de gelo (pelo nome do ramo): contam como "gelo" para o chão
 export const GELADO = /gelo|neve|glacia|inverno|congel/i;
-export function elementoNoSolo(s) {
+export function elementoNoSolo(s: Selo) {
   const el = elementoDe(s);
   if (el !== "agua") return el;
   const r = ramoObj(s);
@@ -67,7 +67,7 @@ export const SINAL_SOLO = {
   queimado: ["#5a4a40", 1, "fumaca"],
   molhado: ["#9fd0ff", 1, null]
 };
-export function sinalSolo(cx, cy, vira) {
+export function sinalSolo(cx: number, cy: number, vira) {
   const sg = SINAL_SOLO[vira];
   if (!sg || SIM.ativo || J.parts.length > 300) return;
   J._sinalT = J._sinalT || 0;
@@ -107,12 +107,12 @@ export const DUR = {
   rachado: 16
 };
 export const DEPOIS = { fogo: "cinza", eletrico: "agua", vinha: "grama" };
-export function hash2(x, y, s) {
+export function hash2(x: number, y: number, s: number) {
   let h = (x * 374761393 + y * 668265263 + s * 982451653) | 0;
   h = Math.imul(h ^ (h >>> 13), 1274126177);
   return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
 }
-export function ruido(x, y, s) {
+export function ruido(x: number, y: number, s: number) {
   const xi = Math.floor(x),
     yi = Math.floor(y),
     fx = x - xi,
@@ -131,7 +131,7 @@ export function terrenoBase() {
 }
 // o solo natural de uma célula não muda durante o mapa: fica guardado (era recalculado, com ruído e busca de lagos, várias vezes por
 // inimigo a cada quadro; com a horda cheia isso era uma das maiores fatias da lógica)
-export function soloNatural(cx, cy) {
+export function soloNatural(cx: number, cy: number) {
   const M = J.soloNat || (J.soloNat = new Map()),
     k = (cx + 32768) * 65536 + (cy + 32768);
   let t = M.get(k);
@@ -163,14 +163,14 @@ export function soloEm(cx, cy) {
   }
   return soloNatural(cx, cy);
 }
-export function mudarSolo(x, y, tipo, dur?) {
+export function mudarSolo(x: number, y: number, tipo: string, dur?: number) {
   if (estruturaU() && J.cena && abismoEm(x, y, 0)) return;
   const cx = Math.floor(x / CEL),
     cy = Math.floor(y / CEL);
   J.solo.set(cx + "," + cy, { t: tipo, ate: J.t + (dur ?? DUR[tipo] ?? 30) });
 }
 export const frio = () => terrenoBase()[0] === "gelo";
-export function aplicarElementoNoSolo(x, y, el) {
+export function aplicarElementoNoSolo(x: number, y: number, el: string) {
   const cx = Math.floor(x / CEL),
     cy = Math.floor(y / CEL),
     atual = soloEm(cx, cy);
@@ -199,7 +199,7 @@ export function aplicarElementoNoSolo(x, y, el) {
     sinalSolo(cx, cy, vira);
   }
 }
-export function atualizarSolo(dt) {
+export function atualizarSolo(dt: number) {
   // cada monstro marca o chão embaixo dele e um pouco em volta (rastro largo, não uma célula só)
   J.tSolo -= dt;
   if (J.tSolo <= 0) {
@@ -240,12 +240,12 @@ export function atualizarSolo(dt) {
   const P = J.jogador,
     sj = soloEm(Math.floor(P.x / CEL), Math.floor(P.y / CEL));
   J.soloJog = sj;
-  const temEl = el => ativos().some(s => elementoDe(s) === el);
+  const temEl = (el: string) => ativos().some(s => elementoDe(s) === el);
   if (sj === "fogo" && !temEl("fogo") && J.invuln <= 0) J.vida -= J.vidaMax * 0.04 * dt;
   if (sj === "eletrico" && !temEl("raio") && J.invuln <= 0) J.vida -= J.vidaMax * 0.05 * dt;
   if (sj === "luz") curar(J.vidaMax * 0.01 * dt);
 }
-export function fatorVentoFogo(dx, dy) {
+export function fatorVentoFogo(dx: number, dy: number) {
   const C = J.cena;
   if (!C || C.kit.submerso) return 1;
   const m = Math.min(1.5, C.Wm / 45),
@@ -334,7 +334,7 @@ export const TEX_SOLO = {},
   BASE_TEX = {};
 // molhado, rachado e queimado escurecem o piso por multiplicação (o desenho do chão continua por baixo, como pedra molhada de verdade)
 export const SOLO_MULT = { molhado: 1, rachado: 1, queimado: 1 };
-export function texturaSolo(t) {
+export function texturaSolo(t: string) {
   if (TEX_SOLO[t]) return TEX_SOLO[t];
   const cor = COR_SOLO[t],
     N = TEX_N,
@@ -357,7 +357,7 @@ export function texturaSolo(t) {
         g.restore();
       }
   };
-  const mancha = (x, y, rr, cc, a) =>
+  const mancha = (x: number, y: number, rr: number, cc, a: number) =>
     rep(() => {
       const gr = g.createRadialGradient(x, y, 0, x, y, rr),
         [R1, G1, B1] = hexRgb(cc);
@@ -368,7 +368,7 @@ export function texturaSolo(t) {
     });
   if (!(t in BASE_TEX))
     for (let i = 0; i < 34; i++) mancha(r() * N, r() * N, 3 + r() * 9, r() < 0.5 ? tom(cor[0], 1.22) : tom(cor[0], 0.78), 0.55);
-  const traco = (pts, cc, lw, a) =>
+  const traco = (pts, cc, lw: number, a: number) =>
     rep(() => {
       g.strokeStyle = cc;
       g.globalAlpha = a;
@@ -381,7 +381,7 @@ export function texturaSolo(t) {
       g.stroke();
       g.globalAlpha = 1;
     });
-  const ponto = (x, y, rr, cc, a) =>
+  const ponto = (x: number, y: number, rr: number, cc, a: number) =>
     rep(() => {
       g.fillStyle = cc;
       g.globalAlpha = a;
@@ -620,7 +620,7 @@ export const SOLO_DES = {
   /** grade de tipos de solo */ G: null,
   F: null as Float32Array
 };
-export function desenharSolo(ox, oy) {
+export function desenharSolo(ox: number, oy: number) {
   const A = SOLO_FOLGA,
     c0 = Math.floor(Math.floor(ox / CEL) / A) * A - A,
     r0 = Math.floor(Math.floor(oy / CEL) / A) * A - A;
@@ -694,7 +694,7 @@ export function desenharSolo(ox, oy) {
   }
   lg.globalAlpha = 1;
 }
-export function montarSolo(c0, r0, W2, H2, UK, Kb, ancora) {
+export function montarSolo(c0: number, r0: number, W2: number, H2: number, UK: number, Kb: number, ancora: string) {
   const ES = SOLO_DES.es;
   ES.ancora = ancora;
   ES.J = J;

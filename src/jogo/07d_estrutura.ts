@@ -42,7 +42,7 @@ export function zonaPeca(zx, zy) {
     }
   }
   if (f) {
-    const v = (a, b) => a + r() * (b - a);
+    const v = (a: number, b: number) => a + r() * (b - a);
     if (f.tipo === "abismo") {
       f.rx = v(55, 95);
       f.ry = v(42, 70);
@@ -62,7 +62,7 @@ export function zonaPeca(zx, zy) {
   C.zonas.set(k, f);
   return f;
 }
-export function pecasPerto(x, y) {
+export function pecasPerto(x: number, y: number) {
   const E = estruturaU();
   if (!E || !J.cena) return [];
   const Z = E.zona || 320,
@@ -83,14 +83,15 @@ export function pecasPerto(x, y) {
   C.vizinhas.set(k, out);
   return out;
 }
-export const naPonte = (f, x, y) => (f.ponte === "h" ? Math.abs(y - f.y) < 8 : f.ponte === "v" ? Math.abs(x - f.x) < 8 : false);
+export const naPonte = (f, x: number, y: number) =>
+  f.ponte === "h" ? Math.abs(y - f.y) < 8 : f.ponte === "v" ? Math.abs(x - f.x) < 8 : false;
 // o ponto está no vazio? (m = margem: positiva alarga o buraco)
 // borda irregular do abismo (rocha quebrada, não uma elipse perfeita): raio relativo pelo ângulo, entre ~0,8 e ~1,2
-export function raioAbismo(f, a) {
+export function raioAbismo(f, a: number) {
   const s = f.fs || [0, 0, 0];
   return 1 + 0.1 * Math.sin(3 * a + s[0]) + 0.06 * Math.sin(5 * a + s[1]) + 0.035 * Math.sin(9 * a + s[2]);
 }
-export function abismoEm(x, y, m) {
+export function abismoEm(x: number, y: number, m: number) {
   m = m || 0;
   for (const f of pecasPerto(x, y)) {
     if (f.tipo !== "abismo" || Math.abs(x - f.x) > f.rx * 1.22 + m || Math.abs(y - f.y) > f.ry * 1.22 + m) continue;
@@ -100,7 +101,7 @@ export function abismoEm(x, y, m) {
   }
   return null;
 }
-export function lagoEm(x, y) {
+export function lagoEm(x: number, y: number) {
   for (const f of pecasPerto(x, y)) {
     if (f.tipo !== "lago" || Math.abs(x - f.x) > f.rx || Math.abs(y - f.y) > f.ry) continue;
     const dx = (x - f.x) / f.rx,
@@ -114,7 +115,7 @@ export function soloLago() {
   const t = (estruturaU() || {}).lago_solo || "agua";
   return t === "agua" && frio() ? "gelo" : t;
 }
-export function soloEstrutura(cx, cy) {
+export function soloEstrutura(cx: number, cy: number) {
   if (!estruturaU() || !J.cena) return null;
   const x = cx * CEL + 4,
     y = cy * CEL + 4;
@@ -122,7 +123,7 @@ export function soloEstrutura(cx, cy) {
   return null;
 }
 // empurra para fora do abismo: para a borda mais próxima ou para a ponte, o que estiver mais perto
-export function sairDoAbismo(o, r) {
+export function sairDoAbismo(o, r: number) {
   const f = abismoEm(o.x, o.y, r);
   if (!f) return false;
   const dx = o.x - f.x,
@@ -145,14 +146,14 @@ export function sairDoAbismo(o, r) {
   return true;
 }
 // quanto o ponto entrou no buraco (0 = borda, 1 = centro)
-export function fundoDoAbismo(x, y) {
+export function fundoDoAbismo(x: number, y: number) {
   const f = abismoEm(x, y, 0);
   if (!f) return 0;
   const dx = (x - f.x) / f.rx,
     dy = (y - f.y) / f.ry;
   return 1 - Math.sqrt(dx * dx + dy * dy) / raioAbismo(f, Math.atan2(dy, dx));
 }
-export function voa(e) {
+export function voa(e: Inimigo) {
   const d = e.def;
   return e.chefe || e.mini || !d || d.andar === "voa" || d.andar === "flutua" || d.corpo === "espectro";
 }
@@ -245,7 +246,7 @@ export function atualizarEstrutura(dt) {
   }
   atualizarFauna(dt);
 }
-export function queda(x, y, spr, esc) {
+export function queda(x: number, y: number, spr: HTMLCanvasElement, esc: number) {
   J.quedas = J.quedas || [];
   J.quedas.push({ x, y, spr, esc, t: 0 });
 }
@@ -297,7 +298,7 @@ export function faixaParedao(img) {
   } catch (e) {
     return null;
   }
-  const caixa = (c, r) => {
+  const caixa = (c: number, r: number) => {
     let x0 = 1e9,
       x1 = -1,
       y0 = 1e9;
@@ -310,7 +311,7 @@ export function faixaParedao(img) {
         }
     return x1 < 0 ? null : { x0, x1, y0 };
   };
-  const linha = r => {
+  const linha = (r: number) => {
     const bs = [0, 1, 2, 3].map(c => caixa(c, r)).filter(Boolean);
     return bs.map(b => {
       const w = b.x1 - b.x0 + 1,
@@ -411,7 +412,7 @@ export function nevoaAbismo(fundo) {
   fundo._nev = n;
   return n;
 }
-export function desenharEstrutura(ox, oy) {
+export function desenharEstrutura(ox: number, oy: number) {
   const E = estruturaU(),
     C = J.cena;
   if (!E || !C) return;
@@ -467,7 +468,7 @@ export function desenharEstrutura(ox, oy) {
       lg.closePath();
     };
     // borda de cima (para o paredão): y mais alto de cada x, dos pontos da metade de cima
-    const topo = wx => {
+    const topo = (wx: number) => {
       let best = null;
       for (let i = 0; i < NP; i++) {
         const [ax, ay] = f.pts[i],
@@ -745,7 +746,7 @@ export function desenharEstrutura(ox, oy) {
     }
   }
 }
-export function desenharQuedasAbismo(ox, oy) {
+export function desenharQuedasAbismo(ox: number, oy: number) {
   if (!J.quedas) return;
   for (const q of J.quedas) q.t += 1 / 60;
   J.quedas = J.quedas.filter(q => q.t < 0.7);
@@ -760,16 +761,16 @@ export function desenharQuedasAbismo(ox, oy) {
 }
 
 // ---------------------------------------------------------------- fauna: bichos de ambiente que reagem a quem passa
-export function quadroFauna(row, col, tam) {
+export function quadroFauna(row: number, col: number, tam: number) {
   const img = folhaU("fauna");
   return img ? celulaArte(img, 8, 2, col, row, tam, tam, 0.5) : null;
 }
-export function atualizarFauna(dt) {
+export function atualizarFauna(dt: number) {
   const C = J.cena,
     P = J.jogador;
   if (!C.fauna) C.fauna = [];
   C.tAve = (C.tAve ?? 3) - dt;
-  const perto = (x, y, r) => {
+  const perto = (x: number, y: number, r: number) => {
     if (Math.hypot(P.x - x, P.y - y) < r) return P;
     for (const e of J.inimigos) {
       if (Math.abs(e.x - x) < r && Math.abs(e.y - y) < r) return e;
@@ -928,7 +929,7 @@ export function atualizarFauna(dt) {
     return Math.abs(b.x - P.x) < VW * 1.6 && Math.abs(b.y - P.y) < VH * 1.6;
   });
 }
-export function desenharFauna(ox, oy, camada) {
+export function desenharFauna(ox: number, oy: number, camada: string) {
   const C = J.cena;
   if (!C || !C.fauna) return;
   for (const b of C.fauna) {
@@ -1025,7 +1026,7 @@ export function fimAbertura() {
   for (const f of I.depois) f();
 }
 // chamada no lugar do atualizar enquanto a abertura passa; devolve true se ela ainda está na tela
-export function passoAbertura(dt) {
+export function passoAbertura(dt: number) {
   const I = J.intro;
   if (!I) return false;
   if (!I.img.pronta) {
@@ -1046,8 +1047,8 @@ export function pularAbertura() {
     else if (J.intro.t < J.intro.dur - 0.8) J.intro.t = J.intro.dur - 0.8;
   }
 }
-export const suaveIO = x => (x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x)),
-  suaveO = x => 1 - Math.pow(1 - Math.max(0, Math.min(1, x)), 3);
+export const suaveIO = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x)),
+  suaveO = (x: number) => 1 - Math.pow(1 - Math.max(0, Math.min(1, x)), 3);
 export let CV_INTRO = null;
 export function desenharAbertura() {
   const I = J && J.intro;
@@ -1187,7 +1188,7 @@ export function desenharAbertura() {
   const tt = t - 0.55,
     cy = H * (H > W * 1.05 ? 0.74 : 0.76),
     larguraMax = W * 0.86,
-    medir = (txt, f) => {
+    medir = (txt, f: number) => {
       g.font = `800 ${f}px "Cinzel", Georgia, serif`;
       return g.measureText(txt).width;
     };

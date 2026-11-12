@@ -171,14 +171,14 @@ document.addEventListener("visibilitychange", () => {
   ultimoT = performance.now();
   desenhouPausado = false;
 });
-export function mudarQual(q) {
+export function mudarQual(q: number) {
   if (q === QUAL) return;
   QUAL = q;
   tQual = performance.now() / 1000;
   redimensionar();
   if (typeof chao !== "undefined" && chao && chao.pat) chao.pat = null;
 }
-export function passo(t) {
+export function passo(t: number) {
   requestAnimationFrame(passo);
   if (document.hidden) return;
   if (t - ultimoQuadro < 15.5) return;
@@ -205,7 +205,7 @@ export function passo(t) {
     }
   }
 }
-export function tick(dt) {
+export function tick(dt: number) {
   if (J.hitstop > 0) {
     J.hitstop -= dt;
     return;
@@ -913,7 +913,7 @@ export function efeitoNivel() {
     el.classList.add("vis");
   }
 }
-export function ganharXp(v) {
+export function ganharXp(v: number) {
   v *= tal.xp() * (1 + passiva("xp"));
   J.xp += v;
   for (const ov of R.ninho) ov.prog += v;

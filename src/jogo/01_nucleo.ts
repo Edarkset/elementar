@@ -9,7 +9,7 @@ import { custo, LENDA, passiva } from "./08f_lendas.js";
 import { toast } from "./10_desenho.js";
 import { menu } from "./11_menu.js";
 // ================================================================ utilidades
-export const $ = id => document.getElementById(id);
+export const $ = (id: string) => document.getElementById(id);
 // Nenhum erro some em silêncio: o que era "catch vazio" passa por aqui. Cada lugar avisa uma vez só (senão um erro que se repete a
 // cada quadro enche o console). grave=true é erro de regra do jogo ou de save (aparece como erro e a verificação automática acusa);
 // sem grave é um recurso do navegador que faltou e o jogo segue com o plano B (aparece como aviso)
@@ -19,7 +19,7 @@ export function relatar(onde: string, erro: unknown, grave?: boolean) {
   RELATADOS.add(onde);
   (grave ? console.error : console.warn)("Elementar · " + onde, erro);
 }
-export const rnd = (a, b) => a + Math.random() * (b - a),
+export const rnd = (a: number, b: number) => a + Math.random() * (b - a),
   escolha = a => a[Math.floor(Math.random() * a.length)];
 export const embaralhar = a => {
   a = a.slice();
@@ -46,7 +46,7 @@ D.reacoes.forEach(r => {
 });
 export const ELS = Object.keys(D.elementos) as Elemento[],
   COR = Object.fromEntries(ELS.map(k => [k, D.elementos[k].cor])),
-  NOME_EL = k => D.elementos[k].nome;
+  NOME_EL = (k: string) => D.elementos[k].nome;
 export const NIV = [1, 4, 9, 15]; // protótipo (jogo final: 1, 5, 12, 20)
 export const MULT = D.estagios.map(e => e.mult),
   TAM = [9, 11, 13, 17];
@@ -58,23 +58,23 @@ export const RAR_BONUS = { comum: 1, incomum: 1.04, raro: 1.08, epico: 1.14, len
   RAR_NOME = { comum: "Comum", incomum: "Incomum", raro: "Raro", epico: "Épico", lendario: "Lendário" };
 export const eficacia = (atk, def) =>
   D.vantagem[atk] === def ? D.mult_vantagem.super_efetivo : D.vantagem[def] === atk ? D.mult_vantagem.pouco_efetivo : 1;
-export function hexRgb(h) {
+export function hexRgb(h: string) {
   h = h.replace("#", "");
   return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
 }
 export const hex = c =>
   "#" +
   c
-    .map(v =>
+    .map((v: number) =>
       Math.max(0, Math.min(255, Math.round(v)))
         .toString(16)
         .padStart(2, "0")
     )
     .join("");
-export function tom(h, f) {
+export function tom(h: string, f: number) {
   return hex(hexRgb(h).map(v => (f > 1 ? v + (255 - v) * (f - 1) : v * f)));
 }
-export function mistura(a, b, t) {
+export function mistura(a: string, b: string, t: number) {
   const x = hexRgb(a),
     y = hexRgb(b);
   return hex(x.map((v, i) => v + (y[i] - v) * t));
@@ -103,7 +103,7 @@ export function somLigar() {
 }
 addEventListener("pointerdown", somLigar, { passive: true });
 addEventListener("keydown", somLigar);
-export function somNota(f, dur, tipo, vol, atraso?, f2?) {
+export function somNota(f: number, dur: number, tipo: string, vol: number, atraso?: number, f2?: number) {
   const c = SOM.ctx,
     t = c.currentTime + (atraso || 0),
     o = c.createOscillator(),
@@ -119,7 +119,7 @@ export function somNota(f, dur, tipo, vol, atraso?, f2?) {
   o.start(t);
   o.stop(t + dur + 0.02);
 }
-export function somRuido(dur, vol, atraso, corte) {
+export function somRuido(dur: number, vol: number, atraso: number, corte: number) {
   const c = SOM.ctx,
     t = c.currentTime + (atraso || 0),
     n = Math.ceil(c.sampleRate * dur),
@@ -139,7 +139,7 @@ export function somRuido(dur, vol, atraso, corte) {
   s.start(t);
 }
 // cada som tem um intervalo mínimo para não virar chiado quando muita coisa acontece junto
-export function som(nome, x?) {
+export function som(nome: string, x?: number) {
   if (!SOM.ctx || SIM.ativo || (META.som && META.som.mudo)) return;
   const agora = performance.now(),
     min = { acerto: 45, moeda: 35, tic: 30, gema: 28, critico: 70 }[nome] || 0;
@@ -270,7 +270,7 @@ export const cacheSpr = new Map();
 if (document.fonts && document.fonts.load) {
   for (const f of ['800 20px "Cinzel"', '900 20px "Nunito"', '600 14px "Nunito"']) document.fonts.load(f).catch(() => {});
 }
-export function semente(s) {
+export function semente(s: string) {
   let h = 2166136261;
   for (const c of s) {
     h ^= c.charCodeAt(0);
@@ -284,7 +284,7 @@ export function semente(s) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-export function gerarSprite(seed, n, base, op: { olhos?: string; rar?: string } = {}) {
+export function gerarSprite(seed: string, n, base: string, op: { olhos?: string; rar?: string } = {}) {
   const k = seed + "|" + n + "|" + base + "|" + (op.olhos || "") + "|" + (op.rar || "");
   if (cacheSpr.has(k)) return cacheSpr.get(k);
   const r = semente(seed),
@@ -319,7 +319,7 @@ export function gerarSprite(seed, n, base, op: { olhos?: string; rar?: string } 
   g.fillRect(ox + 1, oy + 1, 1, 1);
   g.fillRect(n - ox, oy + 1, 1, 1);
   const img = g.getImageData(0, 0, W, W).data,
-    cheio = (x, y) => x >= 0 && y >= 0 && x < W && y < W && img[(y * W + x) * 4 + 3] > 0;
+    cheio = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < W && img[(y * W + x) * 4 + 3] > 0;
   const c2 = document.createElement("canvas");
   c2.width = W;
   c2.height = W;
@@ -359,7 +359,7 @@ export function branco(spr) {
 // ovo em vetor, desenhado em alta resolução (6x) e usado com 10x12 de mundo: casca com volume (degradê e brilho),
 // desenho do elemento na casca e acabamento pela raridade (comum: casca creme; raro: prata com faixa; lendário: ouro com runas que brilham)
 export const OVO_K = 6;
-export function spriteOvo(el, rar) {
+export function spriteOvo(el: string, rar: string) {
   const k = "ovo|" + el + "|" + rar;
   if (cacheSpr.has(k)) return cacheSpr.get(k);
   const K = OVO_K,
@@ -627,7 +627,7 @@ export let rodando = false,
 // construções) é decidido pela lista de artes, não pela imagem, então os obstáculos são os mesmos do jogo normal
 export const SIM: Simulacao = { ativo: false, entrada: null, aoDerrota: null, semEspeciais: false, semArte: false };
 export let FONTE: FonteDano = "basico"; // origem do dano corrente (básico, habilidade, especial, combinado, despertar, reação, ambiente)
-export function agendar(seg, fn) {
+export function agendar(seg: number, fn) {
   J.agenda.push({ t: J.t + seg, fn });
 }
 export function novoSt() {
@@ -696,14 +696,14 @@ export const L = s => LINHA[s.mon.id];
 export function ramoAtual(s) {
   return s.mon.ramo ?? (J && J.desp > 0 ? s.tmpRamo : null);
 }
-export function estBase(s) {
+export function estBase(s: Selo) {
   let e = 0;
   if (s.nivel >= NIV[1]) e = 1;
   if (s.nivel >= NIV[2] && s.mon.ramo != null) e = 2;
   if (e === 2 && s.nivel >= NIV[3] && R.chefesVencidos > 0) e = 3;
   return e;
 }
-export function est(s) {
+export function est(s: Selo) {
   const b = estBase(s);
   if (J && J.desp > 0) {
     const e = Math.min(3, b + 1);
@@ -719,7 +719,7 @@ export function est(s) {
 export function elementoBase(o) {
   return o.mon.ramo != null && estBase(o) >= 2 ? L(o).ramos[o.mon.ramo].elemento : L(o).elemento;
 }
-export function ramoObj(s) {
+export function ramoObj(s: Selo) {
   const r = ramoAtual(s);
   return est(s) >= 2 && r != null ? L(s).ramos[r] : null;
 }
@@ -727,15 +727,15 @@ export function elementoDe(s: Selo): Elemento {
   const r = ramoObj(s);
   return r ? r.elemento : L(s).elemento;
 }
-export function linhagemDe(s) {
+export function linhagemDe(s: Selo) {
   const r = ramoObj(s);
   return r ? r.linhagem : L(s).linhagem;
 }
-export function classeExtraDe(s) {
+export function classeExtraDe(s: Selo) {
   const r = ramoObj(s);
   return r ? r.classe_extra : null;
 }
-export function nomeForma(s) {
+export function nomeForma(s: Selo) {
   const e = est(s),
     l = L(s);
   if (e === 0) return l.filhote;
@@ -743,13 +743,13 @@ export function nomeForma(s) {
   const r = ramoObj(s);
   return e === 2 ? r.nome : r.supremo;
 }
-export function spriteSelo(s) {
+export function spriteSelo(s: Selo) {
   const e = est(s);
   const arte = arteMonstro(s.mon.id, e, ramoAtual(s), s.mon.rar);
   if (arte) return arte;
   return gerarSprite(s.mon.id + "#" + e + "#" + (ramoAtual(s) ?? "-"), TAM[e], COR[elementoDe(s)], { rar: s.mon.rar });
 }
-export function spriteLinha(id, rar) {
+export function spriteLinha(id: string, rar: string) {
   const arte = arteMonstro(id, 0, null, rar);
   if (arte) return arte;
   return gerarSprite(id + "#0#-", TAM[0], COR[LINHA[id].elemento], { rar });
@@ -774,8 +774,8 @@ export const LOJA = [
   { id: "oraculo", nome: "Visão do Oráculo", max: 1, base: 260, val: 1, txt: "+1 portal para escolher ao fim de cada mapa" },
   { id: "chance", nome: "Segunda Chance", max: 1, base: 420, val: 1, txt: "uma vez por run, a equipe se levanta com metade da vida" }
 ];
-export const nivelLoja = id => (META.loja && META.loja[id]) || 0;
-export function bonusLoja(id) {
+export const nivelLoja = (id: string) => (META.loja && META.loja[id]) || 0;
+export function bonusLoja(id: string) {
   const it = LOJA.find(x => x.id === id);
   return 1 + (it ? it.val * nivelLoja(id) : 0);
 }
@@ -783,7 +783,7 @@ export const precoLoja = it => Math.round(it.base * Math.pow(1.85, nivelLoja(it.
 export function lojaAcessivel() {
   return LOJA.filter(it => nivelLoja(it.id) < it.max && precoLoja(it) <= META.essencia);
 }
-export function pipsLoja(n, max, pode) {
+export function pipsLoja(n: number, max: number, pode: boolean) {
   let h = "<span class='pips'>";
   for (let i = 1; i <= max; i++) h += `<i class='${i <= n ? "tem" : i === n + 1 && pode ? "novo" : ""}'></i>`;
   return h + "</span>";
@@ -839,7 +839,7 @@ export const REL_GATILHO = new Set([
   "Espelho Mágico",
   "Bússola Enlouquecida"
 ]);
-export const temRel = n => !!(R && R.reliquias && R.reliquias.includes(n));
+export const temRel = (n: string) => !!(R && R.reliquias && R.reliquias.includes(n));
 export function relMods() {
   const m = {
     dano: bonusLoja("forca"),
@@ -901,7 +901,7 @@ export const danoMedioEquipe = () => {
   const a = ativos();
   return a.length ? a.reduce((t, s) => t + atrib(s).dano, 0) / a.length : 1;
 };
-export function atualizarReliquias(dt) {
+export function atualizarReliquias(dt: number) {
   if (!R.reliquias.length || J.fim) return;
   const P = J.jogador;
   if (temRel("Anzol Mágico")) {
@@ -982,7 +982,7 @@ export function atualizarReliquias(dt) {
 // No reino de origem da Lenda (Terra Natal), o poder dela ganha +25%. Valores pequenos de propósito: somam com as
 // sinergias de classe, linhagem e elemento sem desequilibrar (conferido com o robô em testes/rodar_bot.js).
 export const AFIN_LENDA = { dano: [1, 1.06, 1.11, 1.15], vida: [1, 1, 1, 1.08], poderPorAfim: 0.1, terraNatal: 0.25 };
-export function afinidadeLenda(eq) {
+export function afinidadeLenda(eq: Selo[]) {
   const l = typeof LENDA === "function" && LENDA();
   if (!l) return { dano: 1, vida: 1, poder: 1, n: 0, chip: null };
   const n = Math.min(3, eq.filter(s => l.elementos.includes(elementoDe(s))).length),
@@ -1109,7 +1109,7 @@ export const AJUSTE_CLASSE = {
   mistico: 0.96
 };
 export const ASC0 = { d: 0, c: 0, v: 0 };
-export function atrib(s) {
+export function atrib(s: Selo) {
   const l = L(s),
     b = D.classes[l.classe].base,
     e = est(s),
@@ -1160,8 +1160,8 @@ export function atrib(s) {
     cura: (b.cura || 0) * md * rar
   };
 }
-export const fNivel = lv => 1 + 0.25 * Math.max(0, lv - 1),
-  fRecarga = lv => 1 - 0.06 * Math.max(0, lv - 1);
+export const fNivel = (lv: number) => 1 + 0.25 * Math.max(0, lv - 1),
+  fRecarga = (lv: number) => 1 - 0.06 * Math.max(0, lv - 1);
 
 // ================================================================ escrita vinda de outros módulos
 // Um módulo lê as variáveis de outro direto (J.vida, R.selos...), mas só o módulo dono pode atribuir nelas. Quem precisa trocar o

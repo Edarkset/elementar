@@ -240,7 +240,7 @@ export function telaModerador() {
   metaDeuses();
   const talismas = [...new Set(D.conquistas.map(c => c.talisma).filter(Boolean))],
     temBackup = !!PLAT.lerSave(CHAVE_BACKUP);
-  const feito = msg => {
+  const feito = (msg: string) => {
     gravar();
     toast(msg);
     telaModerador();
@@ -362,13 +362,13 @@ export function telaModerador() {
   $("telaCartas").classList.add("ativa");
 }
 // ---------------------------------------------------------------- testes do moderador: Lendas, deuses e Dragões Ancestrais
-export function equipeTeste(pacto, nivel) {
+export function equipeTeste(pacto: string | string[], nivel: number) {
   const pool = D.linhas.filter(l => pacto.includes(l.elemento)).map(l => l.id);
   return embaralhar(pool)
     .slice(0, 3)
     .map(id => ({ id, nivel }));
 }
-export function comecarTeste(pacto, equipe, lenda?) {
+export function comecarTeste(pacto: string[], equipe, lenda?: string) {
   backupModerador();
   fechar();
   $("telaMenu").classList.remove("ativa");
@@ -448,7 +448,7 @@ export function telaTesteDragao() {
 }
 // ferramentas dentro da partida (menu de pausa)
 export function telaFerramentas() {
-  const feito = m => {
+  const feito = (m: string) => {
     toast(m);
     defPausado(false);
     fechar();
@@ -524,7 +524,7 @@ export function telaFerramentas() {
 }
 // emblema de elemento desenhado em vetor (orbe com o símbolo), nítido em qualquer tela
 export const cacheEmblema = new Map();
-export function emblemaElemento(el, ativo) {
+export function emblemaElemento(el: string, ativo: boolean) {
   const k = el + "|" + !!ativo;
   if (cacheEmblema.has(k)) return cacheEmblema.get(k);
   const N = 96,
@@ -733,7 +733,7 @@ export function telaPacto() {
   };
   render();
 }
-export function infoElemento(el) {
+export function infoElemento(el: string) {
   const n = META.liberados.filter(id => LINHA[id].elemento === el).length,
     perde = ELS.find(k => D.vantagem[k] === el);
   return `${n} monstros · vence ${NOME_EL(D.vantagem[el])} · perde para ${NOME_EL(perde)}`;

@@ -53,7 +53,7 @@ export const VEG = {
 
 // ---------------------------------------------------------------- vento
 export const VT = { x: 0, y: 0 };
-export function vento(x, y) {
+export function vento(x: number, y: number) {
   const C = J.cena;
   if (!C) {
     VT.x = VT.y = 0;
@@ -91,7 +91,7 @@ export function vento(x, y) {
   }
   return VT;
 }
-export function sustentacao(x, y) {
+export function sustentacao(x: number, y: number) {
   let s = 0;
   for (const w of J.cena.vort) {
     const d = Math.hypot(x - w.x, y - w.y);
@@ -101,7 +101,7 @@ export function sustentacao(x, y) {
 }
 
 // ---------------------------------------------------------------- início do mapa
-export function iniciarCena(u) {
+export function iniciarCena(u: Universo) {
   const kit = JSON.parse(JSON.stringify(u.kit)); // cópia: a segunda fase dos chefes muda o kit durante a luta
   const r = semente(u.id + "cena" + R.profundidade),
     ang0 = r() * Math.PI * 2;
@@ -167,7 +167,7 @@ export function gerarBolha() {
   g.fillRect(0, 0, 64, 64);
   return c;
 }
-export function bolhaCor(cor) {
+export function bolhaCor(cor: string | CanvasGradient | CanvasPattern) {
   const C = J.cena,
     k = "bolha" + cor;
   if (C.sprites.has(k)) return C.sprites.get(k);
@@ -243,7 +243,7 @@ export function gerarPedaco(cx, cy) {
   sortearMarcos(cx, cy, r, out);
   C.props.set(k, out);
 }
-export function novoProp(tipo, x, y, r): PropCena {
+export function novoProp(tipo: string, x: number, y: number, r): PropCena {
   const M = MAT[tipo],
     hp = M.indestrutivel ? Infinity : M.hp * DIF.hp * dificuldade();
   return {
@@ -276,7 +276,7 @@ export function novoProp(tipo, x, y, r): PropCena {
     var: Math.floor(r() * 3)
   };
 }
-export function carregarProps(ox, oy) {
+export function carregarProps(ox: number, oy: number) {
   const C = J.cena,
     c0 = Math.floor((ox - 60) / CH),
     c1 = Math.floor((ox + VW + 60) / CH),
@@ -291,13 +291,13 @@ export function carregarProps(ox, oy) {
 }
 
 // ---------------------------------------------------------------- objetos: física
-export function atritoSolo(t) {
+export function atritoSolo(t: string) {
   return t === "gelo" ? 0.15 : t === "agua" ? 0.6 : t === "lama" ? 1.6 : t === "areia" ? 1.2 : 1;
 }
-export function rolamentoSolo(t) {
+export function rolamentoSolo(t: string) {
   return t === "areia" ? 3 : t === "lama" ? 4 : t === "grama" || t === "vinha" ? 1.5 : 1;
 } // areia e lama "engolem" a roda
-export function colidir(p, ent, r, m, vx, vy, inimigo) {
+export function colidir(p, ent, r: number, m: number, vx: number, vy: number, inimigo: Inimigo) {
   if (p.mat.fantasma) return false;
   const R = r + p.r * p.esc,
     dx = p.x - ent.x,
@@ -571,7 +571,7 @@ export function apagar(p) {
   }
   if (p.pavio > 0) p.pavio = 0;
 }
-export function derreter(p, q) {
+export function derreter(p, q: number) {
   p.esc = Math.max(0, p.esc - q);
   p.m = p.mat.m * p.esc * p.esc;
   if (Math.random() < 0.4) J.cena.destrocos.push(gota(p.x + rnd(-3, 3), p.y));
@@ -587,7 +587,7 @@ export function afundar(p) {
   for (let i = 0; i < 3; i++) J.cena.ondas.push({ x: p.x, y: p.y, r: 1 + i * 3, vida: 1 });
   particulas(p.x, p.y, "#bfe6ff", 8, 50);
 }
-export function conduzir(p, dano, alc) {
+export function conduzir(p, dano: number, alc: number) {
   if (J.t < p.tCond) return;
   p.tCond = J.t + 0.5;
   const vistos = new Set();
@@ -611,7 +611,7 @@ export function conduzir(p, dano, alc) {
     anel(p.x, p.y, 10, "#bfe0ff", 0.25);
   }
 }
-export function danificarProp(p, dano, el) {
+export function danificarProp(p, dano: number, el: string) {
   if (p.morto) return;
   const M = p.mat;
   // objetos indestrutíveis têm vida infinita: golpes calculados "em % da vida" viram um valor finito antes de seguir (senão o raio conduzido seria infinito)
@@ -664,7 +664,7 @@ export function quebrar(p) {
   particulas(p.x, p.y, "#d8d0c0", 6, 50);
   tremor(M.m > 100 ? 3 : 1.2);
   const prof = 1 + 0.12 * R.profundidade,
-    gemas = (n, v, cor) => {
+    gemas = (n: number, v: number, cor: string) => {
       for (let i = 0; i < n; i++) {
         const a = Math.random() * Math.PI * 2;
         J.gemas.push({ x: p.x, y: p.y, vx: Math.cos(a) * rnd(25, 60), vy: Math.sin(a) * rnd(25, 60), v: v * prof, cor });
@@ -705,7 +705,7 @@ export function quebrar(p) {
   }
   if (M.explode) C.filaExp.push({ x: p.x, y: p.y, R: 44, t: 0.02 });
 }
-export function explodir(x, y, R) {
+export function explodir(x: number, y: number, R: number) {
   const C = J.cena,
     P = J.jogador;
   evento("explosao");
@@ -817,7 +817,7 @@ export function corFrag(p) {
   const base = COR_FRAG[f] || COR_FRAG.madeira;
   return p.carvao > 0.5 ? ["#2a2224", "#4a3a34", "#1a1416"] : base;
 }
-export function lascas(p, n, quebra) {
+export function lascas(p, n: number, quebra: boolean) {
   const C = J.cena,
     cores = corFrag(p),
     leve = p.mat.frag === "palha";
@@ -844,7 +844,7 @@ export function lascas(p, n, quebra) {
 export function gota(x, y) {
   return { x, y, z: rnd(1, 4), vx: rnd(-5, 5), vy: rnd(-5, 5), vz: 0, cor: "#bfe6ff", tam: 1, vida: 0.6, leve: false };
 }
-export function atualizarDestrocos(dt) {
+export function atualizarDestrocos(dt: number) {
   const C = J.cena,
     P = J.jogador,
     sub = C.kit.submerso;
@@ -891,7 +891,7 @@ export function atualizarDestrocos(dt) {
 }
 
 // ---------------------------------------------------------------- vegetação: balanço com o vento + mola amortecida quando é tocada
-export function tufoInfo(cx, cy) {
+export function tufoInfo(cx: number, cy: number) {
   const C = J.cena,
     t = soloEm(cx, cy),
     h = hash2(cx, cy, 41),
@@ -933,7 +933,7 @@ export function tufoInfo(cx, cy) {
 }
 // onda de choque no ambiente: dobra a grama para fora, empurra objetos soltos e levanta poeira (golpes em área, mortes de elite,
 // chefes e Despertar)
-export function rajada(x, y, R, forca) {
+export function rajada(x: number, y: number, R: number, forca: number) {
   const C = J && J.cena;
   if (!C || SIM.ativo) return;
   const f = forca || 1;
@@ -972,7 +972,7 @@ export function rajada(x, y, R, forca) {
       particulaAr("poeira", x + Math.cos(a) * R * 0.6, y + Math.sin(a) * R * 0.5, 1, Math.cos(a) * 20, Math.sin(a) * 12);
     }
 }
-export function tocarTufos(x, y, r, vx, vy, dt, horda?) {
+export function tocarTufos(x: number, y: number, r: number, vx: number, vy: number, dt: number, horda?: boolean) {
   const C = J.cena,
     V = VEG[C.veg],
     R = r + 4,
@@ -1023,7 +1023,7 @@ export function tocarTufos(x, y, r, vx, vy, dt, horda?) {
       if (t === "agua" && sp > 10 && Math.random() < dt * 3) C.ondas.push({ x: bx, y: by, r: 1, vida: 0.8 });
     }
 }
-export function atualizarTufos(dt) {
+export function atualizarTufos(dt: number) {
   const C = J.cena,
     V = VEG[C.veg],
     P = J.jogador;
@@ -1115,7 +1115,7 @@ export function rastroDe(o, x, y, dist, r) {
     tam: r > 6 ? 2 : 1
   });
 }
-export function atualizarPegadas(dt) {
+export function atualizarPegadas(dt: number) {
   const C = J.cena,
     P = J.jogador;
   // na areia o vento apaga as pegadas mais depressa (transporte de grãos)
@@ -1143,7 +1143,7 @@ export function atualizarPegadas(dt) {
 }
 
 // ---------------------------------------------------------------- clima: partículas do ar
-export function particulaAr(k, x, y, z, vx?, vy?) {
+export function particulaAr(k: string, x: number, y: number, z: number, vx?: number, vy?: number) {
   const C = J.cena;
   if (C.ar.length > 300) C.ar.shift();
   const p: ParticulaAr = {
@@ -1251,18 +1251,18 @@ export function particulaAr(k, x, y, z, vx?, vy?) {
   C.ar.push(p);
   return p;
 }
-export function brasa(x, y, z, vx?, vy?) {
+export function brasa(x: number, y: number, z: number, vx?: number, vy?: number) {
   const p = particulaAr("brasas", x, y, z, vx, vy);
   p.vx = vx || 0;
   p.vy = vy || 0;
 }
-export function fumaca(x, y, r, cor?) {
+export function fumaca(x: number, y: number, r: number, cor?: string) {
   const C = J.cena;
   if (C.fumaca.length > 120) C.fumaca.shift();
   C.fumaca.push({ x, y, z: rnd(2, 6), r: r * 0.5, r1: r * 1.8, vida: rnd(1.8, 2.8), max: 2.8, cor: cor || "#4a4650", vz: rnd(8, 14) });
 }
 export const QUEDA = { neve: 1, cinzas: 1, chuva: 1, garoa: 1, folhas: 1, petalas: 1 };
-export function atualizarAr(dt, ox, oy) {
+export function atualizarAr(dt: number, ox: number, oy: number) {
   const C = J.cena,
     k = C.kit;
   // geração: as que caem nascem no alto e "a barlavento", para pousarem dentro da tela
@@ -1493,7 +1493,7 @@ export function atualizarAr(dt, ox, oy) {
     C.luzes = C.luzes.filter(l => l.vida > 0);
   }
 }
-export function envolver(n, ox, oy, r) {
+export function envolver(n, ox: number, oy: number, r: number) {
   const w = VW + 2 * r + 40,
     h = VH + 2 * r + 40,
     x0 = ox - r - 20,
@@ -1501,7 +1501,7 @@ export function envolver(n, ox, oy, r) {
   n.x = x0 + ((((n.x - x0) % w) + w) % w);
   n.y = y0 + ((((n.y - y0) % h) + h) % h);
 }
-export function respingo(x, y) {
+export function respingo(x: number, y: number) {
   const C = J.cena,
     t = soloEm(Math.floor(x / CEL), Math.floor(y / CEL));
   if ((t === "agua" || t === "eletrico") && C.ondas.length < 80 && Math.random() < 0.5) C.ondas.push({ x, y, r: 0.5, vida: 0.6 });
@@ -1512,7 +1512,7 @@ export function respingo(x, y) {
 }
 
 // ---------------------------------------------------------------- redemoinhos de poeira e de fogo
-export function atualizarVortices(dt, ox, oy) {
+export function atualizarVortices(dt: number, ox: number, oy: number) {
   const C = J.cena,
     P = J.jogador;
   if (C.kit.redemoinho && !J.fim) {
@@ -1601,7 +1601,7 @@ export function atualizarVortices(dt, ox, oy) {
 }
 
 // ---------------------------------------------------------------- relâmpagos: preferem o que é alto e condutor (para-raios)
-export function atualizarRaios(dt) {
+export function atualizarRaios(dt: number) {
   const C = J.cena,
     P = J.jogador;
   if (C.kit.relampago && !J.fim) {
@@ -1641,7 +1641,7 @@ export function atualizarRaios(dt) {
   for (const r of C.raios) r.vida -= dt;
   C.raios = C.raios.filter(r => r.vida > 0);
 }
-export function cairRaio(x, y, alvo) {
+export function cairRaio(x: number, y: number, alvo) {
   const C = J.cena,
     P = J.jogador;
   const pts = [];
@@ -1691,7 +1691,7 @@ export function cairRaio(x, y, alvo) {
 }
 
 // ---------------------------------------------------------------- passo do cenário (chamado uma vez por quadro)
-export function atualizarCena(dt) {
+export function atualizarCena(dt: number) {
   const C = J.cena;
   if (!C) return;
   C.t += dt;
@@ -1727,7 +1727,7 @@ export function atualizarCena(dt) {
   atualizarEstrutura(dt);
 }
 // golpe que atinge um objeto (projéteis e balas)
-export function propNoPonto(x, y, r) {
+export function propNoPonto(x: number, y: number, r: number) {
   const C = J.cena;
   if (!C) return null;
   for (const p of C.lista) {
@@ -1737,7 +1737,7 @@ export function propNoPonto(x, y, r) {
   }
   return null;
 }
-export function propMaisProximo(o, alc) {
+export function propMaisProximo(o, alc: number) {
   const C = J.cena;
   if (!C) return null;
   let best = null,

@@ -68,7 +68,7 @@ export function limparFundo(nome, img) {
     relatar("arte: fundo da imagem não pôde ser limpo", e);
   }
 }
-export function registrarArte(nome, src) {
+export function registrarArte(nome: string, src: string) {
   const img = new Image();
   img.decoding = "async";
   ARTE_PEND++;
@@ -118,7 +118,7 @@ export function preCarregar(nomes) {
 }
 export const artesQue = f => (MANIFESTO ? Object.keys(MANIFESTO).filter(f) : []);
 // artes de um mapa: o reino (arte da abertura primeiro), o Guardião da era, a equipe, a Lenda/deus, chão dos elementos e efeitos
-export function artesDoMapa(u) {
+export function artesDoMapa(u: Universo) {
   if (!u) return [];
   const pre = `arte/reinos/${u.era}/`,
     ord = [
@@ -137,8 +137,8 @@ export function artesDoMapa(u) {
       "efeitos",
       "anim"
     ];
-  const reino = artesQue(n => n.startsWith(pre + u.id + "__") || n.startsWith(pre + "guardiao_" + u.era + "__")).sort((a, b) => {
-    const i = n => {
+  const reino = artesQue((n: string) => n.startsWith(pre + u.id + "__") || n.startsWith(pre + "guardiao_" + u.era + "__")).sort((a, b) => {
+    const i = (n: string | string[]) => {
       const k = ord.findIndex(o => n.includes("__" + o));
       return k < 0 ? 99 : k;
     };
@@ -154,8 +154,8 @@ export function artesDoMapa(u) {
       equipe.push(...artesQue(n => n.startsWith(pasta + s.mon.id + "__")));
     }
   const lenda = typeof LENDA === "function" && LENDA();
-  const extra = lenda ? artesQue(n => n === `arte/lendas/${lenda.id}.png` || n === `arte/panteao/${lenda.id}.png`) : [];
-  return [...reino, ...equipe, ...extra, ...artesQue(n => n.startsWith("arte/ambiente/") || n.startsWith("arte/efeitos/reacao"))];
+  const extra = lenda ? artesQue((n: string) => n === `arte/lendas/${lenda.id}.png` || n === `arte/panteao/${lenda.id}.png`) : [];
+  return [...reino, ...equipe, ...extra, ...artesQue((n: string) => n.startsWith("arte/ambiente/") || n.startsWith("arte/efeitos/reacao"))];
 }
 // artes em arquivos: arte/manifesto.json lista { "nome usado no código": "caminho do arquivo" }.
 // Na abertura baixa só a interface e as imagens fixas dos monstros (menu e cartas); o resto vem por mapa ou quando for usado.
@@ -172,7 +172,7 @@ if (window.ARTE_MANIFESTO) {
       const UI_USADA =
         /^arte\/ui\/(ui__(botao_primario|botao_secundario|botoes_acao|hud_icones|logo|pacto|tela_horizontal|tela_vertical|camada_ceu|camada_criaturas|camada_frente|derrota|vitoria|refugio|livro)|talismas|insignias)\.png$/;
       const base = artesQue(
-        n => UI_USADA.test(n) || /^arte\/monstros\/.*__base\.png$/.test(n) || /^arte\/lendarios\/.*__base\.png$/.test(n)
+        (n: string) => UI_USADA.test(n) || /^arte\/monstros\/.*__base\.png$/.test(n) || /^arte\/lendarios\/.*__base\.png$/.test(n)
       );
       let feitos = 0;
       const total = base.length;
@@ -199,7 +199,7 @@ if (window.ARTE_MANIFESTO) {
     }, 1800);
   })();
 }
-export function arteMonstro(id, e, ramo, rar) {
+export function arteMonstro(id: string, e: number, ramo, rar: string) {
   const l = LINHA[id];
   if (!l) return null;
   if (l.ancestral) {
@@ -244,7 +244,7 @@ export const RITMO_CLASSE = {
   assassino: 1.25
 };
 // ataque com peso: segura o primeiro quadro (preparo), passa rápido pelo golpe e segura o último (impacto)
-export function progressoAtaque(k) {
+export function progressoAtaque(k: number) {
   return k < 0.3 ? k * 0.5 : k < 0.7 ? 0.15 + ((k - 0.3) / 0.4) * 0.75 : 0.9 + ((k - 0.7) / 0.3) * 0.1;
 }
 export const alfaDe = img => {
@@ -256,7 +256,7 @@ export const alfaDe = img => {
   return g.getImageData(0, 0, c.width, c.height).data;
 };
 // melhor corte perto de "nom" (entre lo e hi): linha sem desenho vale muito mais do que ficar perto da grade
-export function melhorCorte(cont, nom, lo, hi) {
+export function melhorCorte(cont, nom: number, lo: number, hi: number) {
   let best = nom,
     bc = 1e18;
   for (let b = Math.max(1, Math.round(lo)); b <= Math.min(cont.length - 1, Math.round(hi)); b++) {
@@ -283,7 +283,7 @@ export function fatiarFolha(img, cols, rows, rigido?) {
   } catch (e) {
     relatar("arte: folha não pôde ser lida para o recorte", e);
   }
-  const cheio = (x, y) => d[(y * W + x) * 4 + 3] > 24;
+  const cheio = (x: number, y: number) => d[(y * W + x) * 4 + 3] > 24;
   // cortes das linhas
   const lin = new Int32Array(H);
   if (d)
@@ -304,8 +304,8 @@ export function fatiarFolha(img, cols, rows, rigido?) {
   if (d && rows === 3 && !rigido) {
     const acum = new Float64Array(H + 1);
     for (let y = 0; y < H; y++) acum[y + 1] = acum[y] + lin[y];
-    const tem = (a, b) => acum[b] - acum[a] > 0,
-      custo = (b, nom) => (lin[b] > 0 ? 1e6 + lin[b] * 100 : 0) + Math.abs(b - nom);
+    const tem = (a: number, b: number) => acum[b] - acum[a] > 0,
+      custo = (b: number, nom: number) => (lin[b] > 0 ? 1e6 + lin[b] * 100 : 0) + Math.abs(b - nom);
     if (!tem(cy[0], cy[1]) || !tem(cy[1], cy[2]) || !tem(cy[2], cy[3])) {
       let bc = 1e18,
         b1 = cy[1],
@@ -417,7 +417,7 @@ export function folhaRecolorida(anim, base, alvo, celula) {
       e = cel(alvo),
       N = 16,
       N3 = N * N * N,
-      chave = (d, i) => ((d[i] >> 4) * N + (d[i + 1] >> 4)) * N + (d[i + 2] >> 4);
+      chave = (d, i: number) => ((d[i] >> 4) * N + (d[i + 1] >> 4)) * N + (d[i + 2] >> 4);
     // desenho da raridade muito diferente do comum (formas que se sobrepõem pouco): a troca de cores sairia borrada; usa a imagem fixa
     let uni = 0,
       inter = 0;
@@ -441,7 +441,7 @@ export function folhaRecolorida(anim, base, alvo, celula) {
       }
     }
     // caixa 3D separável (borda repetida), para espalhar as cores conhecidas para as vizinhas
-    const caixa = (a, comp, r) => {
+    const caixa = (a, comp: number, r: number) => {
       let src = a;
       for (let eixo = 0; eixo < 3; eixo++) {
         const o = new Float32Array(src.length),
@@ -568,7 +568,7 @@ export function quadroAnim(img, row, i, alvo, cor?, rows?, folga?) {
   return c;
 }
 // folha de animação da forma atual (com as cores da raridade), ou null
-export function folhaAnimMonstro(id, e, ramo, rar) {
+export function folhaAnimMonstro(id, e: number, ramo, rar: string) {
   const l = LINHA[id];
   if (!l) return null;
   if (l.ancestral) {
@@ -587,7 +587,7 @@ export function folhaAnimMonstro(id, e, ramo, rar) {
 }
 // o relógio do mapa (J.t) recomeça a cada mapa: horários guardados do mapa anterior viram valores negativos
 // (o golpe "durava" para sempre e esticava o monstro para fora da tela). Zera tudo ao começar um mapa.
-export function resetAnimSelo(s) {
+export function resetAnimSelo(s: Selo) {
   s.atkT = null;
   s._t0 = 0;
   s._row = null;
@@ -662,7 +662,7 @@ export function quadroAnimSelo(s) {
       pos = ((J.t - s._t0) * FPS_ANIM[0] * rc * (0.9 + (0.2 * ((s.mon.id.length * 7) % 5)) / 5)) % per,
       a = Math.floor(pos),
       b = (a + 1) % per,
-      ida = i => (i < n ? i : per - i);
+      ida = (i: number) => (i < n ? i : per - i);
     fr = ida(a);
     if (QUAL > 0) {
       prox = quadroAnim(fa.img, row, ida(b), alvoA, fa.cor);

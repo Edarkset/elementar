@@ -110,14 +110,14 @@ import { anunciar } from "./09b_chefes.js";
 import { desenharEquipe, desenharNinho, toast } from "./10_desenho.js";
 import { menu, telaPacto } from "./11_menu.js";
 // ================================================================ progressão: níveis, poderes, evolução
-export function aplicarNivel(s, qtd) {
+export function aplicarNivel(s: Selo, qtd: number) {
   for (let i = 0; i < qtd; i++) {
     const antes = estBase(s);
     s.nivel++;
     checarEvolucao(s, antes);
   }
 }
-export function checarEvolucao(s, antes) {
+export function checarEvolucao(s: Selo, antes: number) {
   if (s.mon.ramo == null && s.nivel >= NIV[2] && !filaRamo.includes(s)) filaRamo.push(s);
   if (s.esp == null && s.nivel >= NIV[1] && !filaEsp.includes(s)) filaEsp.push(s);
   const depois = estBase(s);
@@ -132,7 +132,7 @@ export function checarEvolucao(s, antes) {
     desenharEquipe();
   }
 }
-export function efeitoEvolucao(s) {
+export function efeitoEvolucao(s: Selo) {
   if (!J) return;
   anel(s.x, s.y, 30, "#ffffff", 0.6);
   anel(s.x, s.y, 50, COR[elementoDe(s)], 0.8);
@@ -141,7 +141,7 @@ export function efeitoEvolucao(s) {
   tremor(5);
   parar(0.08);
 }
-export function ramosElegiveis(s, ignorarPedra?, base?) {
+export function ramosElegiveis(s: Selo, ignorarPedra?: boolean, base?: boolean) {
   const l = L(s),
     outros = ativos().filter(o => o !== s),
     u = UNIV[R.universo],
@@ -166,7 +166,7 @@ export function textoCondicao(r) {
 }
 
 // ================================================================ telas de escolha
-export function mostrarCartas(titulo, sub, cartas, op: OpcoesCartas = {}) {
+export function mostrarCartas(titulo: string, sub: string, cartas, op: OpcoesCartas = {}) {
   defPausado(true);
   {
     const tc = $("telaCartas"),
@@ -187,7 +187,7 @@ export function mostrarCartas(titulo, sub, cartas, op: OpcoesCartas = {}) {
       rl.dataset.t = titulo;
     }
   } // tela nova começa do topo
-  cartas.forEach((c, ci) => {
+  cartas.forEach((c, ci: number) => {
     const b = document.createElement("button");
     b.className = "carta r-" + (c.raridade || "comum");
     b.style.setProperty("--i", String(Math.min(ci, 10)));
@@ -249,7 +249,7 @@ export function fechar() {
 export let animRet = null;
 export function animarRetratos() {
   if (animRet) return;
-  const passo = t => {
+  const passo = (t: number) => {
     const cs = [...(document.querySelectorAll("#cartas canvas.anim-retrato") as NodeListOf<HTMLCanvasElement>)].filter(c => c._quadros);
     if (!cs.length || !$("telaCartas").classList.contains("ativa")) {
       animRet = null;
@@ -273,7 +273,7 @@ export function animarRetratos() {
 // quadros do monstro parado, em alta resolução, para a tela de escolha; sem folha de animação, usa a imagem fixa
 // retrato animado (linha "parado" da folha): caixa calculada pela união de todos os quadros (nada sai cortado), margem,
 // ampliação inteira pixel a pixel (pixel nítido, sem borrão) e uma sombra macia no chão; os pés ficam na mesma linha em todos os quadros
-export function quadrosForma(id, e, ramo, rar) {
+export function quadrosForma(id, e: number, ramo, rar: string) {
   const fa = folhaAnimMonstro(id, e, ramo, rar);
   if (!fa) return null;
   const img = fa.img,
@@ -342,7 +342,7 @@ export function quadrosForma(id, e, ramo, rar) {
 }
 // desenha um quadro do retrato no canvas da carta, que tem o tamanho exato da tela do aparelho:
 // ampliação inteira (cada pixel da arte vira um bloco igual) e nenhuma segunda ampliação do navegador, que borrava tudo
-export function desenharRetrato(c, geo, i) {
+export function desenharRetrato(c: HTMLCanvasElement, geo, i: number) {
   const d = Math.min(3, window.devicePixelRatio || 1),
     T = Math.round((c.clientWidth || 0) * d);
   if (T > 0 && c.width !== T) {
@@ -425,19 +425,19 @@ export function escolherRamo(s) {
     }))
   );
 }
-export function resumoPoderes(s) {
+export function resumoPoderes(s: Selo) {
   const c = D.classes[L(s).classe];
   return `Básico ${s.pod.b} · ${c.h1.nome} ${s.pod.h1} · ${c.h2.nome} ${s.pod.h2}`;
 }
 // level up no estilo survivor: 3 cartas sorteadas entre os poderes da equipe (com raridade), mais Elo, Talismã e Lenda quando houver.
 // Às vezes vem uma carta dourada (+2 níveis). Dá para sortear de novo algumas vezes por run.
 // a carta mostra o que muda de verdade: dano por golpe antes -> depois e a recarga, e bolinhas do nível do poder
-export function pipsPoder(lv, prox) {
+export function pipsPoder(lv: number, prox: number) {
   let h = "<span class='pips'>";
   for (let i = 1; i <= 5; i++) h += `<i class='${i <= lv ? "tem" : i <= prox ? "novo" : ""}'></i>`;
   return h + "</span>";
 }
-export function numerosPoder(s, k, lv, prox) {
+export function numerosPoder(s: Selo, k: string, lv: number, prox: number) {
   try {
     const base = atrib(s).dano * tal.dano();
     if (k === "b") {
@@ -530,7 +530,7 @@ export function cartasNivel() {
   }
   return sorteio;
 }
-export function aplicarCartaNivel(c) {
+export function aplicarCartaNivel(c: CartaNivel) {
   const s = c.s;
   // escolha com efeito visível na hora: o monstro brilha, solta uma onda da cor do elemento e mostra o ganho
   if (J && !SIM.ativo && s.x != null) {
@@ -627,7 +627,7 @@ export function escolherMod(s, k) {
   mostrarCartas(
     `${c.nome}: modificador`,
     "Escolha como esta habilidade vai funcionar daqui pra frente.",
-    c.mods.map((m, i) => ({
+    c.mods.map((m: string, i) => ({
       titulo: m.split(":")[0],
       texto: m.split(":").slice(1).join(":").trim(),
       raridade: "epico",
@@ -646,7 +646,7 @@ export function sortearRaridade() {
   const bonus = Math.min(0.15, R.profundidade * 0.01) + MOD("sorte");
   return r < o.lendario.chance + bonus * 0.3 ? "lendario" : r < o.lendario.chance + o.raro.chance + bonus ? "raro" : "comum";
 }
-export function receberMonstro(mon, origem) {
+export function receberMonstro(mon: Monstro, origem: string) {
   const vazio = R.selos.find(s => !s.mon);
   if (vazio) {
     const outros = ativos();
@@ -676,7 +676,7 @@ export function receberMonstro(mon, origem) {
   desenharEquipe();
   if (filaRamo.length && !pausado) proximaEscolha();
 }
-export function efeitoInvocacao(s) {
+export function efeitoInvocacao(s: Selo) {
   if (!J) return;
   const cor = COR[elementoDe(s)];
   circuloInvocacao(s.x, s.y + 3, elementoDe(s), 26, 1.3, true);
@@ -686,7 +686,7 @@ export function efeitoInvocacao(s) {
   tremor(3);
 }
 // seta na borda da tela apontando para algo valioso fora da vista
-export function setaFora(x, y, cor) {
+export function setaFora(x: number, y: number, cor: string | CanvasGradient | CanvasPattern) {
   if (x >= 6 && y >= 6 && x <= VW - 6 && y <= VH - 6) return;
   const cx = VW / 2,
     cy = VH / 2,
@@ -702,7 +702,7 @@ export function setaFora(x, y, cor) {
   lg.lineTo(ax + Math.cos(ang - 2.5) * 5 * p, ay + Math.sin(ang - 2.5) * 5 * p);
   lg.fill();
 }
-export function spawnOvo(rar?, id?, x?, y?) {
+export function spawnOvo(rar?: string, id?, x?, y?) {
   const pool = poolPacto();
   id = id || escolha(pool);
   rar = rar || sortearRaridade();
@@ -791,7 +791,7 @@ export function chocar(ov) {
   tremor(4);
   receberMonstro(mon, "Chocou no Ninho");
 }
-export function abrirEquipe(seloIdx) {
+export function abrirEquipe(seloIdx: number) {
   if (!J || J.fim) return;
   const s = R.selos[seloIdx];
   const cartas: Carta[] = R.reserva.map((m, i) => ({
@@ -863,7 +863,7 @@ export function abrirBolsa() {
   cartas.push({ titulo: "Fechar", acao: () => proximaEscolha() });
   mostrarCartas("Bolsa", "Itens caem de elites, baús de mini-chefe e chefes.", cartas);
 }
-export function usarItem(k) {
+export function usarItem(k: string) {
   R.itens[k]--;
   R.st.itens++;
   if (k === "incenso") {
@@ -940,7 +940,7 @@ export function diarias() {
   }
   return D2;
 }
-export function diaria(t, n?) {
+export function diaria(t: string, n?) {
   if (SIM.ativo || !R || R.teste) return;
   const D2 = diarias();
   let mudou = false;
@@ -995,10 +995,10 @@ export function telaDiarias() {
 // META.dex[id] = {f: bits das 8 formas (0 filhote, 1 jovem, 2-4 adultos, 5-7 supremos), r: raridades vistas}.
 // A cada 10 formas novas, Essência de presente. Descobrir algo novo mostra "Novo no Bestiário!".
 export const FORMAS_TOTAL = () => D.linhas.length * 8;
-export function celulaForma(e, ramo) {
+export function celulaForma(e: number, ramo) {
   return e <= 1 ? e : e === 2 ? 2 + (ramo ?? 0) : 5 + (ramo ?? 0);
 }
-export function registrarDex(id, e, ramo, rar) {
+export function registrarDex(id, e: number, ramo, rar: string) {
   if (SIM.ativo && !SIM.dex) return;
   META.dex = META.dex || {};
   const d = META.dex[id] || (META.dex[id] = { f: 0, r: [] });
@@ -1038,7 +1038,7 @@ export function formasVistas() {
   }
   return n;
 }
-export function nomeFormaCel(l, c) {
+export function nomeFormaCel(l, c: number) {
   return c === 0 ? l.filhote : c === 1 ? l.jovem : c < 5 ? l.ramos[c - 2].nome : l.ramos[c - 5].supremo;
 }
 export function telaBestiario() {
@@ -1120,7 +1120,7 @@ export function tentarCaptura(f) {
   tremor(2);
   vfx({
     max: 1.5,
-    desenhar(ox, oy, q) {
+    desenhar(ox: number, oy: number, q: number) {
       const x = x0 - ox,
         y = y0 - oy,
         t = q * 1.5,
@@ -1228,7 +1228,7 @@ export function cenaDescoberta(mon) {
   som("jackpot");
 }
 export const CINE = { ativa: false, fila: [] };
-export function cenaTocar(html, classe, dur, aoFim?) {
+export function cenaTocar(html: string, classe: string, dur: number, aoFim?) {
   if (SIM.ativo) return;
   CINE.fila.push({ html, classe, dur, aoFim });
   if (!CINE.ativa) cenaProxima();
@@ -1270,7 +1270,7 @@ export function imgDe(spr) {
     return "";
   }
 }
-export function cenaEvolucao(s, antes, depois) {
+export function cenaEvolucao(s: Selo, antes, depois: number) {
   if (SIM.ativo || !J) return;
   const q = (e, r) => {
     const f = quadrosForma(s.mon.id, e, r, s.mon.rar);
@@ -1302,7 +1302,7 @@ export function cenaEvolucao(s, antes, depois) {
   );
   som("ding");
 }
-export function cenaChefe(e, nome, guardiao) {
+export function cenaChefe(e: Inimigo, nome, guardiao: boolean) {
   if (SIM.ativo) return;
   const u = UNIV[R.universo],
     spr = arteCriatura(e, "parado", 0),
@@ -1316,7 +1316,7 @@ export function cenaChefe(e, nome, guardiao) {
 }
 
 // ================================================================ moedas, baús e a roleta de prêmios
-export function soltarMoedas(x, y, n) {
+export function soltarMoedas(x: number, y: number, n: number) {
   if (!J || n <= 0) return;
   {
     const m = n * (1 + MOD("ouro"));
@@ -1330,7 +1330,7 @@ export function soltarMoedas(x, y, n) {
     J.moedas.push({ x, y, z: 4, vx: Math.cos(a) * v, vy: Math.sin(a) * v * 0.6, vz: rnd(50, 95), f: Math.random() * 6, v: 1, t: 0 });
   }
 }
-export function soltarBau(x, y, tipo) {
+export function soltarBau(x: number, y: number, tipo: string) {
   if (!J) return;
   J.baus = J.baus || [];
   if (J.baus.length >= 4) return;
@@ -1339,7 +1339,7 @@ export function soltarBau(x, y, tipo) {
   luzFlash(x, y, "#ffd34a", 60, 0.6);
   som("bau");
 }
-export function atualizarMoedasBaus(dt, ima) {
+export function atualizarMoedasBaus(dt: number, ima: number) {
   const P = J.jogador;
   if (J.moedas) {
     for (const m of J.moedas) {
@@ -1383,7 +1383,7 @@ export function atualizarMoedasBaus(dt, ima) {
   }
 }
 // baú desenhado em vetor (prata ou ouro), com feixe de luz e brilhos
-export function desenharBauMapa(b, x, y) {
+export function desenharBauMapa(b, x: number, y: number) {
   const ouro = b.tipo === "ouro",
     bob = Math.sin(J.t * 3 + b.x) * 1,
     pul = 0.5 + 0.5 * Math.sin(J.t * 5);
@@ -1438,7 +1438,7 @@ export function desenharBauMapa(b, x, y) {
     lg.globalCompositeOperation = "source-over";
   }
 }
-export function desenharMoedasBaus(ox, oy) {
+export function desenharMoedasBaus(ox: number, oy: number) {
   for (const b of J.baus || []) desenharBauMapa(b, b.x - ox, b.y - oy);
   for (const m of J.moedas || []) {
     const x = m.x - ox,
@@ -1488,7 +1488,7 @@ export function iconeHud(nome) {
   }
   return ICONES_URL[nome];
 }
-export function sortearPremios(tipo) {
+export function sortearPremios(tipo: string) {
   const sorte = SIN.rm && SIN.rm.talisma ? 1.5 : 1,
     r = Math.random(),
     ouro = tipo === "ouro";
@@ -1616,12 +1616,12 @@ export function premioNivel(s) {
 // baú da tela de prêmio: de frente, mais alto que largo o bastante para ler como baú (antes era uma caixa larga e baixa),
 // madeira em tábuas, cantoneiras, cintas com rebites e fechadura. Ao abrir, a tampa sobe e tomba para trás (achata em Y a partir
 // da dobradiça de trás) e aparece o interior brilhando, em vez de girar de lado e ficar solta.
-export function svgBau(ouro) {
+export function svgBau(ouro: boolean) {
   const m = ouro ? ["#fff4c0", "#f0c048", "#a87418", "#5a3a08"] : ["#f4f6fa", "#b8c0cc", "#6e7686", "#3a404c"],
     mad = ouro ? ["#9a4a8e", "#6e2c66", "#4a1a46", "#2a0c28"] : ["#b8743a", "#8a4e22", "#5e3214", "#341a08"];
-  const reb = (x, y, r = 1.9) =>
+  const reb = (x: number, y: number, r = 1.9) =>
     `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#bauM)" stroke="${m[3]}" stroke-width=".6"/><circle cx="${x - r * 0.35}" cy="${y - r * 0.35}" r="${r * 0.35}" fill="#fff" opacity=".7"/>`;
-  const tabuas = (y0, y1) =>
+  const tabuas = (y0: number, y1: number) =>
     [34, 52, 68, 86]
       .map(
         x =>
@@ -1764,7 +1764,7 @@ export function chuvaMoedas(el, n) {
 }
 
 // ================================================================ fim de mapa, portais, derrota
-export function vencerChefe(e) {
+export function vencerChefe(e: Inimigo) {
   diaria("chefes");
   eventosVitoria(e);
   J.escuroFixo = 0;
@@ -1883,7 +1883,9 @@ export function mostrarPortais() {
     return;
   }
   opcoes.forEach(u =>
-    preCarregar(artesQue(n => n.startsWith(`arte/reinos/${u.era}/${u.id}__keyart`) || n.startsWith(`arte/reinos/${u.era}/${u.id}__piso`)))
+    preCarregar(
+      artesQue((n: string) => n.startsWith(`arte/reinos/${u.era}/${u.id}__keyart`) || n.startsWith(`arte/reinos/${u.era}/${u.id}__piso`))
+    )
   );
   PORTAIS.ops = null;
   PORTAIS.jaEsperou = false;
@@ -1906,7 +1908,7 @@ export function mostrarPortais() {
     })
   );
 }
-export function aplicarPortal(u, rec) {
+export function aplicarPortal(u, rec: string) {
   R.universo = u.id;
   R.selos.forEach(s => (s.trocaCd = 0));
   const bussola = temRel("Bússola Enlouquecida"),
@@ -1949,7 +1951,7 @@ export function aplicarPortal(u, rec) {
   mostrarCartas(
     "Recrutar",
     "Escolha um monstro Raro do seu Pacto.",
-    pool.map(id => {
+    pool.map((id: string) => {
       const l = LINHA[id];
       return {
         titulo: l.filhote,
@@ -2080,15 +2082,15 @@ export function derrota() {
 }
 
 // ================================================================ especial individual (escolhido pelo jogador, dispara sozinho)
-export function recargaEspecial(s) {
+export function recargaEspecial(s: Selo) {
   const r = D.especial_regras;
   return Math.max(r.recarga_min_seg, r.recarga_base_seg * (1 - r.reducao_por_nivel * Math.max(0, s.nivel - NIV[1])));
 }
-export function nomeEspecial(s) {
+export function nomeEspecial(s: Selo) {
   const op = D.especiais[L(s).classe][s.esp];
   return est(s) === 3 ? `${op[0]} · ${ramoObj(s).supremo}` : op[0];
 }
-export function escolherEspecial(s) {
+export function escolherEspecial(s: Selo) {
   if (!s.mon || s.esp != null) return proximaEscolha();
   const ops = D.especiais[L(s).classe];
   mostrarCartas(
@@ -2280,7 +2282,7 @@ export function usarCombinado() {
     anel(s.x, s.y, 40, COR[elementoDe(s)], 0.8);
     particulas(s.x, s.y, COR[elementoDe(s)], 30, 150, 2);
   });
-  const pintar = (tipo, raio, dur) => {
+  const pintar = (tipo: string, raio: number, dur: number) => {
     for (let i = 0; i < 60; i++) {
       const a = Math.random() * Math.PI * 2,
         r = Math.random() * raio;

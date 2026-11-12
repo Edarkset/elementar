@@ -47,7 +47,7 @@ export function contarTela() {
   }
   return [n, col];
 }
-export function atualizarDiretor(dt) {
+export function atualizarDiretor(dt: number) {
   if (!J.diretor) iniciarDiretor();
   const d = J.diretor;
   d.tick -= dt;
@@ -88,11 +88,11 @@ export function atualizarDiretor(dt) {
     } else d.tEvento = 8;
   }
 }
-export function avisar(txt, sub, cor?) {
+export function avisar(txt: string, sub: string, cor?: string) {
   J.aviso = { txt, sub: sub || "", vida: 2.2, cor: cor || "#ff8a6a" };
 }
 // lugar bom para um objeto do cenário: fora do abismo (com folga), de lagos, de praças e de construções
-export function lugarDeObjeto(x, y, m) {
+export function lugarDeObjeto(x: number, y: number, m: number) {
   if (!estruturaU() || !J.cena) return true;
   if (abismoEm(x, y, m)) return false;
   for (const f of pecasPerto(x, y)) {
@@ -103,7 +103,7 @@ export function lugarDeObjeto(x, y, m) {
   }
   return true;
 }
-export function lugarLivre(x, y) {
+export function lugarLivre(x: number, y: number) {
   return !(estruturaU() && J.cena && abismoEm(x, y, 6));
 }
 export function eventoHorda() {
@@ -220,7 +220,7 @@ export function eventoHorda() {
     });
   }
 }
-export function atualizarAvisos(dt) {
+export function atualizarAvisos(dt: number) {
   if (J.aviso) {
     J.aviso.vida -= dt;
     if (J.aviso.vida <= 0) J.aviso = null;
@@ -267,14 +267,14 @@ export function desenharAvisos() {
 
 // ---------------------------------------------------------------- leitura: contorno automático quando o inimigo se confunde com o chão
 export const LUM_SPR = new WeakMap();
-export function luminancia(r, g, b) {
-  const f = c => {
+export function luminancia(r: number, g: number, b: number) {
+  const f = (c: number) => {
     c /= 255;
     return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
   };
   return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
 }
-export function lumMedia(cv, passo) {
+export function lumMedia(cv, passo: number) {
   try {
     const d = cv.getContext("2d").getImageData(0, 0, cv.width, cv.height).data;
     let r = 0,

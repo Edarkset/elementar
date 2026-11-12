@@ -42,20 +42,20 @@ import { custo, passiva } from "./08f_lendas.js";
 import { pctMax } from "./09_criaturas.js";
 // ================================================================ chefes: golpes característicos, perigos anunciados e segunda fase
 // Regra de justiça: tudo o que machuca aparece antes como uma marca no chão (círculo, linha, cone ou anel).
-export function angDif(a, b) {
+export function angDif(a: number, b: number) {
   let d = (a - b) % (Math.PI * 2);
   if (d > Math.PI) d -= Math.PI * 2;
   if (d < -Math.PI) d += Math.PI * 2;
   return d;
 }
-export function distSeg(px, py, x1, y1, x2, y2) {
+export function distSeg(px: number, py: number, x1: number, y1: number, x2: number, y2: number) {
   const dx = x2 - x1,
     dy = y2 - y1,
     L = dx * dx + dy * dy || 1,
     t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / L));
   return Math.hypot(px - (x1 + dx * t), py - (y1 + dy * t));
 }
-export function feriJogador(dano, el) {
+export function feriJogador(dano: number, el: string) {
   if (J.invuln > 0 || J.fim || J.deus) return false;
   if (J.chefeVivo) J.atingidoNoChefe = true;
   if (J.escudoGolpes > 0) {
@@ -77,7 +77,7 @@ export function feriJogador(dano, el) {
   particulas(J.jogador.x, J.jogador.y, COR[el] || "#ff5a4a", 5, 60);
   return true;
 }
-export function bala(dono, x, y, ang, vel, dano, proj, el, extra?) {
+export function bala(dono: Inimigo, x: number, y: number, ang: number, vel: number, dano: number, proj: string, el: string, extra?) {
   const el2 = el === "multi" ? escolha(ELS) : el;
   J.balas.push(
     Object.assign(
@@ -103,7 +103,7 @@ export function perigo(o) {
   J.perigos.push(o);
   return o;
 }
-export function pintarSolo(x, y, r, tipo, dur?) {
+export function pintarSolo(x: number, y: number, r: number, tipo: string, dur?: number) {
   const C0 = Math.floor((x - r) / CEL),
     C1 = Math.floor((x + r) / CEL),
     R0 = Math.floor((y - r) / CEL),
@@ -123,7 +123,7 @@ export function pintarSolo(x, y, r, tipo, dur?) {
       J.solo.set(cx + "," + cy, { t, ate: J.t + (dur ?? DUR[t] ?? 30) });
     }
 }
-export function criarProp(tipo, x, y, extra?) {
+export function criarProp(tipo: string, x: number, y: number, extra?) {
   const C = J.cena;
   if (!C || !MAT[tipo]) return null;
   const cx = Math.floor(x / CH),
@@ -137,16 +137,16 @@ export function criarProp(tipo, x, y, extra?) {
 }
 export const corG = (e, g) => (g.el && g.el !== "multi" ? COR[g.el] : COR[e.el] || "#ff5a4a");
 export const elG = (e, g) => (g.el === "multi" ? escolha(ELS) : g.el || e.el);
-export const D0 = e => e.dano * (e.mini ? 0.85 : 1);
-export function propsEm(x, y, r, fn) {
+export const D0 = (e: Inimigo) => e.dano * (e.mini ? 0.85 : 1);
+export function propsEm(x: number, y: number, r: number, fn) {
   if (!J.cena) return;
   for (const p of J.cena.lista) {
     if (p.morto) continue;
     if ((p.x - x) ** 2 + (p.y - y) ** 2 < (r + p.r) ** 2) fn(p, Math.hypot(p.x - x, p.y - y) || 1);
   }
 }
-export function empurrarProps(x, y, r, forca) {
-  propsEm(x, y, r, (p, d) => {
+export function empurrarProps(x: number, y: number, r: number, forca: number) {
+  propsEm(x, y, r, (p, d: number) => {
     if (p.mat.fixo) return;
     const dv = Math.min(300, forca / p.m);
     p.vx += ((p.x - x) / d) * dv;
@@ -169,10 +169,10 @@ export function fadigaChefe(e) {
   if (!e.chefe || J.tChefe == null) return 1;
   return 1 + Math.max(0, J.t - J.tChefe - 75) / 30;
 }
-export function anunciar(e, txt, sub?) {
+export function anunciar(e, txt: string, sub?: string) {
   J.anuncio = { txt, sub: sub || "", vida: sub ? 3.2 : 1.8, cor: COR[e.el] || "#ffd34a" };
 }
-export function iaChefe(e, dt, P) {
+export function iaChefe(e: Inimigo, dt: number, P) {
   const def = e.def;
   if (!def || !def.golpes) {
     return false;
@@ -310,7 +310,7 @@ export function iaChefe(e, dt, P) {
 }
 
 // ---------------------------------------------------------------- as primitivas dos golpes
-export function executarGolpe(e, g, P) {
+export function executarGolpe(e: Inimigo, g, P) {
   const cor = corG(e, g),
     el = elG(e, g),
     C = J.cena;
@@ -343,7 +343,7 @@ export function executarGolpe(e, g, P) {
       J.golpes.push({
         t: 0,
         cd: 0.4,
-        atualizar(dt) {
+        atualizar(dt: number) {
           this.t += dt;
           this.cd -= dt;
           if (e.hp <= 0) return false;
@@ -397,7 +397,7 @@ export function executarGolpe(e, g, P) {
     case "investida": {
       const n = g.n || 1,
         vel = g.vel || 240;
-      const uma = i => {
+      const uma = (i: number) => {
         if (e.hp <= 0) return;
         const P = J.jogador,
           a = Math.atan2(P.y - e.y, P.x - e.x),
@@ -425,7 +425,7 @@ export function executarGolpe(e, g, P) {
     case "salto": {
       const n = g.n || 1,
         r = g.r || 28;
-      const um = i => {
+      const um = (i: number) => {
         if (e.hp <= 0) return;
         const P = J.jogador,
           x = P.x + J.pvx * 0.3,
@@ -466,7 +466,7 @@ export function executarGolpe(e, g, P) {
           hit: 0,
           ts: 0,
           segs: [],
-          atualizar(dt) {
+          atualizar(dt: number) {
             this.t += dt;
             this.hit -= dt;
             this.ts -= dt;
@@ -497,7 +497,7 @@ export function executarGolpe(e, g, P) {
             if (this.ts <= 0) this.ts = 0.06;
             return this.t < durA + 0.15;
           },
-          luz(ox, oy) {
+          luz(ox: number, oy: number) {
             const a = 1 - Math.max(0, this.t - durA) / 0.15;
             for (const [x1, y1, x2, y2] of this.segs) {
               lg.globalAlpha = 0.35 * a;
@@ -533,7 +533,7 @@ export function executarGolpe(e, g, P) {
           cy = e.y;
         tremor(3);
         if (g.cospe && e.engolidos && e.engolidos.length) {
-          e.engolidos.forEach((tipo, i) => {
+          e.engolidos.forEach((tipo, i: number) => {
             const a = (i / e.engolidos.length) * 6.283 + Math.random() * 0.3;
             bala(e, cx, cy, a, 110, D0(e) * 0.7, MAT[tipo]?.frag === "pedra" ? "pedra" : "barril", e.el, { quebra: true, deixa: tipo });
           });
@@ -543,7 +543,7 @@ export function executarGolpe(e, g, P) {
           r: e.r,
           acertou: false,
           ts: 0,
-          atualizar(dt) {
+          atualizar(dt: number) {
             this.r += vel * dt;
             this.ts -= dt;
             const P = J.jogador,
@@ -579,7 +579,7 @@ export function executarGolpe(e, g, P) {
             }
             return this.r < vmax;
           },
-          chao(ox, oy) {
+          chao(ox: number, oy: number) {
             lg.strokeStyle = cor;
             lg.globalAlpha = 0.7 * (1 - (this.r / vmax) * 0.6);
             lg.lineWidth = 3;
@@ -608,7 +608,7 @@ export function executarGolpe(e, g, P) {
         J.golpes.push({
           t: 0,
           hit: 0,
-          atualizar(dt) {
+          atualizar(dt: number) {
             this.t += dt;
             this.hit -= dt;
             if (e.hp <= 0) return false;
@@ -654,7 +654,7 @@ export function executarGolpe(e, g, P) {
             }
             return this.t < dur;
           },
-          chao(ox, oy) {
+          chao(ox: number, oy: number) {
             lg.strokeStyle = cor;
             for (let i = 0; i < 5; i++) {
               const a0 = this.t * 4 + i * 1.256;
@@ -802,7 +802,7 @@ export function executarGolpe(e, g, P) {
                 propsEm(fx, fy, 6, p => danificarProp(p, p.max * 0.9, el));
                 return this.L < comp || this.t < comp / 220 + 1.2;
               },
-              chao(ox, oy) {
+              chao(ox: number, oy: number) {
                 const a = Math.min(1, comp / 220 + 1.2 - this.t);
                 lg.globalAlpha = Math.max(0, a);
                 lg.strokeStyle = "#140f1c";
@@ -853,7 +853,7 @@ export function executarGolpe(e, g, P) {
                   this.t += dt;
                   return this.t < 0.65;
                 },
-                frente(ox, oy) {
+                frente(ox: number, oy: number) {
                   const sa = quadroEfeito(e, e.golpeIdx || 0, Math.min(3, Math.floor((this.t / 0.65) * 4)), 28);
                   if (sa) {
                     lg.drawImage(sa, Math.round(x - ox - 14), Math.round(y - oy - 26));
@@ -884,7 +884,7 @@ export function executarGolpe(e, g, P) {
           t: 0,
           hit: 0,
           ts: 0,
-          atualizar(dt) {
+          atualizar(dt: number) {
             this.t += dt;
             this.hit -= dt;
             this.ts -= dt;
@@ -976,7 +976,7 @@ export function executarGolpe(e, g, P) {
       J.golpes.push({
         t: 0,
         cd: 1.5,
-        atualizar(dt) {
+        atualizar(dt: number) {
           this.t += dt;
           this.cd -= dt;
           const cl = J.inimigos.filter(o => o.clone && o.hp > 0);
@@ -1040,7 +1040,7 @@ export function executarGolpe(e, g, P) {
       if (g.metal) {
         const metais = C ? C.lista.filter(p => !p.morto && p.mat.condutor && dist2(p, e) < 170 * 170) : [];
         if (!metais.length) return -1;
-        metais.forEach((p, i) =>
+        metais.forEach((p, i: number) =>
           agendar(i * 0.2, () => {
             if (p.morto) return;
             raio(p.x, p.y - p.r, e.x, e.y, "#9fe0ff");
@@ -1055,7 +1055,7 @@ export function executarGolpe(e, g, P) {
       e.regenerou = true;
       J.golpes.push({
         t: 0,
-        atualizar(dt) {
+        atualizar(dt: number) {
           this.t += dt;
           if (e.hp <= 0) return false;
           e.hp = Math.min(e.max, e.hp + (e.max * g.pct * dt) / 1.5);
@@ -1081,7 +1081,7 @@ export function executarGolpe(e, g, P) {
       J.golpes.push({
         t: 0,
         parou: false,
-        atualizar(dt) {
+        atualizar(dt: number) {
           this.t += dt;
           if (e.hp <= 0) {
             e.oculto = false;
@@ -1179,7 +1179,7 @@ export function executarGolpe(e, g, P) {
           giro: 0,
           hitJ: 0,
           neve: g.cresce,
-          atualizar(dt) {
+          atualizar(dt: number) {
             this.t += dt;
             this.hitJ -= dt;
             const P = J.jogador,
@@ -1200,7 +1200,7 @@ export function executarGolpe(e, g, P) {
               this.r = Math.min(15, this.r + Math.hypot(this.vx, this.vy) * dt * 0.012);
               pintarSolo(this.x, this.y, this.r * 0.6, "gelo", 20);
             }
-            propsEm(this.x, this.y, this.r, (p, d) => {
+            propsEm(this.x, this.y, this.r, (p, d: number) => {
               if (p.mat.fixo || this.neve || p.m > 100) {
                 const nx = (this.x - p.x) / d,
                   ny = (this.y - p.y) / d,
@@ -1236,7 +1236,7 @@ export function executarGolpe(e, g, P) {
             }
             return true;
           },
-          frente(ox, oy) {
+          frente(ox: number, oy: number) {
             const x = Math.round(this.x - ox),
               y = Math.round(this.y - oy);
             lg.fillStyle = "rgba(0,0,0,.3)";
@@ -1267,7 +1267,7 @@ export function executarGolpe(e, g, P) {
           const p = criarProp("rocha", e.x + Math.cos(a) * 24, e.y + Math.sin(a) * 24, { subindo: 0.3 });
           if (p) alvos.push(p);
         }
-      alvos.forEach((p, i) => {
+      alvos.forEach((p, i: number) => {
         p.levita = true;
         const P = J.jogador;
         perigo({
@@ -1317,7 +1317,7 @@ export function executarGolpe(e, g, P) {
           s: 0,
           ts: 0,
           acertou: false,
-          atualizar(dt) {
+          atualizar(dt: number) {
             this.s += (g.vel || 70) * dt;
             this.ts -= dt;
             const cx = x0 + ux * this.s,
@@ -1345,7 +1345,7 @@ export function executarGolpe(e, g, P) {
             this.c = [cx, cy];
             return this.s < inicio * 2 + 40;
           },
-          frente(ox, oy) {
+          frente(ox: number, oy: number) {
             if (!this.c) return;
             const [cx, cy] = this.c;
             for (let l = -comp / 2; l < comp / 2; l += 3) {
@@ -1369,7 +1369,7 @@ export function executarGolpe(e, g, P) {
       J.golpes.push({
         t: 0,
         ts: 0,
-        atualizar(dt) {
+        atualizar(dt: number) {
           this.t += dt;
           this.ts -= dt;
           if (this.ts <= 0) {
@@ -1414,7 +1414,7 @@ export function executarGolpe(e, g, P) {
   return 0.5;
 }
 
-export function impactoChuva(e, g, x, y, r) {
+export function impactoChuva(e, g, x: number, y: number, r: number) {
   const P = J.jogador,
     el = elG(e, g),
     cor = corG(e, g);
@@ -1438,7 +1438,7 @@ export function impactoChuva(e, g, x, y, r) {
   }
   if (g.solo) pintarSolo(x, y, r * 0.75, g.solo);
 }
-export function impactoSalto(e, g, x, y, r) {
+export function impactoSalto(e, g, x: number, y: number, r: number) {
   const P = J.jogador,
     el = elG(e, g),
     cor = corG(e, g);
@@ -1466,7 +1466,7 @@ export function impactoSalto(e, g, x, y, r) {
     agendar(0.4, () => pintarSolo(x, y, r, "eletrico", 6));
   } else if (g.solo) pintarSolo(x, y, r * 0.8, g.solo);
 }
-export function executarFissuraCurta(x, y, a, L, cor) {
+export function executarFissuraCurta(x, y, a: number, L: number, cor: string) {
   const pts = [[x, y]];
   let cx = x,
     cy = y;
@@ -1481,7 +1481,7 @@ export function executarFissuraCurta(x, y, a, L, cor) {
       this.t += dt;
       return this.t < 4;
     },
-    chao(ox, oy) {
+    chao(ox: number, oy: number) {
       lg.globalAlpha = Math.min(1, 4 - this.t);
       lg.strokeStyle = "#140f1c";
       lg.lineWidth = 1;
@@ -1507,7 +1507,7 @@ export function transmutarProp(p) {
   particulas(p.x, p.y, "#ffd34a", 8, 50);
 }
 // Jörmungandr: o corpo se enrola em volta e aperta; escape pela fresta ou com a esquiva
-export function constricao(e, P, r) {
+export function constricao(e, P, r: number) {
   const cx = P.x,
     cy = P.y,
     gap = Math.random() * 6.283;
@@ -1515,7 +1515,7 @@ export function constricao(e, P, r) {
     t: 0,
     R: r,
     hit: 0,
-    atualizar(dt) {
+    atualizar(dt: number) {
       this.t += dt;
       this.hit -= dt;
       const dur = 4,
@@ -1532,13 +1532,13 @@ export function constricao(e, P, r) {
         P.x = cx + ((P.x - cx) / d) * (this.R + lado * 7);
         P.y = cy + ((P.y - cy) / d) * (this.R + lado * 7);
       }
-      propsEm(cx, cy, this.R + 4, (p, dp) => {
+      propsEm(cx, cy, this.R + 4, (p, dp: number) => {
         if (Math.abs(dp - this.R) < 7) danificarProp(p, p.max * 2 * dt * 5, null);
       });
       this.rot = rot;
       return this.t < dur;
     },
-    frente(ox, oy) {
+    frente(ox: number, oy: number) {
       const n = Math.max(12, Math.round((2 * Math.PI * this.R) / 5));
       for (let i = 0; i < n; i++) {
         const a = (i / n) * 6.283 + this.rot;
@@ -1557,7 +1557,7 @@ export function constricao(e, P, r) {
 }
 
 // ---------------------------------------------------------------- segunda fase: o cenário muda
-export function faseDois(e, f) {
+export function faseDois(e: Inimigo, f) {
   const P = J.jogador,
     C = J.cena;
   anunciar(e, f.nome, f.desc);
@@ -1622,7 +1622,7 @@ export function faseDois(e, f) {
       if (C)
         C.lista
           .filter(p => !p.morto && !p.mat.indestrutivel)
-          .forEach((p, i) =>
+          .forEach((p, i: number) =>
             agendar(i * 0.06, () => {
               if (!p.morto) danificarProp(p, p.max * 6, null);
             })
@@ -1646,7 +1646,7 @@ export function faseDois(e, f) {
           });
       break;
     case "transmutar":
-      if (C) C.lista.forEach((p, i) => agendar(i * 0.04, () => transmutarProp(p)));
+      if (C) C.lista.forEach((p, i: number) => agendar(i * 0.04, () => transmutarProp(p)));
       anel(e.x, e.y, 200, "#ffd34a", 1);
       break;
     case "tempestade":
@@ -1695,7 +1695,7 @@ export function faseDois(e, f) {
         t: 0,
         ts: 0,
         tz: 2,
-        atualizar(dt) {
+        atualizar(dt: number) {
           this.t += dt;
           this.ts -= dt;
           this.tz -= dt;
@@ -1807,7 +1807,7 @@ export function aoQuebrarProp(p) {
 }
 
 // ---------------------------------------------------------------- atualização e desenho do sistema de perigos
-export function atualizarPerigos(dt) {
+export function atualizarPerigos(dt: number) {
   if (!J.perigos) return;
   for (const o of J.perigos) {
     o.t -= dt;
@@ -1837,7 +1837,7 @@ export function atualizarPerigos(dt) {
     if (J.anuncio.vida <= 0) J.anuncio = null;
   }
 }
-export function desenharPerigos(ox, oy) {
+export function desenharPerigos(ox: number, oy: number) {
   if (!J.perigos) return;
   for (const o of J.perigos) {
     const q = 1 - o.t / o.max,
@@ -1907,7 +1907,7 @@ export const COR_PROJ = {
   bala: "#2a2224",
   engrenagem: "#c8a050"
 };
-export function desenharQuedas(ox, oy) {
+export function desenharQuedas(ox: number, oy: number) {
   if (!J.perigos) return;
   for (const o of J.perigos) {
     if (!o.queda) continue;
@@ -1943,12 +1943,12 @@ export function desenharQuedas(ox, oy) {
   }
   for (const g of J.golpes) if (g.frente) g.frente(ox, oy);
 }
-export function desenharGolpesLuz(ox, oy) {
+export function desenharGolpesLuz(ox: number, oy: number) {
   if (!J.golpes) return;
   for (const g of J.golpes) if (g.luz) g.luz(ox, oy);
 }
 // balas com forma: cada chefe atira coisas que combinam com ele
-export function desenharBala(b, ox, oy) {
+export function desenharBala(b: Bala, ox: number, oy: number) {
   const x = Math.round(b.x - ox),
     y = Math.round(b.y - oy),
     a = Math.atan2(b.vy, b.vx),
@@ -2115,7 +2115,7 @@ export function desenharBrilhoInimigos() {
   lg.globalAlpha = 1;
   lg.globalCompositeOperation = a0;
 }
-export function desenharEscuridao(ox, oy) {
+export function desenharEscuridao(ox: number, oy: number) {
   if (!(J.escuro > 0.02) || passiva("imune_escuro")) return;
   if (!ESCURO || ESCURO.width !== VW || ESCURO.height !== VH) {
     ESCURO = document.createElement("canvas");
@@ -2128,7 +2128,7 @@ export function desenharEscuridao(ox, oy) {
   g.fillStyle = `rgba(6,4,14,${J.escuro})`;
   g.fillRect(0, 0, VW, VH);
   g.globalCompositeOperation = "destination-out";
-  const furo = (x, y, r) => {
+  const furo = (x: number, y: number, r: number) => {
     const gr = g.createRadialGradient(x - ox, y - oy, 0, x - ox, y - oy, r);
     gr.addColorStop(0, "rgba(0,0,0,1)");
     gr.addColorStop(1, "rgba(0,0,0,0)");
@@ -2154,7 +2154,7 @@ export function desenharEscuridao(ox, oy) {
 }
 // barra do chefe e anúncio do golpe
 // aviso grande no alto da tela (chefe, eventos do mapa); sem chefe, fica um pouco abaixo do HUD
-export function desenharAnuncio(y?) {
+export function desenharAnuncio(y?: number) {
   if (!J.anuncio) return;
   if (y == null) y = Math.max(Math.round(H * 0.2) + 28, HUD_BAIXO + 70);
   if (J.anuncio) {

@@ -694,6 +694,9 @@ interface Cena {
 
 /** J: o mapa em andamento (recriado a cada mapa por iniciarMapa) */
 interface Mapa {
+  /** rastro do herói no chão (rastroDe): distância desde a última pegada, solo anterior e lado do passo */ _pd?: number;
+  _soloAnt?: string;
+  _lado?: boolean;
   t: number;
   fim: boolean;
   jogador: Ponto;

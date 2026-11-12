@@ -62,7 +62,7 @@ export function hexRgb(h: string) {
   h = h.replace("#", "");
   return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
 }
-export const hex = c =>
+export const hex = (c: number[]) =>
   "#" +
   c
     .map(v =>
@@ -338,7 +338,7 @@ export function gerarSprite(seed: string, n: number, base: string, op: { olhos?:
 }
 export const cacheBranco = new WeakMap();
 // versão de alta resolução (se a arte tiver original) para silhuetas e clarões: senão viram blocos quando ampliados
-export function baseHi(spr) {
+export function baseHi(spr: HTMLCanvasElement) {
   return (spr && spr._src && typeof Q !== "undefined" && Q > 1 && typeof versaoHi === "function" && versaoHi(spr, Q * 1.25)) || spr;
 }
 export function branco(spr: HTMLCanvasElement) {

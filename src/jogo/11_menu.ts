@@ -368,7 +368,7 @@ export function equipeTeste(pacto: string | string[], nivel: number) {
     .slice(0, 3)
     .map(id => ({ id, nivel }));
 }
-export function comecarTeste(pacto: string[], equipe, lenda?: string) {
+export function comecarTeste(pacto: string[], equipe: Monstro[], lenda?: string) {
   backupModerador();
   fechar();
   $("telaMenu").classList.remove("ativa");

@@ -1270,7 +1270,7 @@ export function imgDe(spr: Imagem) {
     return "";
   }
 }
-export function cenaEvolucao(s: Selo, antes, depois: number) {
+export function cenaEvolucao(s: Selo, antes: number, depois: number) {
   if (SIM.ativo || !J) return;
   const q = (e: number, r: number) => {
     const f = quadrosForma(s.mon.id, e, r, s.mon.rar);
@@ -1471,7 +1471,7 @@ export function desenharMoedasBaus(ox: number, oy: number) {
 // ---- prêmios
 export const ICONE_HUD = { estrela: 7, gema: 6, coracao: 8, ampulheta: 4, bolsa: 0, trofeu: 10, fogo: 5, livro: 11, mapa: 3 };
 export let ICONES_URL = null;
-export function iconeHud(nome) {
+export function iconeHud(nome: string) {
   const img = UI_ARQ("ui__hud_icones");
   if (!img) return null;
   if (!ICONES_URL) {
@@ -1665,7 +1665,7 @@ export function svgBau(ouro: boolean) {
       <path d="M53 44h14v9q0 6-7 8q-7-2-7-8z" fill="url(#bauM)" stroke="${m[3]}" stroke-width="1.1"/><circle cx="60" cy="52" r="1.6" fill="#140804"/>
       ${ouro ? `<circle cx="60" cy="27" r="5.5" fill="#d84aff" stroke="${m[1]}" stroke-width="2"/><circle cx="58.3" cy="25.3" r="1.6" fill="#fff" opacity=".85"/>` : ""}</g></svg>`;
 }
-export function abrirBau(b) {
+export function abrirBau(b: { tipo: string; x?: number; y?: number }) {
   const premios = sortearPremios(b.tipo);
   if (SIM.ativo) {
     premios.forEach(p => p.aplicar());

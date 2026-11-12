@@ -67,7 +67,7 @@ export const SINAL_SOLO: Record<string, [cor: string, n: number, forma: string |
   queimado: ["#5a4a40", 1, "fumaca"],
   molhado: ["#9fd0ff", 1, null]
 };
-export function sinalSolo(cx: number, cy: number, vira) {
+export function sinalSolo(cx: number, cy: number, vira: string) {
   const sg = SINAL_SOLO[vira];
   if (!sg || SIM.ativo || J.parts.length > 300) return;
   J._sinalT = J._sinalT || 0;
@@ -357,7 +357,7 @@ export function texturaSolo(t: string) {
         g.restore();
       }
   };
-  const mancha = (x: number, y: number, rr: number, cc, a: number) =>
+  const mancha = (x: number, y: number, rr: number, cc: string, a: number) =>
     rep(() => {
       const gr = g.createRadialGradient(x, y, 0, x, y, rr),
         [R1, G1, B1] = hexRgb(cc);
@@ -368,7 +368,7 @@ export function texturaSolo(t: string) {
     });
   if (!(t in BASE_TEX))
     for (let i = 0; i < 34; i++) mancha(r() * N, r() * N, 3 + r() * 9, r() < 0.5 ? tom(cor[0], 1.22) : tom(cor[0], 0.78), 0.55);
-  const traco = (pts, cc, lw: number, a: number) =>
+  const traco = (pts: number[], cc: string, lw: number, a: number) =>
     rep(() => {
       g.strokeStyle = cc;
       g.globalAlpha = a;
@@ -381,7 +381,7 @@ export function texturaSolo(t: string) {
       g.stroke();
       g.globalAlpha = 1;
     });
-  const ponto = (x: number, y: number, rr: number, cc, a: number) =>
+  const ponto = (x: number, y: number, rr: number, cc: string, a: number) =>
     rep(() => {
       g.fillStyle = cc;
       g.globalAlpha = a;

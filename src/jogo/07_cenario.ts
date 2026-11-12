@@ -550,7 +550,7 @@ export function atualizarProps(dt: number) {
   C.filaExp = C.filaExp.filter(x => x.t > 0);
   prontas.forEach(x => explodir(x.x, x.y, x.R));
 }
-export function acender(p) {
+export function acender(p: PropCena) {
   const M = p.mat;
   if (J.cena.kit.submerso || p.molhado > 0) return;
   if (M.explode) {
@@ -1067,7 +1067,7 @@ export function atualizarTufos(dt: number) {
 }
 
 // ---------------------------------------------------------------- pegadas e ondas na água
-export function rastroDe(o, x, y, dist, r) {
+export function rastroDe(o: Mapa | Selo | Inimigo, x: number, y: number, dist: number, r: number) {
   const C = J.cena;
   o._pd = (o._pd || 0) + dist;
   if (o._pd < 5) return;
@@ -1493,7 +1493,7 @@ export function atualizarAr(dt: number, ox: number, oy: number) {
     C.luzes = C.luzes.filter(l => l.vida > 0);
   }
 }
-export function envolver(n, ox: number, oy: number, r: number) {
+export function envolver(n: Ponto, ox: number, oy: number, r: number) {
   const w = VW + 2 * r + 40,
     h = VH + 2 * r + 40,
     x0 = ox - r - 20,

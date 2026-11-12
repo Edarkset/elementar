@@ -211,14 +211,14 @@ export function puxar(cx: number, cy: number, r: number, forca: number) {
 }
 export const COMPORTAMENTO = {
   guardiao: {
-    b(s: Selo | Inimigo, a: Atributos, el: Elemento) {
+    b(s: Selo, a: Atributos, el: Elemento) {
       const v = (J.danoRec || 0) * 0.25;
       if (v > 0) {
         vfxOnda(s, el, 40);
         emArea(s.x, s.y, 40, e => ferir(e, v, el));
       }
     },
-    h1(s: Inimigo, a: Atributos, el: Elemento) {
+    h1(s: Selo, a: Atributos, el: Elemento) {
       let n = 0;
       for (const e of J.inimigos) {
         if (e.hp <= 0 || e.chefe || dist2(e, s) > 70 * 70) continue;
@@ -231,7 +231,7 @@ export const COMPORTAMENTO = {
       }
       curar(J.vidaMax * 0.003 * n);
     },
-    h2(s: Selo | Inimigo, a: Inimigo, el: Elemento) {
+    h2(s: Selo, a: Atributos, el: Elemento) {
       vfxOnda(s, el, 47);
       emArea(s.x, s.y, 47, e => {
         ferir(e, a.dano * 0.6, el);
@@ -244,11 +244,11 @@ export const COMPORTAMENTO = {
     }
   },
   guerreiro: {
-    b(s: Selo, a: Inimigo, el: Elemento) {
+    b(s: Selo, a: Atributos, el: Elemento) {
       puxar(s.x, s.y, 44, 6);
       emArea(s.x, s.y, 28, e => ferir(e, a.dano * 0.4, el));
     },
-    h1(s: Selo | Inimigo, a: Inimigo, el: Elemento) {
+    h1(s: Selo, a: Atributos, el: Elemento) {
       for (const f of [0.5, 1])
         agendar(0.15 * f, () => {
           if (!J) return;
@@ -261,7 +261,7 @@ export const COMPORTAMENTO = {
     }
   },
   assassino: {
-    b(s, a: Atributos, el: Elemento, cor: string) {
+    b(s: Selo, a: Atributos, el: Elemento, cor: string) {
       for (let i = 0; i < 2; i++) {
         const e = maisProximo(s, 110, o => Math.random() < 0.7);
         if (!e) break;
@@ -269,7 +269,7 @@ export const COMPORTAMENTO = {
         J.proj.push(_P(s, a, el, cor, a.dano * 0.7, { vx: Math.cos(g) * 180, vy: Math.sin(g) * 180, ric: 2, perf: 2 }));
       }
     },
-    h1(s, a: Atributos, el: Elemento) {
+    h1(s: Selo, a: Atributos, el: Elemento) {
       const vistos = new Set();
       for (let i = 0; i < 3; i++) {
         const e = maisProximo(s, 60, o => !vistos.has(o));
@@ -279,7 +279,7 @@ export const COMPORTAMENTO = {
         ferir(e, a.dano, el);
       }
     },
-    h2(s: Inimigo, a: Atributos) {
+    h2(s: Selo, a: Atributos) {
       let n = 0;
       for (const e of J.inimigos) {
         if (e.hp <= 0 || dist2(e, s) > 60 * 60) continue;
@@ -289,7 +289,7 @@ export const COMPORTAMENTO = {
     }
   },
   cacador: {
-    b(s, a: Inimigo, el: Elemento) {
+    b(s: Selo, a: Atributos, el: Elemento) {
       const e = maisProximo(s, 140);
       if (e)
         agendar(0.35, () => {
@@ -309,14 +309,14 @@ export const COMPORTAMENTO = {
     }
   },
   mago: {
-    b(s, a: Atributos, el: Elemento, cor: string) {
+    b(s: Selo, a: Atributos, el: Elemento, cor: string) {
       for (let i = 0; i < 2; i++) {
         const e = maisProximo(s, 130);
         if (!e) break;
         J.proj.push(_P(s, a, el, cor, a.dano * 0.6, { alvo: e, vel: 110, vida: 2.2, r: 3, explode: 16 }));
       }
     },
-    h1(s, a: Inimigo, el: Elemento) {
+    h1(s: Selo, a: Atributos, el: Elemento) {
       const p = pontoDenso(s, 150);
       if (p)
         agendar(0.3, () => {
@@ -325,7 +325,7 @@ export const COMPORTAMENTO = {
           emArea(p.x, p.y, 30, o => ferir(o, a.dano * 1.2, el));
         });
     },
-    h2(s: Selo, a: Inimigo, el: Elemento) {
+    h2(s: Selo, a: Atributos, el: Elemento) {
       const P = J.jogador;
       vfxSelo(P.x, P.y, el, 35);
       emArea(P.x, P.y, 35, o => {
@@ -347,14 +347,14 @@ export const COMPORTAMENTO = {
     h1(s: Selo, a: Atributos, el: Elemento, cor: string) {
       J.crias.push({ fonte: FONTE, x: s.x + rnd(-6, 6), y: s.y + rnd(-6, 6), dano: a.dano * 0.7, el, cor, vida: 7, cd: 0 });
     },
-    h2(s, a: Atributos, el: Elemento, cor: string) {
+    h2(s: Selo, a: Atributos, el: Elemento, cor: string) {
       const p = pontoDenso(s, 150) || s;
       for (let i = 0; i < 2; i++)
         J.crias.push({ fonte: FONTE, x: p.x + rnd(-10, 10), y: p.y + rnd(-10, 10), dano: a.dano * 0.6, el, cor, vida: 8, cd: 0 });
     }
   },
   mistico: {
-    b(s, a: Atributos, el: Elemento) {
+    b(s: Selo, a: Atributos, el: Elemento) {
       const vistos = new Set();
       let o = maisProximo(s, 110);
       for (let i = 0; i < 2 && o; i++) {
@@ -384,7 +384,7 @@ export const COMPORTAMENTO = {
     h1() {
       J.cantoGuerra = 4;
     },
-    h2(s, a: Atributos, el: Elemento) {
+    h2(s: Selo, a: Atributos, el: Elemento) {
       const P = J.jogador;
       for (const g of J.gemas)
         if (dist2(g, P) < 110 * 110) {

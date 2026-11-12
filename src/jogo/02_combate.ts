@@ -1333,7 +1333,7 @@ export const HAB = {
   guardiao: {
     h1: {
       cd: 7,
-      f(s, a: Inimigo, el: Elemento, cor: string, lv: number, mod: number) {
+      f(s: Selo, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         emArea(s.x, s.y, 60, e => {
           e.x += (s.x - e.x) * 0.5;
           e.y += (s.y - e.y) * 0.5;
@@ -1348,7 +1348,7 @@ export const HAB = {
     },
     h2: {
       cd: 10,
-      f(s, a: Inimigo, el: Elemento, cor: string, lv: number, mod: number) {
+      f(s: Selo, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         const rr = mod === 0 ? 65 : 50;
         emArea(s.x, s.y, rr, e => {
           ferir(e, a.dano * 2 * fNivel(lv), el);
@@ -1374,7 +1374,7 @@ export const HAB = {
   guerreiro: {
     h1: {
       cd: 5,
-      f(s: Selo, a: Inimigo, el, cor: string, lv, mod: number) {
+      f(s: Selo, a: Atributos, el, cor: string, lv, mod: number) {
         const e = pontoDenso(s, 90) || maisProximo(s, 90);
         if (!e) return false;
         J.fantasmas.push({ x: s.x, y: s.y, spr: spriteSelo(s), vida: 0.25 });
@@ -1491,7 +1491,7 @@ export const HAB = {
   mago: {
     h1: {
       cd: 6,
-      f(s, a: Inimigo, el: Elemento, cor: string, lv: number, mod: number) {
+      f(s: Selo, a: Atributos, el: Elemento, cor: string, lv: number, mod: number) {
         const e = pontoDenso(s, 140);
         if (!e) return false;
         if (mod === 0) {

@@ -101,7 +101,7 @@ export function novaArte(nome: string) {
   }, 250);
 }
 // pede (sem esperar) uma lista de artes; devolve uma promessa que termina quando todas chegaram ou falharam
-export function preCarregar(nomes) {
+export function preCarregar(nomes: string[]) {
   return Promise.all(
     nomes
       .filter(n => MANIFESTO && MANIFESTO[n])
@@ -116,7 +116,7 @@ export function preCarregar(nomes) {
       )
   );
 }
-export const artesQue = f => (MANIFESTO ? Object.keys(MANIFESTO).filter(f) : []);
+export const artesQue = (f: (nome: string) => boolean) => (MANIFESTO ? Object.keys(MANIFESTO).filter(f) : []);
 // artes de um mapa: o reino (arte da abertura primeiro), o Guardião da era, a equipe, a Lenda/deus, chão dos elementos e efeitos
 export function artesDoMapa(u: Universo) {
   if (!u) return [];
@@ -256,7 +256,7 @@ export const alfaDe = img => {
   return g.getImageData(0, 0, c.width, c.height).data;
 };
 // melhor corte perto de "nom" (entre lo e hi): linha sem desenho vale muito mais do que ficar perto da grade
-export function melhorCorte(cont, nom: number, lo: number, hi: number) {
+export function melhorCorte(cont: ArrayLike<number>, nom: number, lo: number, hi: number) {
   let best = nom,
     bc = 1e18;
   for (let b = Math.max(1, Math.round(lo)); b <= Math.min(cont.length - 1, Math.round(hi)); b++) {
@@ -397,12 +397,12 @@ export function fatiarFolha(img: Imagem, cols: number, rows: number, rigido?: bo
 // monta uma tabela de cores (comum -> raridade) com a célula fixa das duas e pinta os quadros da folha comum com ela.
 // A tabela é suavizada (média com as cores vizinhas) e o brilho de cada pixel é mantido, para não perder o detalhe.
 export const cacheRecor = new Map();
-export function folhaRecolorida(anim, base, alvo, celula) {
+export function folhaRecolorida(anim: Imagem, base: Imagem, alvo: Imagem, celula: number) {
   const k = (anim._id || (anim._id = novoIdImg())) + "|" + (alvo._id || (alvo._id = novoIdImg())) + "|" + celula;
   if (cacheRecor.has(k)) return cacheRecor.get(k);
   let out = null;
   try {
-    const cel = im => {
+    const cel = (im: Imagem) => {
       const cw = im.width / 4,
         ch = im.height / 2,
         c = document.createElement("canvas");
@@ -441,7 +441,7 @@ export function folhaRecolorida(anim, base, alvo, celula) {
       }
     }
     // caixa 3D separável (borda repetida), para espalhar as cores conhecidas para as vizinhas
-    const caixa = (a, comp: number, r: number) => {
+    const caixa = (a: Float32Array, comp: number, r: number) => {
       let src = a;
       for (let eixo = 0; eixo < 3; eixo++) {
         const o = new Float32Array(src.length),
@@ -520,7 +520,7 @@ export const ARTE_ACHATADA: [RegExp, number, number][] = [
   [/^arte\/reinos\/.*__chefe\.png$/, 576, 576],
   [/^arte\/reinos\/.*guardiao_[a-z_]+__anim\.png$/, 576, 576]
 ];
-export function correcaoAltura(img) {
+export function correcaoAltura(img: Imagem) {
   if (!img) return 1;
   if (img._ky != null) return img._ky;
   let k = 1;

@@ -184,7 +184,7 @@ export function celulaArte(img: Imagem, cols: number, rows: number, col: number,
 export const CAMADA_ARTE = [];
 export let cvArte = null;
 // versão da célula em K pixels por pixel de mundo, recortada do arquivo original com suavização de alta qualidade
-export function versaoHi(c: Carta, K?: number) {
+export function versaoHi(c: Imagem, K?: number) {
   if (!c || !c._src) return null;
   K = Math.max(1, Math.min(8, Math.ceil(K || 4)));
   if (c.hi && c.hiK === K) return c.hi;
@@ -223,7 +223,7 @@ export function versaoHi(c: Carta, K?: number) {
 {
   const desenhoOriginal = lg.drawImage.bind(lg);
   // o tipo do navegador descreve as três formas de chamar drawImage; esta função atende as três e troca a imagem pela versão nítida
-  lg.drawImage = function (img: Carta, a: number, b: number, c: number, d: number, e: PropCena, f: number, g2, h2) {
+  lg.drawImage = function (img: Imagem, a: number, b: number, c: number, d: number, e: number, f: number, g2: number, h2: number) {
     if (img && img._suave && !lg.imageSmoothingEnabled) {
       lg.imageSmoothingEnabled = true;
       desenhoOriginal.apply(null, arguments);
@@ -605,7 +605,7 @@ export const TAM_OBJ: Record<string, number> = {
   ovo: 9,
   saque: 14
 };
-export function linhaObjeto(p) {
+export function linhaObjeto(p: PropCena) {
   const u = UNIV[R.universo];
   return u && u.objetos ? u.objetos.indexOf(p.saque ? "saque" : p.tipo) : -1;
 }
@@ -625,7 +625,7 @@ export function spriteObjetoArte(p: PropCena) {
   const tam = Math.round((TAM_OBJ[t] || 14) * 1.8 * (p.carvalho ? 1.4 : 1));
   /* antes 1,35: vaso e caixote saíam menores que a cabeça do herói */ return celulaArte(img, 8, rows, col, lin, tam, tam, 0.85);
 }
-export function cacoArte(p: Ponto) {
+export function cacoArte(p: PropCena) {
   const img = folhaU("objetos");
   if (!img) return null;
   const lin = linhaObjeto(p);

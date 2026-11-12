@@ -1502,7 +1502,7 @@ export function executarFissuraCurta(x: number, y: number, a: number, L: number,
     }
   });
 }
-export function transmutarProp(p) {
+export function transmutarProp(p: PropCena) {
   if (p.morto || p.mat.indestrutivel) return;
   const spr = p.spriteFixo || spriteProp(p);
   if (!spr) return;

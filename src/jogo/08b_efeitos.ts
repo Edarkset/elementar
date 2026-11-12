@@ -1471,11 +1471,11 @@ export function vfxEspecial(s: Selo, alvo: Ponto, cls: Classe, op: number, el: E
   }
   particulasEl(x0, y0, el, 14, 110);
 }
-export function nomeArqReacao(a: Inimigo, b: HTMLButtonElement) {
+export function nomeArqReacao(a: string, b: string) {
   for (const [x, y] of [
     [a, b],
     [b, a]
-  ] as [HTMLButtonElement | Inimigo, HTMLButtonElement | Inimigo][]) {
+  ] as [string, string][]) {
     const c = `arte/efeitos/reacao__${x}_${y}.png`;
     if (folhaArte(c)) return c;
   }

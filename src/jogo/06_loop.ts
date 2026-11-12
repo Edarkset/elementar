@@ -218,7 +218,7 @@ export function tick(dt: number) {
   atualizar(dt);
   if (J && J.deus) J.vida = J.vidaMax;
 }
-export function atualizar(dt) {
+export function atualizar(dt: number) {
   if (J.intro && passoAbertura(dt)) return;
   J.t += dt;
   const P = J.jogador,

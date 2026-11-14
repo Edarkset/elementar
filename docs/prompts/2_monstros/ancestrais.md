@@ -12,8 +12,11 @@ a majestic dragon of pearl-white scales trimmed in gold, a radiant sun disk glow
 - **Salvar como:** `arte/lendarios/dragao_solar__anim_1.png`
 - **Anexar:** `dragao_solar__anim_1`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragonete Solar (`__anim_1`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -43,6 +46,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão Solar Jovem (`__anim_2`)
@@ -50,8 +55,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_solar__anim_2.png`
 - **Anexar:** `dragao_solar__anim_2`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão Solar Jovem (`__anim_2`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -81,6 +89,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão Solar (`__anim_3`)
@@ -88,8 +98,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_solar__anim_3.png`
 - **Anexar:** `dragao_solar__anim_3`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão Solar (`__anim_3`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -119,6 +132,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão Solar Ancestral (`__anim_4`)
@@ -126,8 +141,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_solar__anim_4.png`
 - **Anexar:** `dragao_solar__anim_4`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão Solar Ancestral (`__anim_4`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -157,6 +175,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Imagem fixa das 5 formas (`__base`)
@@ -164,8 +184,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_solar__base.png`
 - **Anexar:** a imagem atual `arte/lendarios/dragao_solar__base` (reconverta antes; gere só se continuar ruim)
 - **O jogo usa:** sim (célula 1 = ovo, 2 a 5 = Filhote a Supremo)
+- **Molde (como deve ficar):** [Dragão ancestral: 5 formas](../moldes/ancestral_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Imagem fixa das 5 formas (`__base`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: 5 still images of one dragon, side by side.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -195,6 +218,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 5 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo chocando (`__eclosao`)
@@ -202,8 +227,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_solar__eclosao.png`
 - **Anexar:** a imagem fixa (`__base`) deste dragão
 - **O jogo usa:** ainda não (vai para a cena do ovo chocando)
+- **Molde (como deve ficar):** [Dragão ancestral: ovo chocando](../moldes/ancestral_eclosao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo chocando (`__eclosao`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: an egg hatching, 6 frames in one row.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -226,6 +254,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -238,8 +268,11 @@ a giant cosmic moth with deep purple wings full of stars and crescent-moon eyesp
 - **Salvar como:** `arte/lendarios/mariposa_vazio__anim_1.png`
 - **Anexar:** `mariposa_vazio__anim_1`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Larva do Vazio (`__anim_1`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -269,6 +302,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Mariposa do Vazio Jovem (`__anim_2`)
@@ -276,8 +311,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/mariposa_vazio__anim_2.png`
 - **Anexar:** `mariposa_vazio__anim_2`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Mariposa do Vazio Jovem (`__anim_2`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -307,6 +345,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Mariposa do Vazio (`__anim_3`)
@@ -314,8 +354,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/mariposa_vazio__anim_3.png`
 - **Anexar:** `mariposa_vazio__anim_3`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Mariposa do Vazio (`__anim_3`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -345,6 +388,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Mariposa do Vazio Ancestral (`__anim_4`)
@@ -352,8 +397,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/mariposa_vazio__anim_4.png`
 - **Anexar:** `mariposa_vazio__anim_4`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Mariposa do Vazio Ancestral (`__anim_4`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -383,6 +431,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Imagem fixa das 5 formas (`__base`)
@@ -390,8 +440,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/mariposa_vazio__base.png`
 - **Anexar:** a imagem atual `arte/lendarios/mariposa_vazio__base` (reconverta antes; gere só se continuar ruim)
 - **O jogo usa:** sim (célula 1 = ovo, 2 a 5 = Filhote a Supremo)
+- **Molde (como deve ficar):** [Dragão ancestral: 5 formas](../moldes/ancestral_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Imagem fixa das 5 formas (`__base`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: 5 still images of one dragon, side by side.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -421,6 +474,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 5 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo chocando (`__eclosao`)
@@ -428,8 +483,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/mariposa_vazio__eclosao.png`
 - **Anexar:** a imagem fixa (`__base`) deste dragão
 - **O jogo usa:** ainda não (vai para a cena do ovo chocando)
+- **Molde (como deve ficar):** [Dragão ancestral: ovo chocando](../moldes/ancestral_eclosao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo chocando (`__eclosao`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: an egg hatching, 6 frames in one row.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -452,6 +510,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -464,8 +524,11 @@ a long serpentine dragon made of living bark and moss, branches as horns, red au
 - **Salvar como:** `arte/lendarios/arvore_dragao__anim_1.png`
 - **Anexar:** `arvore_dragao__anim_1`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Broto-Dragão (`__anim_1`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -495,6 +558,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Árvore-Dragão Jovem (`__anim_2`)
@@ -502,8 +567,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/arvore_dragao__anim_2.png`
 - **Anexar:** `arvore_dragao__anim_2`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Árvore-Dragão Jovem (`__anim_2`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -533,6 +601,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Árvore-Dragão (`__anim_3`)
@@ -540,8 +610,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/arvore_dragao__anim_3.png`
 - **Anexar:** `arvore_dragao__anim_3`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Árvore-Dragão (`__anim_3`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -571,6 +644,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Árvore-Dragão Ancestral (`__anim_4`)
@@ -578,8 +653,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/arvore_dragao__anim_4.png`
 - **Anexar:** `arvore_dragao__anim_4`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Árvore-Dragão Ancestral (`__anim_4`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -609,6 +687,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Imagem fixa das 5 formas (`__base`)
@@ -616,8 +696,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/arvore_dragao__base.png`
 - **Anexar:** a imagem atual `arte/lendarios/arvore_dragao__base` (reconverta antes; gere só se continuar ruim)
 - **O jogo usa:** sim (célula 1 = ovo, 2 a 5 = Filhote a Supremo)
+- **Molde (como deve ficar):** [Dragão ancestral: 5 formas](../moldes/ancestral_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Imagem fixa das 5 formas (`__base`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: 5 still images of one dragon, side by side.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -647,6 +730,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 5 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo chocando (`__eclosao`)
@@ -654,8 +739,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/arvore_dragao__eclosao.png`
 - **Anexar:** a imagem fixa (`__base`) deste dragão
 - **O jogo usa:** ainda não (vai para a cena do ovo chocando)
+- **Molde (como deve ficar):** [Dragão ancestral: ovo chocando](../moldes/ancestral_eclosao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo chocando (`__eclosao`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: an egg hatching, 6 frames in one row.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -678,6 +766,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -690,8 +780,11 @@ a powerful dragon of stone scales covered in clear quartz crystal spikes, transl
 - **Salvar como:** `arte/lendarios/dragao_cristal__anim_1.png`
 - **Anexar:** `dragao_cristal__anim_1`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragonete de Cristal (`__anim_1`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -721,6 +814,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão de Cristal Jovem (`__anim_2`)
@@ -728,8 +823,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_cristal__anim_2.png`
 - **Anexar:** `dragao_cristal__anim_2`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão de Cristal Jovem (`__anim_2`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -759,6 +857,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão de Cristal (`__anim_3`)
@@ -766,8 +866,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_cristal__anim_3.png`
 - **Anexar:** `dragao_cristal__anim_3`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão de Cristal (`__anim_3`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -797,6 +900,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão de Cristal Ancestral (`__anim_4`)
@@ -804,8 +909,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_cristal__anim_4.png`
 - **Anexar:** `dragao_cristal__anim_4`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão de Cristal Ancestral (`__anim_4`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -835,6 +943,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Imagem fixa das 5 formas (`__base`)
@@ -842,8 +952,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_cristal__base.png`
 - **Anexar:** a imagem atual `arte/lendarios/dragao_cristal__base` (reconverta antes; gere só se continuar ruim)
 - **O jogo usa:** sim (célula 1 = ovo, 2 a 5 = Filhote a Supremo)
+- **Molde (como deve ficar):** [Dragão ancestral: 5 formas](../moldes/ancestral_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Imagem fixa das 5 formas (`__base`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: 5 still images of one dragon, side by side.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -873,6 +986,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 5 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo chocando (`__eclosao`)
@@ -880,8 +995,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_cristal__eclosao.png`
 - **Anexar:** a imagem fixa (`__base`) deste dragão
 - **O jogo usa:** ainda não (vai para a cena do ovo chocando)
+- **Molde (como deve ficar):** [Dragão ancestral: ovo chocando](../moldes/ancestral_eclosao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo chocando (`__eclosao`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: an egg hatching, 6 frames in one row.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -904,6 +1022,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -916,8 +1036,11 @@ a sea dragon with deep blue scales, wave-crest fins, a mane of white sea foam, p
 - **Salvar como:** `arte/lendarios/dragao_mares__anim_1.png`
 - **Anexar:** `dragao_mares__anim_1`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragonete das Marés (`__anim_1`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -947,6 +1070,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão das Marés Jovem (`__anim_2`)
@@ -954,8 +1079,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_mares__anim_2.png`
 - **Anexar:** `dragao_mares__anim_2`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão das Marés Jovem (`__anim_2`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -985,6 +1113,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão das Marés (`__anim_3`)
@@ -992,8 +1122,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_mares__anim_3.png`
 - **Anexar:** `dragao_mares__anim_3`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão das Marés (`__anim_3`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1023,6 +1156,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão das Marés Ancestral (`__anim_4`)
@@ -1030,8 +1165,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_mares__anim_4.png`
 - **Anexar:** `dragao_mares__anim_4`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão das Marés Ancestral (`__anim_4`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1061,6 +1199,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Imagem fixa das 5 formas (`__base`)
@@ -1068,8 +1208,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_mares__base.png`
 - **Anexar:** a imagem atual `arte/lendarios/dragao_mares__base` (reconverta antes; gere só se continuar ruim)
 - **O jogo usa:** sim (célula 1 = ovo, 2 a 5 = Filhote a Supremo)
+- **Molde (como deve ficar):** [Dragão ancestral: 5 formas](../moldes/ancestral_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Imagem fixa das 5 formas (`__base`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: 5 still images of one dragon, side by side.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1099,6 +1242,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 5 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo chocando (`__eclosao`)
@@ -1106,8 +1251,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_mares__eclosao.png`
 - **Anexar:** a imagem fixa (`__base`) deste dragão
 - **O jogo usa:** ainda não (vai para a cena do ovo chocando)
+- **Molde (como deve ficar):** [Dragão ancestral: ovo chocando](../moldes/ancestral_eclosao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo chocando (`__eclosao`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: an egg hatching, 6 frames in one row.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1130,6 +1278,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -1142,8 +1292,11 @@ a heavy dragon of black volcanic rock with glowing magma cracks, a mane of flame
 - **Salvar como:** `arte/lendarios/dragao_vulcanico__anim_1.png`
 - **Anexar:** `dragao_vulcanico__anim_1`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragonete de Brasa (`__anim_1`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1173,6 +1326,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão Vulcânico Jovem (`__anim_2`)
@@ -1180,8 +1335,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_vulcanico__anim_2.png`
 - **Anexar:** `dragao_vulcanico__anim_2`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão Vulcânico Jovem (`__anim_2`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1211,6 +1369,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão Vulcânico (`__anim_3`)
@@ -1218,8 +1378,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_vulcanico__anim_3.png`
 - **Anexar:** `dragao_vulcanico__anim_3`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão Vulcânico (`__anim_3`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1249,6 +1412,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão Vulcânico Ancestral (`__anim_4`)
@@ -1256,8 +1421,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_vulcanico__anim_4.png`
 - **Anexar:** `dragao_vulcanico__anim_4`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão Vulcânico Ancestral (`__anim_4`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1287,6 +1455,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Imagem fixa das 5 formas (`__base`)
@@ -1294,8 +1464,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_vulcanico__base.png`
 - **Anexar:** a imagem atual `arte/lendarios/dragao_vulcanico__base` (reconverta antes; gere só se continuar ruim)
 - **O jogo usa:** sim (célula 1 = ovo, 2 a 5 = Filhote a Supremo)
+- **Molde (como deve ficar):** [Dragão ancestral: 5 formas](../moldes/ancestral_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Imagem fixa das 5 formas (`__base`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: 5 still images of one dragon, side by side.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1325,6 +1498,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 5 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo chocando (`__eclosao`)
@@ -1332,8 +1507,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_vulcanico__eclosao.png`
 - **Anexar:** a imagem fixa (`__base`) deste dragão
 - **O jogo usa:** ainda não (vai para a cena do ovo chocando)
+- **Molde (como deve ficar):** [Dragão ancestral: ovo chocando](../moldes/ancestral_eclosao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo chocando (`__eclosao`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: an egg hatching, 6 frames in one row.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1356,6 +1534,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -1368,8 +1548,11 @@ a long slender sky dragon with feathered wings, white-and-sky-blue scales and a 
 - **Salvar como:** `arte/lendarios/dragao_celeste__anim_1.png`
 - **Anexar:** `dragao_celeste__anim_1`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragonete das Nuvens (`__anim_1`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1399,6 +1582,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão Celeste Jovem (`__anim_2`)
@@ -1406,8 +1591,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_celeste__anim_2.png`
 - **Anexar:** `dragao_celeste__anim_2`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão Celeste Jovem (`__anim_2`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1437,6 +1625,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão Celeste (`__anim_3`)
@@ -1444,8 +1634,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_celeste__anim_3.png`
 - **Anexar:** `dragao_celeste__anim_3`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão Celeste (`__anim_3`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1475,6 +1668,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Dragão Celeste Ancestral (`__anim_4`)
@@ -1482,8 +1677,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_celeste__anim_4.png`
 - **Anexar:** `dragao_celeste__anim_4`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Dragão Celeste Ancestral (`__anim_4`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1513,6 +1711,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Imagem fixa das 5 formas (`__base`)
@@ -1520,8 +1720,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_celeste__base.png`
 - **Anexar:** a imagem atual `arte/lendarios/dragao_celeste__base` (reconverta antes; gere só se continuar ruim)
 - **O jogo usa:** sim (célula 1 = ovo, 2 a 5 = Filhote a Supremo)
+- **Molde (como deve ficar):** [Dragão ancestral: 5 formas](../moldes/ancestral_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Imagem fixa das 5 formas (`__base`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: 5 still images of one dragon, side by side.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1551,6 +1754,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 5 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo chocando (`__eclosao`)
@@ -1558,8 +1763,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/dragao_celeste__eclosao.png`
 - **Anexar:** a imagem fixa (`__base`) deste dragão
 - **O jogo usa:** ainda não (vai para a cena do ovo chocando)
+- **Molde (como deve ficar):** [Dragão ancestral: ovo chocando](../moldes/ancestral_eclosao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo chocando (`__eclosao`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: an egg hatching, 6 frames in one row.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1582,6 +1790,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -1594,8 +1804,11 @@ the Thunderbird of myth: a huge eagle-like bird of dark storm-blue feathers with
 - **Salvar como:** `arte/lendarios/passaro_trovao__anim_1.png`
 - **Anexar:** `passaro_trovao__anim_1`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Filhote do Trovão (`__anim_1`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1625,6 +1838,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Pássaro-Trovão Jovem (`__anim_2`)
@@ -1632,8 +1847,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/passaro_trovao__anim_2.png`
 - **Anexar:** `passaro_trovao__anim_2`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Pássaro-Trovão Jovem (`__anim_2`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1663,6 +1881,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Pássaro-Trovão (`__anim_3`)
@@ -1670,8 +1890,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/passaro_trovao__anim_3.png`
 - **Anexar:** `passaro_trovao__anim_3`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Pássaro-Trovão (`__anim_3`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1701,6 +1924,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Pássaro-Trovão Ancestral (`__anim_4`)
@@ -1708,8 +1933,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/passaro_trovao__anim_4.png`
 - **Anexar:** `passaro_trovao__anim_4`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Pássaro-Trovão Ancestral (`__anim_4`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1739,6 +1967,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Imagem fixa das 5 formas (`__base`)
@@ -1746,8 +1976,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/passaro_trovao__base.png`
 - **Anexar:** a imagem atual `arte/lendarios/passaro_trovao__base` (reconverta antes; gere só se continuar ruim)
 - **O jogo usa:** sim (célula 1 = ovo, 2 a 5 = Filhote a Supremo)
+- **Molde (como deve ficar):** [Dragão ancestral: 5 formas](../moldes/ancestral_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Imagem fixa das 5 formas (`__base`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: 5 still images of one dragon, side by side.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1777,6 +2010,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 5 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo chocando (`__eclosao`)
@@ -1784,8 +2019,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/lendarios/passaro_trovao__eclosao.png`
 - **Anexar:** a imagem fixa (`__base`) deste dragão
 - **O jogo usa:** ainda não (vai para a cena do ovo chocando)
+- **Molde (como deve ficar):** [Dragão ancestral: ovo chocando](../moldes/ancestral_eclosao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo chocando (`__eclosao`). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: an egg hatching, 6 frames in one row.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1808,4 +2046,6 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```

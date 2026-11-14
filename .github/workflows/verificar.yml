@@ -48,6 +48,8 @@ jobs:
           npx playwright install chromium   # sem --with-deps: a máquina do GitHub já tem as bibliotecas, e instalar pacotes do sistema falha quando o servidor do Ubuntu oscila
       - name: Artes (grade, recorte, transparência e manifesto; avisos no relatório)
         run: npm run artes
+      - name: Página de conferência das imagens geradas
+        run: npm run conferencia
       - name: Arquivos, telas e mecânicas
         run: |
           node testes/verificar.js --so carga

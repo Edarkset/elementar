@@ -13,6 +13,7 @@ const fs = require("fs"),
 const RAIZ = path.join(__dirname, ".."),
   SAIDA = path.join(RAIZ, "docs", "prompts");
 const D = new Function(fs.readFileSync(path.join(RAIZ, "js", "dados.js"), "utf8") + ";return D;")();
+const LAY = require("./layouts_arte.js");
 
 // ---------------------------------------------------------------- vocabulário (dados em português -> inglês para o gerador)
 const EL = {
@@ -203,6 +204,14 @@ const DETALHE = {
 };
 const det = l => (l || []).map(d => DETALHE[d] || d).join(", ");
 
+// cachoeira do paredão conforme o líquido do reino (estrutura.lago_solo)
+const QUEDA = {
+  agua: "waterfall",
+  fogo: "lava fall",
+  lama: "mud and sand fall",
+  luz: "cascade of glowing light",
+  sombra: "cascade of dark shadow mist"
+};
 // ---------------------------------------------------------------- blocos de travas
 const ESTILO = `STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.`;
 const FUNDO = `BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.`;
@@ -234,11 +243,29 @@ const ref = (o = "", mesmo = false) =>
 // o .webp da pasta arte/ do jogo foi achatado na conversão antiga: anexar o PNG original (ou o corrigido)
 const ANEXO_ORIGINAL = "o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado";
 
-// prompt pronto (bloco de código) com cabeçalho em português: arquivo, anexo, se o jogo já usa
-function bloco(titulo, info, linhas) {
+// prompt pronto (bloco de código) com cabeçalho em português: arquivo, anexo, se o jogo já usa, e o molde de como deve ficar.
+// Toda folha ganha duas travas contra mistura com imagens anteriores da mesma conversa: o isolamento no começo
+// (só este personagem, só o anexo desta mensagem) e a conferência final (quantidade, fundo, nada de imagens anteriores).
+// "so" = o que pode aparecer na imagem (o nome do personagem ou do conjunto); sem ele, vale o título do bloco.
+function bloco(titulo, info, linhas, so) {
+  const salvar = (info.find(([k]) => k === "Salvar como") || [])[1] || "",
+    arq = (/`([^`]+)`/.exec(salvar) || [])[1] || "",
+    lay = LAY.doArquivo(arq),
+    anexo = (info.find(([k]) => k === "Anexar") || [])[1] || "",
+    semAnexo = /^nada/.test(anexo);
   const cab = [`#### ${titulo}`, ""];
   for (const [k, v] of info) cab.push(`- **${k}:** ${v}`);
-  return cab.join("\n") + "\n\n```text\n" + linhas.filter(Boolean).join("\n\n") + "\n```\n";
+  if (lay) cab.push(`- **Molde (como deve ficar):** [${lay.nome}]({{MOLDES}}/${lay.id}.png)`);
+  const isolar = `NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: ${so || titulo}. ${
+    semAnexo
+      ? "There is no reference image for this one: ignore any image attached earlier in the conversation."
+      : "The ONLY reference is the image attached to THIS message."
+  }`;
+  const R = lay ? LAY.linhasDe(lay, arq) : 0,
+    fim = lay
+      ? `BEFORE YOU FINISH, CHECK: the image is ${lay.W} x ${lay.H}; ${lay.R === 1 && lay.C === 1 ? "one single subject" : `exactly ${lay.C} items in every row and exactly ${R} rows`}; nothing from earlier images of this conversation; ${lay.tipo === "opaco" ? "no seam when tiled" : "transparent (or flat #FF00FF magenta) background, no checkerboard"}; nothing written anywhere.`
+      : "";
+  return cab.join("\n") + "\n\n```text\n" + [isolar, ...linhas.filter(Boolean), fim].filter(Boolean).join("\n\n") + "\n```\n";
 }
 
 // ---------------------------------------------------------------- monstros
@@ -352,7 +379,8 @@ function arquivoMonstro(l) {
           ["Anexar", `\`${l.id}__anim_${f.n}\`: ${ANEXO_ORIGINAL}`],
           ["O jogo usa", "sim (parado, andando e atacando)"]
         ],
-        promptBase(l, f)
+        promptBase(l, f),
+        `the monster "${f.nome}" (one single creature, repeated in 18 poses)`
       )
     );
     for (const r of ["epico", "lendario"])
@@ -364,7 +392,8 @@ function arquivoMonstro(l) {
             ["Anexar", `a base NOVA \`${l.id}__anim_${f.n}\` (etapa 2)`],
             ["O jogo usa", "sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)"]
           ],
-          promptBase(l, f, r)
+          promptBase(l, f, r),
+          `the ${r === "epico" ? "EPIC" : "LEGENDARY"} variant of the monster "${f.nome}" (one single creature, repeated in 18 poses)`
         )
       );
     md.push(
@@ -375,7 +404,8 @@ function arquivoMonstro(l) {
           ["Anexar", `a base NOVA \`${l.id}__anim_${f.n}\` (etapa 2)`],
           ["O jogo usa", "ainda não: eu ligo as habilidades a estas linhas quando chegarem (arquivo novo: me mande o PNG)"]
         ],
-        promptAcoes(l, f)
+        promptAcoes(l, f),
+        `the monster "${f.nome}" (one single creature, repeated in 24 poses)`
       )
     );
   }
@@ -388,7 +418,8 @@ function arquivoMonstro(l) {
         ["Anexar", `\`${l.id}__base\`: ${ANEXO_ORIGINAL}`],
         ["O jogo usa", "sim, onde a forma não tem animação (e como referência de cor)"]
       ],
-      promptFixa(l)
+      promptFixa(l),
+      `the 8 evolution forms of the monster line "${l.filhote}", one per cell`
     )
   );
   return md.join("\n");
@@ -515,7 +546,8 @@ ROW ${2 * k + 2}: F1 hurt (flinch), F2-F5 death (${MORTE[e.morte] || e.morte}, t
         FUNDO,
         ESTILO,
         PROIBIDO
-      ]
+      ],
+      `three enemies of ${u.nome}: ${ini.map(e => `"${e.nome}"`).join(", ")} (no other creature)`
     )
   );
   const golpes = x => (x && x.golpes) || [];
@@ -543,7 +575,8 @@ ROW 5 - DEATH, 6 frames: staggers, collapses and fades.`,
           FUNDO,
           ESTILO,
           PROIBIDO
-        ]
+        ],
+        `the mini-boss "${u.mini_chefe}" (one single creature, repeated in 30 poses)`
       )
     );
   if (c.chefe)
@@ -571,7 +604,8 @@ ROW 6 - DEATH, 6 frames: long dramatic collapse, fading at the end.`,
           FUNDO,
           ESTILO,
           PROIBIDO
-        ]
+        ],
+        `the boss "${u.chefe}" (one single creature, repeated in 36 poses)`
       )
     );
   md.push(
@@ -596,7 +630,8 @@ ROW 6 - DEATH, 6 frames: long dramatic collapse, fading at the end.`,
         FUNDO,
         ESTILO,
         PROIBIDO
-      ]
+      ],
+      `the attack effects of "${u.chefe}" (effects only, no creature)`
     )
   );
   if (ar.marcos)
@@ -612,7 +647,7 @@ ROW 6 - DEATH, 6 frames: long dramatic collapse, fading at the end.`,
           `Create a 2D game sprite sheet of 8 environment props, one per cell, seen from a top-down 3/4 camera.`,
           telaGrade(1536, 1024, 4, 2),
           `CELLS, left to right, top row then bottom row:\n${[...ar.marcos.slice(0, 6), ar.luz, ar.frente].map((x, i) => `${i + 1}. ${x}`).join("\n")}`,
-          `Each prop stands on the same baseline at 85% of its cell height, centered, filling most of the cell. ${mundo}`,
+          `ORIENTATION: every prop stands upright, seen from the front at a top-down 3/4 angle, its base on the same line at 85% of the cell height, centered, filling most of the cell. Cell 7 (the light) is a standing object with its flame or glow. Cell 8 is a tall foreground element that may reach the top of its cell. ${mundo}`,
           FUNDO,
           ESTILO,
           PROIBIDO
@@ -631,7 +666,7 @@ ROW 6 - DEATH, 6 frames: long dramatic collapse, fading at the end.`,
         [
           `Create a 2D game sprite sheet of ground decorations seen from straight above, one item per cell.`,
           telaGrade(1536, 1024, 8, 3),
-          `ROW 1 - 8 small square ground texture pieces of ${ar.chao}, each filling its whole cell (opaque inside the cell, slightly different from each other).
+          `ROW 1 - 8 square ground texture pieces of ${ar.chao}, seen from straight above, each filling its WHOLE cell edge to edge with no transparent margin (slightly different from each other).
 ROW 2 - 8 soft ground stains or patches (dirt, moss, cracks) on transparent background, irregular round shapes.
 ROW 3 - 8 small loose decorations, one per cell: ${ar.enfeites.join(", ")}.`,
           mundo,
@@ -654,7 +689,8 @@ ROW 3 - 8 small loose decorations, one per cell: ${ar.enfeites.join(", ")}.`,
           `Create a 2D game sprite sheet of breakable objects: one object per row, 8 states.`,
           telaGrade(1536, 1024, 8, u.objetos.length),
           `${u.objetos.map((o, i) => `ROW ${i + 1}: ${o}`).join("\n")}
-In every row: F1 intact, F2 cracked, F3 badly broken, F4 special state (scorched, frozen or charged, matching the realm), F5-F8 four small debris pieces of that object.`,
+In every row: F1 intact, F2 cracked, F3 badly broken, F4 special state (scorched, frozen or charged, matching the realm), F5-F8 four small debris pieces of that object.
+ORIENTATION: every object upright, seen from the front at a top-down 3/4 angle, base on the line at 85% of the cell height, the same size in F1 to F4 of its row. The debris pieces are small and centered in their cells.`,
           mundo,
           FUNDO,
           ESTILO,
@@ -698,7 +734,8 @@ ROW 2: F1-F4 ${es.fauna.peixe} swimming loop; F5 ${es.fauna.bicho} sitting, F6 j
           `CELL 1 (top left): ${es.praca}, round, filling the cell.
 CELL 2 (top right): ${es.lago}, round, filling the cell.
 CELL 3 (bottom left): ${es.construcao}, top-down 3/4 view.
-CELL 4 (bottom right): ${es.ponte}, seen from the side, spanning the full width of the cell.`,
+CELL 4 (bottom right): THE BRIDGE, LYING HORIZONTALLY: ${es.ponte}. It runs straight across from the LEFT edge to the RIGHT edge of the cell, both ends cut straight at the cell edges (the game repeats it side by side to make it longer). Seen from the front: the walkway deck is a horizontal band in the upper third with its railings, and the arches or supports hang below it. Never vertical, never diagonal, never seen from above, no towers or end posts.`,
+          `ORIENTATION: cells 1 and 2 are seen from straight above (top-down), round, filling their cells. Cell 3 is a building seen from the front at a top-down 3/4 angle, standing upright. Cell 4 is the horizontal bridge described above.`,
           mundo,
           FUNDO,
           ESTILO,
@@ -753,7 +790,9 @@ CELL 4 (bottom right): ${es.ponte}, seen from the side, spanning the full width 
         [
           `Create a 2D game sheet of 8 chasm wall segments, the vertical wall seen from the front, one per cell.`,
           telaGrade(1536, 1024, 4, 2),
-          `Each cell: ${es.paredao}, top edge with a ground lip (and plants if they fit the realm), the bottom fading into mist. Each segment fills the full cell width so they join side by side; small variations between the 8 segments.`,
+          `ROW 1 - 4 wall segments: ${es.paredao}.
+ROW 2 - the same wall, 4 segments, each with a ${QUEDA[es.lago_solo] || "waterfall"} pouring down its middle.
+ORIENTATION: we look straight at the vertical rock face (front view, like a cliff seen from the chasm). In every cell the top edge of the rock (with a thin ground lip${es.lago_solo === "agua" ? " and plants" : ""}) is at the top of the cell, the wall fills about 80% of the cell height and fades into mist at the bottom. Each segment fills the FULL cell width and its left and right edges continue seamlessly into the neighbouring segment, so the 4 segments of a row join into one long wall. Small variations between segments, same scale in all 8.`,
           mundo,
           FUNDO.replace("BACKGROUND:", "BACKGROUND (around the wall):"),
           ESTILO,
@@ -812,7 +851,8 @@ ROW 6 - DEATH, 6 frames: long dramatic collapse, fading at the end.`,
           FUNDO,
           ESTILO,
           PROIBIDO
-        ]
+        ],
+        `the guardian "${e.guardiao}" (one single creature, repeated in 36 poses)`
       )
     );
     md.push(
@@ -837,7 +877,8 @@ ROW 6 - DEATH, 6 frames: long dramatic collapse, fading at the end.`,
           FUNDO,
           ESTILO,
           PROIBIDO
-        ]
+        ],
+        `the attack effects of "${e.guardiao}" (effects only, no creature)`
       )
     );
   }
@@ -873,7 +914,8 @@ ROW 3 - CASTING "${l.poder.nome}" (${l.poder.tipo} power), 6 frames: F1-F2 wind-
           FUNDO,
           ESTILO,
           PROIBIDO
-        ]
+        ],
+        `the hero ${l.nome} (one single character, repeated in 18 poses)`
       )
     );
   }
@@ -1116,7 +1158,8 @@ const CONFERIR = process.argv.includes("--conferir"),
   GERADAS = ["2_monstros", "3_gerais", "4_reinos"],
   gerados = new Map();
 function gravar(rel, txt) {
-  gerados.set(rel, txt.trimEnd() + "\n");
+  const nivel = rel.split("/").length - 1; // link do molde relativo à pasta do arquivo
+  gerados.set(rel, txt.replace(/\{\{MOLDES\}\}/g, "../".repeat(nivel) + "moldes").trimEnd() + "\n");
 }
 let n = 0;
 for (const l of D.linhas) {
@@ -1141,6 +1184,15 @@ for (const d of GERADAS)
     }
   })(d);
 if (CONFERIR) {
+  // a tabela de objetos por reino da página de conferência tem de bater com os dados
+  const objs = Object.fromEntries(D.universos.map(u => [u.id, (u.objetos || []).length]));
+  const errados = Object.keys(objs).filter(k => LAY.OBJETOS[k] !== objs[k]);
+  if (errados.length) {
+    console.error(
+      `ferramentas/layouts_arte.js: objetos por reino desatualizados (${errados.join(", ")}). Atualize OBJETOS com os dados do jogo.`
+    );
+    process.exit(1);
+  }
   const dif = [...new Set([...gerados.keys(), ...existentes])].filter(
     r => !gerados.has(r) || !fs.existsSync(path.join(SAIDA, r)) || fs.readFileSync(path.join(SAIDA, r), "utf8") !== gerados.get(r)
   );

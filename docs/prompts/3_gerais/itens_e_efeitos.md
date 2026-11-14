@@ -7,8 +7,11 @@ Não dependem dos monstros: podem ser feitos a qualquer momento. **O jogo ainda 
 - **Salvar como:** `arte/heroi/invocador__anim.png`
 - **Anexar:** um print do herói atual (tela de jogo) para manter as cores
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Herói (Invocador)](../moldes/heroi.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Herói básico (Invocador). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of the main hero: 4 animations, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -34,6 +37,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo de Fogo
@@ -41,8 +46,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/ovos/ovo__fogo.png`
 - **Anexar:** nada (ou o ovo de outro elemento já gerado, para manter o mesmo formato)
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Ovo (3 raridades)](../moldes/ovo.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo de Fogo. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game sprite sheet of a magical creature egg: 3 rarities, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -66,6 +74,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo de Água
@@ -73,8 +83,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/ovos/ovo__agua.png`
 - **Anexar:** nada (ou o ovo de outro elemento já gerado, para manter o mesmo formato)
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Ovo (3 raridades)](../moldes/ovo.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo de Água. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game sprite sheet of a magical creature egg: 3 rarities, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -98,6 +111,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo de Terra
@@ -105,8 +120,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/ovos/ovo__terra.png`
 - **Anexar:** nada (ou o ovo de outro elemento já gerado, para manter o mesmo formato)
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Ovo (3 raridades)](../moldes/ovo.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo de Terra. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game sprite sheet of a magical creature egg: 3 rarities, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -130,6 +148,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo de Ar
@@ -137,8 +157,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/ovos/ovo__ar.png`
 - **Anexar:** nada (ou o ovo de outro elemento já gerado, para manter o mesmo formato)
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Ovo (3 raridades)](../moldes/ovo.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo de Ar. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game sprite sheet of a magical creature egg: 3 rarities, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -162,6 +185,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo de Raio
@@ -169,8 +194,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/ovos/ovo__raio.png`
 - **Anexar:** nada (ou o ovo de outro elemento já gerado, para manter o mesmo formato)
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Ovo (3 raridades)](../moldes/ovo.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo de Raio. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game sprite sheet of a magical creature egg: 3 rarities, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -194,6 +222,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo de Natureza
@@ -201,8 +231,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/ovos/ovo__natureza.png`
 - **Anexar:** nada (ou o ovo de outro elemento já gerado, para manter o mesmo formato)
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Ovo (3 raridades)](../moldes/ovo.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo de Natureza. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game sprite sheet of a magical creature egg: 3 rarities, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -226,6 +259,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo de Luz
@@ -233,8 +268,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/ovos/ovo__luz.png`
 - **Anexar:** nada (ou o ovo de outro elemento já gerado, para manter o mesmo formato)
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Ovo (3 raridades)](../moldes/ovo.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo de Luz. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game sprite sheet of a magical creature egg: 3 rarities, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -258,6 +296,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ovo de Sombra
@@ -265,8 +305,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/ovos/ovo__sombra.png`
 - **Anexar:** nada (ou o ovo de outro elemento já gerado, para manter o mesmo formato)
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Ovo (3 raridades)](../moldes/ovo.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ovo de Sombra. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game sprite sheet of a magical creature egg: 3 rarities, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -290,6 +333,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Baús
@@ -297,8 +342,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/itens/baus.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Baús (4 raridades)](../moldes/baus.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Baús. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game sprite sheet of treasure chests: 4 rarities, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -322,6 +370,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Coletáveis
@@ -329,8 +379,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/itens/coletaveis.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Coletáveis](../moldes/coletaveis.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Coletáveis. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game sprite sheet of small pickups, one item per cell.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -348,6 +401,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos de Fogo
@@ -355,8 +410,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/elemento__fogo.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de um elemento](../moldes/efeitos_elemento.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos de Fogo. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the fire element (no characters): 4 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -374,6 +432,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos de Água
@@ -381,8 +441,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/elemento__agua.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de um elemento](../moldes/efeitos_elemento.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos de Água. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the water element (no characters): 4 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -400,6 +463,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos de Terra
@@ -407,8 +472,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/elemento__terra.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de um elemento](../moldes/efeitos_elemento.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos de Terra. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the earth element (no characters): 4 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -426,6 +494,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos de Ar
@@ -433,8 +503,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/elemento__ar.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de um elemento](../moldes/efeitos_elemento.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos de Ar. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the air element (no characters): 4 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -452,6 +525,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos de Raio
@@ -459,8 +534,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/elemento__raio.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de um elemento](../moldes/efeitos_elemento.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos de Raio. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the lightning element (no characters): 4 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -478,6 +556,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos de Natureza
@@ -485,8 +565,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/elemento__natureza.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de um elemento](../moldes/efeitos_elemento.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos de Natureza. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the nature element (no characters): 4 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -504,6 +587,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos de Luz
@@ -511,8 +596,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/elemento__luz.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de um elemento](../moldes/efeitos_elemento.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos de Luz. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the light element (no characters): 4 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -530,6 +618,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos de Sombra
@@ -537,8 +627,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/elemento__sombra.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de um elemento](../moldes/efeitos_elemento.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos de Sombra. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the shadow element (no characters): 4 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -556,6 +649,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos da classe Guardião
@@ -563,8 +658,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/classe__guardiao.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de uma classe](../moldes/efeitos_classe.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos da classe Guardião. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the Guardian class (no characters): 3 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -582,6 +680,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos da classe Guerreiro
@@ -589,8 +689,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/classe__guerreiro.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de uma classe](../moldes/efeitos_classe.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos da classe Guerreiro. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the Warrior class (no characters): 3 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -608,6 +711,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos da classe Assassino
@@ -615,8 +720,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/classe__assassino.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de uma classe](../moldes/efeitos_classe.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos da classe Assassino. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the Assassin class (no characters): 3 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -634,6 +742,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos da classe Caçador
@@ -641,8 +751,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/classe__cacador.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de uma classe](../moldes/efeitos_classe.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos da classe Caçador. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the Hunter class (no characters): 3 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -660,6 +773,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos da classe Mago
@@ -667,8 +782,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/classe__mago.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de uma classe](../moldes/efeitos_classe.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos da classe Mago. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the Mage class (no characters): 3 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -686,6 +804,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos da classe Invocador
@@ -693,8 +813,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/classe__invocador.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de uma classe](../moldes/efeitos_classe.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos da classe Invocador. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the Summoner class (no characters): 3 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -712,6 +835,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos da classe Místico
@@ -719,8 +844,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/classe__mistico.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de uma classe](../moldes/efeitos_classe.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos da classe Místico. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the Mystic class (no characters): 3 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -738,6 +866,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos da classe Xamã
@@ -745,8 +875,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/classe__xama.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não
+- **Molde (como deve ficar):** [Efeitos de uma classe](../moldes/efeitos_classe.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Efeitos da classe Xamã. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet for the Shaman class (no characters): 3 effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -764,6 +897,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Guardião 1: Bastião Ancestral
@@ -771,8 +906,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__guardiao_1.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Guardião 1: Bastião Ancestral. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -787,6 +925,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Guardião 2: Terremoto do Guardião
@@ -794,8 +934,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__guardiao_2.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Guardião 2: Terremoto do Guardião. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -810,6 +953,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Guerreiro 1: Grito de Guerra
@@ -817,8 +962,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__guerreiro_1.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Guerreiro 1: Grito de Guerra. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -833,6 +981,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Guerreiro 2: Golpe Devastador
@@ -840,8 +990,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__guerreiro_2.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Guerreiro 2: Golpe Devastador. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -856,6 +1009,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Assassino 1: Dança das Lâminas
@@ -863,8 +1018,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__assassino_1.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Assassino 1: Dança das Lâminas. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -879,6 +1037,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Assassino 2: Execução Sombria
@@ -886,8 +1046,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__assassino_2.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Assassino 2: Execução Sombria. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -902,6 +1065,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Caçador 1: Chuva de Flechas
@@ -909,8 +1074,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__cacador_1.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Caçador 1: Chuva de Flechas. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -925,6 +1093,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Caçador 2: Tiro Perfurante
@@ -932,8 +1102,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__cacador_2.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Caçador 2: Tiro Perfurante. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -948,6 +1121,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Mago 1: Cataclismo
@@ -955,8 +1130,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__mago_1.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Mago 1: Cataclismo. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -971,6 +1149,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Mago 2: Prisão Arcana
@@ -978,8 +1158,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__mago_2.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Mago 2: Prisão Arcana. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -994,6 +1177,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Invocador 1: Exército Invocado
@@ -1001,8 +1186,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__invocador_1.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Invocador 1: Exército Invocado. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1017,6 +1205,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Invocador 2: Colosso Invocado
@@ -1024,8 +1214,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__invocador_2.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Invocador 2: Colosso Invocado. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1040,6 +1233,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Místico 1: Milagre
@@ -1047,8 +1242,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__mistico_1.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Místico 1: Milagre. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1063,6 +1261,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Místico 2: Julgamento
@@ -1070,8 +1270,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__mistico_2.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Místico 2: Julgamento. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1086,6 +1289,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Xamã 1: Tempestade Ritual
@@ -1093,8 +1298,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__xama_1.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Xamã 1: Tempestade Ritual. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1109,6 +1317,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Especial Xamã 2: Totem Ancestral
@@ -1116,8 +1326,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/especial__xama_2.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os especiais hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Especial (tira de 8)](../moldes/especial.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Especial Xamã 2: Totem Ancestral. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1132,6 +1345,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Revoada Ancestral
@@ -1139,8 +1354,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__dragoes.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Revoada Ancestral. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1155,6 +1373,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Marcha dos Mortos
@@ -1162,8 +1382,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__mortos_vivos.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Marcha dos Mortos. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1178,6 +1401,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Grande Caçada
@@ -1185,8 +1410,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__feras.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Grande Caçada. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1201,6 +1429,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Passo dos Titãs
@@ -1208,8 +1438,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__gigantes.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Passo dos Titãs. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1224,6 +1457,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Revolta dos Pequenos
@@ -1231,8 +1466,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__pequeninos.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Revolta dos Pequenos. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1247,6 +1485,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Maremoto
@@ -1254,8 +1494,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__marinhos.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Maremoto. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1270,6 +1513,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Céu em Fúria
@@ -1277,8 +1522,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__alados.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Céu em Fúria. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1293,6 +1541,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Abominação Primordial
@@ -1300,8 +1550,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__quimeras.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Abominação Primordial. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1316,6 +1569,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Inferno
@@ -1323,8 +1578,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__el_fogo.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Inferno. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1339,6 +1597,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Dilúvio
@@ -1346,8 +1606,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__el_agua.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Dilúvio. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1362,6 +1625,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Terremoto Primordial
@@ -1369,8 +1634,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__el_terra.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Terremoto Primordial. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1385,6 +1653,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Furacão
@@ -1392,8 +1662,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__el_ar.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Furacão. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1408,6 +1681,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Tempestade Elétrica
@@ -1415,8 +1690,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__el_raio.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Tempestade Elétrica. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1431,6 +1709,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Floresta Primordial
@@ -1438,8 +1718,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__el_natureza.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Floresta Primordial. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1454,6 +1737,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Juízo Solar
@@ -1461,8 +1746,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__el_luz.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Juízo Solar. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1477,6 +1765,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Noite Eterna
@@ -1484,8 +1774,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__el_sombra.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Noite Eterna. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1500,6 +1793,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Combinado: Trindade
@@ -1507,8 +1802,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/efeitos/combinado__trindade.png`
 - **Anexar:** nada
 - **O jogo usa:** não por enquanto (os combinados hoje são desenhados por código; ligo quando chegarem)
+- **Molde (como deve ficar):** [Combinado (tira de 10)](../moldes/combinado.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Combinado: Trindade. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effect animation strip (effect only, NO character).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1523,6 +1821,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 10 items in every row and exactly 1 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ícones dos Poderes do Elemento
@@ -1530,8 +1830,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/ui/elementais.png`
 - **Anexar:** nada
 - **O jogo usa:** ainda não (vai para a carta de nível)
+- **Molde (como deve ficar):** [Ícones (4 × 2)](../moldes/icones.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: Ícones dos Poderes do Elemento. There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game sheet of 8 square ability icons, one per cell.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1554,4 +1857,6 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row and exactly 2 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```

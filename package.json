@@ -17,7 +17,8 @@
     "regressao:gravar": "node testes/reproduzir.js --sementes 2,3,9,13 --mapas 4 --gravar testes/assinatura.json",
     "catraca": "node ferramentas/catraca.js",
     "prompts": "node ferramentas/gerar_prompts.js",
-    "testar": "npm run tipos_dados -- --conferir && npm run dados && npm run tipos && npm run catraca && npm run formato && npm run compilar -- --conferir && npm run save && npm run prompts -- --conferir && npm run regressao"
+    "conferencia": "node testes/conferir_artes.js",
+    "testar": "npm run tipos_dados -- --conferir && npm run dados && npm run tipos && npm run catraca && npm run formato && npm run compilar -- --conferir && npm run save && npm run prompts -- --conferir && npm run conferencia && npm run regressao"
   },
   "devDependencies": {
     "prettier": "3.10.0",

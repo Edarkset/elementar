@@ -10,8 +10,11 @@ O jogo lê 6 × 6: linhas 3, 4 e 5 são os três golpes, linha 6 a morte.
 - **Salvar como:** `arte/reinos/berco/guardiao_berco__anim.png`
 - **Anexar:** `guardiao_berco__anim`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (6 × 6)
+- **Molde (como deve ficar):** [Guardião da Era](../moldes/guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the guardian "Tiamat, Mãe dos Monstros" (one single creature, repeated in 36 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one epic boss: 6 animations, 6 frames each.
 
 CANVAS: exactly 1024 x 1024 pixels (square 1:1).
@@ -41,6 +44,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1024 x 1024; exactly 6 items in every row and exactly 6 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos dos golpes
@@ -48,8 +53,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/reinos/berco/guardiao_berco__efeitos.png`
 - **Anexar:** nada
 - **O jogo usa:** sim (8 × 3: uma linha por golpe; quadros 1-4 projétil, 5-8 impacto)
+- **Molde (como deve ficar):** [Efeitos do Guardião](../moldes/efeitos_guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the attack effects of "Tiamat, Mãe dos Monstros" (effects only, no creature). There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet (no characters): 3 attack effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -66,6 +74,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -76,8 +86,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/reinos/reinos/guardiao_reinos__anim.png`
 - **Anexar:** `guardiao_reinos__anim`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (6 × 6)
+- **Molde (como deve ficar):** [Guardião da Era](../moldes/guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the guardian "Fenrir Desacorrentado" (one single creature, repeated in 36 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one epic boss: 6 animations, 6 frames each.
 
 CANVAS: exactly 1024 x 1024 pixels (square 1:1).
@@ -107,6 +120,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1024 x 1024; exactly 6 items in every row and exactly 6 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos dos golpes
@@ -114,8 +129,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/reinos/reinos/guardiao_reinos__efeitos.png`
 - **Anexar:** nada
 - **O jogo usa:** sim (8 × 3: uma linha por golpe; quadros 1-4 projétil, 5-8 impacto)
+- **Molde (como deve ficar):** [Efeitos do Guardião](../moldes/efeitos_guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the attack effects of "Fenrir Desacorrentado" (effects only, no creature). There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet (no characters): 3 attack effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -132,6 +150,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -142,8 +162,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/reinos/novo_mundo/guardiao_novo_mundo__anim.png`
 - **Anexar:** `guardiao_novo_mundo__anim`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (6 × 6)
+- **Molde (como deve ficar):** [Guardião da Era](../moldes/guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the guardian "Os Senhores de Xibalba" (one single creature, repeated in 36 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one epic boss: 6 animations, 6 frames each.
 
 CANVAS: exactly 1024 x 1024 pixels (square 1:1).
@@ -173,6 +196,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1024 x 1024; exactly 6 items in every row and exactly 6 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos dos golpes
@@ -180,8 +205,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/reinos/novo_mundo/guardiao_novo_mundo__efeitos.png`
 - **Anexar:** nada
 - **O jogo usa:** sim (8 × 3: uma linha por golpe; quadros 1-4 projétil, 5-8 impacto)
+- **Molde (como deve ficar):** [Efeitos do Guardião](../moldes/efeitos_guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the attack effects of "Os Senhores de Xibalba" (effects only, no creature). There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet (no characters): 3 attack effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -198,6 +226,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -208,8 +238,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/reinos/navegacoes/guardiao_navegacoes__anim.png`
 - **Anexar:** `guardiao_navegacoes__anim`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (6 × 6)
+- **Molde (como deve ficar):** [Guardião da Era](../moldes/guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the guardian "O Kraken" (one single creature, repeated in 36 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one epic boss: 6 animations, 6 frames each.
 
 CANVAS: exactly 1024 x 1024 pixels (square 1:1).
@@ -239,6 +272,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1024 x 1024; exactly 6 items in every row and exactly 6 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos dos golpes
@@ -246,8 +281,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/reinos/navegacoes/guardiao_navegacoes__efeitos.png`
 - **Anexar:** nada
 - **O jogo usa:** sim (8 × 3: uma linha por golpe; quadros 1-4 projétil, 5-8 impacto)
+- **Molde (como deve ficar):** [Efeitos do Guardião](../moldes/efeitos_guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the attack effects of "O Kraken" (effects only, no creature). There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet (no characters): 3 attack effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -264,6 +302,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -274,8 +314,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/reinos/gotica/guardiao_gotica__anim.png`
 - **Anexar:** `guardiao_gotica__anim`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (6 × 6)
+- **Molde (como deve ficar):** [Guardião da Era](../moldes/guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the guardian "O Cavaleiro Sem Cabeça" (one single creature, repeated in 36 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one epic boss: 6 animations, 6 frames each.
 
 CANVAS: exactly 1024 x 1024 pixels (square 1:1).
@@ -305,6 +348,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1024 x 1024; exactly 6 items in every row and exactly 6 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos dos golpes
@@ -312,8 +357,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/reinos/gotica/guardiao_gotica__efeitos.png`
 - **Anexar:** nada
 - **O jogo usa:** sim (8 × 3: uma linha por golpe; quadros 1-4 projétil, 5-8 impacto)
+- **Molde (como deve ficar):** [Efeitos do Guardião](../moldes/efeitos_guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the attack effects of "O Cavaleiro Sem Cabeça" (effects only, no creature). There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet (no characters): 3 attack effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -330,6 +378,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -340,8 +390,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/reinos/perdidos/guardiao_perdidos__anim.png`
 - **Anexar:** `guardiao_perdidos__anim`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (6 × 6)
+- **Molde (como deve ficar):** [Guardião da Era](../moldes/guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the guardian "Colosso de Oricalco" (one single creature, repeated in 36 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one epic boss: 6 animations, 6 frames each.
 
 CANVAS: exactly 1024 x 1024 pixels (square 1:1).
@@ -371,6 +424,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1024 x 1024; exactly 6 items in every row and exactly 6 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos dos golpes
@@ -378,8 +433,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/reinos/perdidos/guardiao_perdidos__efeitos.png`
 - **Anexar:** nada
 - **O jogo usa:** sim (8 × 3: uma linha por golpe; quadros 1-4 projétil, 5-8 impacto)
+- **Molde (como deve ficar):** [Efeitos do Guardião](../moldes/efeitos_guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the attack effects of "Colosso de Oricalco" (effects only, no creature). There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet (no characters): 3 attack effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -396,6 +454,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -406,8 +466,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/reinos/elementais/guardiao_elementais__anim.png`
 - **Anexar:** `guardiao_elementais__anim`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (6 × 6)
+- **Molde (como deve ficar):** [Guardião da Era](../moldes/guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the guardian "O Primordial" (one single creature, repeated in 36 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one epic boss: 6 animations, 6 frames each.
 
 CANVAS: exactly 1024 x 1024 pixels (square 1:1).
@@ -437,6 +500,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1024 x 1024; exactly 6 items in every row and exactly 6 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Efeitos dos golpes
@@ -444,8 +509,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/reinos/elementais/guardiao_elementais__efeitos.png`
 - **Anexar:** nada
 - **O jogo usa:** sim (8 × 3: uma linha por golpe; quadros 1-4 projétil, 5-8 impacto)
+- **Molde (como deve ficar):** [Efeitos do Guardião](../moldes/efeitos_guardiao.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the attack effects of "O Primordial" (effects only, no creature). There is no reference image for this one: ignore any image attached earlier in the conversation.
+
 Create a 2D game visual effects sheet (no characters): 3 attack effects, 8 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -462,4 +530,6 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 8 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```

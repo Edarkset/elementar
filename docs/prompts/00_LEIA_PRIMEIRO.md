@@ -1,8 +1,53 @@
-# Elementar · pacote de prompts de arte (v4)
+# Elementar · pacote de prompts de arte (v5)
 
 Este pacote substitui os anteriores. Cada prompt sai **completo**: tamanho da imagem, grade, o que vai em cada quadro, a descrição do personagem e as travas (o que não pode sair). Não tem campo para preencher à mão.
 
 Os prompts são gerados a partir dos dados do próprio jogo (`node ferramentas/gerar_prompts.js`). Se um nome, visual ou golpe mudar no jogo, eu gero de novo e o pacote acompanha.
+
+## O jeito rápido (resumo de uma tela)
+
+1. **Uma conversa por forma de monstro** (ou por folha de reino). Pode deixar 8 janelas abertas ao mesmo tempo, desde que cada janela seja uma conversa diferente.
+2. Cole o bloco inteiro e **anexe o PNG de referência na mesma mensagem**.
+3. **Solte a imagem gerada na [Conferência de Artes](https://claude.ai/artifact/4tU9w9bqG11R4iCJ9o8486).** Em segundos ela diz "Pode salvar", "Confira" ou "Refazer", marca o quadro com problema e dá a frase de correção pronta para copiar.
+4. Salvou com o nome do pacote, a página reconhece o formato sozinha.
+
+---
+
+## Para não misturar imagens (o gerador "lembra" da imagem anterior)
+
+O gerador usa tudo o que já apareceu na conversa. Por isso uma folha nova às vezes sai com um quadro, uma cor ou um efeito da anterior. Cada prompt já começa com uma trava ("NEW, SEPARATE IMAGE … the ONLY subject is …") e termina com uma conferência ("BEFORE YOU FINISH, CHECK …"). Mas a trava mais forte é o jeito de trabalhar:
+
+| Regra | Por quê |
+|---|---|
+| **Uma conversa = uma forma de monstro.** A base, o Épico, o Lendário e as Ações da mesma forma podem ficar na mesma conversa | são o mesmo personagem: se o gerador "lembrar" da folha anterior, lembra do personagem certo |
+| **Nunca dois monstros diferentes na mesma conversa** | é aí que um monstro vaza para a folha do outro |
+| **8 janelas = 8 conversas diferentes**, uma forma em cada | as janelas não se misturam entre si |
+| **Anexe a referência na mesma mensagem do prompt** | o prompt diz "a única referência é a imagem desta mensagem"; anexo de mensagem antiga confunde |
+| **Errou duas vezes a mesma coisa? Conversa nova** | o gerador "vicia" no erro |
+| **Reinos: uma conversa por reino** (inimigos, chefe e cenário do mesmo reino juntos) | o cenário de um reino não vaza para outro |
+
+A [Conferência de Artes](https://claude.ai/artifact/4tU9w9bqG11R4iCJ9o8486) procura mistura de três jeitos:
+- **Quadro com cores diferentes:** um quadro com cores muito diferentes dos outros do mesmo personagem é o sinal clássico de pose vinda de outra folha.
+- **Dois desenhos no mesmo quadro.**
+- **Comparação com a referência:** com o botão "Comparar com a referência", ela confere se a folha inteira tem as cores do personagem certo.
+
+---
+
+## Molde: como cada folha deve ficar
+
+Cada bloco tem o link "Molde (como deve ficar)", uma figura com:
+- a grade;
+- o que vai em cada linha;
+- a linha dos pés (tracejada);
+- a seta mostrando que o personagem olha para a direita.
+
+Todos os moldes estão em `moldes/`, e a página de conferência mostra o molde ao lado da sua imagem.
+
+**Cenário, que era o que mais confundia:**
+- **Ponte:** **deitada**, atravessando o quadro inteiro da esquerda para a direita, vista de frente: tabuleiro em cima, arcos embaixo, pontas cortadas retas nas bordas. O jogo repete a ponte de lado para alongar e gira sozinho quando ela é vertical. Ponte em pé ou vista de cima está errada.
+- **Paredão:** a linha de cima tem 4 pedaços de paredão. A linha de baixo tem os mesmos 4 pedaços **com uma cachoeira** (água, lava, lama, luz ou sombra, conforme o reino). Os pedaços emendam lado a lado.
+- **Praça e lago:** redondos, vistos de cima.
+- **Construção, marcos e objetos:** de pé, de frente em 3/4, com a base na mesma linha.
 
 ---
 
@@ -55,7 +100,7 @@ Pedir outro tamanho, como 1024 × 384, faz o gerador espremer a grade. Foi isso 
 
 ## 3. Conferência antes de salvar (2 minutos)
 
-Abra a imagem num visualizador que mostre transparência e confira:
+O mais rápido: solte a imagem na [Conferência de Artes](https://claude.ai/artifact/4tU9w9bqG11R4iCJ9o8486). Ela confere tudo isto sozinha. A página também está no repositório, em `ferramentas/conferir_artes.html`, e abre direto no navegador. Para conferir à mão, abra a imagem num visualizador que mostre transparência:
 
 | # | Confira | Se falhar |
 |---|---|---|

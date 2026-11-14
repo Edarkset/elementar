@@ -25,8 +25,11 @@ fada de luz do folclore celta, nascida de uma faísca, com asas translúcidas qu
 - **Salvar como:** `arte/monstros/luz/fada__anim_1.png`
 - **Anexar:** `fada__anim_1`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (parado, andando e atacando)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Lampejo" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -55,6 +58,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Épico (etapa 3)
@@ -62,8 +67,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_1__epico.png`
 - **Anexar:** a base NOVA `fada__anim_1` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Lampejo" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -92,6 +100,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Lendário (etapa 3)
@@ -99,8 +109,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_1__lendario.png`
 - **Anexar:** a base NOVA `fada__anim_1` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Lampejo" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -129,6 +142,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -136,8 +151,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__acoes_1.png`
 - **Anexar:** a base NOVA `fada__anim_1` (etapa 2)
 - **O jogo usa:** ainda não: eu ligo as habilidades a estas linhas quando chegarem (arquivo novo: me mande o PNG)
+- **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Lampejo" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -167,6 +185,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -177,8 +197,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_2.png`
 - **Anexar:** `fada__anim_2`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (parado, andando e atacando)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Fada Vaga-lume" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -207,6 +230,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Épico (etapa 3)
@@ -214,8 +239,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_2__epico.png`
 - **Anexar:** a base NOVA `fada__anim_2` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Fada Vaga-lume" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -244,6 +272,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Lendário (etapa 3)
@@ -251,8 +281,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_2__lendario.png`
 - **Anexar:** a base NOVA `fada__anim_2` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Fada Vaga-lume" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -281,6 +314,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -288,8 +323,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__acoes_2.png`
 - **Anexar:** a base NOVA `fada__anim_2` (etapa 2)
 - **O jogo usa:** ainda não: eu ligo as habilidades a estas linhas quando chegarem (arquivo novo: me mande o PNG)
+- **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Fada Vaga-lume" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -319,6 +357,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -329,8 +369,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_3.png`
 - **Anexar:** `fada__anim_3`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (parado, andando e atacando)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Fada do Sol" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -359,6 +402,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Épico (etapa 3)
@@ -366,8 +411,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_3__epico.png`
 - **Anexar:** a base NOVA `fada__anim_3` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Fada do Sol" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -396,6 +444,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Lendário (etapa 3)
@@ -403,8 +453,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_3__lendario.png`
 - **Anexar:** a base NOVA `fada__anim_3` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Fada do Sol" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -433,6 +486,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -440,8 +495,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__acoes_3.png`
 - **Anexar:** a base NOVA `fada__anim_3` (etapa 2)
 - **O jogo usa:** ainda não: eu ligo as habilidades a estas linhas quando chegarem (arquivo novo: me mande o PNG)
+- **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Fada do Sol" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -471,6 +529,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -481,8 +541,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_4.png`
 - **Anexar:** `fada__anim_4`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (parado, andando e atacando)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Fada Errante" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -511,6 +574,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Épico (etapa 3)
@@ -518,8 +583,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_4__epico.png`
 - **Anexar:** a base NOVA `fada__anim_4` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Fada Errante" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -548,6 +616,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Lendário (etapa 3)
@@ -555,8 +625,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_4__lendario.png`
 - **Anexar:** a base NOVA `fada__anim_4` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Fada Errante" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -585,6 +658,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -592,8 +667,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__acoes_4.png`
 - **Anexar:** a base NOVA `fada__anim_4` (etapa 2)
 - **O jogo usa:** ainda não: eu ligo as habilidades a estas linhas quando chegarem (arquivo novo: me mande o PNG)
+- **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Fada Errante" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -623,6 +701,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -633,8 +713,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_5.png`
 - **Anexar:** `fada__anim_5`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (parado, andando e atacando)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Fada Espinho de Luz" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -663,6 +746,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Épico (etapa 3)
@@ -670,8 +755,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_5__epico.png`
 - **Anexar:** a base NOVA `fada__anim_5` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Fada Espinho de Luz" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -700,6 +788,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Lendário (etapa 3)
@@ -707,8 +797,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_5__lendario.png`
 - **Anexar:** a base NOVA `fada__anim_5` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Fada Espinho de Luz" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -737,6 +830,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -744,8 +839,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__acoes_5.png`
 - **Anexar:** a base NOVA `fada__anim_5` (etapa 2)
 - **O jogo usa:** ainda não: eu ligo as habilidades a estas linhas quando chegarem (arquivo novo: me mande o PNG)
+- **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Fada Espinho de Luz" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -775,6 +873,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -785,8 +885,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_6.png`
 - **Anexar:** `fada__anim_6`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (parado, andando e atacando)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Rainha do Verão" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -815,6 +918,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Épico (etapa 3)
@@ -822,8 +927,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_6__epico.png`
 - **Anexar:** a base NOVA `fada__anim_6` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Rainha do Verão" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -852,6 +960,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Lendário (etapa 3)
@@ -859,8 +969,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_6__lendario.png`
 - **Anexar:** a base NOVA `fada__anim_6` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Rainha do Verão" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -889,6 +1002,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -896,8 +1011,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__acoes_6.png`
 - **Anexar:** a base NOVA `fada__anim_6` (etapa 2)
 - **O jogo usa:** ainda não: eu ligo as habilidades a estas linhas quando chegarem (arquivo novo: me mande o PNG)
+- **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Rainha do Verão" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -927,6 +1045,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -937,8 +1057,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_7.png`
 - **Anexar:** `fada__anim_7`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (parado, andando e atacando)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Anel de Fadas" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -967,6 +1090,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Épico (etapa 3)
@@ -974,8 +1099,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_7__epico.png`
 - **Anexar:** a base NOVA `fada__anim_7` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Anel de Fadas" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1004,6 +1132,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Lendário (etapa 3)
@@ -1011,8 +1141,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_7__lendario.png`
 - **Anexar:** a base NOVA `fada__anim_7` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Anel de Fadas" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1041,6 +1174,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -1048,8 +1183,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__acoes_7.png`
 - **Anexar:** a base NOVA `fada__anim_7` (etapa 2)
 - **O jogo usa:** ainda não: eu ligo as habilidades a estas linhas quando chegarem (arquivo novo: me mande o PNG)
+- **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Anel de Fadas" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1079,6 +1217,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -1089,8 +1229,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_8.png`
 - **Anexar:** `fada__anim_8`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim (parado, andando e atacando)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Lâmina da Aurora" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1119,6 +1262,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Épico (etapa 3)
@@ -1126,8 +1271,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_8__epico.png`
 - **Anexar:** a base NOVA `fada__anim_8` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Lâmina da Aurora" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1156,6 +1304,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Lendário (etapa 3)
@@ -1163,8 +1313,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__anim_8__lendario.png`
 - **Anexar:** a base NOVA `fada__anim_8` (etapa 2)
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
+- **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Lâmina da Aurora" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1193,6 +1346,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -1200,8 +1355,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__acoes_8.png`
 - **Anexar:** a base NOVA `fada__anim_8` (etapa 2)
 - **O jogo usa:** ainda não: eu ligo as habilidades a estas linhas quando chegarem (arquivo novo: me mande o PNG)
+- **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Lâmina da Aurora" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1231,6 +1389,8 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
 
@@ -1241,8 +1401,11 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 - **Salvar como:** `arte/monstros/luz/fada__base.png`
 - **Anexar:** `fada__base`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
 - **O jogo usa:** sim, onde a forma não tem animação (e como referência de cor)
+- **Molde (como deve ficar):** [Monstro: imagem fixa das 8 formas](../../moldes/monstro_fixa.png)
 
 ```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the 8 evolution forms of the monster line "Lampejo", one per cell. The ONLY reference is the image attached to THIS message.
+
 Create a 2D game sprite sheet: the 8 evolution forms of one monster line, one still pose each (a calm 3/4 standing pose).
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
@@ -1276,4 +1439,6 @@ BACKGROUND: fully transparent (real alpha channel). If transparency is not possi
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row and exactly 2 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```

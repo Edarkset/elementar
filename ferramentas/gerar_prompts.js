@@ -1244,6 +1244,9 @@ for (const u of D.universos) gravar(`4_reinos/${u.era}/${u.id}.md`, arquivoReino
 gravar(`4_reinos/guardioes.md`, arquivoGuardioes());
 gravar(`3_gerais/itens_e_efeitos.md`, arquivoGeral());
 gravar(`3_gerais/lendas_e_deuses.md`, arquivoLendas());
+// a página de conferência vai junto no pacote: dois cliques em CONFERIR_ARTES.html e ela abre no navegador, mesmo sem internet
+gravar("CONFERIR_ARTES.html", fs.readFileSync(path.join(__dirname, "conferir_artes.html"), "utf8"));
+gravar("layouts_arte.js", fs.readFileSync(path.join(__dirname, "layouts_arte.js"), "utf8"));
 // arquivos que existem hoje nas pastas geradas (00_LEIA_PRIMEIRO.md e 1_corrigir.md são escritos à mão e ficam de fora)
 const existentes = [];
 for (const d of GERADAS)

@@ -1,0 +1,519 @@
+<meta charset="utf-8">
+<title>Conferência de Artes Elementar</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Nunito:wght@400;600;700&display=swap">
+<style>
+/* Layout: uma faixa de soltar arquivos no topo; abaixo, um cartão por imagem (veredito, problemas, imagem com a grade por cima, molde). */
+:root {
+  --bg: #f6f3ee; --painel: #ffffff; --borda: #ddd3c4; --texto: #2a2233; --suave: #6d6478;
+  --ouro: #a8761c; --ok: #2f8a4c; --aviso: #b7791f; --erro: #c23b3b; --grade: rgba(60, 40, 90, .55); --pe: #0f8fa8;
+  --display: "Cinzel", Georgia, serif; --corpo: "Nunito", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15111d; --painel: #1f1a2b; --borda: #3a3150; --texto: #f2e7c9; --suave: #b6a9c9;
+  --ouro: #d6ab4f; --ok: #5ccf7f; --aviso: #f0b44a; --erro: #ff7a7a; --grade: rgba(240, 220, 160, .6); --pe: #5fd6ee; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #15111d; --painel: #1f1a2b; --borda: #3a3150; --texto: #f2e7c9; --suave: #b6a9c9;
+  --ouro: #d6ab4f; --ok: #5ccf7f; --aviso: #f0b44a; --erro: #ff7a7a; --grade: rgba(240, 220, 160, .6); --pe: #5fd6ee; color-scheme: dark }
+body { background: var(--bg); color: var(--texto); font-family: var(--corpo); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 48px }
+main { max-width: 1100px; margin: 0 auto; display: grid; gap: 18px }
+h1 { font-family: var(--display); font-size: 1.6rem; margin: 0; letter-spacing: .5px; text-wrap: balance }
+h2 { font-family: var(--display); font-size: 1.05rem; margin: 0; overflow-wrap: anywhere }
+p { margin: 0; max-width: 70ch }
+.sub { color: var(--suave) }
+.soltar { border: 2px dashed var(--borda); border-radius: 12px; padding: 22px; display: grid; gap: 10px; justify-items: start; background: var(--painel) }
+.soltar.sobre { border-color: var(--ouro) }
+.linha { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+button, select, label.botao { font: inherit; font-weight: 700; border-radius: 8px; border: 1px solid var(--borda); background: var(--painel); color: var(--texto); padding: 7px 12px; cursor: pointer }
+button.prim, label.botao { background: var(--ouro); color: #1a1208; border-color: var(--ouro) }
+button:focus-visible, select:focus-visible, label.botao:focus-within { outline: 3px solid var(--pe); outline-offset: 2px }
+select { font-weight: 600; max-width: 100% }
+.resumo { display: flex; flex-wrap: wrap; gap: 8px }
+.chip { font-weight: 700; font-size: .85rem; padding: 3px 10px; border-radius: 99px; border: 1px solid currentColor }
+.c-ok { color: var(--ok) } .c-aviso { color: var(--aviso) } .c-erro { color: var(--erro) }
+.cartao { background: var(--painel); border: 1px solid var(--borda); border-left: 6px solid var(--borda); border-radius: 10px; padding: 14px; display: grid; gap: 12px; min-width: 0 }
+.cartao.ok { border-left-color: var(--ok) } .cartao.aviso { border-left-color: var(--aviso) } .cartao.erro { border-left-color: var(--erro) }
+.topo { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between }
+.veredito { font-family: var(--display); font-weight: 700; font-size: 1.1rem }
+ul.prob { margin: 0; padding-left: 20px; display: grid; gap: 4px }
+ul.prob li.erro::marker { color: var(--erro) } ul.prob li.aviso::marker { color: var(--aviso) }
+.figs { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 12px; align-items: start }
+@media (max-width: 720px) { .figs { grid-template-columns: minmax(0, 1fr) } }
+figure { margin: 0; display: grid; gap: 4px; min-width: 0 }
+figcaption { font-size: .8rem; color: var(--suave) }
+canvas { width: 100%; height: auto; border-radius: 6px; display: block;
+  background: repeating-conic-gradient(rgba(128,128,128,.18) 0 25%, transparent 0 50%) 0 0 / 16px 16px }
+.frase { display: grid; gap: 6px; background: var(--bg); border: 1px solid var(--borda); border-radius: 8px; padding: 10px; min-width: 0 }
+.frase code { font-size: .82rem; white-space: pre-wrap; overflow-wrap: anywhere }
+.ajuda { font-size: .9rem; color: var(--suave); display: grid; gap: 6px }
+@media (prefers-reduced-motion: no-preference) { .cartao { animation: entra .25s ease-out } @keyframes entra { from { transform: translateY(6px) } } }
+</style>
+
+<main>
+  <header style="display:grid;gap:6px">
+    <h1>Conferência de Artes</h1>
+    <p class="sub">Solte aqui as imagens que o gerador fez. Para cada uma, a página diz se pode salvar ou se precisa refazer, aponta o quadro com problema e dá a frase pronta para pedir a correção. As imagens não saem do seu aparelho.</p>
+  </header>
+
+  <section class="soltar" id="zona" aria-label="Soltar imagens">
+    <div class="linha">
+      <label class="botao" for="arquivos">Escolher imagens</label>
+      <input id="arquivos" type="file" accept="image/png,image/webp,image/jpeg" multiple hidden>
+      <span class="sub">ou arraste para cá (várias de uma vez)</span>
+    </div>
+    <div class="linha">
+      <label for="tipoPadrao" class="sub">Formato quando o nome do arquivo não diz:</label>
+      <select id="tipoPadrao"></select>
+    </div>
+    <p class="sub" style="font-size:.88rem">Salve com o nome do pacote (ex.: <code>fogo_fatuo__anim_3.png</code>) para o formato ser reconhecido sozinho. Imagem baixada com nome do gerador: escolha o formato acima ou no cartão.</p>
+  </section>
+
+  <div class="resumo" id="resumo" aria-live="polite"></div>
+  <div id="lista" style="display:grid;gap:16px"></div>
+
+  <section class="ajuda">
+    <h2>O que é conferido</h2>
+    <p>Tamanho da tela; fundo transparente ou magenta (e o xadrez falso); quantos desenhos há em cada linha; quadro vazio; desenho atravessando para o quadro vizinho; pés na mesma altura; tamanho igual entre os quadros; dois desenhos no mesmo quadro; quadro com cores diferentes dos outros (sinal de mistura com outra imagem); emenda do piso. Com a referência anexada, confere também se as cores batem com ela.</p>
+  </section>
+</main>
+
+<script src="layouts_arte.js"></script>
+<script>
+"use strict";
+const A = window.LAYOUTS_ARTE;
+const $ = id => document.getElementById(id);
+const FRASE = {
+  tamanho: l => `Redo it on a ${l.W} x ${l.H} canvas (${l.W > l.H ? "landscape 3:2" : "square 1:1"}), keeping exactly ${l.C} poses per row and ${l.R} rows. Keep everything else.`,
+  fundo: () => `Redo it with a real transparent background (alpha). If you cannot, use a flat solid #FF00FF magenta background with no checkerboard, no gradient and no shadow. Keep everything else.`,
+  contagem: l => `Redo it with exactly ${l.C} poses per row and exactly ${l.R} rows, on the same ${l.W} x ${l.H} canvas. Count them: ${l.C} x ${l.R} = ${l.C * l.R} poses, one per cell, evenly spaced. Keep everything else.`,
+  espaco: () => `Redo it smaller inside each cell, with empty space around every pose so nothing touches the cell edges or crosses into the next pose. Keep everything else.`,
+  pes: () => `Redo it with the feet (or the bottom of the body) on the same horizontal line in every pose of each row, and the character the same size in every pose. Keep everything else.`,
+  dois: () => `Redo it with exactly one character pose per cell: no second character, no copy, no extra creature. Keep everything else.`,
+  mistura: () => `This is a new, separate image: do not reuse anything from earlier images in this conversation. Redo it with every pose showing only the character from the image attached to my first message for this sheet, same colors in every pose. Keep the layout.`,
+  referencia: () => `Redo it copying the attached character exactly: same colors, same markings, same shape. Keep the layout.`,
+  costura: () => `Redo it as a seamless tileable texture: the left edge must continue exactly into the right edge and the top edge into the bottom edge, with no visible seam. Keep everything else.`,
+  cheias: () => `Redo row 1 so each of its ${8} ground pieces fills its whole cell edge to edge (opaque square texture). Keep everything else.`
+};
+
+// ---------------------------------------------------------------- seletor de formato
+for (const s of [$("tipoPadrao")]) {
+  s.append(new Option("Reconhecer pelo nome", ""));
+  for (const l of A.LAYOUTS) s.append(new Option(`${l.nome} · ${l.C}×${l.R}`, l.id));
+}
+let tipoPadrao = "";
+try { tipoPadrao = localStorage.getItem("elementar_tipo") || ""; } catch (e) {}
+$("tipoPadrao").value = tipoPadrao;
+$("tipoPadrao").onchange = () => { tipoPadrao = $("tipoPadrao").value; try { localStorage.setItem("elementar_tipo", tipoPadrao); } catch (e) {} };
+
+// ---------------------------------------------------------------- entrada de arquivos
+const zona = $("zona");
+$("arquivos").onchange = e => receber([...e.target.files]);
+zona.addEventListener("dragover", e => { e.preventDefault(); zona.classList.add("sobre"); });
+zona.addEventListener("dragleave", () => zona.classList.remove("sobre"));
+zona.addEventListener("drop", e => { e.preventDefault(); zona.classList.remove("sobre"); receber([...e.dataTransfer.files].filter(f => f.type.startsWith("image/"))); });
+document.addEventListener("paste", e => { const fs = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith("image/")); if (fs.length) receber(fs); });
+const resultados = [];
+async function receber(arquivos) {
+  for (const f of arquivos) {
+    const img = await carregar(f);
+    const item = { nome: f.name, img, ref: null };
+    item.lay = A.doArquivo(f.name) || A.porId(tipoPadrao) || null;
+    resultados.unshift(item);
+    const el = document.createElement("article");
+    item.el = el;
+    $("lista").prepend(el);
+    conferir(item);
+  }
+  resumo();
+}
+function carregar(f) {
+  return new Promise((ok, falha) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => falha(new Error("imagem ilegível")); i.src = URL.createObjectURL(f); });
+}
+
+// ---------------------------------------------------------------- análise
+// trabalha numa cópia reduzida (lado maior até 900 px): rápida e suficiente para grade, pés e cores
+function pixels(img, max = 900) {
+  const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)),
+    w = Math.max(1, Math.round(img.naturalWidth * k)), h = Math.max(1, Math.round(img.naturalHeight * k)),
+    c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  const g = c.getContext("2d", { willReadFrequently: true });
+  g.drawImage(img, 0, 0, w, h);
+  return { w, h, d: g.getImageData(0, 0, w, h).data };
+}
+function fundoDe(P) {
+  // o fundo é decidido pela borda da imagem (onde só aparece fundo): transparente, magenta, xadrez ou pintado
+  const { w, h, d } = P;
+  let transp = 0, mag = 0, cinza = 0, nb = 0, trocas = 0;
+  const amostra = (x, y) => { const i = (y * w + x) * 4, r = d[i], g = d[i + 1], b = d[i + 2]; nb++;
+    if (d[i + 3] < 40) transp++;
+    else if (r > 180 && b > 180 && g < 90) mag++; else if (Math.abs(r - g) < 14 && Math.abs(g - b) < 14 && r > 140) cinza++; };
+  for (let x = 0; x < w; x += 3) { amostra(x, 0); amostra(x, h - 1); }
+  for (let y = 0; y < h; y += 3) { amostra(0, y); amostra(w - 1, y); }
+  for (let x = 1; x < w; x++) if (Math.abs(d[x * 4] - d[(x - 1) * 4]) > 10) trocas++;
+  if (transp / nb > 0.6) return { modo: "alfa", vazio: i => d[i + 3] < 40 };
+  if (mag / nb > 0.6) return { modo: "magenta", vazio: i => d[i + 3] < 40 || Math.min(d[i], d[i + 2]) - d[i + 1] > 100 };
+  if (cinza / nb > 0.6 && trocas > 6) return { modo: "xadrez" };
+  return { modo: "opaco" };
+}
+function conferir(item) {
+  const P = pixels(item.img), probs = [], lay = item.lay;
+  const W0 = item.img.naturalWidth, H0 = item.img.naturalHeight;
+  const add = (nivel, texto, frase, celulas) => probs.push({ nivel, texto, frase, celulas: celulas || [] });
+  if (!lay) {
+    add("erro", "Formato não reconhecido pelo nome do arquivo. Escolha o formato no seletor deste cartão.", null);
+    return mostrar(item, P, probs, null);
+  }
+  const R = A.linhasDe(lay, item.nome), C = lay.C, L = { ...lay, R };
+  // 1) tamanho da tela (proporção)
+  const prop = W0 / H0, esperada = lay.W / lay.H;
+  if (Math.abs(prop / esperada - 1) > 0.03)
+    add("erro", `Tamanho ${W0} × ${H0}: o esperado é ${lay.W} × ${lay.H}. Com outra proporção a grade sai espremida.`, FRASE.tamanho(L));
+  else if (Math.max(W0, H0) < 900) add("aviso", `Imagem pequena (${W0} × ${H0}): o esperado é ${lay.W} × ${lay.H}. Perde detalhe.`, null);
+  // 2) fundo
+  const F = fundoDe(P);
+  if (lay.tipo === "opaco") {
+    costura(P, add);
+    return mostrar(item, P, probs, { L, F: { modo: "opaco", vazio: () => false } });
+  }
+  if (F.modo === "xadrez") { add("erro", "O fundo é um xadrez pintado (transparência falsa). O jogo mostraria o xadrez.", FRASE.fundo()); return mostrar(item, P, probs, { L, F }); }
+  if (F.modo === "opaco") { add("erro", "O fundo veio pintado (sem transparência e sem magenta). O jogo mostraria um retângulo.", FRASE.fundo()); return mostrar(item, P, probs, { L, F }); }
+  // 3) quadros
+  const { w, h, d } = P, cw = w / C, ch = h / R, cheio = i => !F.vazio(i);
+  const cel = [];
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) cel.push(medirCelula(P, F, r, c, cw, ch));
+  // 3a) desenhos por linha: conta os blocos separados por espaço vazio na faixa de cada linha
+  for (let r = 0; r < R; r++) {
+    const y0 = Math.round(r * ch), y1 = Math.round((r + 1) * ch), col = new Array(w).fill(0);
+    for (let y = y0; y < y1; y++) for (let x = 0; x < w; x++) if (cheio((y * w + x) * 4)) col[x]++;
+    // blocos separados por espaço vazio; pedaços pequenos (faíscas, brilhos soltos) não contam como desenho
+    const massas = [];
+    let dentro = false, vazioRun = 0;
+    const minGap = Math.max(2, Math.round(w * 0.006));
+    for (let x = 0; x < w; x++) {
+      if (col[x] > 1) { if (!dentro) { massas.push(0); dentro = true; } massas[massas.length - 1] += col[x]; vazioRun = 0; }
+      else if (dentro && ++vazioRun >= minGap) dentro = false;
+    }
+    const maior = Math.max(0, ...massas), blocos = massas.filter(m => m >= maior * 0.15).length;
+    const efeito = lay.tipo === "efeito";
+    if (!efeito && blocos !== C && blocos > 0 && !(lay.cheias || []).includes(r))
+      add(blocos < C ? "erro" : "aviso", `Linha ${r + 1}: ${blocos} desenho(s) separados, o esperado é ${C}.${blocos > C ? " Pode ser efeito solto ou um quadro a mais." : " Faltam quadros ou há poses grudadas."}`, FRASE.contagem(L), cel.filter(q => q.r === r));
+  }
+  // 3b) quadros vazios e linhas cheias
+  const vazios = cel.filter(q => q.n < cw * ch * 0.004);
+  if (vazios.length) add("erro", `${vazios.length} quadro(s) vazio(s): ${vazios.slice(0, 6).map(q => `linha ${q.r + 1}, quadro ${q.c + 1}`).join("; ")}${vazios.length > 6 ? "…" : ""}.`, FRASE.contagem(L), vazios);
+  for (const r of lay.cheias || []) {
+    const fracos = cel.filter(q => q.r === r && q.n < cw * ch * 0.85);
+    if (fracos.length) add("erro", `Linha ${r + 1}: as peças de chão têm de encher o quadro inteiro (${fracos.length} não enchem).`, FRASE.cheias(), fracos);
+  }
+  // 3c) desenho atravessando a divisão entre quadros
+  const cruza = [];
+  for (let r = 0; r < R; r++) for (let c = 1; c < C; c++) {
+    const x = Math.round(c * cw); let n = 0;
+    for (let y = Math.round(r * ch); y < Math.round((r + 1) * ch); y++) if (cheio((y * w + x) * 4)) n++;
+    if (n > ch * 0.04) cruza.push(cel[r * C + c - 1], cel[r * C + c]);
+  }
+  for (let r = 1; r < R; r++) for (let c = 0; c < C; c++) {
+    const y = Math.round(r * ch); let n = 0;
+    for (let x = Math.round(c * cw); x < Math.round((c + 1) * cw); x++) if (cheio((y * w + x) * 4)) n++;
+    if (n > cw * 0.04) cruza.push(cel[(r - 1) * C + c], cel[r * C + c]);
+  }
+  if (cruza.length) add("erro", `Desenho atravessando para o quadro vizinho em ${cruza.length / 2} ponto(s). O jogo cortaria pedaços.`, FRASE.espaco(), cruza);
+  const encosta = cel.filter(q => q.n && q.borda && !cruza.includes(q) && !(lay.cheias || []).includes(q.r));
+  if (encosta.length > Math.max(1, cel.length * 0.15)) add("aviso", `${encosta.length} quadro(s) encostam na borda do quadro.`, FRASE.espaco(), encosta);
+  if (lay.tipo === "personagem") {
+    // 3d) pés na mesma altura e mesmo tamanho dentro de cada linha
+    const linhasPe = lay.id === "inimigos" ? [0, 2, 4] : lay.grupos === "folha" ? [0, 1] : [...Array(R).keys()];
+    for (const r of linhasPe) {
+      const qs = cel.filter(q => q.r === r && q.n && (lay.id !== "objetos" || q.c < 4));
+      if (qs.length < 3) continue;
+      const pes = qs.map(q => q.pe), v = Math.max(...pes) - Math.min(...pes);
+      if (v > 0.08) add("aviso", `Linha ${r + 1}: os pés mudam de altura ${Math.round(v * 100)}% do quadro entre as poses (o personagem pula no jogo).`, FRASE.pes(), qs);
+      const alts = qs.map(q => q.alt).sort((a, b) => a - b), med = alts[alts.length >> 1];
+      const fora = qs.filter(q => Math.abs(q.alt / med - 1) > 0.3);
+      if (fora.length && lay.grupos === "folha" && r <= 1) add("aviso", `Linha ${r + 1}: ${fora.length} pose(s) com tamanho bem diferente das outras.`, FRASE.pes(), fora);
+    }
+    // 3e) dois desenhos no mesmo quadro
+    const dois = cel.filter(q => q.dois && (lay.id !== "objetos" || q.c < 4));
+    if (dois.length) add("erro", `${dois.length} quadro(s) com dois desenhos separados do mesmo tamanho (personagem repetido ou misturado).`, FRASE.dois(), dois);
+    // 3f) quadro com cores diferentes dos outros do mesmo personagem: mistura com outra imagem
+    const grupos = agrupar(cel, lay, R);
+    const estranhos = [];
+    for (const g of grupos) {
+      const qs = g.filter(q => q.n && q.cor);
+      if (qs.length < 4) continue;
+      const med = qs[0].cor.map((_, k) => { const v = qs.map(q => q.cor[k]).sort((a, b) => a - b); return v[v.length >> 1]; });
+      const dist = qs.map(q => q.cor.reduce((s, v, k) => s + Math.abs(v - med[k]), 0));
+      const ds = [...dist].sort((a, b) => a - b), tipico = ds[ds.length >> 1];
+      qs.forEach((q, i) => { if (dist[i] > Math.max(0.75, tipico * 3)) estranhos.push(q); });
+    }
+    if (estranhos.length) add("aviso", `${estranhos.length} quadro(s) com cores bem diferentes do resto do mesmo personagem: confira se não veio de outra imagem.`, FRASE.mistura(), estranhos);
+  }
+  // 4) comparação com a referência (se anexada)
+  if (item.ref) {
+    const a = assinatura(P, F, 0, 0, w, h), b = item.ref.assin;
+    if (a && b) {
+      const dd = a.reduce((s, v, k) => s + Math.abs(v - b[k]), 0);
+      const variante = /__(epico|lendario)\.png$/i.test(item.nome);
+      if (dd > 0.9)
+        add(
+          "aviso",
+          variante
+            ? "As cores não batem com a referência. Numa variante de raridade isso é esperado se a referência for a forma comum: compare com a imagem fixa da mesma raridade (ex.: curupira__epico)."
+            : "As cores da folha não batem com a referência: pode ser outro personagem ou a paleta mudou.",
+          variante ? null : FRASE.referencia()
+        );
+    }
+  }
+  mostrar(item, P, probs, { L, F, cel, cw, ch });
+}
+function medirCelula(P, F, r, c, cw, ch) {
+  const { w, d } = P, x0 = Math.round(c * cw), x1 = Math.round((c + 1) * cw), y0 = Math.round(r * ch), y1 = Math.round((r + 1) * ch);
+  let n = 0, bx0 = 1e9, bx1 = -1, by0 = 1e9, by1 = -1;
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+    const i = (y * w + x) * 4;
+    if (F.vazio(i)) continue;
+    n++; if (x < bx0) bx0 = x; if (x > bx1) bx1 = x; if (y < by0) by0 = y; if (y > by1) by1 = y;
+  }
+  const q = { r, c, n, x0, x1, y0, y1 };
+  if (!n) return q;
+  const m = 2;
+  q.borda = bx0 <= x0 + m || bx1 >= x1 - 1 - m || by0 <= y0 + m || by1 >= y1 - 1 - m;
+  q.pe = (by1 - y0 + 1) / (y1 - y0);
+  q.alt = (by1 - by0 + 1) / (y1 - y0);
+  q.cor = assinatura(P, F, x0, y0, x1, y1);
+  q.dois = doisDesenhos(P, F, x0, y0, x1, y1);
+  return q;
+}
+// cor de um pedaço: matiz (12 faixas, pesadas pela saturação) + brilho (4 faixas), normalizado
+function assinatura(P, F, x0, y0, x1, y1) {
+  const { w, d } = P, v = new Array(16).fill(0);
+  let t = 0;
+  for (let y = y0; y < y1; y += 2) for (let x = x0; x < x1; x += 2) {
+    const i = (y * w + x) * 4;
+    if (F.vazio(i)) continue;
+    const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), s = mx ? (mx - mn) / mx : 0;
+    let hh = 0;
+    if (mx !== mn) hh = mx === r ? ((g - b) / (mx - mn) + 6) % 6 : mx === g ? (b - r) / (mx - mn) + 2 : (r - g) / (mx - mn) + 4;
+    v[Math.floor(hh * 2) % 12] += s;
+    v[12 + Math.min(3, Math.floor(mx * 4))] += 0.5;
+    t += s + 0.5;
+  }
+  return t ? v.map(x => x / t) : null;
+}
+// dois desenhos grandes e separados dentro do mesmo quadro (componentes numa grade de 40 x 40)
+function doisDesenhos(P, F, x0, y0, x1, y1) {
+  const N = 40, sx = (x1 - x0) / N, sy = (y1 - y0) / N, m = new Uint8Array(N * N);
+  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+    let n = 0;
+    for (let k = 0; k < 4; k++) { const x = Math.floor(x0 + (i + (k % 2) * 0.5 + 0.25) * sx), y = Math.floor(y0 + (j + (k >> 1) * 0.5 + 0.25) * sy); if (!F.vazio((y * P.w + x) * 4)) n++; }
+    m[j * N + i] = n >= 2 ? 1 : 0;
+  }
+  const lab = new Int32Array(N * N), tam = [];
+  for (let s = 0; s < N * N; s++) {
+    if (!m[s] || lab[s]) continue;
+    const id = tam.length + 1, pilha = [s]; lab[s] = id; let t = 0;
+    while (pilha.length) {
+      const p = pilha.pop(); t++;
+      const px = p % N, py = (p / N) | 0;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const qx = px + dx, qy = py + dy;
+        if (qx < 0 || qy < 0 || qx >= N || qy >= N) continue;
+        const q = qy * N + qx;
+        if (m[q] && !lab[q]) { lab[q] = id; pilha.push(q); }
+      }
+    }
+    tam.push(t);
+  }
+  tam.sort((a, b) => b - a);
+  return tam.length > 1 && tam[1] > 60 && tam[1] > tam[0] * 0.45;
+}
+function agrupar(cel, lay, R) {
+  if (lay.grupos === "folha") return [cel];
+  if (lay.grupos === "pares") return [0, 2, 4].filter(r => r < R).map(r => cel.filter(q => q.r === r || q.r === r + 1));
+  if (lay.grupos === "linha") return [...Array(R).keys()].map(r => cel.filter(q => q.r === r && (lay.id !== "objetos" || q.c < 4)));
+  return [];
+}
+// piso: a borda esquerda tem de continuar na direita, e a de cima na de baixo
+function costura(P, add) {
+  const { w, h, d } = P, px = (x, y) => (y * w + x) * 4, dif = (a, b) => Math.abs(d[a] - d[b]) + Math.abs(d[a + 1] - d[b + 1]) + Math.abs(d[a + 2] - d[b + 2]);
+  let bordaH = 0, dentroH = 0, bordaV = 0, dentroV = 0;
+  for (let y = 0; y < h; y++) { bordaH += dif(px(0, y), px(w - 1, y)); dentroH += dif(px(w >> 1, y), px((w >> 1) + 1, y)); }
+  for (let x = 0; x < w; x++) { bordaV += dif(px(x, 0), px(x, h - 1)); dentroV += dif(px(x, h >> 1), px(x, (h >> 1) + 1)); }
+  const lado = bordaH / h > (dentroH / h) * 2.2 + 12, topo = bordaV / w > (dentroV / w) * 2.2 + 12;
+  if (lado || topo) add("erro", `Costura visível ao repetir: ${[lado && "esquerda com direita", topo && "cima com baixo"].filter(Boolean).join(" e ")} não continuam.`, FRASE.costura());
+}
+
+// ---------------------------------------------------------------- resultado
+function mostrar(item, P, probs, ctx) {
+  const nivel = probs.some(p => p.nivel === "erro") ? "erro" : probs.length ? "aviso" : "ok";
+  item.nivel = nivel;
+  const el = item.el;
+  el.className = "cartao " + nivel;
+  el.innerHTML = "";
+  const topo = document.createElement("div"); topo.className = "topo";
+  const t = document.createElement("div"); t.style.cssText = "display:grid;gap:2px;min-width:0";
+  t.innerHTML = `<h2></h2><span class="veredito c-${nivel}">${nivel === "ok" ? "Pode salvar" : nivel === "aviso" ? "Confira os pontos abaixo" : "Refazer"}</span>`;
+  t.querySelector("h2").textContent = item.nome;
+  topo.append(t);
+  const ctl = document.createElement("div"); ctl.className = "linha";
+  const sel = document.createElement("select"); sel.id = "tipo_" + resultados.indexOf(item); sel.setAttribute("aria-label", "Formato da imagem");
+  for (const l of A.LAYOUTS) sel.append(new Option(`${l.nome} · ${l.C}×${l.R}`, l.id));
+  sel.value = item.lay ? item.lay.id : "";
+  if (!item.lay) sel.prepend(new Option("Escolha o formato", "", true, true));
+  sel.onchange = () => { item.lay = A.porId(sel.value); conferir(item); resumo(); };
+  const refBt = document.createElement("label"); refBt.className = "botao"; refBt.style.background = "var(--painel)"; refBt.style.color = "var(--texto)"; refBt.style.borderColor = "var(--borda)";
+  refBt.textContent = item.ref ? "Trocar referência" : "Comparar com a referência";
+  const refIn = document.createElement("input"); refIn.type = "file"; refIn.accept = "image/*"; refIn.hidden = true;
+  refIn.onchange = async () => { const f = refIn.files[0]; if (!f) return; const im = await carregar(f), Pr = pixels(im, 600), Fr = fundoDe(Pr);
+    item.ref = { assin: Fr.vazio ? assinatura(Pr, Fr, 0, 0, Pr.w, Pr.h) : null }; conferir(item); resumo(); };
+  refBt.append(refIn);
+  ctl.append(sel, refBt); topo.append(ctl); el.append(topo);
+  if (ctx && ctx.L) {
+    const info = document.createElement("p"); info.className = "sub"; info.style.fontSize = ".88rem";
+    info.textContent = `${ctx.L.nome}: ${ctx.L.C} × ${ctx.L.R} em ${ctx.L.W} × ${ctx.L.H}. Imagem: ${item.img.naturalWidth} × ${item.img.naturalHeight}${ctx.F && ctx.F.modo === "magenta" ? ", fundo magenta (o conversor apaga)" : ""}.`;
+    el.append(info);
+  }
+  if (probs.length) {
+    const ul = document.createElement("ul"); ul.className = "prob";
+    for (const p of probs) { const li = document.createElement("li"); li.className = p.nivel; li.textContent = p.texto; ul.append(li); }
+    el.append(ul);
+    const frases = [...new Set(probs.map(p => p.frase).filter(Boolean))];
+    for (const f of frases.slice(0, 2)) {
+      const box = document.createElement("div"); box.className = "frase";
+      const code = document.createElement("code"); code.textContent = f;
+      const bt = document.createElement("button"); bt.textContent = "Copiar a frase de correção"; bt.style.justifySelf = "start";
+      bt.onclick = () => { navigator.clipboard?.writeText(f).then(() => (bt.textContent = "Copiada"), () => selecionar(code)); };
+      box.append(code, bt); el.append(box);
+    }
+  }
+  const figs = document.createElement("div"); figs.className = "figs";
+  const f1 = document.createElement("figure"), cv = document.createElement("canvas");
+  desenharConferencia(cv, item.img, ctx, probs);
+  f1.append(cv); const c1 = document.createElement("figcaption");
+  c1.textContent = "Sua imagem com a grade esperada, a linha dos pés (tracejada) e os quadros com problema marcados."; f1.append(c1);
+  figs.append(f1);
+  if (ctx && ctx.L) {
+    const f2 = document.createElement("figure"), mv = document.createElement("canvas");
+    desenharMolde(mv, ctx.L, 520);
+    const c2 = document.createElement("figcaption"); c2.textContent = "Como deve ficar (molde)."; f2.append(mv, c2); figs.append(f2);
+  }
+  el.append(figs);
+}
+function selecionar(n) { const r = document.createRange(); r.selectNodeContents(n); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function desenharConferencia(cv, img, ctx, probs) {
+  const maxW = 1100, k = Math.min(1, maxW / img.naturalWidth);
+  cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k);
+  const g = cv.getContext("2d");
+  g.drawImage(img, 0, 0, cv.width, cv.height);
+  if (!ctx || !ctx.L || ctx.L.tipo === "opaco") return;
+  const { C, R } = ctx.L, cw = cv.width / C, ch = cv.height / R;
+  g.strokeStyle = cssVar("--grade"); g.lineWidth = 1; g.setLineDash([]);
+  for (let c = 1; c < C; c++) { g.beginPath(); g.moveTo(c * cw, 0); g.lineTo(c * cw, cv.height); g.stroke(); }
+  for (let r = 1; r < R; r++) { g.beginPath(); g.moveTo(0, r * ch); g.lineTo(cv.width, r * ch); g.stroke(); }
+  if (ctx.L.tipo === "personagem") {
+    g.strokeStyle = cssVar("--pe"); g.setLineDash([6, 5]);
+    for (let r = 0; r < R; r++) { const y = r * ch + ch * 0.85; g.beginPath(); g.moveTo(0, y); g.lineTo(cv.width, y); g.stroke(); }
+    g.setLineDash([]);
+  }
+  const marca = new Map();
+  for (const p of probs) for (const q of p.celulas) { const kq = q.r * C + q.c; if (p.nivel === "erro" || !marca.has(kq)) marca.set(kq, p.nivel); }
+  g.lineWidth = 3;
+  for (const [kq, nv] of marca) { const r = Math.floor(kq / C), c = kq % C; g.strokeStyle = cssVar(nv === "erro" ? "--erro" : "--aviso"); g.strokeRect(c * cw + 2, r * ch + 2, cw - 4, ch - 4); }
+}
+
+// ---------------------------------------------------------------- moldes (como deve ficar)
+function desenharMolde(cv, L, largura) {
+  const k = largura / L.W; cv.width = Math.round(L.W * k); cv.height = Math.round(L.H * k);
+  const g = cv.getContext("2d"), W = cv.width, H = cv.height, C = L.C, R = L.R, cw = W / C, ch = H / R;
+  const cor = { fundo: "#efe8dc", linha: "#b9a98f", texto: "#3a2f45", forma: "#7a5fa6", pe: "#0f8fa8", destaque: "#c0392b" };
+  g.fillStyle = cor.fundo; g.fillRect(0, 0, W, H);
+  const fonte = Math.max(9, Math.min(14, ch * 0.09));
+  if (L.id === "piso") {
+    for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) { g.fillStyle = (x + y) % 2 ? "#d9cdb6" : "#e4dac6"; g.fillRect((x * W) / 4, (y * H) / 4, W / 4, H / 4); }
+    rotulo(g, "textura sem objetos; a borda esquerda continua na direita e a de cima na de baixo", 8, 16, fonte, cor.texto);
+    seta(g, W - 20, H / 2, W - 4, H / 2, cor.destaque); seta(g, W / 2, H - 20, W / 2, H - 4, cor.destaque);
+    return;
+  }
+  g.strokeStyle = cor.linha; g.lineWidth = 1;
+  for (let c = 0; c <= C; c++) { g.beginPath(); g.moveTo(c * cw, 0); g.lineTo(c * cw, H); g.stroke(); }
+  for (let r = 0; r <= R; r++) { g.beginPath(); g.moveTo(0, r * ch); g.lineTo(W, r * ch); g.stroke(); }
+  for (let r = 0; r < R; r++) {
+    for (let c = 0; c < C; c++) {
+      const x = c * cw, y = r * ch;
+      if (L.id === "pecas") { pecaMolde(g, r * 2 + c, x, y, cw, ch, cor); continue; }
+      if (L.id === "paredao") { paredaoMolde(g, r, x, y, cw, ch, cor); continue; }
+      if (L.id === "tiles" && r === 0) { g.fillStyle = "#c9b48e"; g.fillRect(x + 1, y + 1, cw - 2, ch - 2); continue; }
+      if (L.tipo === "efeito" || L.id === "props" || L.id === "tiles" || L.id === "fauna" || L.id === "icone") { g.fillStyle = cor.forma; g.globalAlpha = 0.5; g.beginPath(); g.arc(x + cw / 2, y + ch * 0.55, Math.min(cw, ch) * (0.12 + 0.18 * Math.sin(((c + 1) / (C + 1)) * Math.PI)), 0, 7); g.fill(); g.globalAlpha = 1; continue; }
+      // inimigos e folhas com um personagem por linha: cada um de uma cor, para ver onde começa e termina cada um
+      const tons = ["#7a5fa6", "#3f8f6b", "#b5653a", "#3d6fb0", "#a3497a", "#6b7d2c", "#8a5a2b", "#4b5d8a"];
+      const tom = L.grupos === "pares" ? tons[r >> 1] : L.grupos === "linha" ? tons[r % tons.length] : cor.forma;
+      personagemMolde(g, x, y, cw, ch, { ...cor, forma: tom }, r, c);
+    }
+    const nomes = L.linhasVariaveis ? L.linhas[0] : L.linhas[r] || "";
+    rotulo(g, `${R > 1 ? `Linha ${r + 1}: ` : ""}${nomes}`, 4, r * ch + ch - 6, fonte, cor.texto);
+    if (L.tipo === "personagem" && L.id !== "pecas") { g.strokeStyle = cor.pe; g.setLineDash([5, 4]); g.beginPath(); g.moveTo(0, r * ch + ch * 0.85); g.lineTo(W, r * ch + ch * 0.85); g.stroke(); g.setLineDash([]); }
+  }
+}
+function rotulo(g, t, x, y, tam, c) { g.font = `700 ${tam}px Nunito, system-ui, sans-serif`; g.fillStyle = "rgba(255,255,255,.75)"; const w = g.measureText(t).width; g.fillRect(x - 2, y - tam, w + 4, tam + 4); g.fillStyle = c; g.fillText(t, x, y); }
+function seta(g, x0, y0, x1, y1, c) { g.strokeStyle = c; g.fillStyle = c; g.lineWidth = 2; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke(); const a = Math.atan2(y1 - y0, x1 - x0); g.beginPath(); g.moveTo(x1, y1); g.lineTo(x1 - 7 * Math.cos(a - 0.5), y1 - 7 * Math.sin(a - 0.5)); g.lineTo(x1 - 7 * Math.cos(a + 0.5), y1 - 7 * Math.sin(a + 0.5)); g.fill(); }
+// silhueta genérica virada para a direita, pés na linha de 85%, ocupando ~70% da altura do quadro
+function personagemMolde(g, x, y, cw, ch, cor, r, c) {
+  const pe = y + ch * 0.85, alt = Math.min(ch * 0.62, cw * 0.95), cx = x + cw / 2, bob = Math.sin(c * 1.2) * alt * 0.03;
+  g.fillStyle = cor.forma; g.globalAlpha = 0.85;
+  g.beginPath(); g.ellipse(cx, pe - alt * 0.32 + bob, alt * 0.26, alt * 0.32, 0, 0, 7); g.fill();
+  g.beginPath(); g.arc(cx + alt * 0.1, pe - alt * 0.78 + bob, alt * 0.2, 0, 7); g.fill();
+  g.fillRect(cx - alt * 0.15, pe - alt * 0.08, alt * 0.09, alt * 0.08); g.fillRect(cx + alt * 0.06, pe - alt * 0.08, alt * 0.09, alt * 0.08);
+  g.globalAlpha = 1; g.fillStyle = "#fff"; g.beginPath(); g.arc(cx + alt * 0.2, pe - alt * 0.8 + bob, alt * 0.05, 0, 7); g.fill();
+  if (r === 0 && c === 0) seta(g, cx - alt * 0.2, pe - alt * 1.02, cx + alt * 0.3, pe - alt * 1.02, cor.destaque);
+}
+function pecaMolde(g, i, x, y, cw, ch, cor) {
+  const cx = x + cw / 2, cy = y + ch / 2, rr = Math.min(cw, ch) * 0.4;
+  g.lineWidth = 2;
+  if (i === 0) { g.fillStyle = "#cdbb98"; g.beginPath(); g.arc(cx, cy, rr, 0, 7); g.fill(); rotulo(g, "praça redonda, vista de cima", x + 6, y + ch - 10, 12, cor.texto); }
+  else if (i === 1) { g.fillStyle = "#6f9fc4"; g.beginPath(); g.arc(cx, cy, rr, 0, 7); g.fill(); rotulo(g, "lago redondo, vista de cima", x + 6, y + ch - 10, 12, cor.texto); }
+  else if (i === 2) { g.fillStyle = "#a07a58"; g.fillRect(cx - rr * 0.6, cy - rr * 0.2, rr * 1.2, rr * 0.8); g.beginPath(); g.moveTo(cx - rr * 0.75, cy - rr * 0.2); g.lineTo(cx, cy - rr * 0.75); g.lineTo(cx + rr * 0.75, cy - rr * 0.2); g.fill(); rotulo(g, "construção em 3/4", x + 6, y + ch - 10, 12, cor.texto); }
+  else {
+    // PONTE DEITADA: atravessa o quadro inteiro da esquerda para a direita; tabuleiro em cima, arcos embaixo
+    const topo = cy - ch * 0.16, alto = ch * 0.36;
+    g.fillStyle = "#8d6a4a"; g.fillRect(x + 1, topo, cw - 2, alto * 0.28);
+    g.fillStyle = "#a78462"; g.fillRect(x + 1, topo + alto * 0.28, cw - 2, alto * 0.72);
+    g.fillStyle = cor.fundo; for (let a = 0; a < 3; a++) { g.beginPath(); g.ellipse(x + cw * (a + 0.5) / 3, topo + alto, cw / 8, alto * 0.5, 0, Math.PI, 0); g.fill(); }
+    seta(g, x + 8, topo - 12, x + cw - 8, topo - 12, cor.destaque);
+    rotulo(g, "PONTE DEITADA, de lado a lado", x + 6, y + 16, 12, cor.destaque);
+    rotulo(g, "tabuleiro em cima, arcos embaixo", x + 6, y + ch - 10, 12, cor.texto);
+  }
+}
+function paredaoMolde(g, r, x, y, cw, ch, cor) {
+  const h = ch * 0.82;
+  g.fillStyle = "#8a7a66"; g.fillRect(x, y + ch * 0.06, cw, h);
+  g.fillStyle = "#6d8f4a"; g.fillRect(x, y + ch * 0.06, cw, ch * 0.06);
+  const grd = g.createLinearGradient(0, y + ch * 0.5, 0, y + ch * 0.88); grd.addColorStop(0, "rgba(239,232,220,0)"); grd.addColorStop(1, cor.fundo);
+  g.fillStyle = grd; g.fillRect(x, y + ch * 0.5, cw, ch * 0.38);
+  if (r === 1) { g.fillStyle = "rgba(111,159,196,.9)"; g.fillRect(x + cw * 0.38, y + ch * 0.1, cw * 0.24, h * 0.9); }
+}
+
+// ---------------------------------------------------------------- resumo
+function resumo() {
+  const n = { ok: 0, aviso: 0, erro: 0 };
+  for (const r of resultados) if (r.nivel) n[r.nivel]++;
+  $("resumo").innerHTML = resultados.length
+    ? `<span class="chip c-ok">${n.ok} pode salvar</span><span class="chip c-aviso">${n.aviso} conferir</span><span class="chip c-erro">${n.erro} refazer</span>`
+    : "";
+}
+
+// ---------------------------------------------------------------- exemplo inicial: um molde de cada formato principal
+(function exemplo() {
+  const box = document.createElement("section"); box.className = "cartao"; box.id = "exemplo";
+  box.innerHTML = `<div class="topo"><h2>Moldes: como cada folha deve ficar</h2><select id="moldeSel" aria-label="Escolher molde"></select></div><figure><canvas id="moldeCv"></canvas><figcaption>Linha tracejada: onde ficam os pés. Seta vermelha: o personagem olha para a direita. Os rótulos são só para você: o gerador não deve escrever nada.</figcaption></figure>`;
+  $("lista").append(box);
+  const s = box.querySelector("#moldeSel");
+  for (const l of A.LAYOUTS) s.append(new Option(`${l.nome} · ${l.C}×${l.R}`, l.id));
+  const ver = () => desenharMolde(box.querySelector("#moldeCv"), A.porId(s.value), 900);
+  s.value = "monstro_base"; s.onchange = ver; ver();
+  window.desenharMolde = desenharMolde; // usado por ferramentas/gerar_moldes.js
+})();
+</script>

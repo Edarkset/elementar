@@ -8,7 +8,7 @@ Os prompts são gerados a partir dos dados do próprio jogo (`node ferramentas/g
 
 1. **Uma conversa por forma de monstro** (ou por folha de reino). Pode deixar 8 janelas abertas ao mesmo tempo, desde que cada janela seja uma conversa diferente.
 2. Cole o bloco inteiro e **anexe o PNG de referência na mesma mensagem**.
-3. **Solte a imagem gerada na [Conferência de Artes](https://claude.ai/artifact/4tU9w9bqG11R4iCJ9o8486).** Em segundos ela diz "Pode salvar", "Confira" ou "Refazer", marca o quadro com problema e dá a frase de correção pronta para copiar.
+3. **Solte a imagem gerada na Conferência de Artes:** dois cliques em **`CONFERIR_ARTES.html`**, aqui nesta pasta (abre no navegador, até sem internet), ou pelo link [Conferência de Artes](https://claude.ai/artifact/4tU9w9bqG11R4iCJ9o8486). Em segundos ela diz "Pode salvar", "Confira" ou "Refazer", marca o quadro com problema e dá a frase de correção pronta para copiar.
 4. Salvou com o nome do pacote, a página reconhece o formato sozinha.
 
 ---

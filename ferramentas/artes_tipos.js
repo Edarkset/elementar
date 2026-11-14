@@ -6,8 +6,8 @@
 const TIPOS_ARTE = [
   {
     nome: "monstro (animação)",
-    re: /^arte\/monstros\/[^/]+\/[^/]+__anim_\d+\.png$/,
-    grades: [{ g: [6, 3] }],
+    re: /^arte\/monstros\/[^/]+\/[^/]+__anim_\d+(__(epico|lendario))?\.png$/,
+    grades: [{ g: [6, 3] }, { g: [8, 3], nota: "folha refeita em 128 px com 8 quadros por linha" }],
     personagem: true,
     chao: [0, 1]
   },
@@ -20,7 +20,7 @@ const TIPOS_ARTE = [
   {
     nome: "monstro (ações novas)",
     re: /^arte\/monstros\/[^/]+\/[^/]+__acoes_\d+\.png$/,
-    grades: [{ g: [8, 4], le: false, nota: "folha de ações nova: o código ainda não usa (precisa ligar as habilidades a estas linhas)" }],
+    grades: [{ g: [8, 5], le: false, nota: "folha de ações nova: o código ainda não usa (precisa ligar as habilidades a estas linhas)" }],
     personagem: true
   },
   { nome: "monstro (retrato)", re: /^arte\/monstros\/.*__retrato\.png$/, grades: null },
@@ -29,7 +29,7 @@ const TIPOS_ARTE = [
   {
     nome: "dragão ancestral (animação)",
     re: /^arte\/lendarios\/[^/]+__anim_\d+\.png$/,
-    grades: [{ g: [6, 3] }],
+    grades: [{ g: [6, 3] }, { g: [8, 3], nota: "folha refeita em 128 px com 8 quadros por linha" }],
     personagem: true,
     chao: [0, 1]
   },
@@ -73,7 +73,7 @@ const TIPOS_ARTE = [
   {
     nome: "herói (novo)",
     re: /^arte\/heroi\/invocador__anim\.png$/,
-    grades: [{ g: [8, 7], le: false, nota: "herói novo: o código ainda desenha o Invocador por código" }],
+    grades: [{ g: [8, 8], le: false, nota: "herói novo: o código ainda desenha o Invocador por código" }],
     personagem: true
   },
   {

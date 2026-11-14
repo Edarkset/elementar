@@ -254,6 +254,15 @@ export function arteMonstro(id, e, ramo, rar) {
 // linha (e a coluna) vazia mais próxima da grade, e cada quadro é alinhado pelos pés e pelo centro do corpo.
 export const FPS_ANIM = [5, 10, 12],
   cacheFatia = new Map();
+/** colunas de uma folha de 3 linhas (parado, andando, atacando): 6 nas folhas antigas (64 px) e 8 nas refeitas (128 px).
+ * As células são quadradas, então a proporção da imagem diz qual é: 6×3 tem largura = 2× a altura, 8×3 tem 2,67×. */
+export function colunasFolha(img, rows = 3) {
+  return rows === 3 && img.width / img.height >= 2.5 ? 8 : 6;
+}
+/** quadros por segundo de uma linha: folhas de 8 quadros andam mais rápido, para o golpe e o passo durarem o mesmo tempo */
+export function ritmoQuadros(n) {
+  return Math.max(1, n / 6);
+}
 // ritmo por classe: guardiões e místicos são calmos, assassinos e caçadores inquietos (o mesmo quadro ganha personalidade)
 export const RITMO_CLASSE = {
   guardiao: 0.75,
@@ -561,7 +570,7 @@ export function quadroAnim(img, row, i, alvo, cor, rows, folga) {
   const fo = cor || img,
     k = (fo._id || (fo._id = novoIdImg())) + "|q" + row + "|" + i + "|" + alvo + "|" + rows + "|" + folga;
   if (cacheArte.has(k)) return cacheArte.get(k);
-  const f = fatiarFolha(img, 6, rows),
+  const f = fatiarFolha(img, colunasFolha(img, rows), rows),
     L = f.linhas[row],
     q = L && L.qs[i];
   if (!q) return null;
@@ -595,12 +604,15 @@ export function folhaAnimMonstro(id, e, ramo, rar) {
   if (!l) return null;
   if (l.ancestral) {
     const img = ARTE_IMG[`arte/lendarios/${id}__anim_${e + 1}.png`];
-    return img && img.pronta && fatiarFolha(img, 6, 3).valida ? { img, cor: null } : null;
+    return img && img.pronta && fatiarFolha(img, colunasFolha(img), 3).valida ? { img, cor: null } : null;
   }
   const celula = e <= 1 ? e : e === 2 ? 2 + (ramo ?? 0) : 5 + (ramo ?? 0),
     img = ARTE_IMG[`arte/monstros/${l.elemento}/${id}__anim_${celula + 1}.png`];
-  if (!img || !img.pronta || !fatiarFolha(img, 6, 3).valida) return null;
+  if (!img || !img.pronta || !fatiarFolha(img, colunasFolha(img), 3).valida) return null;
   if (rar !== "epico" && rar !== "lendario") return { img, cor: null };
+  // folha própria da raridade (arte/monstros/<el>/<id>__anim_N__epico.png ou __lendario.png): usa direto, sem repintar
+  const propria = ARTE_IMG[`arte/monstros/${l.elemento}/${id}__anim_${celula + 1}__${rar}.png`];
+  if (propria && propria.pronta && fatiarFolha(propria, colunasFolha(propria), 3).valida) return { img: propria, cor: null };
   const base = ARTE_IMG[`arte/monstros/${l.elemento}/${id}__base.png`],
     alvo = ARTE_IMG[`arte/monstros/${l.elemento}/${id}__${rar}.png`];
   if (!base || !base.pronta || !alvo || !alvo.pronta) return null;
@@ -643,9 +655,14 @@ export function quadroAnimSelo(s) {
   const e = est(s),
     fa = folhaAnimMonstro(s.mon.id, e, ramoAtual(s), s.mon.rar);
   if (!fa) return null;
-  const f = fatiarFolha(fa.img, 6, 3),
+  const f = fatiarFolha(fa.img, colunasFolha(fa.img), 3),
     nAtk = f.linhas[2] ? f.linhas[2].qs.length : 0;
-  let row = s.atkT != null && nAtk >= 2 && J.t >= s.atkT && J.t - s.atkT < nAtk / FPS_ANIM[2] ? 2 : (s._vel || 0) > 6 ? 1 : 0;
+  let row =
+    s.atkT != null && nAtk >= 2 && J.t >= s.atkT && J.t - s.atkT < nAtk / (FPS_ANIM[2] * ritmoQuadros(nAtk))
+      ? 2
+      : (s._vel || 0) > 6
+        ? 1
+        : 0;
   if (!f.linhas[row] || f.linhas[row].qs.length < 2) row = 0;
   const n = f.linhas[row].qs.length;
   if (n < 1) return null;
@@ -661,14 +678,14 @@ export function quadroAnimSelo(s) {
   // andando: a cadência acompanha a velocidade (pés não "patinam" no chão)
   const dtF = Math.min(0.1, Math.max(0, J.t - (s._tf ?? J.t)));
   s._tf = J.t;
-  if (row === 1) s._fase = (s._fase || 0) + dtF * FPS_ANIM[1] * Math.max(0.6, Math.min(1.8, (s._vel || 0) / 45));
+  if (row === 1) s._fase = (s._fase || 0) + dtF * FPS_ANIM[1] * ritmoQuadros(n) * Math.max(0.6, Math.min(1.8, (s._vel || 0) / 45));
   const rc = RITMO_CLASSE[L(s).classe] || 1,
     alvoA = ALVO_ARTE[e] * (LINHA[s.mon.id].ancestral ? 1.15 : 1);
   let fr,
     prox = null,
     mix = 0;
   if (row === 2) {
-    const dur = (n / (FPS_ANIM[2] * rc)) * 1.25,
+    const dur = (n / (FPS_ANIM[2] * rc * ritmoQuadros(n))) * 1.25,
       k = Math.min(1, (J.t - s._t0) / dur);
     fr = Math.min(n - 1, Math.floor(progressoAtaque(k) * n));
   } else if (row === 1) {
@@ -681,7 +698,7 @@ export function quadroAnimSelo(s) {
   else {
     // parado: vai e volta pelos quadros (0,1,2,3,2,1...), num ritmo próprio de cada monstro, com mistura suave entre um quadro e o próximo
     const per = Math.max(1, 2 * n - 2),
-      pos = ((J.t - s._t0) * FPS_ANIM[0] * rc * (0.9 + (0.2 * ((s.mon.id.length * 7) % 5)) / 5)) % per,
+      pos = ((J.t - s._t0) * FPS_ANIM[0] * rc * ritmoQuadros(n) * (0.9 + (0.2 * ((s.mon.id.length * 7) % 5)) / 5)) % per,
       a = Math.floor(pos),
       b = (a + 1) % per,
       ida = i => (i < n ? i : per - i);

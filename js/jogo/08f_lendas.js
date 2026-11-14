@@ -27,7 +27,7 @@ import {
 } from "./01_nucleo.js";
 import { curar, emArea, ferir, iniciarMapa, maisProximo, morrer, parar, particulas, pontoDenso, texto, tremor } from "./02_combate.js";
 import { mostrarCartas, proximaEscolha, salvarRun } from "./03_progressao.js";
-import { ARTE_IMG, fatiarFolha, preCarregar, quadroAnim } from "./05_arte.js";
+import { ARTE_IMG, colunasFolha, fatiarFolha, preCarregar, quadroAnim, ritmoQuadros } from "./05_arte.js";
 import { QUAL } from "./06_loop.js";
 import { bolhaCor } from "./07_cenario.js";
 import { silhueta } from "./07b_cenario_desenho.js";
@@ -52,7 +52,7 @@ export function custo(ef) {
 // afinidade com o Pacto (quantos elementos em comum), para a escolha ter peso; as bloqueadas dizem como liberar
 export function arteHeroiLenda(l) {
   const img = folhaArte(l.dom ? `arte/panteao/${l.id}.png` : `arte/lendas/${l.id}.png`);
-  if (!img || !fatiarFolha(img, 6, 3).valida) return null;
+  if (!img || !fatiarFolha(img, colunasFolha(img), 3).valida) return null;
   return quadroAnim(img, 0, 0, 64);
 }
 export function telaInvocador(pacto, id, esperou) {
@@ -400,12 +400,13 @@ export function desenharLenda(ox, oy) {
     pose = J.lendaPose,
     lancando = !!pose,
     esq = (J.pvx || 0) < -1;
-  if (img && fatiarFolha(img, 6, 3).valida) {
-    const f = fatiarFolha(img, 6, 3);
+  if (img && fatiarFolha(img, colunasFolha(img), 3).valida) {
+    const f = fatiarFolha(img, colunasFolha(img), 3);
     let lin = lancando ? 2 : andando ? 1 : 0;
     if (f.linhas[lin].qs.length < 1) lin = 0;
     const n = f.linhas[lin].qs.length;
-    const q = lin === 2 ? Math.min(n - 1, Math.floor((pose.t / pose.dur) * n)) : Math.floor(J.t * (lin === 1 ? 10 : 6)) % n,
+    const q =
+        lin === 2 ? Math.min(n - 1, Math.floor((pose.t / pose.dur) * n)) : Math.floor(J.t * (lin === 1 ? 10 : 6) * ritmoQuadros(n)) % n,
       s = quadroAnim(img, lin, q, 38); // um pouco maior que antes (34): o herói é o centro da tela
     if (s) {
       const resp = lin === 0 ? 1 + 0.012 * Math.sin(J.t * 2.4) : 1;

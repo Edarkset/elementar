@@ -96,7 +96,7 @@ import {
   tremor
 } from "./02_combate.js";
 import { mudarSolo } from "./04_ambiente.js";
-import { ARTE_IMG, arteMonstro, artesQue, correcaoAltura, fatiarFolha, folhaAnimMonstro, preCarregar } from "./05_arte.js";
+import { ARTE_IMG, arteMonstro, artesQue, colunasFolha, correcaoAltura, fatiarFolha, folhaAnimMonstro, preCarregar } from "./05_arte.js";
 import { ganharXp } from "./06_loop.js";
 import { bolhaCor } from "./07_cenario.js";
 import { silhueta } from "./07b_cenario_desenho.js";
@@ -282,7 +282,7 @@ export function quadrosForma(id, e, ramo, rar) {
   if (!fa) return null;
   const img = fa.img,
     fo = fa.cor || img,
-    f = fatiarFolha(img, 6, 3);
+    f = fatiarFolha(img, colunasFolha(img), 3);
   if (!f.valida || !f.linhas[0].qs.length) return null;
   const L = f.linhas[0],
     ky = correcaoAltura(img);

@@ -33,6 +33,27 @@ A [Conferência de Artes](https://claude.ai/artifact/4tU9w9bqG11R4iCJ9o8486) pro
 
 ---
 
+## Épico e Lendário com tema próprio (Curupira de inverno, Kodama sakura…)
+
+Pode mudar as cores à vontade: **não mexe em nada da partida**. Força, chance de aparecer e golpes continuam iguais. O que importa é ser **igual em todas as folhas daquela raridade**. Senão a carta mostra um monstro e a partida mostra outro.
+
+| Onde o Épico ou o Lendário aparece | Arquivo |
+|---|---|
+| cartas, Bestiário, tela de escolha | imagem fixa das 8 formas (`<monstro>__epico.png`, `__lendario.png`) |
+| partida, quando a forma tem animação própria | `<monstro>__anim_N__epico.png` / `__lendario.png` |
+| partida, quando a forma ainda não tem | o jogo pinta a animação comum com as cores da imagem fixa |
+
+Por isso:
+- O tema de cada monstro fica numa tabela (`ferramentas/raridades_arte.js`). Todos os prompts daquela raridade usam o mesmo texto: as 8 animações e a imagem fixa. Hoje estão lá:
+  - **Curupira:** Épico Inverno, Lendário Ipê amarelo;
+  - **Kodama:** Épico Sakura (ipê rosa), Lendário Ipê amarelo;
+  - **Boto:** Épico Boto azul, Lendário Boto branco, como a roupa branca do Boto encantado.
+- **Inventou um tema novo no meio do refino?** Me diga o monstro e as cores, que eu acrescento na tabela e gero de novo. Os prompts daquela raridade, inclusive da imagem fixa, já saem com o tema certo.
+- **Duas regras valem para todo tema:** a raridade tem de continuar parecendo rara (o Épico com um brilho leve, o Lendário com aura e enfeites), e o traço marcante e uma pista do elemento continuam visíveis. Exemplos: o Curupira de inverno mantém a roupa de folhas, e o Boto mantém o chapéu.
+- **Na página de conferência,** compare uma variante com a imagem fixa **da mesma raridade**, e não com a comum. Com a comum, as cores não batem mesmo.
+
+---
+
 ## Molde: como cada folha deve ficar
 
 Cada bloco tem o link "Molde (como deve ficar)", uma figura com:

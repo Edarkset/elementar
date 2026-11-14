@@ -13,7 +13,8 @@ const fs = require("fs"),
 const RAIZ = path.join(__dirname, ".."),
   SAIDA = path.join(RAIZ, "docs", "prompts");
 const D = new Function(fs.readFileSync(path.join(RAIZ, "js", "dados.js"), "utf8") + ";return D;")();
-const LAY = require("./layouts_arte.js");
+const LAY = require("./layouts_arte.js"),
+  RAR = require("./raridades_arte.js");
 
 // ---------------------------------------------------------------- vocabulário (dados em português -> inglês para o gerador)
 const EL = {
@@ -290,12 +291,9 @@ function promptBase(l, f, raridade) {
     H = 1024,
     C = 6,
     L = 3;
-  const cab =
-    raridade === "epico"
-      ? `Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster.`
-      : raridade === "lendario"
-        ? `Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster.`
-        : `Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.`;
+  const cab = raridade
+    ? `Create a 2D game sprite sheet: the ${raridade === "epico" ? "EPIC" : "LEGENDARY"} rarity variant of a monster. Same poses and same size as the reference, redesigned as a ${RAR.tema(l.id, raridade).en}. The silhouette must stay recognizable as the same monster. ${RAR.REGRA}`
+    : `Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.`;
   return [
     cab,
     telaGrade(W, H, C, L),
@@ -331,20 +329,24 @@ ROW 4 - PERSONALITY, 6 frames: F1-F4 a quirk that shows its personality "${l.per
     PROIBIDO
   ];
 }
-function promptFixa(l) {
+function promptFixa(l, raridade) {
   const W = 1536,
     H = 1024,
     C = 4,
     L = 2,
     fs8 = formasDe(l);
   return [
-    `Create a 2D game sprite sheet: the 8 evolution forms of one monster line, one still pose each (a calm 3/4 standing pose).`,
+    raridade
+      ? `Create a 2D game sprite sheet: the 8 evolution forms of one monster line in its ${raridade === "epico" ? "EPIC" : "LEGENDARY"} rarity variant, one still pose each (a calm 3/4 standing pose). The variant is a ${RAR.tema(l.id, raridade).en}. Every form gets the SAME variant treatment so the line looks consistent. ${RAR.REGRA}`
+      : `Create a 2D game sprite sheet: the 8 evolution forms of one monster line, one still pose each (a calm 3/4 standing pose).`,
     telaGrade(W, H, C, L),
     `CELLS, left to right, top row then bottom row:
 ${fs8.map(f => `${f.n}. "${f.nome}" - ${ESTAGIO[f.e].nome.toLowerCase()}${f.ramo != null ? ` (branch ${RAMO[f.ramo]})` : ""}, element ${EL[f.el]}`).join("\n")}
 The baby is the smallest and the supreme forms the most imposing, but every form fills most of its cell height so the details stay readable.`,
     `MONSTER LINE (Portuguese): ${l.visual}. Signature trait in every form: ${l.traco}. Inspired by: ${l.animal}. Class: ${CLASSE_EN[l.classe]}.`,
-    `REFERENCE: attach the current __base image of this monster (or the new animation sheets) and copy each form's design exactly. The attachment is only a reference: ignore its layout.`,
+    raridade
+      ? `REFERENCE: the attached image is the normal (common) version of these 8 forms in the same layout: keep each form's shape, pose and cell, change only the colors and ornaments to the variant described above.`
+      : `REFERENCE: attach the current __base image of this monster (or the new animation sheets) and copy each form's design exactly. The attachment is only a reference: ignore its layout.`,
     travasPersonagem(W, H, C, L).replace("in the idle row the body fills", "the body fills"),
     FUNDO,
     ESTILO,
@@ -363,7 +365,12 @@ function arquivoMonstro(l) {
     md.push(
       `| \`__anim_${f.n}\` | ${f.nome} | ${ESTAGIO[f.e].nome}${f.ramo != null ? ` (ramo ${RAMO[f.ramo]})` : ""} | ${D.elementos[f.el].nome} |`
     );
+  const te = RAR.tema(l.id, "epico"),
+    tl = RAR.tema(l.id, "lendario"),
+    proprio = !!RAR.RARIDADES[l.id];
   md.push(`
+**Raridades:** Épico **${te.nome}** · Lendário **${tl.nome}**${proprio ? " (tema próprio deste monstro)" : ""}. O tema vale para todas as folhas da raridade: as animações de cada forma e a imagem fixa das 8 formas (a das cartas). Para mudar o tema, me diga as cores que eu atualizo a tabela (\`ferramentas/raridades_arte.js\`) e gero de novo.
+
 **Ordem:** primeiro a folha base de uma forma (etapa 2), depois o Épico, o Lendário e as ações dela (etapa 3), sempre anexando a **base nova** como referência. Comece pelas formas Adulto e Supremo (\`__anim_3\` a \`__anim_8\`).
 
 **Como usar cada bloco:** copie o texto inteiro do bloco para o gerador, anexe a imagem indicada e salve com o nome indicado. Depois confira com a lista do arquivo \`00_LEIA_PRIMEIRO.md\`.
@@ -386,7 +393,7 @@ function arquivoMonstro(l) {
     for (const r of ["epico", "lendario"])
       md.push(
         bloco(
-          r === "epico" ? "Épico (etapa 3)" : "Lendário (etapa 3)",
+          r === "epico" ? `Épico: ${te.nome} (etapa 3)` : `Lendário: ${tl.nome} (etapa 3)`,
           [
             ["Salvar como", `\`${pasta}/${l.id}__anim_${f.n}__${r}.png\``],
             ["Anexar", `a base NOVA \`${l.id}__anim_${f.n}\` (etapa 2)`],
@@ -409,7 +416,10 @@ function arquivoMonstro(l) {
       )
     );
   }
-  md.push(`\n## Imagem fixa das 8 formas (opcional)\n`);
+  md.push(`\n## Imagens fixas das 8 formas (cartas e Bestiário)\n`);
+  md.push(
+    `A comum é opcional (já existe). A do Épico e a do Lendário têm de seguir o mesmo tema das animações: elas aparecem nas cartas e servem de cor para as formas que ainda não têm animação própria.\n`
+  );
   md.push(
     bloco(
       "Imagem fixa",
@@ -422,6 +432,19 @@ function arquivoMonstro(l) {
       `the 8 evolution forms of the monster line "${l.filhote}", one per cell`
     )
   );
+  for (const r of ["epico", "lendario"])
+    md.push(
+      bloco(
+        r === "epico" ? `Imagem fixa do Épico: ${te.nome}` : `Imagem fixa do Lendário: ${tl.nome}`,
+        [
+          ["Salvar como", `\`${pasta}/${l.id}__${r}.png\``],
+          ["Anexar", `a imagem fixa comum \`${l.id}__base\`: ${ANEXO_ORIGINAL}`],
+          ["O jogo usa", "sim (cartas, Bestiário e cor das formas sem animação própria)"]
+        ],
+        promptFixa(l, r),
+        `the 8 forms of "${l.filhote}" in the ${r === "epico" ? "EPIC" : "LEGENDARY"} variant, one per cell`
+      )
+    );
   return md.join("\n");
 }
 
@@ -1184,6 +1207,12 @@ for (const d of GERADAS)
     }
   })(d);
 if (CONFERIR) {
+  // temas de raridade só para monstros que existem
+  const semMonstro = Object.keys(RAR.RARIDADES).filter(id => !D.linhas.some(l => l.id === id));
+  if (semMonstro.length) {
+    console.error(`ferramentas/raridades_arte.js: monstro(s) que não existem no jogo: ${semMonstro.join(", ")}`);
+    process.exit(1);
+  }
   // a tabela de objetos por reino da página de conferência tem de bater com os dados
   const objs = Object.fromEntries(D.universos.map(u => [u.id, (u.objetos || []).length]));
   const errados = Object.keys(objs).filter(k => LAY.OBJETOS[k] !== objs[k]);

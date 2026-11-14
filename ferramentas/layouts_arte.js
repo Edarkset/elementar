@@ -55,7 +55,7 @@
       linhas: ["Filhote · Jovem · Adulto A · Adulto B", "Adulto C · Supremo A · Supremo B · Supremo C"],
       tipo: "personagem",
       grupos: null,
-      re: /monstros[\\/].*__base\.png$|^[a-z_]+__base\.png$/i
+      re: /monstros[\\/].*__(base|epico|lendario)\.png$|^[a-z_]+__(base|epico|lendario)\.png$/i
     },
     {
       id: "ancestral_eclosao",

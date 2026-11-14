@@ -256,7 +256,15 @@ function conferir(item) {
     const a = assinatura(P, F, 0, 0, w, h), b = item.ref.assin;
     if (a && b) {
       const dd = a.reduce((s, v, k) => s + Math.abs(v - b[k]), 0);
-      if (dd > 0.9) add("aviso", "As cores da folha não batem com a referência: pode ser outro personagem ou a paleta mudou.", FRASE.referencia());
+      const variante = /__(epico|lendario)\.png$/i.test(item.nome);
+      if (dd > 0.9)
+        add(
+          "aviso",
+          variante
+            ? "As cores não batem com a referência. Numa variante de raridade isso é esperado se a referência for a forma comum: compare com a imagem fixa da mesma raridade (ex.: curupira__epico)."
+            : "As cores da folha não batem com a referência: pode ser outro personagem ou a paleta mudou.",
+          variante ? null : FRASE.referencia()
+        );
     }
   }
   mostrar(item, P, probs, { L, F, cel, cw, ch });

@@ -45,7 +45,7 @@ Pode mudar as cores à vontade: **não mexe em nada da partida**. Força, chance
 
 **As imagens fixas que já estão no jogo são a fonte das cores.** Elas já têm os seus ajustes finos: Fogo-fátuo de chama verde e de chama galáxia, Vampiro azulado e de cabelo branco, Caçada de fogo e de gelo, Lobisomem vermelho e da neve, e assim por diante. Por isso:
 - **Dois anexos:** cada prompt de raridade pede duas imagens. A **base nova** dá as poses, e a **imagem fixa aprovada daquela raridade** dá as cores. O prompt diz em qual quadro dela está a forma (por exemplo "linha 1, coluna 3") e que, se a imagem e o texto discordarem, vale a imagem.
-- **Descrição de reforço:** o prompt também descreve o tema em palavras. Escrevi as descrições olhando as 102 imagens. Estão em `ferramentas/raridades_arte.js`, e a pasta `raridades/` tem as 8 pranchas com Comum, Épico e Lendário de cada monstro, lado a lado.
+- **Descrição de reforço:** o prompt também descreve o tema em palavras. Escrevi as descrições olhando as 102 imagens. Estão em `ferramentas/raridades_arte.js`, e a pasta `raridades/` tem as 8 pranchas (`.webp`) com Comum, Épico e Lendário de cada monstro, lado a lado.
 - **Para mudar uma cor depois:** troque a imagem fixa e me avise, que eu atualizo a descrição.
 - **Duas regras valem para todo tema:** a raridade continua parecendo rara (o Épico com um brilho leve, o Lendário com aura e enfeites), e o traço marcante continua visível.
 - **Temas rosa, roxo ou lilás** (Boto, Morcego lendário, Raiju épico, Fogo-fátuo galáxia): o prompt exige **transparência de verdade**, sem fundo magenta. O conversor apagaria o magenta junto com pedaços do monstro.

@@ -334,9 +334,10 @@
         por: "nasce dentro das tempestades"
       },
       lendario: {
-        nome: "Ouro",
-        en: "GOLDEN: gold and cream feathers",
-        por: "voa no pôr do sol"
+        nome: "Olho do furacão",
+        en: "EYE OF THE HURRICANE: silver-white feathers with pale blue spiral patterns, a calm swirling vortex of wind wrapped around its wings",
+        por: "nasce no centro calmo de um furacão (sugestão: troque se quiser)",
+        novo: true
       }
     },
     grifo: {
@@ -438,9 +439,10 @@
     },
     curupira: {
       epico: {
-        nome: "Outono",
-        en: "AUTUMN: clothes of orange, amber and gold autumn leaves, falling autumn leaves, fiery orange hair",
-        por: "a mata no outono"
+        nome: "Primavera",
+        en: "SPRING: fresh bright-green leaf clothes covered in blooming flowers (pink, white and yellow blossoms), a flower crown in the fiery hair, petals drifting around",
+        por: "a mata florindo na primavera",
+        novo: true
       },
       lendario: {
         nome: "Inverno",
@@ -455,9 +457,10 @@
         por: "floresce à noite"
       },
       lendario: {
-        nome: "Raiz dourada",
-        en: "GOLDEN ROOT: golden-yellow body and leaves with cream flowers",
-        por: "raiz centenária"
+        nome: "Raiz morta",
+        en: "DEAD ROOT: withered dry grey-brown root body with cracked bark, dry dead leaves and thorns, faint pale-green glowing eyes, eerie but still alive",
+        por: "secou e morreu, mas a raiz continuou viva: a mais rara e a mais assustadora",
+        novo: true
       }
     },
     kodama: {

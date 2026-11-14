@@ -49,7 +49,7 @@ Regras:
 - **Épico** é uma variação rara mas plausível. **Lendário** é o fenômeno mais raro ou extremo.
 - Cada monstro tem os dois temas com a condição escrita (`ferramentas/raridades_arte.js`), e **o prompt conta a condição ao gerador** ("WHY THIS VARIANT EXISTS…"). Assim ele muda o que a condição mudaria de verdade (geada, gelo pingando, brasa nas rachaduras), e não só a cor.
 - **Tema mantido:** as cores vêm da imagem fixa que já está no jogo, como segundo anexo.
-- **Tema novo** (25 temas, em 17 monstros): o arquivo do monstro começa com **"Comece por aqui"**, a imagem fixa nova daquela raridade. Gere, confira, me mande, e só depois faça as animações dela, com essa imagem nova como segundo anexo.
+- **Tema novo** (28 temas, em 20 monstros): o arquivo do monstro começa com **"Comece por aqui"**, a imagem fixa nova daquela raridade. Gere, confira, me mande, e só depois faça as animações dela, com essa imagem nova como segundo anexo.
 - **Para mudar uma decisão,** use a [página de raridades](https://claude.ai/artifact/NqXWqdfxZyBt7tqhMhzT5X) e cole aqui o que ela copiar.
 - **Temas rosa, roxo ou lilás** exigem transparência de verdade, nunca fundo magenta.
 - **Na página de conferência,** compare uma variante com a imagem fixa **da mesma raridade**.

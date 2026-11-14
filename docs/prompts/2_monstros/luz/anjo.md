@@ -13,7 +13,11 @@ anjo de luz que nasce de uma nuvem, com asas de penas brancas e auréola dourada
 | `__anim_7` | Trono | Supremo (ramo B) | Luz |
 | `__anim_8` | Serafim Ardente | Supremo (ramo C) | Luz |
 
-**Raridades:** Épico **Serafim sombrio** · Lendário **Ouro radiante**. As cores vêm das imagens fixas que você já aprovou (`__epico` e `__lendario`): cada prompt de raridade pede essa imagem como **segundo anexo** e diz em qual quadro dela está a forma. Mudou uma cor? Basta trocar a imagem fixa, e me avise para eu atualizar a descrição (`ferramentas/raridades_arte.js`).
+**Raridades** (cada uma é uma condição especial do ambiente, não só outra cor):
+- **Épico: Anjo caído.** Condição: caiu do céu e a luz escureceu na armadura.
+- **Lendário: Ouro radiante.** Condição: a luz mais pura, sem sombra nenhuma.
+
+As cores de cada raridade vêm da **imagem fixa** dela (`__epico`, `__lendario`): cada prompt de animação de raridade pede essa imagem como **segundo anexo** e diz em qual quadro dela está a forma. Tema mantido: use a imagem fixa que já está no jogo. Tema novo: gere a imagem fixa nova primeiro e use ela.
 
 **Ordem:** primeiro a folha base de uma forma (etapa 2), depois o Épico, o Lendário e as ações dela (etapa 3), sempre anexando a **base nova** como referência. Comece pelas formas Adulto e Supremo (`__anim_3` a `__anim_8`).
 
@@ -64,7 +68,7 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Serafim sombrio (etapa 3)
+#### Épico: Anjo caído (etapa 3)
 
 - **Salvar como:** `arte/monstros/luz/anjo__anim_1__epico.png`
 - **Anexar:** **duas imagens**: 1) a base NOVA `anjo__anim_1` (etapa 2), para as poses; 2) a imagem fixa aprovada `anjo__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
@@ -74,7 +78,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Nuvenzinha" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): caiu do céu e a luz escureceu na armadura. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -118,7 +122,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Nuvenzinha" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): a luz mais pura, sem sombra nenhuma. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -240,7 +244,7 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Serafim sombrio (etapa 3)
+#### Épico: Anjo caído (etapa 3)
 
 - **Salvar como:** `arte/monstros/luz/anjo__anim_2__epico.png`
 - **Anexar:** **duas imagens**: 1) a base NOVA `anjo__anim_2` (etapa 2), para as poses; 2) a imagem fixa aprovada `anjo__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
@@ -250,7 +254,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Anjinho" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): caiu do céu e a luz escureceu na armadura. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -294,7 +298,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Anjinho" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): a luz mais pura, sem sombra nenhuma. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -416,7 +420,7 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Serafim sombrio (etapa 3)
+#### Épico: Anjo caído (etapa 3)
 
 - **Salvar como:** `arte/monstros/luz/anjo__anim_3__epico.png`
 - **Anexar:** **duas imagens**: 1) a base NOVA `anjo__anim_3` (etapa 2), para as poses; 2) a imagem fixa aprovada `anjo__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
@@ -426,7 +430,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Arcanjo" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): caiu do céu e a luz escureceu na armadura. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -470,7 +474,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Arcanjo" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): a luz mais pura, sem sombra nenhuma. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -592,7 +596,7 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Serafim sombrio (etapa 3)
+#### Épico: Anjo caído (etapa 3)
 
 - **Salvar como:** `arte/monstros/luz/anjo__anim_4__epico.png`
 - **Anexar:** **duas imagens**: 1) a base NOVA `anjo__anim_4` (etapa 2), para as poses; 2) a imagem fixa aprovada `anjo__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
@@ -602,7 +606,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Querubim" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): caiu do céu e a luz escureceu na armadura. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -646,7 +650,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Querubim" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): a luz mais pura, sem sombra nenhuma. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -768,7 +772,7 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Serafim sombrio (etapa 3)
+#### Épico: Anjo caído (etapa 3)
 
 - **Salvar como:** `arte/monstros/luz/anjo__anim_5__epico.png`
 - **Anexar:** **duas imagens**: 1) a base NOVA `anjo__anim_5` (etapa 2), para as poses; 2) a imagem fixa aprovada `anjo__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
@@ -778,7 +782,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Serafim" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): caiu do céu e a luz escureceu na armadura. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -822,7 +826,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Serafim" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): a luz mais pura, sem sombra nenhuma. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -944,7 +948,7 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Serafim sombrio (etapa 3)
+#### Épico: Anjo caído (etapa 3)
 
 - **Salvar como:** `arte/monstros/luz/anjo__anim_6__epico.png`
 - **Anexar:** **duas imagens**: 1) a base NOVA `anjo__anim_6` (etapa 2), para as poses; 2) a imagem fixa aprovada `anjo__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
@@ -954,7 +958,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Arcanjo Supremo" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): caiu do céu e a luz escureceu na armadura. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -998,7 +1002,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Arcanjo Supremo" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): a luz mais pura, sem sombra nenhuma. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1120,7 +1124,7 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Serafim sombrio (etapa 3)
+#### Épico: Anjo caído (etapa 3)
 
 - **Salvar como:** `arte/monstros/luz/anjo__anim_7__epico.png`
 - **Anexar:** **duas imagens**: 1) a base NOVA `anjo__anim_7` (etapa 2), para as poses; 2) a imagem fixa aprovada `anjo__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
@@ -1130,7 +1134,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Trono" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): caiu do céu e a luz escureceu na armadura. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1174,7 +1178,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Trono" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): a luz mais pura, sem sombra nenhuma. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1296,7 +1300,7 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Serafim sombrio (etapa 3)
+#### Épico: Anjo caído (etapa 3)
 
 - **Salvar como:** `arte/monstros/luz/anjo__anim_8__epico.png`
 - **Anexar:** **duas imagens**: 1) a base NOVA `anjo__anim_8` (etapa 2), para as poses; 2) a imagem fixa aprovada `anjo__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
@@ -1306,7 +1310,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Serafim Ardente" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: DARK SERAPH: dark navy and bronze-orange armor and wings. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): caiu do céu e a luz escureceu na armadura. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1350,7 +1354,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Serafim Ardente" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: RADIANT: gold and white with a strong glow. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): a luz mais pura, sem sombra nenhuma. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1430,7 +1434,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 
 ## Imagens fixas das 8 formas (cartas e Bestiário)
 
-As três já existem, e a do Épico e a do Lendário já têm as suas cores aprovadas: **elas são a referência de cor** das animações de raridade (segundo anexo). Refaça só se quiser mais nitidez, anexando a atual: o prompt manda manter as cores.
+A comum já existe. A imagem fixa de cada raridade **é a referência de cor** das animações dela (segundo anexo). Tema mantido: a atual já tem as cores aprovadas, refaça só para mais nitidez. Tema novo: está em "Comece por aqui", no topo.
 
 #### Imagem fixa
 
@@ -1479,7 +1483,7 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row and exactly 2 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Imagem fixa do Épico: Serafim sombrio
+#### Imagem fixa do Épico: Anjo caído
 
 - **Salvar como:** `arte/monstros/luz/anjo__epico.png`
 - **Anexar:** **duas imagens**: 1) a imagem fixa comum `anjo__base`, para as formas; 2) a imagem fixa aprovada `anjo__epico`, para as cores (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado)
@@ -1490,7 +1494,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the 8 forms of "Nuvenzinha" in the EPIC variant, one per cell. The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the 8 evolution forms of one monster line in its EPIC rarity variant, one still pose each (a calm 3/4 standing pose). The variant is a DARK SERAPH: dark navy and bronze-orange armor and wings. Every form gets the SAME variant treatment so the line looks consistent. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the 8 evolution forms of one monster line in its EPIC rarity variant, one still pose each (a calm 3/4 standing pose). The variant: DARK SERAPH: dark navy and bronze-orange armor and wings. Every form gets the SAME variant treatment so the line looks consistent. WHY THIS VARIANT EXISTS (Portuguese): caiu do céu e a luz escureceu na armadura. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 4 equal columns x 2 equal rows = 8 cells, each cell 384 px wide x 512 px tall. Do NOT draw the grid. Exactly one pose per cell, 4 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1538,7 +1542,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the 8 forms of "Nuvenzinha" in the LEGENDARY variant, one per cell. The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the 8 evolution forms of one monster line in its LEGENDARY rarity variant, one still pose each (a calm 3/4 standing pose). The variant is a RADIANT: gold and white with a strong glow. Every form gets the SAME variant treatment so the line looks consistent. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the 8 evolution forms of one monster line in its LEGENDARY rarity variant, one still pose each (a calm 3/4 standing pose). The variant: RADIANT: gold and white with a strong glow. Every form gets the SAME variant treatment so the line looks consistent. WHY THIS VARIANT EXISTS (Portuguese): a luz mais pura, sem sombra nenhuma. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 4 equal columns x 2 equal rows = 8 cells, each cell 384 px wide x 512 px tall. Do NOT draw the grid. Exactly one pose per cell, 4 per row, no more, no less. Rows are read top to bottom, frames left to right.

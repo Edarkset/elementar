@@ -13,11 +13,68 @@ gigante costurado de retalhos coloridos e botões, com parafusos pequenos e esti
 | `__anim_7` | A Criatura Eterna | Supremo (ramo B) | Raio |
 | `__anim_8` | Coração Elétrico | Supremo (ramo C) | Raio |
 
-**Raridades:** Épico **Galvânico verde** · Lendário **Porcelana azul**. As cores vêm das imagens fixas que você já aprovou (`__epico` e `__lendario`): cada prompt de raridade pede essa imagem como **segundo anexo** e diz em qual quadro dela está a forma. Mudou uma cor? Basta trocar a imagem fixa, e me avise para eu atualizar a descrição (`ferramentas/raridades_arte.js`).
+**Raridades** (cada uma é uma condição especial do ambiente, não só outra cor):
+- **Épico: Galvânico verde.** Condição: acordou com faíscas químicas verdes.
+- **Lendário: Fogo de Santelmo.** Condição: acordou numa tempestade, coberto de plasma azul. **Tema novo:** comece pela imagem fixa dele (logo abaixo).
+
+As cores de cada raridade vêm da **imagem fixa** dela (`__epico`, `__lendario`): cada prompt de animação de raridade pede essa imagem como **segundo anexo** e diz em qual quadro dela está a forma. Tema mantido: use a imagem fixa que já está no jogo. Tema novo: gere a imagem fixa nova primeiro e use ela.
 
 **Ordem:** primeiro a folha base de uma forma (etapa 2), depois o Épico, o Lendário e as ações dela (etapa 3), sempre anexando a **base nova** como referência. Comece pelas formas Adulto e Supremo (`__anim_3` a `__anim_8`).
 
 **Como usar cada bloco:** copie o texto inteiro do bloco para o gerador, anexe a imagem indicada e salve com o nome indicado. Depois confira com a lista do arquivo `00_LEIA_PRIMEIRO.md`.
+
+
+## Comece por aqui: imagem fixa do tema novo
+
+O tema do Lendário mudou. Gere primeiro a imagem fixa nova, confira na página de conferência e me mande: ela substitui a antiga e é o segundo anexo das animações desse tema.
+
+#### Imagem fixa do Lendário (tema novo): Fogo de Santelmo
+
+- **Salvar como:** `arte/monstros/raio/frankenstein__lendario.png`
+- **Anexar:** a imagem fixa comum `frankenstein__base` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado)
+- **O jogo usa:** sim (cartas, Bestiário e cor das formas sem animação própria)
+- **Precisa?:** **sim, e antes das animações deste tema**: ela substitui a antiga e vira a referência de cor (converta e confira antes de seguir)
+- **Molde (como deve ficar):** [Monstro: imagem fixa das 8 formas](../../moldes/monstro_fixa.png)
+
+```text
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the 8 forms of "Faísca de Vida" in the LEGENDARY variant, one per cell. The ONLY reference is the image attached to THIS message.
+
+Create a 2D game sprite sheet: the 8 evolution forms of one monster line in its LEGENDARY rarity variant, one still pose each (a calm 3/4 standing pose). The variant: ST. ELMO'S FIRE: steel-blue and white body wrapped in glowing electric-blue plasma, crackling sparks. Every form gets the SAME variant treatment so the line looks consistent. WHY THIS VARIANT EXISTS (Portuguese): acordou numa tempestade, coberto de plasma azul. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
+
+CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
+GRID: invisible grid of exactly 4 equal columns x 2 equal rows = 8 cells, each cell 384 px wide x 512 px tall. Do NOT draw the grid. Exactly one pose per cell, 4 per row, no more, no less. Rows are read top to bottom, frames left to right.
+
+CELLS, left to right, top row then bottom row:
+1. "Faísca de Vida" - filhote, element lightning
+2. "Criatura Remendada" - jovem, element lightning
+3. "Criatura Galvânica" - adulto (branch A), element lightning
+4. "Criatura Solitária" - adulto (branch B), element lightning
+5. "Criatura Gentil" - adulto (branch C), element lightning
+6. "Colosso Galvânico" - supremo (branch A), element lightning
+7. "A Criatura Eterna" - supremo (branch B), element lightning
+8. "Coração Elétrico" - supremo (branch C), element lightning
+The baby is the smallest and the supreme forms the most imposing, but every form fills most of its cell height so the details stay readable.
+
+MONSTER LINE (Portuguese): gigante costurado de retalhos coloridos e botões, com parafusos pequenos e estilizados, rosto gentil. Signature trait in every form: o coração elétrico que brilha no peito. Inspired by: humanoide: gigante costurado. Class: Guardian.
+
+REFERENCE: the attached image is the normal version of these 8 forms in the same layout: keep each form's shape, pose and cell, and apply the new variant described above. This is a NEW variant: do not reuse any older LEGENDARY colors of this monster.
+
+PLACEMENT LOCKS:
+- The character faces RIGHT in every cell (the game mirrors it for left).
+- Same size in every cell: the body fills about 70% of the cell height. Draw it big even if it is a small or baby creature: the game sets the size on screen, the drawing only needs detail.
+- Feet (or the bottom of a floating body) touch the same invisible line in every cell: 435 px below the top of the cell (85% of the cell height).
+- Centered horizontally in its cell, with at least 27 px of empty space to every cell border. Nothing (tail, wings, weapon, flames, sparks, glow) crosses into a neighbouring cell.
+- Clear empty gap between rows.
+- Looping rows loop seamlessly: the last frame flows back into the first.
+
+BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+
+STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
+
+DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row and exactly 2 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+```
 
 
 ## Faísca de Vida (`__anim_1`, Filhote)
@@ -74,7 +131,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Faísca de Vida" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou com faíscas químicas verdes. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -108,17 +165,17 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Porcelana azul (etapa 3)
+#### Lendário: Fogo de Santelmo (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/frankenstein__anim_1__lendario.png`
-- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_1` (etapa 2), para as poses; 2) a imagem fixa aprovada `frankenstein__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
+- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_1` (etapa 2), para as poses; 2) a imagem fixa NOVA `frankenstein__lendario` (a que você gerou em "Comece por aqui"), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Faísca de Vida" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: BLUE PORCELAIN: blue and white armor patches with gold. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: ST. ELMO'S FIRE: steel-blue and white body wrapped in glowing electric-blue plasma, crackling sparks. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou numa tempestade, coberto de plasma azul. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -250,7 +307,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Criatura Remendada" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou com faíscas químicas verdes. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -284,17 +341,17 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Porcelana azul (etapa 3)
+#### Lendário: Fogo de Santelmo (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/frankenstein__anim_2__lendario.png`
-- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_2` (etapa 2), para as poses; 2) a imagem fixa aprovada `frankenstein__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
+- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_2` (etapa 2), para as poses; 2) a imagem fixa NOVA `frankenstein__lendario` (a que você gerou em "Comece por aqui"), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Criatura Remendada" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: BLUE PORCELAIN: blue and white armor patches with gold. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: ST. ELMO'S FIRE: steel-blue and white body wrapped in glowing electric-blue plasma, crackling sparks. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou numa tempestade, coberto de plasma azul. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -426,7 +483,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Criatura Galvânica" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou com faíscas químicas verdes. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -460,17 +517,17 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Porcelana azul (etapa 3)
+#### Lendário: Fogo de Santelmo (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/frankenstein__anim_3__lendario.png`
-- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_3` (etapa 2), para as poses; 2) a imagem fixa aprovada `frankenstein__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
+- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_3` (etapa 2), para as poses; 2) a imagem fixa NOVA `frankenstein__lendario` (a que você gerou em "Comece por aqui"), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Criatura Galvânica" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: BLUE PORCELAIN: blue and white armor patches with gold. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: ST. ELMO'S FIRE: steel-blue and white body wrapped in glowing electric-blue plasma, crackling sparks. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou numa tempestade, coberto de plasma azul. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -602,7 +659,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Criatura Solitária" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou com faíscas químicas verdes. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -636,17 +693,17 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Porcelana azul (etapa 3)
+#### Lendário: Fogo de Santelmo (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/frankenstein__anim_4__lendario.png`
-- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_4` (etapa 2), para as poses; 2) a imagem fixa aprovada `frankenstein__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
+- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_4` (etapa 2), para as poses; 2) a imagem fixa NOVA `frankenstein__lendario` (a que você gerou em "Comece por aqui"), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Criatura Solitária" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: BLUE PORCELAIN: blue and white armor patches with gold. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: ST. ELMO'S FIRE: steel-blue and white body wrapped in glowing electric-blue plasma, crackling sparks. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou numa tempestade, coberto de plasma azul. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -778,7 +835,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Criatura Gentil" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou com faíscas químicas verdes. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -812,17 +869,17 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Porcelana azul (etapa 3)
+#### Lendário: Fogo de Santelmo (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/frankenstein__anim_5__lendario.png`
-- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_5` (etapa 2), para as poses; 2) a imagem fixa aprovada `frankenstein__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
+- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_5` (etapa 2), para as poses; 2) a imagem fixa NOVA `frankenstein__lendario` (a que você gerou em "Comece por aqui"), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Criatura Gentil" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: BLUE PORCELAIN: blue and white armor patches with gold. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: ST. ELMO'S FIRE: steel-blue and white body wrapped in glowing electric-blue plasma, crackling sparks. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou numa tempestade, coberto de plasma azul. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -954,7 +1011,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Colosso Galvânico" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou com faíscas químicas verdes. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -988,17 +1045,17 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Porcelana azul (etapa 3)
+#### Lendário: Fogo de Santelmo (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/frankenstein__anim_6__lendario.png`
-- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_6` (etapa 2), para as poses; 2) a imagem fixa aprovada `frankenstein__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
+- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_6` (etapa 2), para as poses; 2) a imagem fixa NOVA `frankenstein__lendario` (a que você gerou em "Comece por aqui"), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Colosso Galvânico" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: BLUE PORCELAIN: blue and white armor patches with gold. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: ST. ELMO'S FIRE: steel-blue and white body wrapped in glowing electric-blue plasma, crackling sparks. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou numa tempestade, coberto de plasma azul. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1130,7 +1187,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "A Criatura Eterna" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou com faíscas químicas verdes. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1164,17 +1221,17 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Porcelana azul (etapa 3)
+#### Lendário: Fogo de Santelmo (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/frankenstein__anim_7__lendario.png`
-- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_7` (etapa 2), para as poses; 2) a imagem fixa aprovada `frankenstein__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
+- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_7` (etapa 2), para as poses; 2) a imagem fixa NOVA `frankenstein__lendario` (a que você gerou em "Comece por aqui"), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "A Criatura Eterna" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: BLUE PORCELAIN: blue and white armor patches with gold. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: ST. ELMO'S FIRE: steel-blue and white body wrapped in glowing electric-blue plasma, crackling sparks. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou numa tempestade, coberto de plasma azul. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1306,7 +1363,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Coração Elétrico" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou com faíscas químicas verdes. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1340,17 +1397,17 @@ DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any tex
 BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Porcelana azul (etapa 3)
+#### Lendário: Fogo de Santelmo (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/frankenstein__anim_8__lendario.png`
-- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_8` (etapa 2), para as poses; 2) a imagem fixa aprovada `frankenstein__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
+- **Anexar:** **duas imagens**: 1) a base NOVA `frankenstein__anim_8` (etapa 2), para as poses; 2) a imagem fixa NOVA `frankenstein__lendario` (a que você gerou em "Comece por aqui"), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Coração Elétrico" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: BLUE PORCELAIN: blue and white armor patches with gold. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster: ST. ELMO'S FIRE: steel-blue and white body wrapped in glowing electric-blue plasma, crackling sparks. Same poses and same size as reference image 1, only the colors, surface details and small ornaments change. The silhouette must stay recognizable as the same monster. WHY THIS VARIANT EXISTS (Portuguese): acordou numa tempestade, coberto de plasma azul. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1430,7 +1487,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 
 ## Imagens fixas das 8 formas (cartas e Bestiário)
 
-As três já existem, e a do Épico e a do Lendário já têm as suas cores aprovadas: **elas são a referência de cor** das animações de raridade (segundo anexo). Refaça só se quiser mais nitidez, anexando a atual: o prompt manda manter as cores.
+A comum já existe. A imagem fixa de cada raridade **é a referência de cor** das animações dela (segundo anexo). Tema mantido: a atual já tem as cores aprovadas, refaça só para mais nitidez. Tema novo: está em "Comece por aqui", no topo.
 
 #### Imagem fixa
 
@@ -1490,7 +1547,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row
 ```text
 NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the 8 forms of "Faísca de Vida" in the EPIC variant, one per cell. The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the 8 evolution forms of one monster line in its EPIC rarity variant, one still pose each (a calm 3/4 standing pose). The variant is a GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Every form gets the SAME variant treatment so the line looks consistent. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the 8 evolution forms of one monster line in its EPIC rarity variant, one still pose each (a calm 3/4 standing pose). The variant: GREEN GALVANIC: glowing green heart and eyes, moss-green patches. Every form gets the SAME variant treatment so the line looks consistent. WHY THIS VARIANT EXISTS (Portuguese): acordou com faíscas químicas verdes. The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 4 equal columns x 2 equal rows = 8 cells, each cell 384 px wide x 512 px tall. Do NOT draw the grid. Exactly one pose per cell, 4 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1509,54 +1566,6 @@ The baby is the smallest and the supreme forms the most imposing, but every form
 MONSTER LINE (Portuguese): gigante costurado de retalhos coloridos e botões, com parafusos pequenos e estilizados, rosto gentil. Signature trait in every form: o coração elétrico que brilha no peito. Inspired by: humanoide: gigante costurado. Class: Guardian.
 
 TWO REFERENCES ARE ATTACHED. IMAGE 1 = the normal version of these 8 forms in the same layout: keep each form's shape, pose and cell. IMAGE 2 = the approved EPIC version in the same layout: copy its colors, palette, markings and glow exactly, cell by cell, only cleaner and sharper. If image 2 and the text disagree, image 2 wins.
-
-PLACEMENT LOCKS:
-- The character faces RIGHT in every cell (the game mirrors it for left).
-- Same size in every cell: the body fills about 70% of the cell height. Draw it big even if it is a small or baby creature: the game sets the size on screen, the drawing only needs detail.
-- Feet (or the bottom of a floating body) touch the same invisible line in every cell: 435 px below the top of the cell (85% of the cell height).
-- Centered horizontally in its cell, with at least 27 px of empty space to every cell border. Nothing (tail, wings, weapon, flames, sparks, glow) crosses into a neighbouring cell.
-- Clear empty gap between rows.
-- Looping rows loop seamlessly: the last frame flows back into the first.
-
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
-
-STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
-
-DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
-
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row and exactly 2 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
-```
-
-#### Imagem fixa do Lendário: Porcelana azul
-
-- **Salvar como:** `arte/monstros/raio/frankenstein__lendario.png`
-- **Anexar:** **duas imagens**: 1) a imagem fixa comum `frankenstein__base`, para as formas; 2) a imagem fixa aprovada `frankenstein__lendario`, para as cores (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado)
-- **O jogo usa:** sim (cartas, Bestiário e cor das formas sem animação própria)
-- **Precisa?:** só para mais nitidez: a atual já tem as cores aprovadas
-- **Molde (como deve ficar):** [Monstro: imagem fixa das 8 formas](../../moldes/monstro_fixa.png)
-
-```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the 8 forms of "Faísca de Vida" in the LEGENDARY variant, one per cell. The ONLY references are the two images attached to THIS message.
-
-Create a 2D game sprite sheet: the 8 evolution forms of one monster line in its LEGENDARY rarity variant, one still pose each (a calm 3/4 standing pose). The variant is a BLUE PORCELAIN: blue and white armor patches with gold. Every form gets the SAME variant treatment so the line looks consistent. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
-
-CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
-GRID: invisible grid of exactly 4 equal columns x 2 equal rows = 8 cells, each cell 384 px wide x 512 px tall. Do NOT draw the grid. Exactly one pose per cell, 4 per row, no more, no less. Rows are read top to bottom, frames left to right.
-
-CELLS, left to right, top row then bottom row:
-1. "Faísca de Vida" - filhote, element lightning
-2. "Criatura Remendada" - jovem, element lightning
-3. "Criatura Galvânica" - adulto (branch A), element lightning
-4. "Criatura Solitária" - adulto (branch B), element lightning
-5. "Criatura Gentil" - adulto (branch C), element lightning
-6. "Colosso Galvânico" - supremo (branch A), element lightning
-7. "A Criatura Eterna" - supremo (branch B), element lightning
-8. "Coração Elétrico" - supremo (branch C), element lightning
-The baby is the smallest and the supreme forms the most imposing, but every form fills most of its cell height so the details stay readable.
-
-MONSTER LINE (Portuguese): gigante costurado de retalhos coloridos e botões, com parafusos pequenos e estilizados, rosto gentil. Signature trait in every form: o coração elétrico que brilha no peito. Inspired by: humanoide: gigante costurado. Class: Guardian.
-
-TWO REFERENCES ARE ATTACHED. IMAGE 1 = the normal version of these 8 forms in the same layout: keep each form's shape, pose and cell. IMAGE 2 = the approved LEGENDARY version in the same layout: copy its colors, palette, markings and glow exactly, cell by cell, only cleaner and sharper. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).

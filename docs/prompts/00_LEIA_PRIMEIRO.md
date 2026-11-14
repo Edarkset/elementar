@@ -33,23 +33,27 @@ A [Conferência de Artes](https://claude.ai/artifact/4tU9w9bqG11R4iCJ9o8486) pro
 
 ---
 
-## Épico e Lendário: as cores que você já aprovou
+## Épico e Lendário: a condição especial do ambiente
 
-Pode mudar as cores à vontade: **não mexe em nada da partida**. Força, chance de aparecer e golpes continuam iguais. O que importa é ser **igual em todas as folhas daquela raridade**. Senão a carta mostra um monstro e a partida mostra outro.
+A raridade não é só outra cor. **O monstro é Épico ou Lendário porque nasceu numa condição rara daquele ambiente**, como os shiny:
+- **Natureza:** estações e floradas.
+- **Fogo:** a cor real da chama.
+- **Água e gelo:** degelo, aurora e as cores reais da espécie (carpa koi, tartaruga, axolote).
+- **Terra e pedra:** barro, sal, e a escada do mineral (pedra, ouro, diamante).
+- **Ar:** a hora do céu.
+- **Raio:** raios reais.
+- **Luz:** o Lendário é o mais puro e o Épico é o caído ou corrompido.
+- **Sombra:** a temperatura, mais gelado ou mais infernal.
 
-| Onde o Épico ou o Lendário aparece | Arquivo |
-|---|---|
-| cartas, Bestiário, tela de escolha | imagem fixa das 8 formas (`<monstro>__epico.png`, `__lendario.png`) |
-| partida, quando a forma tem animação própria | `<monstro>__anim_N__epico.png` / `__lendario.png` |
-| partida, quando a forma ainda não tem | o jogo pinta a animação comum com as cores da imagem fixa |
-
-**As imagens fixas que já estão no jogo são a fonte das cores.** Elas já têm os seus ajustes finos: Fogo-fátuo de chama verde e de chama galáxia, Vampiro azulado e de cabelo branco, Caçada de fogo e de gelo, Lobisomem vermelho e da neve, e assim por diante. Por isso:
-- **Dois anexos:** cada prompt de raridade pede duas imagens. A **base nova** dá as poses, e a **imagem fixa aprovada daquela raridade** dá as cores. O prompt diz em qual quadro dela está a forma (por exemplo "linha 1, coluna 3") e que, se a imagem e o texto discordarem, vale a imagem.
-- **Descrição de reforço:** o prompt também descreve o tema em palavras. Escrevi as descrições olhando as 102 imagens. Estão em `ferramentas/raridades_arte.js`, e a pasta `raridades/` tem as 8 pranchas (`.webp`) com Comum, Épico e Lendário de cada monstro, lado a lado.
-- **Para mudar uma cor depois:** troque a imagem fixa e me avise, que eu atualizo a descrição.
-- **Duas regras valem para todo tema:** a raridade continua parecendo rara (o Épico com um brilho leve, o Lendário com aura e enfeites), e o traço marcante continua visível.
-- **Temas rosa, roxo ou lilás** (Boto, Morcego lendário, Raiju épico, Fogo-fátuo galáxia): o prompt exige **transparência de verdade**, sem fundo magenta. O conversor apagaria o magenta junto com pedaços do monstro.
-- **Na página de conferência,** compare uma variante com a imagem fixa **da mesma raridade**, e não com a comum.
+Regras:
+- **Épico** é uma variação rara mas plausível. **Lendário** é o fenômeno mais raro ou extremo.
+- Cada monstro tem os dois temas com a condição escrita (`ferramentas/raridades_arte.js`), e **o prompt conta a condição ao gerador** ("WHY THIS VARIANT EXISTS…"). Assim ele muda o que a condição mudaria de verdade (geada, gelo pingando, brasa nas rachaduras), e não só a cor.
+- **Tema mantido:** as cores vêm da imagem fixa que já está no jogo, como segundo anexo.
+- **Tema novo** (25 temas, em 17 monstros): o arquivo do monstro começa com **"Comece por aqui"**, a imagem fixa nova daquela raridade. Gere, confira, me mande, e só depois faça as animações dela, com essa imagem nova como segundo anexo.
+- **Para mudar uma decisão,** use a [página de raridades](https://claude.ai/artifact/NqXWqdfxZyBt7tqhMhzT5X) e cole aqui o que ela copiar.
+- **Temas rosa, roxo ou lilás** exigem transparência de verdade, nunca fundo magenta.
+- **Na página de conferência,** compare uma variante com a imagem fixa **da mesma raridade**.
+- A pasta `raridades/` tem as pranchas com as imagens **atuais** (antes dos temas novos), lado a lado.
 
 ---
 

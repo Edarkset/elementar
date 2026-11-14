@@ -172,6 +172,11 @@ function gradeDe(tipo, w, h) {
       cw = w / C,
       L = L0 || h / cw;
     if (Number.isInteger(cw) && Number.isInteger(L) && L >= 1 && Math.abs(cw - h / L) < 0.5) return { ...op, g: [C, L] };
+    // células não quadradas permitidas (tela 1536 x 1024 do gerador): vale se a proporção de cada célula é razoável
+    if (op.livre && L0) {
+      const prop = w / C / (h / L0);
+      if (prop > 0.4 && prop < 2.5) return { ...op, g: [C, L0] };
+    }
     if (tipo.linhasExtras && Number.isInteger(cw) && Number.isInteger(h / cw) && h / cw > L0)
       return { ...op, g: [C, h / cw], le: false, nota: `${h / cw - L0} linha(s) além das ${L0} que o código lê hoje: ajustar ao trocar` };
   }

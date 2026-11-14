@@ -1,5 +1,7 @@
 ## A. Monstros (51 linhas evolutivas × 8 formas)
 
+> **Pacote atual: [docs/prompts/00_LEIA_PRIMEIRO.md](prompts/00_LEIA_PRIMEIRO.md).** Prompts completos, gerados dos dados do jogo, no formato que o gerador de imagem entrega e no layout que o código lê. Este arquivo fica como histórico.
+
 Ordem das 8 formas (= arquivos `__anim_1` a `__anim_8`): 1 Filhote, 2 Jovem, 3–5 Adulto (ramos A, B, C), 6–8 Supremo (ramos A, B, C). Use a coluna *jeito* para as animações de personalidade.
 
 ### Fogo-fátuo `fogo_fatuo` · Fogo · Mago · Errante

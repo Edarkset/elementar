@@ -1,13 +1,18 @@
 // Tipos de arte do Elementar: o que o jogo espera de cada folha (grade, linhas onde o pé tem de ficar fixo, se é personagem).
 // Usado pela conferência (testes/artes.js, no Node) e pela galeria (ferramentas/galeria.html, no navegador): uma tabela só.
-// As especificações vêm de docs/PEDIDO_SPRITES.md.
+// As especificações são as do pacote de prompts (docs/prompts/, gerado por ferramentas/gerar_prompts.js).
 // grades: [colunas, linhas]; linhas null = quantas couberem (células quadradas). le: false = formato novo que o código ainda não lê.
+// livre: true = as células podem não ser quadradas (folha gerada numa tela 1536 x 1024 ou 1024 x 1024, como pede o pacote de
+// prompts em docs/prompts/): o jogo recorta pelo desenho, então só a quantidade de colunas e de linhas importa.
 // personagem: confere linha do chão e transparência.
 const TIPOS_ARTE = [
   {
     nome: "monstro (animação)",
     re: /^arte\/monstros\/[^/]+\/[^/]+__anim_\d+(__(epico|lendario))?\.png$/,
-    grades: [{ g: [6, 3] }, { g: [8, 3], nota: "folha refeita em 128 px com 8 quadros por linha" }],
+    grades: [
+      { g: [8, 3], nota: "folha com 8 quadros por linha" },
+      { g: [6, 3], livre: true }
+    ],
     personagem: true,
     chao: [0, 1]
   },
@@ -20,7 +25,14 @@ const TIPOS_ARTE = [
   {
     nome: "monstro (ações novas)",
     re: /^arte\/monstros\/[^/]+\/[^/]+__acoes_\d+\.png$/,
-    grades: [{ g: [8, 5], le: false, nota: "folha de ações nova: o código ainda não usa (precisa ligar as habilidades a estas linhas)" }],
+    grades: [
+      {
+        g: [6, 4],
+        livre: true,
+        le: false,
+        nota: "folha de ações nova: o código ainda não usa (precisa ligar as habilidades a estas linhas)"
+      }
+    ],
     personagem: true
   },
   { nome: "monstro (retrato)", re: /^arte\/monstros\/.*__retrato\.png$/, grades: null },
@@ -29,17 +41,26 @@ const TIPOS_ARTE = [
   {
     nome: "dragão ancestral (animação)",
     re: /^arte\/lendarios\/[^/]+__anim_\d+\.png$/,
-    grades: [{ g: [6, 3] }, { g: [8, 3], nota: "folha refeita em 128 px com 8 quadros por linha" }],
+    grades: [
+      { g: [8, 3], nota: "folha com 8 quadros por linha" },
+      { g: [6, 3], livre: true }
+    ],
     personagem: true,
     chao: [0, 1]
   },
   { nome: "Lenda / deus (retrato)", re: /^arte\/(lendas|panteao)\/[^/]+__retrato\.png$/, grades: null },
-  { nome: "Lenda / deus", re: /^arte\/(lendas|panteao)\/[^/]+\.png$/, grades: [{ g: [6, 3] }], personagem: true, chao: [0, 1] },
+  {
+    nome: "Lenda / deus",
+    re: /^arte\/(lendas|panteao)\/[^/]+\.png$/,
+    grades: [{ g: [6, 3], livre: true }],
+    personagem: true,
+    chao: [0, 1]
+  },
   {
     nome: "inimigos do reino",
     re: /^arte\/reinos\/[^/]+\/[^/]+__inimigos\.png$/,
     grades: [
-      { g: [8, 6] },
+      { g: [8, 6], livre: true },
       {
         g: [8, 9],
         le: false,
@@ -49,22 +70,34 @@ const TIPOS_ARTE = [
     personagem: true,
     chao: [0, 2, 4]
   },
-  { nome: "mini-chefe", re: /^arte\/reinos\/[^/]+\/[^/]+__mini\.png$/, grades: [{ g: [6, 5] }], personagem: true, linhasExtras: true },
-  { nome: "chefe", re: /^arte\/reinos\/[^/]+\/[^/]+__chefe\.png$/, grades: [{ g: [6, 6] }], personagem: true, linhasExtras: true },
   {
-    nome: "Guardião da Era",
-    re: /^arte\/reinos\/[^/]+\/guardiao_[^/]+__anim\.png$/,
-    grades: [{ g: [6, 6] }],
+    nome: "mini-chefe",
+    re: /^arte\/reinos\/[^/]+\/[^/]+__mini\.png$/,
+    grades: [{ g: [6, 5], livre: true }],
     personagem: true,
     linhasExtras: true
   },
-  { nome: "efeitos de chefe", re: /^arte\/reinos\/[^/]+\/[^/]+__efeitos\.png$/, grades: [{ g: [8, 2] }] },
-  { nome: "marcos e plantas", re: /^arte\/reinos\/[^/]+\/[^/]+__props\.png$/, grades: [{ g: [4, 2] }] },
-  { nome: "peças grandes", re: /^arte\/reinos\/[^/]+\/[^/]+__pecas\.png$/, grades: [{ g: [2, 2] }] },
-  { nome: "paredão do abismo", re: /^arte\/reinos\/[^/]+\/[^/]+__paredao\.png$/, grades: [{ g: [4, 2] }] },
+  {
+    nome: "chefe",
+    re: /^arte\/reinos\/[^/]+\/[^/]+__chefe\.png$/,
+    grades: [{ g: [6, 6], livre: true }],
+    personagem: true,
+    linhasExtras: true
+  },
+  {
+    nome: "Guardião da Era",
+    re: /^arte\/reinos\/[^/]+\/guardiao_[^/]+__anim\.png$/,
+    grades: [{ g: [6, 6], livre: true }],
+    personagem: true,
+    linhasExtras: true
+  },
+  { nome: "efeitos de chefe", re: /^arte\/reinos\/[^/]+\/[^/]+__efeitos\.png$/, grades: [{ g: [8, 2], livre: true }] },
+  { nome: "marcos e plantas", re: /^arte\/reinos\/[^/]+\/[^/]+__props\.png$/, grades: [{ g: [4, 2], livre: true }] },
+  { nome: "peças grandes", re: /^arte\/reinos\/[^/]+\/[^/]+__pecas\.png$/, grades: [{ g: [2, 2], livre: true }] },
+  { nome: "paredão do abismo", re: /^arte\/reinos\/[^/]+\/[^/]+__paredao\.png$/, grades: [{ g: [4, 2], livre: true }] },
   { nome: "objetos de quebrar", re: /^arte\/reinos\/[^/]+\/[^/]+__objetos\.png$/, grades: [{ g: [8, null] }] },
-  { nome: "fauna", re: /^arte\/reinos\/[^/]+\/[^/]+__fauna\.png$/, grades: [{ g: [8, 2] }] },
-  { nome: "ladrilhos e enfeites", re: /^arte\/reinos\/[^/]+\/[^/]+__tiles\.png$/, grades: [{ g: [8, 3] }] },
+  { nome: "fauna", re: /^arte\/reinos\/[^/]+\/[^/]+__fauna\.png$/, grades: [{ g: [8, 2], livre: true }] },
+  { nome: "ladrilhos e enfeites", re: /^arte\/reinos\/[^/]+\/[^/]+__tiles\.png$/, grades: [{ g: [8, 3], livre: true }] },
   { nome: "piso, fundo e arte de abertura", re: /^arte\/reinos\/[^/]+\/[^/]+__(piso|fundo|keyart)\.png$/, grades: null },
   { nome: "superfície do chão", re: /^arte\/ambiente\/[^/]+\.png$/, grades: [{ g: [8, 2] }] },
   { nome: "reação elemental", re: /^arte\/efeitos\/reacao__[^/]+\.png$/, grades: [{ g: [6, 1] }] },
@@ -73,19 +106,24 @@ const TIPOS_ARTE = [
   {
     nome: "herói (novo)",
     re: /^arte\/heroi\/invocador__anim\.png$/,
-    grades: [{ g: [8, 8], le: false, nota: "herói novo: o código ainda desenha o Invocador por código" }],
+    grades: [{ g: [6, 4], livre: true, le: false, nota: "herói novo: o código ainda desenha o Invocador por código" }],
     personagem: true
   },
   {
     nome: "ovo (novo)",
     re: /^arte\/ovos\/ovo__[^/]+\.png$/,
-    grades: [{ g: [8, 3], le: false, nota: "ovos novos: o código ainda desenha os ovos por código" }],
+    grades: [{ g: [6, 3], livre: true, le: false, nota: "ovos novos: o código ainda desenha os ovos por código" }],
     personagem: true
   },
   {
-    nome: "baús e coletáveis (novo)",
-    re: /^arte\/itens\/(baus|coletaveis)\.png$/,
-    grades: [{ g: [8, 4], le: false, nota: "folha nova: o código ainda não usa" }]
+    nome: "baús (novo)",
+    re: /^arte\/itens\/baus\.png$/,
+    grades: [{ g: [6, 4], livre: true, le: false, nota: "folha nova: o código ainda não usa" }]
+  },
+  {
+    nome: "coletáveis (novo)",
+    re: /^arte\/itens\/coletaveis\.png$/,
+    grades: [{ g: [8, 4], livre: true, le: false, nota: "folha nova: o código ainda não usa" }]
   },
   { nome: "imagem avulsa", re: /^arte\/(itens|ui|heroi)\//, grades: null }
 ];

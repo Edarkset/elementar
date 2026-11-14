@@ -39,6 +39,8 @@ jobs:
         run: npm run compilar -- --conferir
       - name: Save (saves antigos abrem; save estragado é corrigido sem perder o original)
         run: npm run save
+      - name: Pacote de prompts igual aos dados do jogo
+        run: npm run prompts -- --conferir
       - name: Instalar o navegador de teste
         # o Playwright fica fora do package.json de propósito: quem roda os testes na própria máquina usa o que já tem instalado
         run: |

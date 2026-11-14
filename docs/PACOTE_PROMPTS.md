@@ -1,6 +1,7 @@
 # Elementar · pacote de prompts de arte (v2)
 
-> **Use o [PACOTE_PROMPTS_V3.md](PACOTE_PROMPTS_V3.md)**: mesmos prompts, organizados pela ordem de geração e conferidos com o que o jogo lê. Este arquivo fica como histórico.
+> **Pacote atual: [docs/prompts/00_LEIA_PRIMEIRO.md](prompts/00_LEIA_PRIMEIRO.md).** Prompts completos, gerados dos dados do jogo, no formato que o gerador de imagem entrega e no layout que o código lê. Este arquivo fica como histórico.
+
 
 Pacote pronto para gerar as folhas novas e refazer as antigas. Baseado numa auditoria do jogo rodando: pranchas de todas as 408 formas de monstro, combate com cada uma das 8 classes, luta de chefe nas 7 eras, medição automática das 440 folhas de animação e das 34 folhas de inimigos.
 

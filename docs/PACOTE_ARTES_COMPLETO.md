@@ -1,6 +1,7 @@
 # Elementar · todas as propostas de arte nova
 
-> **Use o [PACOTE_PROMPTS_V3.md](PACOTE_PROMPTS_V3.md)**: mesmos prompts, organizados pela ordem de geração e conferidos com o que o jogo lê. Este arquivo fica como histórico.
+> **Pacote atual: [docs/prompts/00_LEIA_PRIMEIRO.md](prompts/00_LEIA_PRIMEIRO.md).** Prompts completos, gerados dos dados do jogo, no formato que o gerador de imagem entrega e no layout que o código lê. Este arquivo fica como histórico.
+
 
 Arquivo único para gerar as artes novas e as correções. Tem três partes:
 1. **Pacote de prompts:** o que a auditoria encontrou, o bloco de estilo e o bloco técnico para colar em todo prompt, e um prompt por folha (herói, monstros, raridades, dragões, Lendas, ovos, baús, coletáveis, inimigos, chefes, efeitos, abismo, pisos, pontes, ambiente, ícones e interface).

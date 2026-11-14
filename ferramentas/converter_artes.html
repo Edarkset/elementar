@@ -56,8 +56,64 @@ function montarGrade(bmp, t, g) {
   for (let y = 0; y < t.h; y++) for (let x = 0; x < t.w; x++) { if (y < T && x >= T * 4) continue; e[(y * t.w + x) * 4 + 3] = 255; }
   g.putImageData(im, 0, 0);
 }
+// Fundo: personagens, efeitos e peças precisam de transparência de verdade. Quando o gerador não consegue, o pacote de
+// prompts pede fundo magenta chapado (#FF00FF), que é apagado aqui (com a borda suave e sem o tom rosado no contorno).
+// O "xadrez" que alguns geradores pintam no lugar da transparência não dá para apagar sem estragar o desenho: vira erro.
+// Pisos, fundos, retratos e a interface podem ser opacos de propósito e passam direto.
+const OPACAS = /__(piso|fundo|fundo2|keyart|retrato)\.png$|^ui[\\/]/i;
+function tirarFundo(bmp, rel) {
+  if (OPACAS.test(rel)) return null;
+  const W = bmp.width, H = bmp.height, c = new OffscreenCanvas(W, H), g = c.getContext("2d");
+  g.drawImage(bmp, 0, 0);
+  const im = g.getImageData(0, 0, W, H), d = im.data;
+  let transp = 0;
+  for (let i = 3; i < d.length; i += 4 * 16) if (d[i] < 250) transp++;
+  if (transp / (d.length / 64) > 0.02) return null; // já tem transparência de verdade
+  // amostra da borda: magenta chapado ou xadrez cinza e branco
+  let mag = 0, cinza = 0, n = 0;
+  const amostra = (x, y) => {
+    const i = (y * W + x) * 4, r = d[i], gg = d[i + 1], b = d[i + 2];
+    n++;
+    if (r > 180 && b > 180 && gg < 90) mag++;
+    else if (Math.abs(r - gg) < 12 && Math.abs(gg - b) < 12 && r > 150) cinza++;
+  };
+  for (let x = 0; x < W; x += 4) { amostra(x, 0); amostra(x, H - 1); }
+  for (let y = 0; y < H; y += 4) { amostra(0, y); amostra(W - 1, y); }
+  if (mag / n > 0.6) {
+    for (let i = 0; i < d.length; i += 4) {
+      const r = d[i], gg = d[i + 1], b = d[i + 2],
+        m = Math.min(r, b) - gg; // quanto o pixel puxa para magenta
+      if (m > 150) d[i + 3] = 0;
+      else if (m > 60) {
+        const k = (m - 60) / 90; // borda: meio transparente e sem o tom rosado
+        d[i + 3] = Math.round(d[i + 3] * (1 - k));
+        const tira = (m - 60) * 0.9;
+        d[i] = Math.max(0, r - tira);
+        d[i + 2] = Math.max(0, b - tira);
+      }
+    }
+    g.putImageData(im, 0, 0);
+    return c;
+  }
+  if (cinza / n > 0.6) {
+    // xadrez: as cores da borda alternam entre dois cinzas claros em blocos regulares
+    let trocas = 0;
+    for (let x = 1; x < W; x++) {
+      const i = x * 4, j = (x - 1) * 4;
+      if (Math.abs(d[i] - d[j]) > 10) trocas++;
+    }
+    if (trocas > 8) throw new Error('fundo em xadrez pintado (transparência falsa do gerador): gere de novo pedindo fundo transparente ou magenta #FF00FF');
+  }
+  throw new Error("sem transparência: o fundo veio pintado. Gere de novo com fundo transparente ou magenta chapado #FF00FF");
+}
 async function converter(t) {
-  const png = await (await fetch(`/origem/${t.i}`)).blob();
+  let png = await (await fetch(`/origem/${t.i}`)).blob();
+  {
+    const bruto = await createImageBitmap(png, { premultiplyAlpha: "none" }),
+      limpo = tirarFundo(bruto, t.rel);
+    bruto.close();
+    if (limpo) png = await limpo.convertToBlob({ type: "image/png" });
+  }
   const tela = new OffscreenCanvas(t.w, t.h), g = tela.getContext("2d");
   if (t.grade) { const bmp = await createImageBitmap(png, { premultiplyAlpha: "none" }); montarGrade(bmp, t, g); bmp.close(); }
   else if (t.cols) { const bmp = await createImageBitmap(png, { premultiplyAlpha: "none" }); montarTira(bmp, t, g); bmp.close(); }

@@ -1,34 +1,85 @@
-# Etapa 1 · Corrigir (o jogo usa hoje)
+# Corrigir (refazer a folha atual)
 
-As correções dos monstros você já fez. Estas são as que faltam. O prompt completo de cada uma está no arquivo do reino ou nos gerais. Aqui fica só a lista, com a ordem e o motivo.
+49 prompts, um arquivo por imagem. Prioridade: P1 primeiro, depois P2 e P3.
 
-## 1. Inimigos com a grade errada (mais urgente: aparecem o tempo todo)
+| Código | Prompts | P1 | P2 | P3 |
+|---|---|---|---|---|
+| C2_piso_costura | 4 | 4 | 0 | 0 |
+| E2_combinados | 17 | 0 | 17 | 0 |
+| E2_especiais | 16 | 0 | 16 | 0 |
+| fundo_opaco | 5 | 4 | 1 | 0 |
+| M1 | 7 | 7 | 0 | 0 |
 
-O jogo lê os inimigos em **8 colunas × 6 linhas**, com cada inimigo ocupando 2 linhas:
-- **Linha de cima:** 2 quadros parado, 4 andando e 2 atacando.
-- **Linha de baixo:** 1 de dor, 4 de morte e 3 de mania.
+## C2_piso_costura
 
-O prompt "Inimigos comuns" de cada reino já pede exatamente isso.
+| Prioridade | Salvar como | Grade | Célula | Anexar |
+|---|---|---|---|---|
+| P1 | `arte/reinos/berco/persia__piso.png` | 1x1 | 1024 px | `arte/reinos/berco/persia__piso.png` |
+| P1 | `arte/reinos/novo_mundo/tenochtitlan__piso.png` | 1x1 | 1024 px | `arte/reinos/novo_mundo/tenochtitlan__piso.png` |
+| P1 | `arte/reinos/perdidos/atlantida__piso.png` | 1x1 | 1024 px | `arte/reinos/perdidos/atlantida__piso.png` |
+| P1 | `arte/reinos/reinos/tavola__piso.png` | 1x1 | 1024 px | `arte/reinos/reinos/tavola__piso.png` |
 
-| Defeito | Reinos | Arquivo do prompt |
-|---|---|---|
-| linhas fora da grade | Floresta Negra, Reino da Luz, Laboratório, Atlântida, Shangri-lá, Tenochtitlán | `4_reinos/gotica/floresta_negra.md`, `4_reinos/elementais/reino_luz.md`, `4_reinos/gotica/laboratorio.md`, `4_reinos/perdidos/atlantida.md`, `4_reinos/perdidos/shangrila.md`, `4_reinos/novo_mundo/tenochtitlan.md` |
-| altura muda entre os quadros de andar | Egito, Celta, Eslavo, Amazônia | `4_reinos/berco/egito.md`, `4_reinos/reinos/celta.md`, `4_reinos/reinos/eslavo.md`, `4_reinos/novo_mundo/amazonia.md` |
+## E2_combinados
 
-## 2. Pisos com costura (aparece uma linha quando o piso se repete)
+| Prioridade | Salvar como | Grade | Célula | Anexar |
+|---|---|---|---|---|
+| P2 | `arte/efeitos/combinado__alados.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__dragoes.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__el_agua.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__el_ar.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__el_fogo.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__el_luz.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__el_natureza.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__el_raio.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__el_sombra.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__el_terra.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__feras.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__gigantes.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__marinhos.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__mortos_vivos.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__pequeninos.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__quimeras.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/combinado__trindade.png` | 8x1 | 256 px | - |
 
-Pérsia, Tenochtitlán, Atlântida, Távola: bloco "Piso" em `4_reinos/berco/persia.md`, `4_reinos/novo_mundo/tenochtitlan.md`, `4_reinos/perdidos/atlantida.md` e `4_reinos/reinos/tavola.md`.
+## E2_especiais
 
-## 3. Chefes com moldura em volta
+| Prioridade | Salvar como | Grade | Célula | Anexar |
+|---|---|---|---|---|
+| P2 | `arte/efeitos/especial__assassino_1.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__assassino_2.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__cacador_1.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__cacador_2.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__guardiao_1.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__guardiao_2.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__guerreiro_1.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__guerreiro_2.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__invocador_1.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__invocador_2.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__mago_1.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__mago_2.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__mistico_1.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__mistico_2.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__xama_1.png` | 8x1 | 256 px | - |
+| P2 | `arte/efeitos/especial__xama_2.png` | 8x1 | 256 px | - |
 
-Reino do Fogo e Reino da Terra: bloco "Chefe" em `4_reinos/elementais/reino_fogo.md` e `4_reinos/elementais/reino_terra.md`. A trava "DO NOT draw … cell borders, frames" já cobre a moldura.
+## fundo_opaco
 
-## 4. Especiais e combinados cortados (hoje desligados no jogo)
+| Prioridade | Salvar como | Grade | Célula | Anexar |
+|---|---|---|---|---|
+| P1 | `arte/monstros/fogo/fenix__base.png` | 4x2 | 256 px | `arte/monstros/fogo/fenix__base.png` |
+| P1 | `arte/monstros/fogo/fenix__epico.png` | 4x2 | 256 px | `arte/monstros/fogo/fenix__epico.png` |
+| P1 | `arte/monstros/fogo/fenix__lendario.png` | 4x2 | 256 px | `arte/monstros/fogo/fenix__lendario.png` |
+| P1 | `arte/monstros/sombra/morcego__base.png` | 4x2 | 256 px | `arte/monstros/sombra/morcego__base.png` |
+| P2 | `arte/ui/ui__camada_criaturas.png` | 1x1 | 1080 px | `arte/ui/ui__tela_vertical.png` |
 
-Os 16 especiais e os 17 combinados vieram com cada quadro cortado e com pedaço do vizinho. Por isso o jogo usa os efeitos desenhados por código.
+## M1
 
-Os prompts estão em `3_gerais/itens_e_efeitos.md` (blocos "Especial" e "Combinado"). Eles usam os mesmos nomes de arquivo de hoje, então o conversor normal funciona. Quando chegarem, eu ligo de novo no jogo e confiro.
-
-## 5. Relíquias sem desenho
-
-As 34 relíquias hoje são só marcação. Bloco "Relíquia" no arquivo de cada reino. São arquivos novos para o conversor: me mande os PNG.
+| Prioridade | Salvar como | Grade | Célula | Anexar |
+|---|---|---|---|---|
+| P1 | `arte/monstros/ar/grifo__anim_8.png` | 8x3 | 128 px | `arte/monstros/ar/grifo__anim_8.png` |
+| P1 | `arte/monstros/fogo/fogo_fatuo__anim_5.png` | 8x3 | 128 px | `arte/monstros/fogo/fogo_fatuo__anim_5.png` |
+| P1 | `arte/monstros/natureza/boto__anim_6.png` | 8x3 | 128 px | `arte/monstros/natureza/boto__anim_6.png` |
+| P1 | `arte/monstros/sombra/vampiro__anim_1.png` | 8x3 | 128 px | `arte/monstros/sombra/vampiro__anim_1.png` |
+| P1 | `arte/monstros/sombra/vampiro__anim_2.png` | 8x3 | 128 px | `arte/monstros/sombra/vampiro__anim_2.png` |
+| P1 | `arte/monstros/sombra/vampiro__anim_4.png` | 8x3 | 128 px | `arte/monstros/sombra/vampiro__anim_4.png` |
+| P1 | `arte/monstros/terra/amaru__anim_2.png` | 8x3 | 128 px | `arte/monstros/terra/amaru__anim_2.png` |

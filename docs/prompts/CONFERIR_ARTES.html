@@ -80,9 +80,26 @@ canvas { width: 100%; height: auto; border-radius: 6px; display: block;
 </main>
 
 <script src="layouts_arte.js"></script>
+<script src="grades_arte.js"></script>
 <script>
 "use strict";
 const A = window.LAYOUTS_ARTE;
+// grade de cada arquivo do pacote de prompts (grades_arte.js, gerado do pacote): reconhece a imagem pelo nome com a grade exata
+const NOME_CAT = { monstro_anim_v2: "Monstro: animação", monstro_raridade: "Monstro: Épico ou Lendário", monstro_acoes: "Monstro: ações",
+  monstro: "Monstro: imagem fixa", monstro_fixa_raridade: "Monstro: imagem fixa da raridade", reino_inimigos_v2: "Inimigos do reino",
+  reino_chefe_v2: "Chefe", reino_mini_v2: "Mini-chefe", guardiao_v2: "Guardião da Era", heroi_lenda: "Lenda ou deus como herói",
+  lendario_anim: "Dragão ancestral: animação", lendario_v2: "Dragão ancestral", reino_objetos_v2: "Objetos de quebrar", reino_fauna_v2: "Fauna",
+  reino_ponte: "Ponte (deitada)", reino_paredao_v2: "Paredão (faixa)", reino_cachoeira: "Cachoeira", reino_fundo2: "Fundo do abismo (camada 2)",
+  reino_props_anim: "Ambiente animado", reino_efeitos_v2: "Efeitos do chefe", textura: "Textura (piso ou fundo)", retrato: "Retrato" };
+function layoutDo(nome) {
+  const G = window.GRADES_ARTE, base = (nome || "").split(/[\\/]/).pop().toLowerCase();
+  const g = G && G[base];
+  if (!g) return A.doArquivo(nome);
+  const [C, R] = g.g.split("x").map(Number), cel = g.c || 256;
+  const grupos = g.t !== "personagem" ? null : g.k === "reino_inimigos_v2" ? "tercos" : /objetos|ovo|bau/.test(g.k) ? "linha" : /^monstro_(fixa|$)|^monstro$|lendario_v2/.test(g.k) ? null : "folha";
+  return { id: "v2_" + g.k, nome: NOME_CAT[g.k] || g.k.replace(/_/g, " "), W: C * cel, H: R * cel, C, R, ideal: true,
+    linhas: [...Array(R)].map((_, i) => `Linha ${i + 1}`), tipo: g.t, grupos, cheias: [] };
+}
 const $ = id => document.getElementById(id);
 const FRASE = {
   tamanho: l => `Redo it on a ${l.W} x ${l.H} canvas (${l.W > l.H ? "landscape 3:2" : "square 1:1"}), keeping exactly ${l.C} poses per row and ${l.R} rows. Keep everything else.`,
@@ -119,7 +136,7 @@ async function receber(arquivos) {
   for (const f of arquivos) {
     const img = await carregar(f);
     const item = { nome: f.name, img, ref: null };
-    item.lay = A.doArquivo(f.name) || A.porId(tipoPadrao) || null;
+    item.lay = layoutDo(f.name) || A.porId(tipoPadrao) || null;
     resultados.unshift(item);
     const el = document.createElement("article");
     item.el = el;
@@ -169,8 +186,12 @@ function conferir(item) {
   const R = A.linhasDe(lay, item.nome), C = lay.C, L = { ...lay, R };
   // 1) tamanho da tela (proporção)
   const prop = W0 / H0, esperada = lay.W / lay.H;
-  if (Math.abs(prop / esperada - 1) > 0.03)
-    add("erro", `Tamanho ${W0} × ${H0}: o esperado é ${lay.W} × ${lay.H}. Com outra proporção a grade sai espremida.`, FRASE.tamanho(L));
+  // pacote de prompts: o gerador costuma só fazer 1536 x 1024 ou 1024 x 1024; a grade é conferida no tamanho que veio e eu ajusto ao converter
+  const telaDoGerador = lay.ideal && lay.C * lay.R > 1 && [1.5, 1, 1.75, 2 / 3].some(v => Math.abs(prop / v - 1) < 0.03);
+  if (Math.abs(prop / esperada - 1) > 0.03 && telaDoGerador)
+    add("aviso", `Feita em ${W0} × ${H0} (o ideal seria ${lay.W} × ${lay.H}). Tudo bem: a grade de ${lay.C} × ${lay.R} foi conferida neste tamanho e o ajuste é feito na conversão.`, null);
+  else if (Math.abs(prop / esperada - 1) > 0.03 && lay.C * lay.R > 1)
+    add("erro", `Tamanho ${W0} × ${H0}: o esperado é ${lay.W} × ${lay.H} (ou uma tela 1536 × 1024 com a grade ${lay.C} × ${lay.R} cobrindo a imagem inteira).`, FRASE.tamanho(L));
   else if (Math.max(W0, H0) < 900) add("aviso", `Imagem pequena (${W0} × ${H0}): o esperado é ${lay.W} × ${lay.H}. Perde detalhe.`, null);
   // 2) fundo
   const F = fundoDe(P);
@@ -225,7 +246,7 @@ function conferir(item) {
   if (encosta.length > Math.max(1, cel.length * 0.15)) add("aviso", `${encosta.length} quadro(s) encostam na borda do quadro.`, FRASE.espaco(), encosta);
   if (lay.tipo === "personagem") {
     // 3d) pés na mesma altura e mesmo tamanho dentro de cada linha
-    const linhasPe = lay.id === "inimigos" ? [0, 2, 4] : lay.grupos === "folha" ? [0, 1] : [...Array(R).keys()];
+    const linhasPe = lay.id === "inimigos" ? [0, 2, 4] : lay.grupos === "tercos" ? [0, 3, 6] : lay.grupos === "folha" ? [0, 1] : [...Array(R).keys()];
     for (const r of linhasPe) {
       const qs = cel.filter(q => q.r === r && q.n && (lay.id !== "objetos" || q.c < 4));
       if (qs.length < 3) continue;
@@ -333,6 +354,7 @@ function doisDesenhos(P, F, x0, y0, x1, y1) {
 function agrupar(cel, lay, R) {
   if (lay.grupos === "folha") return [cel];
   if (lay.grupos === "pares") return [0, 2, 4].filter(r => r < R).map(r => cel.filter(q => q.r === r || q.r === r + 1));
+  if (lay.grupos === "tercos") return [0, 3, 6].filter(r => r < R).map(r => cel.filter(q => q.r >= r && q.r < r + 3));
   if (lay.grupos === "linha") return [...Array(R).keys()].map(r => cel.filter(q => q.r === r && (lay.id !== "objetos" || q.c < 4)));
   return [];
 }

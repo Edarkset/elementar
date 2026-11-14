@@ -8,3 +8,4 @@ desktop/jogo/
 desktop/dist/
 package-lock.json
 testes/assinatura.json
+ferramentas/grades_arte.js

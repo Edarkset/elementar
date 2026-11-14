@@ -653,7 +653,7 @@
   };
   // vale para todos os temas: a raridade tem de continuar parecendo rara e o elemento reconhecível
   const REGRA =
-    "The variant exists because of a special condition of its environment (explained below), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.";
+    "The variant exists because of a special condition of its environment (see WHY THIS VARIANT EXISTS), so the change must look natural and physical, not just a recolor: frost, melting ice, mud, mineral veins, flame color, light. The rarity must still read as special at a glance: the Epic has a soft glow; the Legendary is the rarest and most striking. Keep the signature trait and at least one clear cue of its element visible.";
   const PADRAO = {
     epico: {
       nome: "Padrão (prateado-violeta)",

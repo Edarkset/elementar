@@ -1,0 +1,15 @@
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: fauna: Reino da Luz. The ONLY reference is the image attached to THIS message.
+
+Ambient wildlife of Reino da Luz, redrawn bigger: Row 1 the white dove flying, 8 frames · Row 2 the small white fox walking 4 + hopping 4 · Row 3 the golden fish swimming 4 + the light moth fluttering 4.
+
+Art style: high-detail painted pixel art for a 2D action roguelite (Vampire Survivors-like) seen from a top-down 3/4 camera, in the spirit of Sea of Stars, Octopath Traveler and Hades: rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when scaled down to 24 px tall. Mythological fantasy theme with 8 elements: fire, water, earth, air, lightning, nature, light, shadow.
+
+Sprite sheet rules: no floor, no cast shadow, no text, no grid lines, no frame borders. GRID: exactly 8 columns x 3 rows of equal cells (24 cells in total), filling the WHOLE image edge to edge, one pose per cell, 8 per row, no more, no less. Ideal size 1024x384 px (cells 128x128). If your tool only makes fixed sizes (like 1536x1024), use a landscape canvas and still divide the WHOLE image into exactly 8 x 3 equal cells (the cells may then be taller than wide). Do NOT draw the grid. Every frame stays fully inside its own cell with ~6% empty margin: nothing (tails, weapons, sparks, glow) may cross into a neighbouring cell. Feet (or the base of a floating body) sit on the same horizontal line in every frame, at 85% of the cell height. Same scale and same character size in every frame and row. Character faces RIGHT in every frame. Animation rows read left to right; looping rows loop seamlessly (last frame flows into the first). Natural proportions, never stretched or squashed.
+
+BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+
+Reference: the attached image is reino_luz__fauna.png; keep the same design, colors and proportions.
+
+DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground or cast shadow (unless this is a ground texture); paint a checkerboard pattern to fake transparency; add any character or object that was not requested, or two poses in the same cell; change colors, size or design between frames; crop anything at a cell edge; stretch or squash anything.
+
+BEFORE YOU FINISH, CHECK: exactly 8 items in every row and exactly 3 rows (24 in total); nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.

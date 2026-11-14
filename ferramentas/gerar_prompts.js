@@ -216,6 +216,10 @@ const QUEDA = {
 // ---------------------------------------------------------------- blocos de travas
 const ESTILO = `STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.`;
 const FUNDO = `BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.`;
+// personagem rosa, roxo ou lilás: o fundo magenta apagaria pedaços dele na conversão, então só transparência de verdade
+const FUNDO_SO_ALFA = `BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.`;
+const ROSA = /pink|purple|violet|magenta|lavender|rose|periwinkle|rosa|roxo|lil[aá]s|violeta|magenta/i;
+const fundoPara = (...textos) => (textos.some(t => t && ROSA.test(t)) ? FUNDO_SO_ALFA : FUNDO);
 const PROIBIDO = `DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.`;
 function telaGrade(W, H, C, L) {
   const cw = W / C,
@@ -253,18 +257,21 @@ function bloco(titulo, info, linhas, so) {
     arq = (/`([^`]+)`/.exec(salvar) || [])[1] || "",
     lay = LAY.doArquivo(arq),
     anexo = (info.find(([k]) => k === "Anexar") || [])[1] || "",
-    semAnexo = /^nada/.test(anexo);
+    semAnexo = /^nada/.test(anexo),
+    doisAnexos = /\b2\)/.test(anexo);
   const cab = [`#### ${titulo}`, ""];
   for (const [k, v] of info) cab.push(`- **${k}:** ${v}`);
   if (lay) cab.push(`- **Molde (como deve ficar):** [${lay.nome}]({{MOLDES}}/${lay.id}.png)`);
   const isolar = `NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: ${so || titulo}. ${
     semAnexo
       ? "There is no reference image for this one: ignore any image attached earlier in the conversation."
-      : "The ONLY reference is the image attached to THIS message."
+      : doisAnexos
+        ? "The ONLY references are the two images attached to THIS message."
+        : "The ONLY reference is the image attached to THIS message."
   }`;
   const R = lay ? LAY.linhasDe(lay, arq) : 0,
     fim = lay
-      ? `BEFORE YOU FINISH, CHECK: the image is ${lay.W} x ${lay.H}; ${lay.R === 1 && lay.C === 1 ? "one single subject" : `exactly ${lay.C} items in every row and exactly ${R} rows`}; nothing from earlier images of this conversation; ${lay.tipo === "opaco" ? "no seam when tiled" : "transparent (or flat #FF00FF magenta) background, no checkerboard"}; nothing written anywhere.`
+      ? `BEFORE YOU FINISH, CHECK: the image is ${lay.W} x ${lay.H}; ${lay.R === 1 && lay.C === 1 ? "one single subject" : `exactly ${lay.C} items in every row and exactly ${R} rows`}; nothing from earlier images of this conversation; ${lay.tipo === "opaco" ? "no seam when tiled" : linhas.includes(FUNDO_SO_ALFA) ? "real transparent background (never magenta), no checkerboard" : "transparent (or flat #FF00FF magenta) background, no checkerboard"}; nothing written anywhere.`
       : "";
   return cab.join("\n") + "\n\n```text\n" + [isolar, ...linhas.filter(Boolean), fim].filter(Boolean).join("\n\n") + "\n```\n";
 }
@@ -280,9 +287,9 @@ function formasDe(l) {
   return f;
 }
 const RAMO = ["A", "B", "C"];
-function descricaoForma(l, f) {
+function descricaoForma(l, f, raridade) {
   const e = ESTAGIO[f.e];
-  return `CHARACTER: "${f.nome}", the ${e.nome} stage (${e.en}) of a monster line from the game. Element: ${EL[f.el]} (main colors: ${COR_EL[f.el]}). Lineage: ${LINHAGEM_EN[f.lin] || f.lin}. Combat class: ${CLASSE_EN[l.classe]}.
+  return `CHARACTER: "${f.nome}", the ${e.nome} stage (${e.en}) of a monster line from the game. Element: ${EL[f.el]} (${raridade ? "this rarity variant uses the approved variant colors, not the normal ones" : `main colors: ${COR_EL[f.el]}`}). Lineage: ${LINHAGEM_EN[f.lin] || f.lin}. Combat class: ${CLASSE_EN[l.classe]}.
 Look of the line (Portuguese): ${l.visual}. Signature trait that must always be visible: ${l.traco}. Inspired by: ${l.animal}.
 Personality (Portuguese, show it in the poses): ${l.personalidade}.`;
 }
@@ -292,7 +299,7 @@ function promptBase(l, f, raridade) {
     C = 6,
     L = 3;
   const cab = raridade
-    ? `Create a 2D game sprite sheet: the ${raridade === "epico" ? "EPIC" : "LEGENDARY"} rarity variant of a monster. Same poses and same size as the reference, redesigned as a ${RAR.tema(l.id, raridade).en}. The silhouette must stay recognizable as the same monster. ${RAR.REGRA}`
+    ? `Create a 2D game sprite sheet: the ${raridade === "epico" ? "EPIC" : "LEGENDARY"} rarity variant of a monster, using the already approved colors of this variant: ${RAR.tema(l.id, raridade).en}. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. ${RAR.REGRA}`
     : `Create a 2D game sprite sheet of one monster: 3 animations (idle, move, attack), 6 frames each.`;
   return [
     cab,
@@ -300,10 +307,14 @@ function promptBase(l, f, raridade) {
     `ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tail, flames, hair, wings, ears). F1 neutral, F2-F3 inhale and rise slightly, F4 top, F5-F6 exhale back to F1. Feet stay planted.
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: ${ATAQUE_CLASSE[l.classe]}. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of ${EL[f.el]} energy kept inside the cell, F5-F6 recovery back to the idle pose.`,
-    descricaoForma(l, f),
-    ref(raridade ? ", except for the rarity recolor and ornaments described above" : "", true),
+    descricaoForma(l, f, raridade),
+    raridade
+      ? `TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved ${raridade === "epico" ? "EPIC" : "LEGENDARY"} colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row ${Math.floor((f.n - 1) / 4) + 1}, column ${((f.n - 1) % 4) + 1}. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.`
+      : ref("", true),
     travasPersonagem(W, H, C, L),
-    FUNDO,
+    fundoPara(l.visual, raridade && RAR.tema(l.id, raridade).en),
     ESTILO,
     PROIBIDO
   ];
@@ -324,7 +335,7 @@ ROW 4 - PERSONALITY, 6 frames: F1-F4 a quirk that shows its personality "${l.per
     descricaoForma(l, f),
     ref(),
     travasPersonagem(W, H, C, L, "use the same body size as the attached reference"),
-    FUNDO,
+    fundoPara(l.visual),
     ESTILO,
     PROIBIDO
   ];
@@ -345,10 +356,10 @@ ${fs8.map(f => `${f.n}. "${f.nome}" - ${ESTAGIO[f.e].nome.toLowerCase()}${f.ramo
 The baby is the smallest and the supreme forms the most imposing, but every form fills most of its cell height so the details stay readable.`,
     `MONSTER LINE (Portuguese): ${l.visual}. Signature trait in every form: ${l.traco}. Inspired by: ${l.animal}. Class: ${CLASSE_EN[l.classe]}.`,
     raridade
-      ? `REFERENCE: the attached image is the normal (common) version of these 8 forms in the same layout: keep each form's shape, pose and cell, change only the colors and ornaments to the variant described above.`
+      ? `TWO REFERENCES ARE ATTACHED. IMAGE 1 = the normal version of these 8 forms in the same layout: keep each form's shape, pose and cell. IMAGE 2 = the approved ${raridade === "epico" ? "EPIC" : "LEGENDARY"} version in the same layout: copy its colors, palette, markings and glow exactly, cell by cell, only cleaner and sharper. If image 2 and the text disagree, image 2 wins.`
       : `REFERENCE: attach the current __base image of this monster (or the new animation sheets) and copy each form's design exactly. The attachment is only a reference: ignore its layout.`,
     travasPersonagem(W, H, C, L).replace("in the idle row the body fills", "the body fills"),
-    FUNDO,
+    fundoPara(l.visual, raridade && RAR.tema(l.id, raridade).en),
     ESTILO,
     PROIBIDO
   ];
@@ -369,7 +380,7 @@ function arquivoMonstro(l) {
     tl = RAR.tema(l.id, "lendario"),
     proprio = !!RAR.RARIDADES[l.id];
   md.push(`
-**Raridades:** Épico **${te.nome}** · Lendário **${tl.nome}**${proprio ? " (tema próprio deste monstro)" : ""}. O tema vale para todas as folhas da raridade: as animações de cada forma e a imagem fixa das 8 formas (a das cartas). Para mudar o tema, me diga as cores que eu atualizo a tabela (\`ferramentas/raridades_arte.js\`) e gero de novo.
+**Raridades:** Épico **${te.nome}** · Lendário **${tl.nome}**${proprio ? "" : " (tema padrão)"}. As cores vêm das imagens fixas que você já aprovou (\`__epico\` e \`__lendario\`): cada prompt de raridade pede essa imagem como **segundo anexo** e diz em qual quadro dela está a forma. Mudou uma cor? Basta trocar a imagem fixa, e me avise para eu atualizar a descrição (\`ferramentas/raridades_arte.js\`).
 
 **Ordem:** primeiro a folha base de uma forma (etapa 2), depois o Épico, o Lendário e as ações dela (etapa 3), sempre anexando a **base nova** como referência. Comece pelas formas Adulto e Supremo (\`__anim_3\` a \`__anim_8\`).
 
@@ -396,7 +407,10 @@ function arquivoMonstro(l) {
           r === "epico" ? `Épico: ${te.nome} (etapa 3)` : `Lendário: ${tl.nome} (etapa 3)`,
           [
             ["Salvar como", `\`${pasta}/${l.id}__anim_${f.n}__${r}.png\``],
-            ["Anexar", `a base NOVA \`${l.id}__anim_${f.n}\` (etapa 2)`],
+            [
+              "Anexar",
+              `**duas imagens**: 1) a base NOVA \`${l.id}__anim_${f.n}\` (etapa 2), para as poses; 2) a imagem fixa aprovada \`${l.id}__${r}\` (${ANEXO_ORIGINAL}), para as cores`
+            ],
             ["O jogo usa", "sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)"]
           ],
           promptBase(l, f, r),
@@ -418,7 +432,7 @@ function arquivoMonstro(l) {
   }
   md.push(`\n## Imagens fixas das 8 formas (cartas e Bestiário)\n`);
   md.push(
-    `A comum é opcional (já existe). A do Épico e a do Lendário têm de seguir o mesmo tema das animações: elas aparecem nas cartas e servem de cor para as formas que ainda não têm animação própria.\n`
+    `As três já existem, e a do Épico e a do Lendário já têm as suas cores aprovadas: **elas são a referência de cor** das animações de raridade (segundo anexo). Refaça só se quiser mais nitidez, anexando a atual: o prompt manda manter as cores.\n`
   );
   md.push(
     bloco(
@@ -438,8 +452,12 @@ function arquivoMonstro(l) {
         r === "epico" ? `Imagem fixa do Épico: ${te.nome}` : `Imagem fixa do Lendário: ${tl.nome}`,
         [
           ["Salvar como", `\`${pasta}/${l.id}__${r}.png\``],
-          ["Anexar", `a imagem fixa comum \`${l.id}__base\`: ${ANEXO_ORIGINAL}`],
-          ["O jogo usa", "sim (cartas, Bestiário e cor das formas sem animação própria)"]
+          [
+            "Anexar",
+            `**duas imagens**: 1) a imagem fixa comum \`${l.id}__base\`, para as formas; 2) a imagem fixa aprovada \`${l.id}__${r}\`, para as cores (${ANEXO_ORIGINAL})`
+          ],
+          ["O jogo usa", "sim (cartas, Bestiário e cor das formas sem animação própria)"],
+          ["Precisa?", "só para mais nitidez: a atual já tem as cores aprovadas"]
         ],
         promptFixa(l, r),
         `the 8 forms of "${l.filhote}" in the ${r === "epico" ? "EPIC" : "LEGENDARY"} variant, one per cell`

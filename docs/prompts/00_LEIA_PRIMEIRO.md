@@ -33,7 +33,7 @@ A [Conferência de Artes](https://claude.ai/artifact/4tU9w9bqG11R4iCJ9o8486) pro
 
 ---
 
-## Épico e Lendário com tema próprio (Curupira de inverno, Kodama sakura…)
+## Épico e Lendário: as cores que você já aprovou
 
 Pode mudar as cores à vontade: **não mexe em nada da partida**. Força, chance de aparecer e golpes continuam iguais. O que importa é ser **igual em todas as folhas daquela raridade**. Senão a carta mostra um monstro e a partida mostra outro.
 
@@ -43,14 +43,13 @@ Pode mudar as cores à vontade: **não mexe em nada da partida**. Força, chance
 | partida, quando a forma tem animação própria | `<monstro>__anim_N__epico.png` / `__lendario.png` |
 | partida, quando a forma ainda não tem | o jogo pinta a animação comum com as cores da imagem fixa |
 
-Por isso:
-- O tema de cada monstro fica numa tabela (`ferramentas/raridades_arte.js`). Todos os prompts daquela raridade usam o mesmo texto: as 8 animações e a imagem fixa. Hoje estão lá:
-  - **Curupira:** Épico Inverno, Lendário Ipê amarelo;
-  - **Kodama:** Épico Sakura (ipê rosa), Lendário Ipê amarelo;
-  - **Boto:** Épico Boto azul, Lendário Boto branco, como a roupa branca do Boto encantado.
-- **Inventou um tema novo no meio do refino?** Me diga o monstro e as cores, que eu acrescento na tabela e gero de novo. Os prompts daquela raridade, inclusive da imagem fixa, já saem com o tema certo.
-- **Duas regras valem para todo tema:** a raridade tem de continuar parecendo rara (o Épico com um brilho leve, o Lendário com aura e enfeites), e o traço marcante e uma pista do elemento continuam visíveis. Exemplos: o Curupira de inverno mantém a roupa de folhas, e o Boto mantém o chapéu.
-- **Na página de conferência,** compare uma variante com a imagem fixa **da mesma raridade**, e não com a comum. Com a comum, as cores não batem mesmo.
+**As imagens fixas que já estão no jogo são a fonte das cores.** Elas já têm os seus ajustes finos: Fogo-fátuo de chama verde e de chama galáxia, Vampiro azulado e de cabelo branco, Caçada de fogo e de gelo, Lobisomem vermelho e da neve, e assim por diante. Por isso:
+- **Dois anexos:** cada prompt de raridade pede duas imagens. A **base nova** dá as poses, e a **imagem fixa aprovada daquela raridade** dá as cores. O prompt diz em qual quadro dela está a forma (por exemplo "linha 1, coluna 3") e que, se a imagem e o texto discordarem, vale a imagem.
+- **Descrição de reforço:** o prompt também descreve o tema em palavras. Escrevi as descrições olhando as 102 imagens. Estão em `ferramentas/raridades_arte.js`, e a pasta `raridades/` tem as 8 pranchas com Comum, Épico e Lendário de cada monstro, lado a lado.
+- **Para mudar uma cor depois:** troque a imagem fixa e me avise, que eu atualizo a descrição.
+- **Duas regras valem para todo tema:** a raridade continua parecendo rara (o Épico com um brilho leve, o Lendário com aura e enfeites), e o traço marcante continua visível.
+- **Temas rosa, roxo ou lilás** (Boto, Morcego lendário, Raiju épico, Fogo-fátuo galáxia): o prompt exige **transparência de verdade**, sem fundo magenta. O conversor apagaria o magenta junto com pedaços do monstro.
+- **Na página de conferência,** compare uma variante com a imagem fixa **da mesma raridade**, e não com a comum.
 
 ---
 

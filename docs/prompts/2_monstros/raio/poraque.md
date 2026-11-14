@@ -13,7 +13,7 @@ enguia rosada e fofa. Traço marcante: as bolinhas que acendem como pisca-pisca.
 | `__anim_7` | Poraquê Ancestral | Supremo (ramo B) | Raio |
 | `__anim_8` | Lança Viva | Supremo (ramo C) | Raio |
 
-**Raridades:** Épico **Padrão (prateado-violeta)** · Lendário **Padrão (dourado)**. O tema vale para todas as folhas da raridade: as animações de cada forma e a imagem fixa das 8 formas (a das cartas). Para mudar o tema, me diga as cores que eu atualizo a tabela (`ferramentas/raridades_arte.js`) e gero de novo.
+**Raridades:** Épico **Bioluminescente** · Lendário **Ouro**. As cores vêm das imagens fixas que você já aprovou (`__epico` e `__lendario`): cada prompt de raridade pede essa imagem como **segundo anexo** e diz em qual quadro dela está a forma. Mudou uma cor? Basta trocar a imagem fixa, e me avise para eu atualizar a descrição (`ferramentas/raridades_arte.js`).
 
 **Ordem:** primeiro a folha base de uma forma (etapa 2), depois o Épico, o Lendário e as ações dela (etapa 3), sempre anexando a **base nova** como referência. Comece pelas formas Adulto e Supremo (`__anim_3` a `__anim_8`).
 
@@ -55,26 +55,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Padrão (prateado-violeta) (etapa 3)
+#### Épico: Bioluminescente (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_1__epico.png`
-- **Anexar:** a base NOVA `poraque__anim_1` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_1` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Ovinho Faiscante" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Ovinho Faiscante" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: BIOLUMINESCENT: deep blue body with glowing cyan spots. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -83,11 +83,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Ovinho Faiscante", the Filhote stage (baby form: tiny, round and cute, big head and eyes, short limbs) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Ovinho Faiscante", the Filhote stage (baby form: tiny, round and cute, big head and eyes, short limbs) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved EPIC colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 1, column 1. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -97,26 +99,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Padrão (dourado) (etapa 3)
+#### Lendário: Ouro (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_1__lendario.png`
-- **Anexar:** a base NOVA `poraque__anim_1` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_1` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Ovinho Faiscante" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Ovinho Faiscante" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: GOLDEN: golden electric eel with a warm glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -125,11 +127,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Ovinho Faiscante", the Filhote stage (baby form: tiny, round and cute, big head and eyes, short limbs) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Ovinho Faiscante", the Filhote stage (baby form: tiny, round and cute, big head and eyes, short limbs) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved LEGENDARY colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 1, column 1. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -139,13 +143,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -156,7 +160,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 - **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Ovinho Faiscante" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Ovinho Faiscante" (one single creature, repeated in 24 poses). The ONLY references are the two images attached to THIS message.
 
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
@@ -182,13 +186,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 
@@ -227,26 +231,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Padrão (prateado-violeta) (etapa 3)
+#### Épico: Bioluminescente (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_2__epico.png`
-- **Anexar:** a base NOVA `poraque__anim_2` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_2` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Poraquê" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Poraquê" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: BIOLUMINESCENT: deep blue body with glowing cyan spots. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -255,11 +259,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Poraquê", the Jovem stage (young form: small and lively, adult traits starting to show) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Poraquê", the Jovem stage (young form: small and lively, adult traits starting to show) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved EPIC colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 1, column 2. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -269,26 +275,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Padrão (dourado) (etapa 3)
+#### Lendário: Ouro (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_2__lendario.png`
-- **Anexar:** a base NOVA `poraque__anim_2` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_2` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Poraquê" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Poraquê" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: GOLDEN: golden electric eel with a warm glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -297,11 +303,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Poraquê", the Jovem stage (young form: small and lively, adult traits starting to show) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Poraquê", the Jovem stage (young form: small and lively, adult traits starting to show) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved LEGENDARY colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 1, column 2. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -311,13 +319,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -328,7 +336,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 - **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Poraquê" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Poraquê" (one single creature, repeated in 24 poses). The ONLY references are the two images attached to THIS message.
 
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
@@ -354,13 +362,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 
@@ -399,26 +407,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Padrão (prateado-violeta) (etapa 3)
+#### Épico: Bioluminescente (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_3__epico.png`
-- **Anexar:** a base NOVA `poraque__anim_3` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_3` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Poraquê Gigante" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Poraquê Gigante" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: BIOLUMINESCENT: deep blue body with glowing cyan spots. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -427,11 +435,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Poraquê Gigante", the Adulto stage (adult form: full, confident and impressive body) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Poraquê Gigante", the Adulto stage (adult form: full, confident and impressive body) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved EPIC colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 1, column 3. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -441,26 +451,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Padrão (dourado) (etapa 3)
+#### Lendário: Ouro (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_3__lendario.png`
-- **Anexar:** a base NOVA `poraque__anim_3` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_3` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Poraquê Gigante" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Poraquê Gigante" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: GOLDEN: golden electric eel with a warm glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -469,11 +479,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Poraquê Gigante", the Adulto stage (adult form: full, confident and impressive body) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Poraquê Gigante", the Adulto stage (adult form: full, confident and impressive body) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved LEGENDARY colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 1, column 3. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -483,13 +495,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -500,7 +512,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 - **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Poraquê Gigante" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Poraquê Gigante" (one single creature, repeated in 24 poses). The ONLY references are the two images attached to THIS message.
 
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
@@ -526,13 +538,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 
@@ -571,26 +583,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Padrão (prateado-violeta) (etapa 3)
+#### Épico: Bioluminescente (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_4__epico.png`
-- **Anexar:** a base NOVA `poraque__anim_4` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_4` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Poraquê Solitário" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Poraquê Solitário" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: BIOLUMINESCENT: deep blue body with glowing cyan spots. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -599,11 +611,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Poraquê Solitário", the Adulto stage (adult form: full, confident and impressive body) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Poraquê Solitário", the Adulto stage (adult form: full, confident and impressive body) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved EPIC colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 1, column 4. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -613,26 +627,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Padrão (dourado) (etapa 3)
+#### Lendário: Ouro (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_4__lendario.png`
-- **Anexar:** a base NOVA `poraque__anim_4` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_4` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Poraquê Solitário" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Poraquê Solitário" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: GOLDEN: golden electric eel with a warm glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -641,11 +655,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Poraquê Solitário", the Adulto stage (adult form: full, confident and impressive body) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Poraquê Solitário", the Adulto stage (adult form: full, confident and impressive body) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved LEGENDARY colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 1, column 4. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -655,13 +671,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -672,7 +688,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 - **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Poraquê Solitário" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Poraquê Solitário" (one single creature, repeated in 24 poses). The ONLY references are the two images attached to THIS message.
 
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
@@ -698,13 +714,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 
@@ -743,26 +759,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Padrão (prateado-violeta) (etapa 3)
+#### Épico: Bioluminescente (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_5__epico.png`
-- **Anexar:** a base NOVA `poraque__anim_5` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_5` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Poraquê Arpão" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Poraquê Arpão" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: BIOLUMINESCENT: deep blue body with glowing cyan spots. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -771,11 +787,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Poraquê Arpão", the Adulto stage (adult form: full, confident and impressive body) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Poraquê Arpão", the Adulto stage (adult form: full, confident and impressive body) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved EPIC colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 2, column 1. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -785,26 +803,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Padrão (dourado) (etapa 3)
+#### Lendário: Ouro (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_5__lendario.png`
-- **Anexar:** a base NOVA `poraque__anim_5` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_5` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Poraquê Arpão" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Poraquê Arpão" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: GOLDEN: golden electric eel with a warm glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -813,11 +831,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Poraquê Arpão", the Adulto stage (adult form: full, confident and impressive body) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Poraquê Arpão", the Adulto stage (adult form: full, confident and impressive body) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved LEGENDARY colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 2, column 1. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -827,13 +847,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -844,7 +864,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 - **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Poraquê Arpão" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Poraquê Arpão" (one single creature, repeated in 24 poses). The ONLY references are the two images attached to THIS message.
 
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
@@ -870,13 +890,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 
@@ -915,26 +935,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Padrão (prateado-violeta) (etapa 3)
+#### Épico: Bioluminescente (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_6__epico.png`
-- **Anexar:** a base NOVA `poraque__anim_6` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_6` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Rei-Poraquê" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Rei-Poraquê" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: BIOLUMINESCENT: deep blue body with glowing cyan spots. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -943,11 +963,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Rei-Poraquê", the Supremo stage (supreme form: legendary and imposing, bulkier silhouette, ornate details, visible power aura) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Rei-Poraquê", the Supremo stage (supreme form: legendary and imposing, bulkier silhouette, ornate details, visible power aura) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved EPIC colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 2, column 2. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -957,26 +979,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Padrão (dourado) (etapa 3)
+#### Lendário: Ouro (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_6__lendario.png`
-- **Anexar:** a base NOVA `poraque__anim_6` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_6` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Rei-Poraquê" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Rei-Poraquê" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: GOLDEN: golden electric eel with a warm glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -985,11 +1007,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Rei-Poraquê", the Supremo stage (supreme form: legendary and imposing, bulkier silhouette, ornate details, visible power aura) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Rei-Poraquê", the Supremo stage (supreme form: legendary and imposing, bulkier silhouette, ornate details, visible power aura) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved LEGENDARY colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 2, column 2. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -999,13 +1023,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -1016,7 +1040,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 - **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Rei-Poraquê" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Rei-Poraquê" (one single creature, repeated in 24 poses). The ONLY references are the two images attached to THIS message.
 
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
@@ -1042,13 +1066,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 
@@ -1087,26 +1111,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Padrão (prateado-violeta) (etapa 3)
+#### Épico: Bioluminescente (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_7__epico.png`
-- **Anexar:** a base NOVA `poraque__anim_7` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_7` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Poraquê Ancestral" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Poraquê Ancestral" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: BIOLUMINESCENT: deep blue body with glowing cyan spots. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1115,11 +1139,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Poraquê Ancestral", the Supremo stage (supreme form: legendary and imposing, bulkier silhouette, ornate details, visible power aura) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Poraquê Ancestral", the Supremo stage (supreme form: legendary and imposing, bulkier silhouette, ornate details, visible power aura) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved EPIC colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 2, column 3. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -1129,26 +1155,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Padrão (dourado) (etapa 3)
+#### Lendário: Ouro (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_7__lendario.png`
-- **Anexar:** a base NOVA `poraque__anim_7` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_7` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Poraquê Ancestral" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Poraquê Ancestral" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: GOLDEN: golden electric eel with a warm glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1157,11 +1183,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Poraquê Ancestral", the Supremo stage (supreme form: legendary and imposing, bulkier silhouette, ornate details, visible power aura) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Poraquê Ancestral", the Supremo stage (supreme form: legendary and imposing, bulkier silhouette, ornate details, visible power aura) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved LEGENDARY colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 2, column 3. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -1171,13 +1199,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -1188,7 +1216,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 - **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Poraquê Ancestral" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Poraquê Ancestral" (one single creature, repeated in 24 poses). The ONLY references are the two images attached to THIS message.
 
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
@@ -1214,13 +1242,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 
@@ -1259,26 +1287,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Épico: Padrão (prateado-violeta) (etapa 3)
+#### Épico: Bioluminescente (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_8__epico.png`
-- **Anexar:** a base NOVA `poraque__anim_8` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_8` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__epico` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Lança Viva" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the EPIC variant of the monster "Lança Viva" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the EPIC rarity variant of a monster. Same poses and same size as the reference, redesigned as a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the EPIC rarity variant of a monster, using the already approved colors of this variant: BIOLUMINESCENT: deep blue body with glowing cyan spots. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1287,11 +1315,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Lança Viva", the Supremo stage (supreme form: legendary and imposing, bulkier silhouette, ornate details, visible power aura) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Lança Viva", the Supremo stage (supreme form: legendary and imposing, bulkier silhouette, ornate details, visible power aura) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved EPIC colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 2, column 4. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -1301,26 +1331,26 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Lendário: Padrão (dourado) (etapa 3)
+#### Lendário: Ouro (etapa 3)
 
 - **Salvar como:** `arte/monstros/raio/poraque__anim_8__lendario.png`
-- **Anexar:** a base NOVA `poraque__anim_8` (etapa 2)
+- **Anexar:** **duas imagens**: 1) a base NOVA `poraque__anim_8` (etapa 2), para as poses; 2) a imagem fixa aprovada `poraque__lendario` (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado), para as cores
 - **O jogo usa:** sim, no lugar da repintura da forma comum (arquivo novo: me mande o PNG para converter)
 - **Molde (como deve ficar):** [Monstro: animação (base, Épico ou Lendário)](../../moldes/monstro_base.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Lança Viva" (one single creature, repeated in 18 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the LEGENDARY variant of the monster "Lança Viva" (one single creature, repeated in 18 poses). The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster. Same poses and same size as the reference, redesigned as a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the LEGENDARY rarity variant of a monster, using the already approved colors of this variant: GOLDEN: golden electric eel with a warm glow. Same poses and same size as reference image 1, only the colors and small ornaments change. The silhouette must stay recognizable as the same monster. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 6 equal columns x 3 equal rows = 18 cells, each cell 256 px wide x 341 px tall. Do NOT draw the grid. Exactly one pose per cell, 6 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1329,11 +1359,13 @@ ROW 1 - IDLE LOOP, 6 frames: breathing in place with small secondary motion (tai
 ROW 2 - MOVE LOOP, 6 frames: a full walk cycle moving to the right, in place (no travel across the cell); if the creature has wings or floats, a flying or floating cycle instead, with the bottom of the body on the feet line. F1 and F4 are the two contact poses; the cycle loops.
 ROW 3 - BASIC ATTACK, 6 frames: life ray: channels a beam of light from its body, calm and graceful. F1-F2 anticipation (wind-up), F3 strike, F4 impact with a small burst of lightning energy kept inside the cell, F5-F6 recovery back to the idle pose.
 
-CHARACTER: "Lança Viva", the Supremo stage (supreme form: legendary and imposing, bulkier silhouette, ornate details, visible power aura) of a monster line from the game. Element: lightning (main colors: electric yellow, violet and white). Lineage: sea creatures. Combat class: Mystic.
+CHARACTER: "Lança Viva", the Supremo stage (supreme form: legendary and imposing, bulkier silhouette, ornate details, visible power aura) of a monster line from the game. Element: lightning (this rarity variant uses the approved variant colors, not the normal ones). Lineage: sea creatures. Combat class: Mystic.
 Look of the line (Portuguese): enguia rosada e fofa. Signature trait that must always be visible: as bolinhas que acendem como pisca-pisca. Inspired by: enguia.
 Personality (Portuguese, show it in the poses): simpático e espoleta.
 
-REFERENCE: the attached image shows this same character. Copy its design, colors, markings and proportions exactly, except for the rarity recolor and ornaments described above. It already uses the same grid as requested here: keep each pose in the same cell, but redraw everything cleaner, with more detail, perfectly aligned and with real transparency.
+TWO REFERENCES ARE ATTACHED.
+IMAGE 1 = the new normal sheet of this same form: copy its poses, cell layout, shapes and size exactly.
+IMAGE 2 = the approved LEGENDARY colors of this monster line (8 forms, 4 columns x 2 rows): this form is the one in row 2, column 4. Copy its colors, palette, markings and glow EXACTLY onto every pose. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -1343,13 +1375,13 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 3 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 #### Ações (etapa 3, menor urgência)
@@ -1360,7 +1392,7 @@ BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row
 - **Molde (como deve ficar):** [Monstro: ações](../../moldes/monstro_acoes.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Lança Viva" (one single creature, repeated in 24 poses). The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the monster "Lança Viva" (one single creature, repeated in 24 poses). The ONLY references are the two images attached to THIS message.
 
 Create a 2D game sprite sheet of one monster: 4 extra action animations, 6 frames each.
 
@@ -1386,19 +1418,19 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 6 items in every row and exactly 4 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
 
 ## Imagens fixas das 8 formas (cartas e Bestiário)
 
-A comum é opcional (já existe). A do Épico e a do Lendário têm de seguir o mesmo tema das animações: elas aparecem nas cartas e servem de cor para as formas que ainda não têm animação própria.
+As três já existem, e a do Épico e a do Lendário já têm as suas cores aprovadas: **elas são a referência de cor** das animações de raridade (segundo anexo). Refaça só se quiser mais nitidez, anexando a atual: o prompt manda manter as cores.
 
 #### Imagem fixa
 
@@ -1438,26 +1470,27 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row and exactly 2 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row and exactly 2 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Imagem fixa do Épico: Padrão (prateado-violeta)
+#### Imagem fixa do Épico: Bioluminescente
 
 - **Salvar como:** `arte/monstros/raio/poraque__epico.png`
-- **Anexar:** a imagem fixa comum `poraque__base`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
+- **Anexar:** **duas imagens**: 1) a imagem fixa comum `poraque__base`, para as formas; 2) a imagem fixa aprovada `poraque__epico`, para as cores (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado)
 - **O jogo usa:** sim (cartas, Bestiário e cor das formas sem animação própria)
+- **Precisa?:** só para mais nitidez: a atual já tem as cores aprovadas
 - **Molde (como deve ficar):** [Monstro: imagem fixa das 8 formas](../../moldes/monstro_fixa.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the 8 forms of "Ovinho Faiscante" in the EPIC variant, one per cell. The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the 8 forms of "Ovinho Faiscante" in the EPIC variant, one per cell. The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the 8 evolution forms of one monster line in its EPIC rarity variant, one still pose each (a calm 3/4 standing pose). The variant is a crystalline silver-violet variant with glowing runes, sharper details and a faint violet aura. Every form gets the SAME variant treatment so the line looks consistent. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the 8 evolution forms of one monster line in its EPIC rarity variant, one still pose each (a calm 3/4 standing pose). The variant is a BIOLUMINESCENT: deep blue body with glowing cyan spots. Every form gets the SAME variant treatment so the line looks consistent. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 4 equal columns x 2 equal rows = 8 cells, each cell 384 px wide x 512 px tall. Do NOT draw the grid. Exactly one pose per cell, 4 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1475,7 +1508,7 @@ The baby is the smallest and the supreme forms the most imposing, but every form
 
 MONSTER LINE (Portuguese): enguia rosada e fofa. Signature trait in every form: as bolinhas que acendem como pisca-pisca. Inspired by: enguia. Class: Mystic.
 
-REFERENCE: the attached image is the normal (common) version of these 8 forms in the same layout: keep each form's shape, pose and cell, change only the colors and ornaments to the variant described above.
+TWO REFERENCES ARE ATTACHED. IMAGE 1 = the normal version of these 8 forms in the same layout: keep each form's shape, pose and cell. IMAGE 2 = the approved EPIC version in the same layout: copy its colors, palette, markings and glow exactly, cell by cell, only cleaner and sharper. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -1485,26 +1518,27 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row and exactly 2 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row and exactly 2 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```
 
-#### Imagem fixa do Lendário: Padrão (dourado)
+#### Imagem fixa do Lendário: Ouro
 
 - **Salvar como:** `arte/monstros/raio/poraque__lendario.png`
-- **Anexar:** a imagem fixa comum `poraque__base`: o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado
+- **Anexar:** **duas imagens**: 1) a imagem fixa comum `poraque__base`, para as formas; 2) a imagem fixa aprovada `poraque__lendario`, para as cores (o PNG original (ou o que você já corrigiu), **não** o `.webp` da pasta do jogo, que está achatado)
 - **O jogo usa:** sim (cartas, Bestiário e cor das formas sem animação própria)
+- **Precisa?:** só para mais nitidez: a atual já tem as cores aprovadas
 - **Molde (como deve ficar):** [Monstro: imagem fixa das 8 formas](../../moldes/monstro_fixa.png)
 
 ```text
-NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the 8 forms of "Ovinho Faiscante" in the LEGENDARY variant, one per cell. The ONLY reference is the image attached to THIS message.
+NEW, SEPARATE IMAGE. Start from a blank canvas: do not reuse, copy or continue anything from images generated earlier in this conversation (no characters, poses, colors, effects or layout from them). The ONLY subject of this image is: the 8 forms of "Ovinho Faiscante" in the LEGENDARY variant, one per cell. The ONLY references are the two images attached to THIS message.
 
-Create a 2D game sprite sheet: the 8 evolution forms of one monster line in its LEGENDARY rarity variant, one still pose each (a calm 3/4 standing pose). The variant is a radiant gold-and-white variant with a soft halo, flowing light particles and ornamental markings. Every form gets the SAME variant treatment so the line looks consistent. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
+Create a 2D game sprite sheet: the 8 evolution forms of one monster line in its LEGENDARY rarity variant, one still pose each (a calm 3/4 standing pose). The variant is a GOLDEN: golden electric eel with a warm glow. Every form gets the SAME variant treatment so the line looks consistent. The rarity must still read as special at a glance: the Epic has a soft glow and a few sparkles; the Legendary has a stronger aura, ornaments and floating particles. Keep the signature trait and at least one clear cue of its element visible.
 
 CANVAS: exactly 1536 x 1024 pixels (landscape 3:2).
 GRID: invisible grid of exactly 4 equal columns x 2 equal rows = 8 cells, each cell 384 px wide x 512 px tall. Do NOT draw the grid. Exactly one pose per cell, 4 per row, no more, no less. Rows are read top to bottom, frames left to right.
@@ -1522,7 +1556,7 @@ The baby is the smallest and the supreme forms the most imposing, but every form
 
 MONSTER LINE (Portuguese): enguia rosada e fofa. Signature trait in every form: as bolinhas que acendem como pisca-pisca. Inspired by: enguia. Class: Mystic.
 
-REFERENCE: the attached image is the normal (common) version of these 8 forms in the same layout: keep each form's shape, pose and cell, change only the colors and ornaments to the variant described above.
+TWO REFERENCES ARE ATTACHED. IMAGE 1 = the normal version of these 8 forms in the same layout: keep each form's shape, pose and cell. IMAGE 2 = the approved LEGENDARY version in the same layout: copy its colors, palette, markings and glow exactly, cell by cell, only cleaner and sharper. If image 2 and the text disagree, image 2 wins.
 
 PLACEMENT LOCKS:
 - The character faces RIGHT in every cell (the game mirrors it for left).
@@ -1532,11 +1566,11 @@ PLACEMENT LOCKS:
 - Clear empty gap between rows.
 - Looping rows loop seamlessly: the last frame flows back into the first.
 
-BACKGROUND: fully transparent (real alpha channel). If transparency is not possible, fill the whole background with flat pure magenta #FF00FF (one solid color, no gradient, no texture, no shadow, no vignette) and then do not use magenta or hot pink anywhere in the artwork.
+BACKGROUND: fully transparent (real alpha channel). This character has pink or purple colors, so NEVER use a magenta or colored background: only real transparency. No checkerboard, no white or grey background.
 
 STYLE: high-detail painted pixel art for a 2D action roguelite seen from a top-down 3/4 camera (like Sea of Stars, Octopath Traveler and Hades): rich saturated colors, soft painterly shading, warm rim light from the top-left, crisp 1-2 px dark outline (very dark brown or plum, never pure black), strong readable silhouette that still reads when shrunk to 24 px tall. Mythological fantasy.
 
 DO NOT: draw grid lines, cell borders, frames, panels or dividers; write any text, letters, numbers, labels or watermark; draw a floor, ground, platform, cast shadow or background scenery; paint a checkerboard pattern to fake transparency; add any character that was not requested, or two poses in the same cell; change colors, size or design between frames; crop the character at a cell edge; stretch or squash anything.
 
-BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row and exactly 2 rows; nothing from earlier images of this conversation; transparent (or flat #FF00FF magenta) background, no checkerboard; nothing written anywhere.
+BEFORE YOU FINISH, CHECK: the image is 1536 x 1024; exactly 4 items in every row and exactly 2 rows; nothing from earlier images of this conversation; real transparent background (never magenta), no checkerboard; nothing written anywhere.
 ```

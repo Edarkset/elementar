@@ -1,6 +1,6 @@
 # Elementar · pedido de folhas de sprites novas
 
-> **Pacote atual: [docs/prompts/00_LEIA_PRIMEIRO.md](prompts/00_LEIA_PRIMEIRO.md).** Prompts completos, gerados dos dados do jogo, no formato que o gerador de imagem entrega e no layout que o código lê. Este arquivo fica como histórico.
+> **Pacote atual: [docs/prompts/00 - COMO USAR.md](<prompts/00 - COMO USAR.md>).** Prompts completos, gerados dos dados do jogo, no formato que o gerador de imagem entrega e no layout que o código lê. Este arquivo fica como histórico.
 
 > Versão completa com auditoria e prompts prontos: [PACOTE_PROMPTS.md](PACOTE_PROMPTS.md) (+ dados em [PACOTE_PROMPTS_DADOS.md](PACOTE_PROMPTS_DADOS.md)).
 

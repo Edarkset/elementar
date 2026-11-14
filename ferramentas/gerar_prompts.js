@@ -156,6 +156,14 @@ function montar(item) {
     corpo +=
       " ORIENTATION: a horizontal strip of the vertical cliff face seen from the front (as if looking at it from the chasm), the ground lip along the top edge, wider than tall.";
   if (item.categoria === "monstro_anim_v2" && m) extra.push(...auditoria(m));
+  // imagem fixa de raridade refeita (fundo opaco): mantém as cores aprovadas e conta a condição do tema
+  const fixaRar = item.categoria === "monstro" && /monstros\/[a-z]+\/([a-z_]+)__(epico|lendario)\.png$/.exec(item.saida);
+  if (fixaRar) {
+    const t = RAR.tema(fixaRar[1], fixaRar[2]);
+    extra.push(
+      `This is the ${fixaRar[2] === "epico" ? "EPIC" : "LEGENDARY"} variant "${t.nome}": ${t.en}. WHY THIS VARIANT EXISTS (Portuguese): ${t.por}. Keep the colors of the attached image exactly; only fix the background.`
+    );
+  }
   const tema = m && m.rar ? RAR.tema(m.id, m.rar).en : "",
     soAlfa = tipo !== "opaco" && ROSA.test([l && l.visual, tema, corpo].join(" "));
   const partes = [
@@ -169,7 +177,7 @@ function montar(item) {
     PROIBIDO,
     conferencia(item, tipo, soAlfa)
   ].filter(Boolean);
-  return { ...item, arquivo, tipo, texto: partes.join("\n\n") + "\n" };
+  return { ...item, arquivo, arquivoV2: arquivo, tipo, texto: partes.join("\n\n") + "\n" };
 }
 
 // imagem fixa nova de uma raridade com tema novo: vem antes das animações daquela raridade
@@ -199,43 +207,150 @@ function fixaNova(l, rar) {
 // ---------------------------------------------------------------- montagem do pacote
 const prompts = BASE.prompts.map(montar);
 for (const l of D.linhas) for (const rar of ["epico", "lendario"]) if (RAR.tema(l.id, rar).novo) prompts.push(fixaNova(l, rar));
+// ---------------------------------------------------------------- ordem de execução: a ordem está nos números das pastas e dos
+// arquivos. Pastas de etapa (01, 02...), dentro delas uma pasta por monstro, reino ou dragão, e os arquivos numerados na ordem
+// exata (o que depende de outro vem depois dele). "NOVA CONVERSA" no nome marca onde abrir uma conversa nova no gerador.
+const ETAPAS = {
+  corrigir: "01 - PRIMEIRO - corrigir imagens fixas",
+  heroi: "02 - heroi, ovos, baus, coletaveis e efeitos",
+  monstros: "03 - monstros (um por vez, na ordem)",
+  dragoes: "04 - dragoes ancestrais",
+  reinos: "05 - reinos (um por vez, na ordem)",
+  lendas: "06 - lendas e deuses",
+  efeitos: "07 - efeitos grandes",
+  ambiente: "08 - POR ULTIMO - chao, particulas e interface"
+};
+const ORDEM_EL = ["fogo", "agua", "terra", "ar", "raio", "natureza", "luz", "sombra"];
+const NOME_EL = { fogo: "fogo", agua: "agua", terra: "terra", ar: "ar", raio: "raio", natureza: "natureza", luz: "luz", sombra: "sombra" };
+const dois = n => String(n).padStart(2, "0");
+const anexoDoNome = arq => {
+  const m = / - (anexar .*|sem anexo)\.txt$/.exec(arq);
+  return m ? m[1] : "sem anexo";
+};
+const anexoTexto = p => {
+  const a = anexoDoNome(p.arquivoV2 || p.arquivo);
+  return p.anexo && p.anexo.includes("/reliquias/") ? a.replace(/^anexar ([a-z_]+)$/, "anexar $1 (pasta reliquias)") : a;
+};
+const saidaNome = p => path.basename(p.saida, ".png") + (p.saida.includes("/reliquias/") ? " (pasta reliquias)" : "");
+const ordemReino = Object.fromEntries(D.universos.map((u, i) => [u.id, i]));
+const eras = [...new Set(D.universos.map(u => u.era))];
+function destino(p) {
+  const s = p.saida,
+    k = p.categoria;
+  const mon = /arte\/monstros\/([a-z]+)\/([a-z_]+?)__/.exec(s);
+  if (k === "monstro") return { etapa: "corrigir", pasta: "", ordem: [0, s] };
+  if (/^(heroi|ovo|bau|coletavel|efeito_elemento|efeito_classe)$/.test(k))
+    return { etapa: "heroi", pasta: "", ordem: [["heroi", "ovo", "bau", "coletavel", "efeito_elemento", "efeito_classe"].indexOf(k), s] };
+  if (mon && /^monstro_/.test(k)) {
+    const [, el, id] = mon,
+      l = LINHA[id],
+      semAcento = x =>
+        x
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^A-Za-z0-9 ]/g, "")
+          .toLowerCase(),
+      pasta = `${dois(ORDEM_EL.indexOf(el) + 1)} - ${NOME_EL[el]}/${dois(D.linhas.filter(x => x.elemento === el).indexOf(l) + 1)} - ${id} (epico ${semAcento(RAR.tema(id, "epico").nome)}, lendario ${semAcento(RAR.tema(id, "lendario").nome)})`;
+    if (k === "monstro_fixa_raridade") return { etapa: "monstros", pasta, ordem: [0, 0, s.includes("__epico") ? 0 : 1] };
+    const n = +/__(?:anim|acoes)_(\d)/.exec(s)[1],
+      posForma = [3, 4, 5, 6, 7, 8, 1, 2].indexOf(n),
+      sub = k === "monstro_anim_v2" ? 0 : s.includes("__epico") ? 1 : s.includes("__lendario") ? 2 : 3;
+    return { etapa: "monstros", pasta, ordem: [1, posForma, sub], forma: n };
+  }
+  if (/^lendario_/.test(k)) {
+    const id = /arte\/lendarios\/([a-z_]+?)__/.exec(s)[1],
+      i = D.ancestrais_info.findIndex(a => a.id === id),
+      partes = ["ovo", "filhote", "jovem", "adulto", "supremo", "retrato", "eclosao", "anim_1", "anim_2", "anim_3", "anim_4"];
+    return { etapa: "dragoes", pasta: `${dois(i + 1)} - ${id}`, ordem: [partes.indexOf(/__([a-z_0-9]+)\.png$/.exec(s)[1]), s] };
+  }
+  const guard = /arte\/reinos\/([a-z_]+)\/guardiao_[a-z_]+__/.exec(s);
+  if (guard) return { etapa: "reinos", pasta: `G:${guard[1]}`, ordem: [s.includes("__efeitos") ? 1 : 0, s] };
+  const reino = /arte\/reinos\/[a-z_]+\/([a-z_]+?)__([a-z_0-9]+)\.png$/.exec(s) || /arte\/itens\/reliquias\/([a-z_]+)\.png$/.exec(s);
+  if (reino && ordemReino[reino[1]] != null) {
+    const parte = reino[2] || "reliquia",
+      seq = [
+        "piso_corrigir",
+        "inimigos",
+        "mini",
+        "chefe",
+        "efeitos",
+        "piso",
+        "fundo",
+        "fundo2",
+        "paredao",
+        "cachoeira",
+        "ponte",
+        "props_anim",
+        "fauna",
+        "objetos",
+        "reliquia"
+      ],
+      chave = parte === "piso" && p.grupo === "1_corrigir" ? "piso_corrigir" : parte;
+    return { etapa: "reinos", pasta: `R:${reino[1]}`, ordem: [seq.indexOf(chave), s] };
+  }
+  if (/^(heroi_lenda|retrato)$/.test(k)) {
+    const id = /arte\/(?:lendas|panteao)\/([a-z_]+?)__/.exec(s)[1];
+    return { etapa: "lendas", pasta: "", ordem: [id, k === "heroi_lenda" ? 0 : 1], grupoConversa: id };
+  }
+  if (/^efeito_/.test(k))
+    return {
+      etapa: "efeitos",
+      pasta: "",
+      ordem: [["efeito_especial", "efeito_combinado", "efeito_desperto", "efeito_lenda"].indexOf(k), s]
+    };
+  return { etapa: "ambiente", pasta: "", ordem: [["superficie", "particulas", "ui", "ui_camada"].indexOf(k), s] };
+}
+// pastas de reino na ordem das eras, com o Guardião da era depois dos reinos dela
+const pastaReino = new Map();
+{
+  let i = 0;
+  for (const era of eras) {
+    for (const u of D.universos.filter(x => x.era === era)) pastaReino.set(`R:${u.id}`, `${dois(++i)} - ${u.id}`);
+    pastaReino.set(`G:${era}`, `${dois(++i)} - guardiao da era ${era}`);
+  }
+}
+const cmp = (a, b) => {
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    if (a[i] === b[i]) continue;
+    if (a[i] === undefined) return -1;
+    if (b[i] === undefined) return 1;
+    return typeof a[i] === "number" && typeof b[i] === "number" ? a[i] - b[i] : String(a[i]).localeCompare(String(b[i]));
+  }
+  return 0;
+};
+for (const p of prompts) {
+  p.dest = destino(p);
+  if (pastaReino.has(p.dest.pasta)) p.dest.pasta = pastaReino.get(p.dest.pasta);
+}
+const grupos = new Map();
+for (const p of prompts) {
+  const chave = `${ETAPAS[p.dest.etapa]}/${p.dest.pasta}`;
+  (grupos.get(chave) || grupos.set(chave, []).get(chave)).push(p);
+}
+for (const [chave, ps] of grupos) {
+  ps.sort((a, b) => cmp(a.dest.ordem, b.dest.ordem));
+  let ant = null;
+  ps.forEach((p, i) => {
+    // conversa nova: começo de cada pasta, de cada forma de monstro e de cada Lenda
+    const conversa =
+      p.dest.etapa === "monstros"
+        ? p.dest.forma
+          ? `forma ${p.dest.forma}`
+          : "fixa " + p.saida
+        : p.dest.etapa === "lendas"
+          ? p.dest.grupoConversa
+          : p.dest.etapa === "reinos" || p.dest.etapa === "dragoes"
+            ? "pasta"
+            : saidaNome(p).replace(/__(anim|retrato)$/, "");
+    const nova = conversa !== ant;
+    ant = conversa;
+    p.arquivo = `${chave.replace(/\/$/, "")}/${String(i + 1).padStart(3, "0")} - ${nova ? "NOVA CONVERSA - " : ""}salvar como ${saidaNome(p)} - ${anexoTexto(p)}.txt`;
+  });
+}
 const arquivos = new Map();
 const gravar = (rel, txt) => arquivos.set(rel, txt);
 for (const p of prompts) gravar(p.arquivo, p.texto);
 
-// índice de cada grupo (lista de arquivos, grade, célula e anexo), como no v2
-const NOME_GRUPO = {
-  "1_corrigir": "Corrigir (refazer a folha atual)",
-  "2_novas": "Novas (não existem hoje)",
-  "3_complementares": "Complementares (melhoram uma folha que já existe, que vai anexada)"
-};
-for (const g of Object.keys(NOME_GRUPO)) {
-  const ps = prompts.filter(p => p.grupo === g).sort((a, b) => a.arquivo.localeCompare(b.arquivo));
-  const porCodigo = new Map();
-  for (const p of ps) (porCodigo.get(p.codigo) || porCodigo.set(p.codigo, []).get(p.codigo)).push(p);
-  const md = [`# ${NOME_GRUPO[g]}`, "", `${ps.length} prompts, um arquivo por imagem. Prioridade: P1 primeiro, depois P2 e P3.`, ""];
-  if (g === "2_novas")
-    md.push(
-      `**Temas novos de raridade:** nas pastas \`M3_raridades/<elemento>/<monstro>/\`, o arquivo \`000 - P1 - COMECE AQUI\` é a imagem fixa nova daquela raridade. Faça ele antes das animações dela: ele vira o segundo anexo.`,
-      ""
-    );
-  md.push("| Código | Prompts | P1 | P2 | P3 |", "|---|---|---|---|---|");
-  for (const [c, l] of porCodigo)
-    md.push(`| ${c} | ${l.length} | ${["P1", "P2", "P3"].map(x => l.filter(p => p.prioridade === x).length).join(" | ")} |`);
-  for (const [c, l] of porCodigo) {
-    md.push("", `## ${c}`, "", "| Prioridade | Salvar como | Grade | Célula | Anexar |", "|---|---|---|---|---|");
-    for (const p of l) {
-      const anexos =
-        p.categoria === "monstro_raridade"
-          ? `\`${p.anexo}\` + imagem fixa \`${path.basename(p.saida).replace(/__anim_\d/, "")}\``
-          : p.anexo && p.anexo !== "-"
-            ? `\`${p.anexo}\``
-            : "-";
-      md.push(`| ${p.prioridade} | \`${p.saida}\` | ${p.grade} | ${p.celula} px | ${anexos} |`);
-    }
-  }
-  gravar(`${g}.md`, md.join("\n") + "\n");
-}
 // manifesto (mesmas colunas do v2)
 gravar(
   "MANIFESTO.csv",
@@ -261,8 +376,8 @@ gravar("CONFERIR_ARTES.html", fs.readFileSync(path.join(__dirname, "conferir_art
 gravar("layouts_arte.js", fs.readFileSync(path.join(__dirname, "layouts_arte.js"), "utf8"));
 
 // ---------------------------------------------------------------- conferir ou gravar
-const GERADAS = ["1_corrigir", "2_novas", "3_complementares"],
-  ANTIGAS = ["2_monstros", "3_gerais", "4_reinos"]; // estrutura da revisão anterior, substituída por esta
+const GERADAS = Object.values(ETAPAS),
+  ANTIGAS = ["1_corrigir", "2_novas", "3_complementares", "2_monstros", "3_gerais", "4_reinos"]; // estruturas anteriores, substituídas por esta
 const nasPastas = [];
 for (const d of GERADAS)
   (function andar(rel) {

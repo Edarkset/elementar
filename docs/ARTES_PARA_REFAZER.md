@@ -1,6 +1,6 @@
 # Artes para refazer ou reconverter
 
-> **Pacote atual: [docs/prompts/00_LEIA_PRIMEIRO.md](prompts/00_LEIA_PRIMEIRO.md).** Prompts completos, gerados dos dados do jogo, no formato que o gerador de imagem entrega e no layout que o código lê. Este arquivo fica como histórico.
+> **Pacote atual: [docs/prompts/00 - COMO USAR.md](<prompts/00 - COMO USAR.md>).** Prompts completos, gerados dos dados do jogo, no formato que o gerador de imagem entrega e no layout que o código lê. Este arquivo fica como histórico.
 
 Varredura feita em todas as artes do `arte/manifesto.json`. Dois tipos de problema:
 

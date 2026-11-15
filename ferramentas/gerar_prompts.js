@@ -205,7 +205,29 @@ function fixaNova(l, rar) {
 }
 
 // ---------------------------------------------------------------- montagem do pacote
-const prompts = BASE.prompts.map(montar);
+// raridade das formas 1 e 2 (Filhote e Jovem): o v2 só tinha das formas 3 a 8. Mesmo texto da forma 3, com o nome da forma
+const extrasRaridade = [];
+for (const l of D.linhas)
+  for (const n of [1, 2])
+    for (const rar of ["epico", "lendario"]) {
+      const modelo = BASE.prompts.find(p => p.saida.endsWith(`/${l.id}__anim_3__${rar}.png`));
+      if (!modelo || BASE.prompts.some(p => p.saida.endsWith(`/${l.id}__anim_${n}__${rar}.png`))) continue;
+      const nome = n === 1 ? l.filhote : l.jovem;
+      extrasRaridade.push({
+        ...modelo,
+        prioridade: "P2",
+        saida: modelo.saida.replace("__anim_3__", `__anim_${n}__`),
+        anexo: modelo.anexo.replace("__anim_3.png", `__anim_${n}.png`),
+        arquivo: modelo.arquivo.replace(
+          /\/\d+ - P\d - salvar como ([a-z_]+)__anim_3__([a-z]+) - anexar ([a-z_]+)__anim_3\.txt$/,
+          `/9${n}${rar === "epico" ? 0 : 1} - P2 - salvar como $1__anim_${n}__$2 - anexar $3__anim_${n}.txt`
+        ),
+        titulo: `${nome} ${rar}`,
+        corpo: modelo.corpo.replace(/recognizable as [^(]+\(/, `recognizable as ${nome} (`),
+        referencia: (modelo.referencia || "").replace("__anim_3.png", `__anim_${n}.png`)
+      });
+    }
+const prompts = [...BASE.prompts, ...extrasRaridade].map(montar);
 for (const l of D.linhas) for (const rar of ["epico", "lendario"]) if (RAR.tema(l.id, rar).novo) prompts.push(fixaNova(l, rar));
 // ---------------------------------------------------------------- ordem de execução: a ordem está nos números das pastas e dos
 // arquivos. Pastas de etapa (01, 02...), dentro delas uma pasta por monstro, reino ou dragão, e os arquivos numerados na ordem
@@ -226,6 +248,17 @@ const dois = n => String(n).padStart(2, "0");
 const anexoDoNome = arq => {
   const m = / - (anexar .*|sem anexo)\.txt$/.exec(arq);
   return m ? m[1] : "sem anexo";
+};
+// o que é cada arquivo, em palavras, no começo do nome
+const rotulo = p => {
+  const s = p.saida,
+    k = p.categoria;
+  if (k === "monstro_fixa_raridade")
+    return s.includes("__epico") ? "IMAGEM FIXA EPICA (tema novo) - " : "IMAGEM FIXA LENDARIA (tema novo) - ";
+  if (k === "monstro_anim_v2") return "ANIM BASE - ";
+  if (k === "monstro_raridade") return s.includes("__epico") ? "ANIM EPICA - " : "ANIM LENDARIA - ";
+  if (k === "monstro_acoes") return "ACOES - ";
+  return "";
 };
 const anexoTexto = p => {
   const a = anexoDoNome(p.arquivoV2 || p.arquivo);
@@ -344,7 +377,7 @@ for (const [chave, ps] of grupos) {
             : saidaNome(p).replace(/__(anim|retrato)$/, "");
     const nova = conversa !== ant;
     ant = conversa;
-    p.arquivo = `${chave.replace(/\/$/, "")}/${String(i + 1).padStart(3, "0")} - ${nova ? "NOVA CONVERSA - " : ""}salvar como ${saidaNome(p)} - ${anexoTexto(p)}.txt`;
+    p.arquivo = `${chave.replace(/\/$/, "")}/${String(i + 1).padStart(3, "0")} - ${nova ? "NOVA CONVERSA - " : ""}${rotulo(p)}salvar como ${saidaNome(p)} - ${anexoTexto(p)}.txt`;
   });
 }
 const arquivos = new Map();
@@ -425,5 +458,5 @@ for (const [rel, txt] of arquivos) {
 fs.writeFileSync(gradesFerramenta, gradesJs);
 const novos = prompts.filter(p => p.categoria === "monstro_fixa_raridade").length;
 console.log(
-  `docs/prompts/: ${prompts.length} prompts (${BASE.prompts.length} do v2 com as travas + ${novos} imagens fixas de temas novos), um arquivo por imagem.`
+  `docs/prompts/: ${prompts.length} prompts (${BASE.prompts.length} do v2 com as travas + ${extrasRaridade.length} animacoes epicas e lendarias das formas 1 e 2 + ${novos} imagens fixas de temas novos), um arquivo por imagem.`
 );

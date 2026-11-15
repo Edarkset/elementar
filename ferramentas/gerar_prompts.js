@@ -235,9 +235,9 @@ for (const l of D.linhas) for (const rar of ["epico", "lendario"]) if (RAR.tema(
 const ETAPAS = {
   corrigir: "01 - PRIMEIRO - corrigir imagens fixas",
   heroi: "02 - heroi, ovos, baus, coletaveis e efeitos",
-  monstros: "03 - monstros (um por vez, na ordem)",
+  monstros: "03 - monstros",
   dragoes: "04 - dragoes ancestrais",
-  reinos: "05 - reinos (um por vez, na ordem)",
+  reinos: "05 - reinos",
   lendas: "06 - lendas e deuses",
   efeitos: "07 - efeitos grandes",
   ambiente: "08 - POR ULTIMO - chao, particulas e interface"
@@ -283,7 +283,7 @@ function destino(p) {
           .replace(/[\u0300-\u036f]/g, "")
           .replace(/[^A-Za-z0-9 ]/g, "")
           .toLowerCase(),
-      pasta = `${dois(ORDEM_EL.indexOf(el) + 1)} - ${NOME_EL[el]}/${dois(D.linhas.filter(x => x.elemento === el).indexOf(l) + 1)} - ${id} (epico ${semAcento(RAR.tema(id, "epico").nome)}, lendario ${semAcento(RAR.tema(id, "lendario").nome)})`;
+      pasta = `${dois(ORDEM_EL.indexOf(el) + 1)} - ${NOME_EL[el]}/${dois(D.linhas.filter(x => x.elemento === el).indexOf(l) + 1)} - ${id}`;
     if (k === "monstro_fixa_raridade") return { etapa: "monstros", pasta, ordem: [0, 0, s.includes("__epico") ? 0 : 1] };
     const n = +/__(?:anim|acoes)_(\d)/.exec(s)[1],
       posForma = [3, 4, 5, 6, 7, 8, 1, 2].indexOf(n),
@@ -410,7 +410,16 @@ gravar("layouts_arte.js", fs.readFileSync(path.join(__dirname, "layouts_arte.js"
 
 // ---------------------------------------------------------------- conferir ou gravar
 const GERADAS = Object.values(ETAPAS),
-  ANTIGAS = ["1_corrigir", "2_novas", "3_complementares", "2_monstros", "3_gerais", "4_reinos"]; // estruturas anteriores, substituídas por esta
+  ANTIGAS = [
+    "1_corrigir",
+    "2_novas",
+    "3_complementares",
+    "2_monstros",
+    "3_gerais",
+    "4_reinos",
+    "03 - monstros (um por vez, na ordem)",
+    "05 - reinos (um por vez, na ordem)"
+  ]; // estruturas anteriores, substituídas por esta
 const nasPastas = [];
 for (const d of GERADAS)
   (function andar(rel) {

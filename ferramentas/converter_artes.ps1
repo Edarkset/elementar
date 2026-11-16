@@ -8,6 +8,9 @@
 # - A proporção do original é mantida (antes a arte era forçada ao tamanho antigo e ficava achatada ou esticada).
 #   A largura é a do arquivo atual vezes -Escala (padrão 2: o dobro de detalhe); a altura sai da proporção do original.
 #   O jogo lê qualquer tamanho e proporção. Use -Escala 1 para manter a largura de antes.
+#   Folhas de animação (__anim_N) ficam com pelo menos 1024 de largura: 8 poses por linha numa tela 1536x1024 do gerador
+#   (o jogo conta as poses quando a folha não tem a proporção de 8x3).
+# - Folha própria de Épico/Lendário (<id>__anim_N__epico ou __lendario) entra no manifesto ao lado da folha comum da forma.
 # - Arte que já está no manifesto: substitui o arquivo atual.
 # - ambiente: folha 8x2 de peças de 64 px (512x128). Cada peça é recortada pelo desenho (o original tem as peças no meio
 #   de uma imagem grande, com margem em volta); reduzir a imagem inteira esmagava as peças e deixava faixas transparentes.
@@ -73,11 +76,20 @@ foreach ($f in Get-ChildItem -LiteralPath $Origem -Recurse -File -Filter *.png |
     $chave = $porNome[$nome]; $atual = Join-Path $repo ($manifesto[$chave] -replace '/', '\')
     if (-not (Test-Path -LiteralPath $atual)) { [void]$pulados.Add("$rel  (arquivo do manifesto não existe)"); continue }
     $t = TamanhoWebp $atual; $w = $t[0]; $h = $t[1]
+  } elseif ($nome -match '^(.+__anim_\d+)__(epico|lendario)$' -and $porNome.ContainsKey($Matches[1])) {
+    # folha própria de Épico ou Lendário: fica na mesma pasta da folha comum da forma e tem o mesmo tamanho dela
+    $chaveComum = $porNome[$Matches[1]]; $atual = Join-Path $repo ($manifesto[$chaveComum] -replace '/', '\')
+    if (-not (Test-Path -LiteralPath $atual)) { [void]$pulados.Add("$rel  (folha comum da forma não existe)"); continue }
+    $chave = ($chaveComum -replace '[^/]+$', '') + "$nome.png"; $t = TamanhoWebp $atual; $w = $t[0]; $h = $t[1]
   } elseif ($topo -eq 'lendas' -or $topo -eq 'panteao') {
     $chave = "arte/$topo/$nome.png"; if ($nome -like '*__retrato') { $w = 256; $h = 384 } else { $w = 384; $h = 192 }
   } else { [void]$pulados.Add("$rel  (não sei onde o jogo usa)"); continue }
   # mantém a proporção do original (menos efeitos e ambiente, que são montados em grade própria)
-  if (-not $cols -and -not $grade) { $o = TamanhoPng $f.FullName; $w = [int][Math]::Min($o[0], [Math]::Round($w * $Escala)); $h = [int][Math]::Max(1, [Math]::Round($w * $o[1] / $o[0])) }
+  # folha de animação (__anim_N): pelo menos 1024 de largura, para 8 poses por linha ficarem com 128 px cada
+  if (-not $cols -and -not $grade) {
+    $o = TamanhoPng $f.FullName; $alvo = [Math]::Round($w * $Escala); if ($nome -match '__anim_\d+') { $alvo = [Math]::Max($alvo, 1024) }
+    $w = [int][Math]::Min($o[0], $alvo); $h = [int][Math]::Max(1, [Math]::Round($w * $o[1] / $o[0]))
+  }
   if ($porChave.ContainsKey($chave)) { [void]$pulados.Add("$rel  (repetida: $chave já veio de $($porChave[$chave]))"); continue }
   $porChave[$chave] = $rel
   $destino = if ($manifesto.Contains($chave) -and $manifesto[$chave] -like '*.webp') { $manifesto[$chave] } else { $chave -replace '\.png$', '.webp' }

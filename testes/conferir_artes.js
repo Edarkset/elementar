@@ -55,7 +55,7 @@ const path = require("path");
       ["pintado", await folha({ fundo: "#334455" })],
       ["tamanho errado", await folha({ W: 1024, H: 384 })],
       ["quadro misturado", await folha({ trocar: [1, 3] })],
-      // nome do pacote de prompts (grade 8 x 3 do v2) feito na tela do gerador (1536 x 1024): reconhecido e aceito, só avisa o tamanho
+      // nome do pacote de prompts (grade 8 x 3 do v2) feito na tela do gerador (1536 x 1024): reconhecido e aceito (o jogo lê 8 poses nesse tamanho)
       ["v2 em 1536x1024", await folha({ cols: 8, nome: "fogo_fatuo__anim_3.png" })],
       ["v2 com 6 colunas", await folha({ cols: 6, nome: "fogo_fatuo__anim_3.png" })]
     ];
@@ -65,6 +65,18 @@ const path = require("path");
       const el = document.querySelector("article.cartao");
       out.push([nome, el.className.replace("cartao ", ""), [...el.querySelectorAll("ul.prob li")].map(l => l.textContent).join(" | ")]);
     }
+    // contadores clicáveis: "refazer" mostra só os cartões a refazer, "Ver todas" volta a mostrar tudo
+    const chips = [...document.querySelectorAll("#resumo button.chip")];
+    chips.find(c => c.textContent.includes("refazer")).click();
+    const visiveis = [...document.querySelectorAll("article.cartao")].filter(c => !c.hidden);
+    const soRefazer = visiveis.length > 0 && visiveis.every(c => c.classList.contains("erro"));
+    [...document.querySelectorAll("#resumo button.chip")].find(c => c.textContent.includes("Ver todas")).click();
+    const todas = [...document.querySelectorAll("article.cartao")].every(c => !c.hidden);
+    out.push([
+      "filtro refazer",
+      soRefazer && todas ? "ok" : "erro",
+      soRefazer ? (todas ? "" : "Ver todas não voltou") : "mostrou cartões que não são de refazer"
+    ]);
     return out;
   });
   await b.close();
@@ -76,8 +88,9 @@ const path = require("path");
     pintado: "erro",
     "tamanho errado": "erro",
     "quadro misturado": "aviso",
-    "v2 em 1536x1024": "aviso",
-    "v2 com 6 colunas": "erro"
+    "v2 em 1536x1024": "ok",
+    "v2 com 6 colunas": "erro",
+    "filtro refazer": "ok"
   };
   let falhas = 0;
   for (const [nome, nivel, probs] of casos) {

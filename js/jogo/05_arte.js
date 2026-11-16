@@ -255,9 +255,55 @@ export function arteMonstro(id, e, ramo, rar) {
 export const FPS_ANIM = [5, 10, 12],
   cacheFatia = new Map();
 /** colunas de uma folha de 3 linhas (parado, andando, atacando): 6 nas folhas antigas (64 px) e 8 nas refeitas (128 px).
- * As células são quadradas, então a proporção da imagem diz qual é: 6×3 tem largura = 2× a altura, 8×3 tem 2,67×. */
+ * Com células quadradas a proporção diz qual é (6×3 tem largura = 2× a altura, 8×3 tem 2,67×). O gerador de imagens só
+ * faz telas 1536×1024 ou 1024×1024, então uma folha de 8 poses pode chegar com proporção 1,5: nesse caso conta as poses. */
 export function colunasFolha(img, rows = 3) {
-  return rows === 3 && img.width / img.height >= 2.5 ? 8 : 6;
+  if (rows !== 3) return 6;
+  const asp = img.width / img.height;
+  if (asp >= 2.5) return 8;
+  if (asp >= 1.9) return 6;
+  return posesPorLinha(img) >= 7 ? 8 : 6;
+}
+const cachePoses = new Map();
+/** quantas poses separadas por coluna vazia há em cada terço da folha; vale o número que aparece em pelo menos duas linhas
+ * (a linha de ataque pode ter rastro ligando os quadros). Pedaços pequenos (faísca solta) não contam. */
+export function posesPorLinha(img) {
+  if (!img._id) img._id = novoIdImg();
+  const ja = cachePoses.get(img._id);
+  if (ja != null) return ja;
+  let d = null;
+  try {
+    d = alfaDe(img);
+  } catch (e) {
+    relatar("arte: folha não pôde ser lida para contar as poses", e);
+  }
+  const W = img.width,
+    H = img.height,
+    contas = [];
+  if (d)
+    for (let r = 0; r < 3; r++) {
+      const y0 = Math.round((r * H) / 3),
+        y1 = Math.round(((r + 1) * H) / 3),
+        min = Math.max(2, (y1 - y0) * 0.01),
+        col = new Int32Array(W);
+      for (let y = y0; y < y1; y++) for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 24) col[x]++;
+      const blocos = [];
+      let massa = 0,
+        dentro = false;
+      for (let x = 0; x <= W; x++) {
+        const cheia = x < W && col[x] > min;
+        if (cheia) massa += col[x];
+        else if (dentro) blocos.push(massa);
+        if (!cheia) massa = 0;
+        dentro = cheia;
+      }
+      const maior = Math.max(0, ...blocos);
+      contas.push(blocos.filter(m => m >= maior * 0.15).length);
+    }
+  const ordem = contas.sort((a, b) => b - a),
+    n = ordem.length >= 2 ? ordem[1] : 0;
+  cachePoses.set(img._id, n);
+  return n;
 }
 /** quadros por segundo de uma linha: folhas de 8 quadros andam mais rápido, para o golpe e o passo durarem o mesmo tempo */
 export function ritmoQuadros(n) {

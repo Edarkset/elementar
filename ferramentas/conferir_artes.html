@@ -32,13 +32,19 @@ button:focus-visible, select:focus-visible, label.botao:focus-within { outline: 
 select { font-weight: 600; max-width: 100% }
 .resumo { display: flex; flex-wrap: wrap; gap: 8px }
 .chip { font-weight: 700; font-size: .85rem; padding: 3px 10px; border-radius: 99px; border: 1px solid currentColor }
+button.chip { font-size: 1rem; padding: 8px 16px; background: transparent; border: 2px solid currentColor; min-height: 44px }
+button.chip[aria-pressed="true"] { background: currentColor }
+button.chip[aria-pressed="true"] span { color: var(--bg) }
+button.chip:disabled { opacity: .45; cursor: default }
+.resumo .dica { color: var(--suave); font-size: .88rem; align-self: center }
+.cartao[hidden] { display: none }
 .c-ok { color: var(--ok) } .c-aviso { color: var(--aviso) } .c-erro { color: var(--erro) }
 .cartao { background: var(--painel); border: 1px solid var(--borda); border-left: 6px solid var(--borda); border-radius: 10px; padding: 14px; display: grid; gap: 12px; min-width: 0 }
 .cartao.ok { border-left-color: var(--ok) } .cartao.aviso { border-left-color: var(--aviso) } .cartao.erro { border-left-color: var(--erro) }
 .topo { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between }
 .veredito { font-family: var(--display); font-weight: 700; font-size: 1.1rem }
 ul.prob { margin: 0; padding-left: 20px; display: grid; gap: 4px }
-ul.prob li.erro::marker { color: var(--erro) } ul.prob li.aviso::marker { color: var(--aviso) }
+ul.prob li.erro::marker { color: var(--erro) } ul.prob li.aviso::marker { color: var(--aviso) } ul.prob li.info { color: var(--suave) } ul.prob li.info::marker { color: var(--ok) }
 .figs { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 12px; align-items: start }
 @media (max-width: 720px) { .figs { grid-template-columns: minmax(0, 1fr) } }
 figure { margin: 0; display: grid; gap: 4px; min-width: 0 }
@@ -189,7 +195,7 @@ function conferir(item) {
   // pacote de prompts: o gerador costuma só fazer 1536 x 1024 ou 1024 x 1024; a grade é conferida no tamanho que veio e eu ajusto ao converter
   const telaDoGerador = lay.ideal && lay.C * lay.R > 1 && [1.5, 1, 1.75, 2 / 3].some(v => Math.abs(prop / v - 1) < 0.03);
   if (Math.abs(prop / esperada - 1) > 0.03 && telaDoGerador)
-    add("aviso", `Feita em ${W0} × ${H0} (o ideal seria ${lay.W} × ${lay.H}). Tudo bem: a grade de ${lay.C} × ${lay.R} foi conferida neste tamanho e o ajuste é feito na conversão.`, null);
+    add("info", `Tamanho ${W0} × ${H0} (tela do gerador): aceito, o jogo lê a grade de ${lay.C} × ${lay.R} neste tamanho.`, null);
   else if (Math.abs(prop / esperada - 1) > 0.03 && lay.C * lay.R > 1)
     add("erro", `Tamanho ${W0} × ${H0}: o esperado é ${lay.W} × ${lay.H} (ou uma tela 1536 × 1024 com a grade ${lay.C} × ${lay.R} cobrindo a imagem inteira).`, FRASE.tamanho(L));
   else if (Math.max(W0, H0) < 900) add("aviso", `Imagem pequena (${W0} × ${H0}): o esperado é ${lay.W} × ${lay.H}. Perde detalhe.`, null);
@@ -370,10 +376,12 @@ function costura(P, add) {
 
 // ---------------------------------------------------------------- resultado
 function mostrar(item, P, probs, ctx) {
-  const nivel = probs.some(p => p.nivel === "erro") ? "erro" : probs.length ? "aviso" : "ok";
+  // "info" é só uma observação: não pede para conferir nem refazer
+  const nivel = probs.some(p => p.nivel === "erro") ? "erro" : probs.some(p => p.nivel === "aviso") ? "aviso" : "ok";
   item.nivel = nivel;
   const el = item.el;
   el.className = "cartao " + nivel;
+  el.hidden = !!filtro && filtro !== nivel;
   el.innerHTML = "";
   const topo = document.createElement("div"); topo.className = "topo";
   const t = document.createElement("div"); t.style.cssText = "display:grid;gap:2px;min-width:0";
@@ -518,13 +526,35 @@ function paredaoMolde(g, r, x, y, cw, ch, cor) {
   if (r === 1) { g.fillStyle = "rgba(111,159,196,.9)"; g.fillRect(x + cw * 0.38, y + ch * 0.1, cw * 0.24, h * 0.9); }
 }
 
-// ---------------------------------------------------------------- resumo
+// ---------------------------------------------------------------- resumo: os contadores são botões que mostram só aquele grupo
+let filtro = "";
+function aplicarFiltro() {
+  for (const r of resultados) if (r.el) r.el.hidden = !!filtro && filtro !== r.nivel;
+  const ex = $("exemplo");
+  if (ex) ex.hidden = !!filtro;
+}
 function resumo() {
   const n = { ok: 0, aviso: 0, erro: 0 };
   for (const r of resultados) if (r.nivel) n[r.nivel]++;
-  $("resumo").innerHTML = resultados.length
-    ? `<span class="chip c-ok">${n.ok} pode salvar</span><span class="chip c-aviso">${n.aviso} conferir</span><span class="chip c-erro">${n.erro} refazer</span>`
-    : "";
+  if (filtro && !n[filtro]) filtro = "";
+  const box = $("resumo");
+  box.innerHTML = "";
+  if (!resultados.length) return aplicarFiltro();
+  const grupos = [["erro", `${n.erro} refazer`], ["aviso", `${n.aviso} conferir`], ["ok", `${n.ok} pode salvar`], ["", `Ver todas (${resultados.length})`]];
+  for (const [k, txt] of grupos) {
+    const bt = document.createElement("button");
+    bt.className = "chip" + (k ? " c-" + k : "");
+    bt.innerHTML = "<span></span>";
+    bt.firstChild.textContent = txt;
+    bt.setAttribute("aria-pressed", String(filtro === k));
+    bt.disabled = !!k && !n[k];
+    bt.onclick = () => { filtro = k; resumo(); window.scrollTo({ top: box.getBoundingClientRect().top + window.scrollY - 12, behavior: "smooth" }); };
+    box.append(bt);
+  }
+  const dica = document.createElement("span"); dica.className = "dica";
+  dica.textContent = filtro ? "Mostrando só este grupo. Clique em Ver todas para voltar." : "Clique num número para ver só aquelas imagens.";
+  box.append(dica);
+  aplicarFiltro();
 }
 
 // ---------------------------------------------------------------- exemplo inicial: um molde de cada formato principal
